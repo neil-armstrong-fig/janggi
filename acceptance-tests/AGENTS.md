@@ -29,6 +29,12 @@ given("a user opens the game for the first time", () => {
 
 `given`/`when` are `test.describe`; `then` is `test`, which is why only `then` receives the DSL.
 
+**The root `AGENTS.md` ban on a wrapper `describe` does not apply to these specs.** There it stops a
+unit test file restating its own filename; here the `given`/`when` nesting _is_ the acceptance
+criterion, and it is expected on every spec — write the full three levels even when a `given` holds
+one `when`. The ban does still apply to the Vitest tests for DSL helpers, which are unit tests like
+any other.
+
 ## What a spec may reach
 
 The DSL, and nothing else — no `page`, `context`, `browser` or `testInfo`. Enforced three ways: the

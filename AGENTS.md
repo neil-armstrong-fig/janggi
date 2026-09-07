@@ -38,6 +38,21 @@ pnpm install-browsers    # one-time Playwright chromium download
 This project is Acceptance Test Driven. **Write the acceptance test first**, watch it fail for the
 right reason, then make it pass. See `acceptance-tests/AGENTS.md`.
 
+A unit test file is one-to-one with the single export it covers, and the filename already names that
+export — so **do not wrap the file in a top-level `describe`**. Write `it(...)` at the top level and
+let each name read as a sentence about the subject:
+
+```ts
+// BoardPositions.test.ts
+it("covers the 90 intersections of 9 files and 10 ranks", () => {
+```
+
+`describe` is for grouping that earns itself — cases needing a different setup, or a genuine split
+within one subject. A wrapper that only restates the filename is noise in every test report.
+
+This governs unit tests only. Acceptance specs are the opposite case — their `given`/`when` nesting
+is the specification rather than a restatement of the filename — so see `acceptance-tests/AGENTS.md`.
+
 ## Code style
 
 Prettier owns formatting — run `pnpm format` rather than hand-matching. What it will not tell you:
@@ -53,6 +68,12 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
     // ...the detail below it
   }
   ```
+
+- **A file lives as close to its caller as it can, in a subdirectory of it.** A helper used by one
+  component goes in a folder beneath that component, never beside it; something several siblings
+  share rises to their nearest common ancestor and no further. Depth is the signal — it tells you a
+  file's blast radius before you open it, and it is what stops a folder becoming a bag of loose
+  parts. See `webapp/AGENTS.md` for the shape this produces.
 
 - **No `../` imports.** Use the `@src/*` alias, which each package maps to its own `src/`.
 - **Explicit return types** on function declarations, and `import type` for type-only imports

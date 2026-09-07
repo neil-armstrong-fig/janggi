@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm view *)",
+      "Bash(pnpm checks)",
+      "Bash(pnpm acceptance-tests)",
+      "Bash(pnpm --filter @janggi/webapp checks)",
+      "Bash(pnpm --filter @janggi/acceptance-tests checks)",
+      "Bash(pnpm --filter @janggi/shared checks)",
+      "mcp__ide__getDiagnostics"
+    ]
+  }
+}

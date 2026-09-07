@@ -6,15 +6,51 @@ Vite + React 19 + Redux Toolkit + Tailwind v4, client-side rendered, installable
 
 ```
 src/main.tsx          entry — createRoot + <Provider store>
-src/react/            components
+src/react/            components, nested by who uses them
 src/redux/            Store.ts, typed Hooks.ts, one folder per slice
 src/index.css         Tailwind import + the base layer
 ```
+
+`src/react/` follows the locality rule from the root `AGENTS.md`. The same folder set recurses at
+every level, and a folder only appears once something needs it:
+
+```
+src/react/
+  App.tsx                    the shell — routing and providers
+  pages/
+    <page>/
+      <Page>.tsx
+      components/
+        <thing>/
+          <Thing>.tsx
+          components/        components only <Thing> renders, each in its own folder
+          hooks/
+            <useThing>.ts    hooks only <Thing> calls
+            utils/           helpers only <useThing> calls
+          types/
+          utils/             plain functions, each with its .test.ts beside it
+```
+
+Anything shared by two siblings moves up to the folder that contains them both, and no higher.
+
+Name a folder for what is in it, not for the shape of it. Tailwind means presentation lives in the
+JSX, so a folder called `styles/` reads as CSS and is almost always wrong — `board/cell-styles/`
+holds the data that describes how cells are painted, and says so.
 
 ## Conventions
 
 - **Mobile first.** This is played on phones; touch is the primary input. Assume a small viewport
   and check any layout work against the `mobile` acceptance-test project.
+- **Every component gets its own file, in its own folder** — `components/<thing>/<Thing>.tsx` — no
+  matter how small it is or how few callers it has. A one-caller button is still its own folder.
+  This is the one place the root `AGENTS.md` rule about declaring functions below their callers does
+  not apply: that is for plain functions. Inline a component only where extracting it would be
+  actively misleading, and leave a comment saying why.
+- **A component's props interface is called `Props`, and is not exported.** One component per file
+  means there is nothing to collide with, so `BoardProps` only says twice what the filename already
+  says once. Give it a real name solely when another file genuinely imports it —
+  `CellRenderProps` in `board/styles/types/BoardStyle.ts` is the current example, and it is part of
+  a published contract rather than one component's arguments.
 - **Every element an acceptance test needs gets a `data-testid`.** That attribute is the contract
   with `acceptance-tests/` — renaming one breaks specs.
 - Redux: use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped
