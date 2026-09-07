@@ -2,6 +2,7 @@ import {baseConfig, restrictedImports} from "@janggi/shared/config/eslint.base.j
 import eslintReact from "@eslint-react/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
 import globals from "globals";
+import {globalIgnores} from "eslint/config";
 
 /**
  * Hook tests are welcome; component tests are not — see `AGENTS.md`. These are the only
@@ -27,6 +28,7 @@ const hookTestingOnly = [
 
 export default [
   ...baseConfig({allowedPackages: ["@janggi/shared"]}),
+  globalIgnores(["scripts/*"]),
   {
     files: ["src/**/*.{ts,tsx}"],
     languageOptions: {
