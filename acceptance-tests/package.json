@@ -1,0 +1,38 @@
+{
+  "name": "@janggi/acceptance-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm checks",
+    "checks": "pnpm lint && pnpm format:check && pnpm type-check && pnpm test",
+    "lint": "eslint --max-warnings=0 .",
+    "lint:fix": "eslint --max-warnings=0 --fix .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "install-browsers": "playwright install chromium",
+    "acceptance-tests": "playwright test",
+    "acceptance-tests:local": "WEBAPP_URL=http://localhost:3000 playwright test",
+    "acceptance-tests:production": "WEBAPP_URL=https://neil-armstrong-fig.github.io/janggi/ playwright test",
+    "acceptance-tests:headed": "playwright test --headed",
+    "acceptance-tests:ui": "playwright test --ui",
+    "acceptance-tests:report": "playwright show-report"
+  },
+  "dependencies": {
+    "@janggi/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.13.3",
+    "eslint": "10.10.0",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.12.0",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.69.0",
+    "vitest": "5.0.0"
+  }
+}

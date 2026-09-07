@@ -1,0 +1,28 @@
+{
+  "name": "janggi",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=24.13.1"
+  },
+  "scripts": {
+    "start": "pnpm --filter @janggi/webapp start",
+    "build": "pnpm --recursive build",
+    "checks": "pnpm --recursive checks",
+    "lint": "pnpm --recursive lint",
+    "lint:fix": "pnpm --recursive lint:fix",
+    "format": "pnpm --recursive format",
+    "format:check": "pnpm --recursive format:check",
+    "type-check": "pnpm --recursive type-check",
+    "test": "pnpm --recursive test",
+    "install-browsers": "pnpm --filter @janggi/acceptance-tests install-browsers",
+    "acceptance-tests": "pnpm --filter @janggi/acceptance-tests acceptance-tests",
+    "acceptance-tests:local": "pnpm --filter @janggi/acceptance-tests acceptance-tests:local",
+    "acceptance-tests:production": "pnpm --filter @janggi/acceptance-tests acceptance-tests:production",
+    "acceptance-tests:headed": "pnpm --filter @janggi/acceptance-tests acceptance-tests:headed",
+    "acceptance-tests:ui": "pnpm --filter @janggi/acceptance-tests acceptance-tests:ui",
+    "acceptance-tests:report": "pnpm --filter @janggi/acceptance-tests acceptance-tests:report"
+  }
+}
