@@ -1,0 +1,162 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Allow one deploy at a time, and let a newer push supersede a queued one.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Lint, format, types and unit tests across every package.
+      - run: pnpm checks
+
+      - run: pnpm --filter @janggi/webapp compile
+
+  acceptance-tests:
+    name: Acceptance tests (local)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # --with-deps installs the system libraries Chromium needs on a bare runner.
+      - run: pnpm --filter @janggi/acceptance-tests exec playwright install --with-deps chromium
+
+      # Test the production build, not the dev server.
+      - run: pnpm --filter @janggi/webapp compile
+
+      - name: Serve the build
+        run: pnpm --filter @janggi/webapp preview &
+
+      - name: Wait for the server
+        run: |
+          for _ in $(seq 1 60); do
+            curl -sf http://localhost:3000 >/dev/null && exit 0
+            sleep 1
+          done
+          echo "The preview server never came up" >&2
+          exit 1
+
+      - run: pnpm acceptance-tests
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-local
+          path: acceptance-tests/playwright-report/
+          retention-days: 7
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: [checks, acceptance-tests]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    outputs:
+      page-url: ${{ steps.deployment.outputs.page_url }}
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Pages serves the site under the repository name, so the app is rebuilt with that base
+      # rather than reusing the "/" build the tests ran against.
+      - name: Build for Pages
+        run: pnpm --filter @janggi/webapp compile
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: webapp/build
+
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  acceptance-tests-production:
+    name: Acceptance tests (production)
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @janggi/acceptance-tests exec playwright install --with-deps chromium
+
+      # Pages can serve the previous build for a moment after the deployment reports success.
+      - name: Wait for the deployment
+        run: |
+          for _ in $(seq 1 60); do
+            curl -sf "$WEBAPP_URL" >/dev/null && exit 0
+            sleep 5
+          done
+          echo "$WEBAPP_URL never came up" >&2
+          exit 1
+        env:
+          WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
+
+      # The deployed URL, rather than the one baked into the :production script.
+      - run: pnpm acceptance-tests
+        env:
+          WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-production
+          path: acceptance-tests/playwright-report/
+          retention-days: 7

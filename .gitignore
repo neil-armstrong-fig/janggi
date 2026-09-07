@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+build/
+dist/
+dev-dist/
+*.tsbuildinfo
+
+# Test output
+coverage/
+screenshots/
+playwright-report/
+test-results/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Caches
+.eslintcache
+.vite/
+
+# Editors
+.idea/
+.vscode/
+.DS_Store
+
+# Local scratch notes, not for the repo
+todo.txt

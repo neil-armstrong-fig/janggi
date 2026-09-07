@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":dependencyDashboard", "schedule:weekly"],
+  "minimumReleaseAge": "7 days",
+  "rangeStrategy": "pin",
+  "lockFileMaintenance": { "enabled": true },
+  "packageRules": [
+    {
+      "description": "TypeScript is held at 6.x on purpose. TS 7's native compiler ships without a stable programmatic API, so typescript-eslint cannot read the AST and ESLint crashes on startup. Re-enable when TS 7.1 lands that API.",
+      "matchPackageNames": ["typescript"],
+      "enabled": false
+    },
+    {
+      "description": "Playwright's runner, browsers and system libraries move together — one PR, not three.",
+      "matchPackageNames": [
+        "@playwright/test",
+        "playwright",
+        "playwright-core"
+      ],
+      "groupName": "playwright"
+    },
+    {
+      "description": "Same for the lint toolchain, which has to stay mutually compatible.",
+      "matchPackageNames": [
+        "eslint",
+        "@eslint/js",
+        "typescript-eslint",
+        "eslint-config-prettier",
+        "@eslint-react/eslint-plugin",
+        "eslint-plugin-react-hooks"
+      ],
+      "groupName": "eslint"
+    },
+    {
+      "description": "Everything else non-major in one weekly PR, so the queue stays short.",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "non-major dependencies"
+    }
+  ]
+}
