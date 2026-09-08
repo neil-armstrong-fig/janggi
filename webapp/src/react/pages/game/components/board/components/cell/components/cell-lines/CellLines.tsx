@@ -22,6 +22,7 @@ export function CellLines({shape, style}: Props): React.JSX.Element {
       {shape.orthogonals.map(direction => (
         <Segment key={direction} towards={direction} stroke={style.stroke} strokeWidth={style.strokeWidth} />
       ))}
+
       {shape.diagonals.map(direction => (
         <Segment key={direction} towards={direction} stroke={diagonalStroke} strokeWidth={diagonalStrokeWidth} />
       ))}

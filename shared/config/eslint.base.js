@@ -39,8 +39,16 @@ export function restrictedImports({allowedPackages = [], paths = [], patterns = 
   return ["error", {paths, patterns: [noParentImports, workspaceBoundary, ...patterns]}];
 }
 
-/** The rules every package in the workspace shares. */
-export function baseConfig({allowedPackages = []} = {}) {
+/**
+ * The rules every package in the workspace shares.
+ *
+ * @param tsconfigRootDir always `import.meta.dirname` — the directory of the calling
+ *   `eslint.config.js`. See the note above `assertTsconfigRootDir` for why this is not optional.
+ * @param allowedPackages passed through to `restrictedImports`.
+ */
+export function baseConfig({tsconfigRootDir, allowedPackages = []} = {}) {
+  assertTsconfigRootDir(tsconfigRootDir);
+
   return tseslint.config(
     {ignores},
     js.configs.recommended,
@@ -49,6 +57,7 @@ export function baseConfig({allowedPackages = []} = {}) {
       languageOptions: {
         ecmaVersion: 2022,
         sourceType: "module",
+        parserOptions: {tsconfigRootDir},
         globals: {
           ...globals.es2022,
           ...globals.node,
@@ -79,4 +88,24 @@ export function baseConfig({allowedPackages = []} = {}) {
     },
     prettierConfig,
   );
+}
+
+/**
+ * Left to itself, the parser infers `tsconfigRootDir` by walking the call stack for a frame in a
+ * file named `eslint.config.js` — and caches every answer it finds in one module-level set. The CLI
+ * never notices, because `pnpm lint` starts a process per package and so only ever loads one config.
+ *
+ * The editor is a single long-lived server for the whole workspace, and webapp and acceptance-tests
+ * resolve to the same copy of typescript-eslint, so opening a file from each loads both configs into
+ * that one set. From then on every parse in either package fails with "multiple candidate
+ * TSConfigRootDirs are present" — every file in the editor red, while `pnpm checks` stays green.
+ *
+ * Passing the directory explicitly skips the inference entirely. It is required rather than
+ * defaulted because there is no value this file could pick: `import.meta.dirname` here is
+ * `shared/config/`, and a wrong root is a worse failure than a missing one.
+ */
+function assertTsconfigRootDir(tsconfigRootDir) {
+  if (typeof tsconfigRootDir !== "string") {
+    throw new Error("baseConfig needs tsconfigRootDir — pass `import.meta.dirname` from your eslint.config.js.");
+  }
 }

@@ -27,7 +27,7 @@ const hookTestingOnly = [
 ];
 
 export default [
-  ...baseConfig({allowedPackages: ["@janggi/shared"]}),
+  ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages: ["@janggi/shared"]}),
   globalIgnores(["scripts/*"]),
   {
     files: ["src/**/*.{ts,tsx}"],

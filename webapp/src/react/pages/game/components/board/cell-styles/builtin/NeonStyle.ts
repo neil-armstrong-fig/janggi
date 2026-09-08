@@ -1,4 +1,4 @@
-import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
+import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 import type {CellStyle} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
 import {toPositionKey} from "@src/react/pages/game/components/board/utils/PositionKeys";
 
@@ -13,7 +13,7 @@ const NEON_CELL: CellStyle = {
  * Deliberately unlike a real board, to prove a style imposes nothing on the grid: its own surface,
  * palace diagonals in their own colour, and two intersections marked through `cells`.
  */
-export const neonStyle: BoardStyle = {
+export const neonStyle: BuiltInBoardStyle = {
   name: "Neon",
   surface: "linear-gradient(160deg, #0b1220, #131c2e)",
   defaultCell: NEON_CELL,

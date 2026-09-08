@@ -25,6 +25,12 @@ export function Segment({towards, stroke, strokeWidth}: Props): React.JSX.Elemen
   );
 }
 
+/** Where a segment stops, in the cell's own 100-unit box. */
+interface SegmentEnd {
+  readonly x: number;
+  readonly y: number;
+}
+
 /**
  * How far past its own edge a segment is drawn. Grid tracks rarely land on whole device pixels, so
  * two neighbours meeting exactly on the boundary leave hairline gaps along the diagonals; a small
@@ -35,7 +41,7 @@ const OVERSHOOT = 2;
 const NEAR = 0 - OVERSHOOT;
 const FAR = 100 + OVERSHOOT;
 
-const SEGMENT_ENDS: Record<Orthogonal | Diagonal, {readonly x: number; readonly y: number}> = {
+const SEGMENT_ENDS: Record<Orthogonal | Diagonal, SegmentEnd> = {
   north: {x: CENTRE, y: NEAR},
   south: {x: CENTRE, y: FAR},
   west: {x: NEAR, y: CENTRE},
