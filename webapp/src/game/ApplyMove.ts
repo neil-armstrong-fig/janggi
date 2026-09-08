@@ -1,10 +1,9 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import {movesFrom} from "@src/game/MovesFrom";
-import {opponentOf} from "@src/game/utils/OpponentOf";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {positionAfter} from "@src/game/utils/PositionAfter";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 
 /**
@@ -13,6 +12,10 @@ import {toPositionKey} from "@src/game/board/utils/PositionKeys";
  *
  * The state handed in is never touched — a new one comes back — which is what keeps a move list
  * replayable and lets a caller hold on to any position it likes.
+ *
+ * This is the rules; `positionAfter` beside it is the transition alone. Everything here is the
+ * checking: that a piece is there, that it is that army's turn, and that the move is one the piece
+ * may make.
  *
  * **It throws on an illegal move rather than returning undefined.** `parsePieceKey` returns
  * undefined because its input is a string off a DOM attribute and genuinely untrusted; a move is
@@ -35,25 +38,11 @@ export function applyMove(state: GameState, move: Move): GameState {
     );
   }
 
-  return {
-    pieces: [...state.pieces.filter(stillStanding(move)), {piece: moving, position: move.to}],
-    sideToMove: opponentOf(state.sideToMove),
-  };
+  return positionAfter(state, move);
 }
 
 function canReach(state: GameState, move: Move): boolean {
   const destination = toPositionKey(move.to);
 
   return movesFrom(state, move.from).some(reachable => toPositionKey(reachable) === destination);
-}
-
-/**
- * Everything still on the board afterwards: the two points the move touches are cleared, since the
- * piece has left one and whatever stood on the other has been taken. The moved piece is added back
- * by the caller, on its new point.
- */
-function stillStanding(move: Move): (placed: PlacedPiece) => boolean {
-  const emptied = new Set([toPositionKey(move.from), toPositionKey(move.to)]);
-
-  return ({position}) => !emptied.has(toPositionKey(position));
 }

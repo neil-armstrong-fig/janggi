@@ -9,6 +9,7 @@ import {applyMove} from "@src/game/ApplyMove";
 import {describe, expect, it} from "vitest";
 import fc from "fast-check";
 import {isInPalace} from "@src/game/board/utils/Palaces";
+import {legalMovesFor} from "@src/game/LegalMovesFor";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
 import {opponentOf} from "@src/game/utils/OpponentOf";
@@ -255,12 +256,6 @@ function finalPositionOf(choices: readonly number[]): GameState {
 
 function gameChoices(): fc.Arbitrary<number[]> {
   return fc.array(fc.nat({max: MOST_MOVES_ON_OFFER}), {maxLength: MOVES_PER_GAME});
-}
-
-function legalMovesFor(state: GameState): Move[] {
-  return state.pieces
-    .filter(({piece}) => piece.side === state.sideToMove)
-    .flatMap(({position}) => movesFrom(state, position).map(to => ({from: position, to})));
 }
 
 function pieceOn(state: GameState, position: Position): Piece | undefined {

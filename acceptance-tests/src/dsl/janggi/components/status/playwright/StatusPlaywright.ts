@@ -6,11 +6,17 @@ import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 /** Where the game says what it is doing, rather than what is standing on it. */
 export class StatusPlaywright extends BaseComponent {
   readonly container: Locator;
+  private readonly newGame: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.container = page.getByTestId("turn");
+    this.newGame = page.getByTestId("new-game");
+  }
+
+  async startNewGame(): Promise<void> {
+    await this.newGame.click();
   }
 
   /**

@@ -38,9 +38,13 @@ hold separate copies of that geometry.
   which army is moving, never a whole `GameState`, so a movement rule cannot accidentally depend on
   whose turn it is. The two shared bodies — `getPalaceStepMoves`, `getStepThenTurnMoves` — take the
   same verb without the "legal", because a shared body is not any one piece's legal moves.
-- **"Legal" currently means "legal ignoring check."** Once check detection lands, a move that leaves
-  its own general attacked has to be filtered out, and until then the name promises more than it
-  delivers. That filter belongs in `movesFrom` — one place, not seven.
+- **Legal means legal.** `movesFrom` filters out anything that would leave its own general
+  attacked, so a pinned piece cannot step off the pin and a general cannot walk onto a covered
+  point. The seven movers below it are **pseudo-legal** — `pseudoLegalMovesFrom` is what a piece
+  _attacks_, which is the right question for check, because a pinned piece still gives check.
+- **The filter cannot go through `applyMove`.** `applyMove` validates by asking `movesFrom`, so
+  filtering with it would recurse forever. `positionAfter` is the transition with nothing checked,
+  and exists for that reason.
 - **`moves/utils/` holds only what two or more movers share.** A helper with one caller is a
   `function` declaration below that caller in the mover's own file — `FORWARD_RANK_STEP` belongs to
   the soldier, `slideAlong` to the chariot.
@@ -71,9 +75,11 @@ number.
 
 ## What is not modelled yet
 
-Check and checkmate, bikjang, the pass move, repetition, and scoring — each recorded in
-`docs/rules.md` §6 with its source, and where sources disagree, the disagreement. Two need a
-decision before they need code.
+Bikjang, the pass move, repetition, and scoring — each recorded in `docs/rules.md` §6 with its
+source, and where sources disagree, the disagreement. Two need a decision before they need code.
+Check and checkmate are done: `isInCheck`, `isCheckmate` and `legalMovesFor`.
+
+A general can no longer be captured, because no move that leaves one attacked is ever offered.
 
 There is also no move history and no captured pile, because nothing needs them yet. Adding a field
 to `GameState` before a rule asks for it fixes its shape too early.

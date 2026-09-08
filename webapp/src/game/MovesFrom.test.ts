@@ -1,7 +1,11 @@
+import type {GameState} from "@src/game/types/GameState";
 import type {Position} from "@src/game/board/types/Position";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {expect, it} from "vitest";
+import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
+import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
@@ -74,6 +78,60 @@ it("gives each guard the two empty palace points beside it", () => {
     ]),
   );
 });
+
+/**
+ * A move is legal only if its own general survives it, so these are the cases the seven movers
+ * cannot answer alone. Cho's general sits on (5,9) and file 5 runs the length of the board.
+ */
+it("does not offer a move that would leave its own general in check", () => {
+  const pinned = position(cho("general", 5, 9), cho("chariot", 5, 8), han("chariot", 5, 1));
+
+  const moves = points(movesFrom(pinned, {file: 5, rank: 8}));
+
+  expect(moves).not.toContain(toPositionKey({file: 4, rank: 8}));
+  expect(moves).not.toContain(toPositionKey({file: 6, rank: 8}));
+});
+
+/** A pinned piece may still move along the line it is pinned on, because it stays in the way. */
+it("still offers a pinned piece the moves that keep it in the way", () => {
+  const pinned = position(cho("general", 5, 9), cho("chariot", 5, 8), han("chariot", 5, 1));
+
+  expect(points(movesFrom(pinned, {file: 5, rank: 8}))).toContain(toPositionKey({file: 5, rank: 7}));
+});
+
+it("does not let a general step onto a point the enemy attacks", () => {
+  const covered = position(cho("general", 5, 9), han("chariot", 4, 1));
+
+  const moves = points(movesFrom(covered, {file: 5, rank: 9}));
+
+  expect(moves).not.toContain(toPositionKey({file: 4, rank: 8}));
+  expect(moves).not.toContain(toPositionKey({file: 4, rank: 9}));
+  expect(moves).not.toContain(toPositionKey({file: 4, rank: 10}));
+  expect(moves).toContain(toPositionKey({file: 6, rank: 9}));
+});
+
+it("offers only the moves that answer a check", () => {
+  const inCheck = position(cho("general", 5, 9), cho("chariot", 1, 8), han("chariot", 5, 1));
+
+  // The chariot's one useful move is onto file 5, where it blocks the check.
+  expect(points(movesFrom(inCheck, {file: 1, rank: 8}))).toEqual([toPositionKey({file: 5, rank: 8})]);
+});
+
+function position(...pieces: readonly PlacedPiece[]): GameState {
+  return {pieces, sideToMove: "cho"};
+}
+
+function cho(type: PieceType, file: number, rank: number): PlacedPiece {
+  return placed("cho", type, file, rank);
+}
+
+function han(type: PieceType, file: number, rank: number): PlacedPiece {
+  return placed("han", type, file, rank);
+}
+
+function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
+  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+}
 
 function points(positions: readonly Position[]): string[] {
   return positions.map(toPositionKey).sort();

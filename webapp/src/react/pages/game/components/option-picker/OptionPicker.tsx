@@ -16,6 +16,8 @@ interface Props<Option extends WithName> {
   readonly ariaLabel?: string;
   readonly options: readonly Option[];
   readonly selected: Option;
+  /** A picker whose choice is no longer available — a setup, once play has begun. */
+  readonly disabled?: boolean;
   readonly onSelect: (option: Option) => void;
 }
 
@@ -25,6 +27,7 @@ export function OptionPicker<Option extends WithName>({
   ariaLabel,
   options,
   selected,
+  disabled = false,
   onSelect,
 }: Props<Option>): React.JSX.Element {
   return (
@@ -40,6 +43,7 @@ export function OptionPicker<Option extends WithName>({
             pickerId={id}
             option={option}
             selected={option.name === selected.name}
+            disabled={disabled}
             onSelect={onSelect}
           />
         ))}
