@@ -5,10 +5,10 @@ import {Piece} from "@src/react/pages/game/components/board/components/piece/Pie
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
-import type {Position} from "@src/react/pages/game/components/board/types/Position";
+import type {Position} from "@src/game/board/types/Position";
 import {cellShapeAt} from "@src/react/pages/game/components/board/utils/CellShapes";
 import {resolveCellStyle} from "@src/react/pages/game/components/board/components/cell/utils/ResolveCellStyle";
-import {toPositionKey} from "@src/react/pages/game/components/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 
 /**
  * One intersection. Takes its geometry from the board and its appearance from the style, and is the

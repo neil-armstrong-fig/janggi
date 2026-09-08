@@ -1,5 +1,5 @@
-import type {Position} from "@src/react/pages/game/components/board/types/Position";
-import {toPositionKey} from "@src/react/pages/game/components/board/utils/PositionKeys";
+import type {Position} from "@src/game/board/types/Position";
+import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
 import type {CellStyle} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
 

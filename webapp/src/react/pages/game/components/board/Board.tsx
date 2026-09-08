@@ -1,12 +1,13 @@
 import {Cell} from "@src/react/pages/game/components/board/components/cell/Cell";
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
-import {CELL_ASPECT_RATIO, FILE_COUNT, RANK_COUNT} from "@src/react/pages/game/components/board/utils/BoardDimensions";
+import {CELL_ASPECT_RATIO} from "@src/react/pages/game/components/board/utils/CellAspectRatio";
+import {FILE_COUNT, RANK_COUNT} from "@src/game/board/utils/BoardDimensions";
 import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/utils/BoardPositions";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
-import type {PlacedPiece} from "@src/react/pages/game/components/board/types/PlacedPiece";
-import {pieceAt} from "@src/react/pages/game/components/board/utils/PieceAt";
-import {piecesByPosition} from "@src/react/pages/game/components/board/utils/PiecesByPosition";
-import {toPositionKey} from "@src/react/pages/game/components/board/utils/PositionKeys";
+import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
+import {pieceAt} from "@src/game/board/utils/PieceAt";
+import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 import {useMemo} from "react";
 
 /**

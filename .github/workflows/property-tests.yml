@@ -1,0 +1,105 @@
+name: Property tests
+
+# Deliberately a workflow of its own rather than a job in ci.yml.
+#
+# These tests play thousands of randomly generated games against a fresh seed on every run, so a
+# failure is not reproducible from the same commit the way every other test here is. It means "these
+# particular random games found something" — worth looking at, but not a reason to hold up a deploy
+# that the real gate already passed. Nothing in ci.yml depends on this workflow, and the deploy job
+# needs only `checks` and `acceptance-tests`, so a red run here blocks nothing.
+#
+# It still goes red, because a warning nobody sees is not worth running.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Fresh seeds against unchanged code is where these earn their keep — the point is to explore
+  # games nobody has played yet, which a per-commit run alone will never do.
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: How many random games to play per property
+        required: false
+        default: "5000"
+
+concurrency:
+  group: property-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  properties:
+    name: Play random games
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # A scheduled or manual run can afford far more games than a per-commit one.
+      - name: Choose how hard to look
+        id: effort
+        run: echo "runs=${{ github.event.inputs.runs || (github.event_name == 'schedule' && '5000' || '1000') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Play random games
+        # `shell: bash` rather than the default, for the pipefail that makes the exit code vitest's
+        # rather than tee's.
+        shell: bash
+        run: pnpm test:properties 2>&1 | tee property-tests.log
+        env:
+          PROPERTY_TEST_RUNS: ${{ steps.effort.outputs.runs }}
+
+      - name: Say what broke
+        if: failure()
+        shell: bash
+        run: |
+          {
+            echo "## A property did not hold"
+            echo
+            echo "Random games found a position the rules do not hold for."
+            echo "**This has not blocked the build or the deploy** — CI is a separate workflow and ran on its own."
+            echo
+            echo "Games played per property: \`${{ steps.effort.outputs.runs }}\`"
+            echo
+            echo "### What failed"
+            echo
+            echo '```'
+            grep -E "^ *FAIL " property-tests.log | head -20 || echo "(nothing matched — see the uploaded log)"
+            echo '```'
+            echo
+            echo "### The game that broke it"
+            echo
+            echo "fast-check shrinks to the shortest sequence that still fails, and the \`Caused by:\` line names the moves."
+            echo
+            echo '```'
+            grep -E "Property failed|seed:|Counterexample|Shrunk|Caused by" property-tests.log | head -40 || true
+            echo '```'
+            echo
+            echo "### Reproducing it"
+            echo
+            echo '```bash'
+            echo "pnpm --filter @janggi/webapp test:properties"
+            echo '```'
+            echo
+            echo "That uses a new seed, so it may well pass. To replay this exact run, paste the"
+            echo "\`{ seed, path, endOnFailure }\` block above into the failing \`fc.assert\` call in"
+            echo "\`webapp/src/game/PlayingRandomGames.test.ts\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: property-tests-log
+          path: property-tests.log
+          retention-days: 14

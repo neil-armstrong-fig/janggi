@@ -1,5 +1,5 @@
 import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/utils/BoardPositions";
-import {toPositionKey} from "@src/react/pages/game/components/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 import {expect, it} from "vitest";
 
 it("covers the 90 intersections of 9 files and 10 ranks", () => {

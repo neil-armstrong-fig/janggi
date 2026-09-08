@@ -17,6 +17,7 @@
     "format:check": "pnpm --recursive format:check",
     "type-check": "pnpm --recursive type-check",
     "test": "pnpm --recursive test",
+    "test:properties": "pnpm --filter @janggi/webapp test:properties",
     "install-browsers": "pnpm --filter @janggi/acceptance-tests install-browsers",
     "acceptance-tests": "pnpm --filter @janggi/acceptance-tests acceptance-tests",
     "acceptance-tests:local": "pnpm --filter @janggi/acceptance-tests acceptance-tests:local",

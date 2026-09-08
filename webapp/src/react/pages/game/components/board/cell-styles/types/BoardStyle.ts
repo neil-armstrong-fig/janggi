@@ -1,5 +1,5 @@
 import type {CellStyle} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
-import type {PositionKey} from "@src/react/pages/game/components/board/types/Position";
+import type {PositionKey} from "@src/game/board/types/Position";
 
 /** Overrides keyed by `toPositionKey`, e.g. `{f5r2: {...}}`. */
 export type CellOverrides = Readonly<Partial<Record<PositionKey, CellStyle>>>;

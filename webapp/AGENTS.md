@@ -8,8 +8,14 @@ Vite + React 19 + Redux Toolkit + Tailwind v4, client-side rendered, installable
 src/main.tsx          entry — createRoot + <Provider store>
 src/react/            components, nested by who uses them
 src/redux/            Store.ts, typed Hooks.ts, one folder per slice
+src/game/             the janggi engine — rules, move generation, game state. No React, no Redux
 src/index.css         Tailwind import + the base layer
 ```
+
+`src/game/` has its own `AGENTS.md` — read it before touching a rule. It is pure TypeScript and the
+bottom of this package's dependency graph: `react/` and `redux/` may import it, it may import
+neither, and it may not import a framework package either. `docs/rules.md` is where the rules it
+encodes are written down with their sources.
 
 `src/react/` follows the locality rule from the root `AGENTS.md`. The same folder set recurses at
 every level, and a folder only appears once something needs it:
@@ -59,8 +65,9 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
 - Tailwind v4 has no config file — use utilities in JSX, and put genuinely global rules in the
   `@layer base` block in `index.css`.
 - Import with the `@src/*` alias. This package may import `@janggi/shared` and nothing else from
-  the workspace, and **`src/redux/` may not import from `src/react/`** — components depend on state,
-  never the reverse. Both are lint errors.
+  the workspace; **`src/redux/` may not import from `src/react/`** — components depend on state,
+  never the reverse — and **`src/game/` may import neither**, nor React or Redux themselves. All
+  three are lint errors.
 - Lint rules come from `@eslint-react/eslint-plugin` (React 19 aware, TypeScript-first) plus
   `eslint-plugin-react-hooks`. The legacy `eslint-plugin-react` is deliberately not used — do not
   reintroduce it.
@@ -83,7 +90,21 @@ acceptance test except through a page.
 | Custom hooks                         | Vitest + `renderHook`                    |
 | Reducers, selectors, plain functions | Vitest, called directly — no RTL, no DOM |
 
-`jsdom` and `src/testing/Setup.ts` remain configured because `renderHook` needs a DOM.
+**Tests run on `node`, not `jsdom`.** Building a DOM was 75% of the time a run took, and nothing
+here needed one — components are not unit tested at all, and everything that is tested is a pure
+function. Dropping it took the suite from 2.3s to 0.4s.
+
+A hook test needs a DOM, so it opts in and pays for it alone, with two lines of its own at the top:
+
+```ts
+// @vitest-environment jsdom
+import "@src/testing/SetupDomTest";
+```
+
+The docblock gives that one file a DOM; the import brings the jest-dom matchers and the `cleanup`
+that unmounts between tests. Both are needed — forget the import and the matchers are simply
+missing, which is what the first failure will say. `@testing-library` stays installed and
+`renderHook` works exactly as before.
 
 ## The board
 
@@ -94,7 +115,6 @@ systems, the same shape, side by side:
 cell-styles/     how an intersection is painted — BoardStyle over CellStyle
 piece-styles/    how a piece is painted — PieceSetStyle over PieceStyle
   builtin/       one folder per set, each with its own marks/ beside it
-setups/          the five opening arrangements, and the 32 pieces they produce
 ```
 
 Both are **plain data**: a default plus a map of per-position or per-piece overrides, with one
@@ -117,10 +137,21 @@ belongs to it, one a level up is shared.
 paths were written by hand here, not traced from anything, and that is the only reason there is no
 licence attached.
 
+The board's _geometry_ is deliberately not here. Positions, dimensions and the palaces live in
+`src/game/board/`, because the rules need them too and the engine may not reach into `react/`. What
+stays is only what is drawn — `CellShape`, `cellShapeAt` and `CELL_ASPECT_RATIO`. `cellShapeAt` asks
+`palaceDiagonalStepsAt` for the palace X rather than working it out again, so the diagonals painted
+on the board and the diagonals a chariot may run down are one list, not two.
+
 ## Current placeholders
 
 - `src/redux/game/GameSlice.ts` holds one `status: "idle"` field and exists only so
-  `configureStore` has a valid reducer. Replace it with real game state.
+  `configureStore` has a valid reducer. The engine it should be holding now exists — replace the
+  placeholder with a `GameState` from `src/game/`, with reducers that call `applyMove` and nothing
+  else. Note its placeholder `GameState` interface collides in name with the real one.
+- `GamePage.tsx` still keeps the board style, the piece set and both setups in `useState`, and
+  builds the pieces with `startingPieces` rather than `newGame`. Nothing on the board can be moved
+  yet: the engine is complete for a first turn but nothing is wired to it.
 - `option-picker/` is prototype scaffolding for choosing a style, set or setup. A real settings
   screen replaces it.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
