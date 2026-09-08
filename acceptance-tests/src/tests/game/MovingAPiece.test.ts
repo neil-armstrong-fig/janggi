@@ -32,11 +32,11 @@ given("a game has just begun", () => {
     });
 
     then("the soldier is standing there", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(1, 6)).toEqual({side: "cho", type: "soldier"});
+      expect(await janggi.board.getPieceAt(1, 6)).toEqual({side: "cho", type: "soldier"});
     });
 
     then("the point it came from is empty", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(1, 7)).toBeUndefined();
+      expect(await janggi.board.getPieceAt(1, 7)).toBeUndefined();
     });
 
     then("nothing is left selected", async ({janggi}) => {

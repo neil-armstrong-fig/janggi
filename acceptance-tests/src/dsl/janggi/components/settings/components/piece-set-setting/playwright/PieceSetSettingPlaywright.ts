@@ -24,7 +24,7 @@ export class PieceSetSettingPlaywright extends BaseComponent {
     await this.options[name].click();
   }
 
-  async selected(): Promise<PieceSetName | undefined> {
+  async getSelected(): Promise<PieceSetName | undefined> {
     const pressed = this.picker.locator("[aria-pressed='true']");
     if ((await pressed.count()) === 0) return undefined;
 

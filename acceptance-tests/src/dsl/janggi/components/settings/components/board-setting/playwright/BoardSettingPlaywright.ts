@@ -32,7 +32,7 @@ export class BoardSettingPlaywright extends BaseComponent {
   }
 
   /** The name on whichever button is pressed, or undefined before anything has rendered. */
-  async selected(): Promise<BoardStyleName | undefined> {
+  async getSelected(): Promise<BoardStyleName | undefined> {
     const pressed = this.picker.locator("[aria-pressed='true']");
     if ((await pressed.count()) === 0) return undefined;
 

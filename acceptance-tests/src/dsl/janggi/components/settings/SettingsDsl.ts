@@ -26,9 +26,9 @@ export class SettingsDsl {
     }
   }
 
-  async selectedBoard(): Promise<BoardStyleName | undefined> {
+  async getSelectedBoard(): Promise<BoardStyleName | undefined> {
     try {
-      return await this.settings.board.selected();
+      return await this.settings.board.getSelected();
     } catch (error) {
       throw new DslError("Failed to read which board is selected", error);
     }
@@ -42,9 +42,9 @@ export class SettingsDsl {
     }
   }
 
-  async selectedPieceSet(): Promise<PieceSetName | undefined> {
+  async getSelectedPieceSet(): Promise<PieceSetName | undefined> {
     try {
-      return await this.settings.pieceSet.selected();
+      return await this.settings.pieceSet.getSelected();
     } catch (error) {
       throw new DslError("Failed to read which piece set is selected", error);
     }
@@ -58,9 +58,9 @@ export class SettingsDsl {
     }
   }
 
-  async selectedHanSetup(): Promise<SetupName | undefined> {
+  async getSelectedHanSetup(): Promise<SetupName | undefined> {
     try {
-      return await this.settings.hanSetup.selected();
+      return await this.settings.hanSetup.getSelected();
     } catch (error) {
       throw new DslError("Failed to read which setup Han has chosen", error);
     }
@@ -74,9 +74,9 @@ export class SettingsDsl {
     }
   }
 
-  async selectedChoSetup(): Promise<SetupName | undefined> {
+  async getSelectedChoSetup(): Promise<SetupName | undefined> {
     try {
-      return await this.settings.choSetup.selected();
+      return await this.settings.choSetup.getSelected();
     } catch (error) {
       throw new DslError("Failed to read which setup Cho has chosen", error);
     }

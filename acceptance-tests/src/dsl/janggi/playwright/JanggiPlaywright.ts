@@ -2,6 +2,7 @@ import type {Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 import {BoardPlaywright} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
 import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
+import {StatusPlaywright} from "@src/dsl/janggi/components/status/playwright/StatusPlaywright";
 
 /**
  * The app, and the only screen it has. The bottom of the stack: this is the layer that actually
@@ -14,12 +15,14 @@ import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright
 export class JanggiPlaywright extends BasePage {
   readonly board: BoardPlaywright;
   readonly settings: SettingsPlaywright;
+  readonly status: StatusPlaywright;
 
   constructor(page: Page) {
     super(page);
 
     this.board = new BoardPlaywright(page);
     this.settings = new SettingsPlaywright(page);
+    this.status = new StatusPlaywright(page);
   }
 
   /**

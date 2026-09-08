@@ -28,7 +28,7 @@ export class HanSetupSettingPlaywright extends BaseComponent {
     await this.options[name].click();
   }
 
-  async selected(): Promise<SetupName | undefined> {
+  async getSelected(): Promise<SetupName | undefined> {
     const pressed = this.picker.locator("[aria-pressed='true']");
     if ((await pressed.count()) === 0) return undefined;
 

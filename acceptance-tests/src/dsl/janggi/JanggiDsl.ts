@@ -2,6 +2,7 @@ import {BoardDsl} from "@src/dsl/janggi/components/board/BoardDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
+import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
 
 /**
  * The application under test, and the whole of what a spec is handed.
@@ -26,10 +27,12 @@ import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
 export class JanggiDsl {
   readonly board: BoardDsl;
   readonly settings: SettingsDsl;
+  readonly status: StatusDsl;
 
   constructor(private readonly janggi: JanggiPlaywright) {
     this.board = new BoardDsl(janggi.board);
     this.settings = new SettingsDsl(janggi.settings);
+    this.status = new StatusDsl(janggi.status);
   }
 
   async navigateToPage(): Promise<void> {

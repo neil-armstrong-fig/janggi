@@ -143,13 +143,9 @@ on the board and the diagonals a chariot may run down are one list, not two.
 
 ## Current placeholders
 
-- `src/redux/game/GameSlice.ts` holds one `status: "idle"` field and exists only so
-  `configureStore` has a valid reducer. The engine it should be holding now exists — replace the
-  placeholder with a `GameState` from `src/game/`, with reducers that call `applyMove` and nothing
-  else. Note its placeholder `GameState` interface collides in name with the real one.
-- `GamePage.tsx` still keeps the board style, the piece set and both setups in `useState`, and
-  builds the pieces with `startingPieces` rather than `newGame`. Nothing on the board can be moved
-  yet: the engine is complete for a first turn but nothing is wired to it.
+- `GameSlice.movesPlayed` is counted and read by nothing. It is meant to lock the setup pickers
+  once play begins; until it does, choosing a setup mid-game re-deals the board and hands the turn
+  back to cho. `restarted` is exported and dispatched by nothing, for the same missing control.
 - `option-picker/` is prototype scaffolding for choosing a style, set or setup. A real settings
   screen replaces it.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
