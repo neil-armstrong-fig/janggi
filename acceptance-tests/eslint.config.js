@@ -2,28 +2,20 @@ import {baseConfig, restrictedImports} from "@janggi/shared/config/eslint.base.j
 
 const acceptanceCriteriaMapping = "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
+const playwrightPackages = ["@playwright/test", "playwright", "playwright-core"];
+
 export default [
-  ...baseConfig({allowedPackages: ["@janggi/shared"]}),
+  ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages: ["@janggi/shared"]}),
   {
     // Specs see the mapping and `src/shared/` — nothing else. That keeps them readable as acceptance
     // criteria and stops them reaching into the DSL, or Playwright, behind the mapping's back.
     files: ["src/tests/**"],
     rules: {
       "no-restricted-imports": restrictedImports({
-        paths: [
-          {
-            name: "@playwright/test",
-            message: "Specs talk to the DSL, never to Playwright. Ask for what you need as a fixture instead.",
-          },
-          {
-            name: "playwright",
-            message: "Specs talk to the DSL, never to Playwright. Ask for what you need as a fixture instead.",
-          },
-          {
-            name: "playwright-core",
-            message: "Specs talk to the DSL, never to Playwright. Ask for what you need as a fixture instead.",
-          },
-        ],
+        paths: playwrightPackages.map(name => ({
+          name,
+          message: "Specs talk to the DSL, never to Playwright. Ask for what you need as a fixture instead.",
+        })),
         patterns: [
           {
             // The mapping module itself is the one file specs may see; its neighbours are not.
@@ -33,7 +25,7 @@ export default [
               "@src/dsl/**",
               "@src/tests/**",
             ],
-            message: `A spec may import only '${acceptanceCriteriaMapping}' and '@src/shared/*'. Anything else belongs on the mapping's exports, or on a page object reached through a fixture.`,
+            message: `A spec may import only '${acceptanceCriteriaMapping}' and '@src/shared/*'. Anything else belongs on the mapping's exports, or on the DSL reached through a fixture.`,
           },
         ],
       }),
@@ -55,11 +47,38 @@ export default [
     },
   },
   {
-    // Page objects and components: they know about the app, and nothing about how tests are declared.
+    // The DSL knows about the app, and nothing about how tests are declared.
     files: ["src/dsl/**"],
     rules: {
       "no-restricted-imports": restrictedImports({
         allowedPackages: ["@janggi/shared"],
+        patterns: [
+          {
+            group: ["@src/tests/**", "@src/acceptance-criteria-mapping/**"],
+            message: "Imports run tests -> acceptance-criteria-mapping -> dsl -> shared, never back up.",
+          },
+        ],
+      }),
+    },
+  },
+  {
+    // Playwright lives in `playwright/` folders and nowhere else. Every DSL object is a pair — the
+    // `*Dsl` that says what a test may do, and the `*Playwright` beside it that drives the browser
+    // — and this is what stops the halves growing back together: a locator, a click or a wait
+    // outside a `playwright/` folder cannot even be written.
+    //
+    // `AcceptanceTestFixtures` is the one exception, and is exempt only because it is not under
+    // `src/dsl/`: handing the browser to the DSL has to happen somewhere.
+    files: ["src/dsl/**"],
+    ignores: ["src/dsl/**/playwright/**"],
+    rules: {
+      "no-restricted-imports": restrictedImports({
+        allowedPackages: ["@janggi/shared"],
+        paths: playwrightPackages.map(name => ({
+          name,
+          message:
+            "Only a `playwright/` folder may import Playwright. Put the locator work in the *Playwright beside this file and call it from here.",
+        })),
         patterns: [
           {
             group: ["@src/tests/**", "@src/acceptance-criteria-mapping/**"],

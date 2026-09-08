@@ -75,7 +75,7 @@ function criterion(prefix: string): Criterion {
  * named here as well.
  */
 function withDslOnly(run: RunCriterion): PlaywrightTestBody {
-  return async ({board}: AcceptanceTestFixtures): Promise<void> => {
-    await run({board});
+  return async ({janggi}: AcceptanceTestFixtures): Promise<void> => {
+    await run({janggi});
   };
 }

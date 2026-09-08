@@ -35,7 +35,7 @@ Anything shared by two siblings moves up to the folder that contains them both, 
 
 Name a folder for what is in it, not for the shape of it. Tailwind means presentation lives in the
 JSX, so a folder called `styles/` reads as CSS and is almost always wrong — `board/cell-styles/`
-holds the data that describes how cells are painted, and says so.
+and `board/piece-styles/` hold the data describing how cells and pieces are painted, and say so.
 
 ## Conventions
 
@@ -48,9 +48,8 @@ holds the data that describes how cells are painted, and says so.
   actively misleading, and leave a comment saying why.
 - **A component's props interface is called `Props`, and is not exported.** One component per file
   means there is nothing to collide with, so `BoardProps` only says twice what the filename already
-  says once. Give it a real name solely when another file genuinely imports it —
-  `CellRenderProps` in `board/styles/types/BoardStyle.ts` is the current example, and it is part of
-  a published contract rather than one component's arguments.
+  says once. A generic component constrains it against a named type rather than an inline one —
+  `Props<Option extends WithName>` in `option-picker/`, never `Option extends {name: string}`.
 - **Every element an acceptance test needs gets a `data-testid`.** That attribute is the contract
   with `acceptance-tests/` — renaming one breaks specs.
 - Redux: use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped
@@ -86,12 +85,49 @@ acceptance test except through a page.
 
 `jsdom` and `src/testing/Setup.ts` remain configured because `renderHook` needs a DOM.
 
+## The board
+
+`src/react/pages/game/components/board/` is the only substantial thing here so far. Two style
+systems, the same shape, side by side:
+
+```
+cell-styles/     how an intersection is painted — BoardStyle over CellStyle
+piece-styles/    how a piece is painted — PieceSetStyle over PieceStyle
+  builtin/       one folder per set, each with its own marks/ beside it
+setups/          the five opening arrangements, and the 32 pieces they produce
+```
+
+Both are **plain data**: a default plus a map of per-position or per-piece overrides, with one
+component that turns that data into pixels. Everything a style needs travels inside the style —
+including the marks. A `CharacterGlyphStyle` carries its own `CharacterSet` and a
+`PictographGlyphStyle` its own `PictographSet`, so `CharacterGlyph` is handed one character and
+`Pictograph` one path. Neither knows hanja or hangul exist, and a set someone writes can bring its
+own writing or its own drawings without a line of code changing.
+
+Built-ins are named from the unions in `@janggi/shared/janggi/settings/` — `BuiltInBoardStyle` and
+`BuiltInPieceSetStyle` are the plain style types with the name narrowed. Renaming or dropping one
+then breaks the acceptance tests at compile time. User-authored styles stay the plain type.
+
+A set's marks live in a `marks/` folder beside it — `builtin/hangul/marks/`, `builtin/modern/marks/`
+— except where two sets share one. Traditional and Hanja write the same characters, so those rise to
+`builtin/marks/` and no further, which is the locality rule doing its job: a mark set beside a set
+belongs to it, one a level up is shared.
+
+`builtin/modern/marks/JanggiPictographs.ts` carries a provenance note. Keep it accurate: those
+paths were written by hand here, not traced from anything, and that is the only reason there is no
+licence attached.
+
 ## Current placeholders
 
 - `src/redux/game/GameSlice.ts` holds one `status: "idle"` field and exists only so
   `configureStore` has a valid reducer. Replace it with real game state.
+- `option-picker/` is prototype scaffolding for choosing a style, set or setup. A real settings
+  screen replaces it.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
   maskable variant are still to do.
+- No Korean font is bundled, so the character sets fall back to whatever the device has, and the
+  traditional set approximates Cho's cursive script by leaning it. A self-hosted subset face would
+  fix both.
 
 ## The icon
 

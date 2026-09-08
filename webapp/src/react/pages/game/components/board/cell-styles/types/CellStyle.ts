@@ -16,9 +16,11 @@ export interface CellStyle {
   readonly marker?: CellMarker;
 }
 
+export type CellMarkerShape = "ring" | "dot";
+
 /** An optional shape drawn on the intersection itself, on top of the lines. */
 export interface CellMarker {
-  readonly shape: "ring" | "dot";
+  readonly shape: CellMarkerShape;
   readonly radius: number;
   /** The stroke of a ring, the fill of a dot. */
   readonly colour: string;

@@ -1,6 +1,6 @@
 import {classicStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/ClassicStyle";
 import {neonStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/NeonStyle";
-import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
+import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 
 /**
  * The styles that ship with the app. Add one by writing another `BoardStyle` in this folder and
@@ -10,6 +10,6 @@ import type {BoardStyle} from "@src/react/pages/game/components/board/cell-style
  * one — so whatever offers a choice concatenates the two lists rather than treating built-ins as a
  * special case.
  */
-export const BUILT_IN_STYLES: readonly BoardStyle[] = [classicStyle, neonStyle];
+export const BUILT_IN_STYLES: readonly BuiltInBoardStyle[] = [classicStyle, neonStyle];
 
-export const DEFAULT_STYLE: BoardStyle = classicStyle;
+export const DEFAULT_STYLE: BuiltInBoardStyle = classicStyle;
