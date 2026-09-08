@@ -12,10 +12,8 @@ src/game/             the janggi engine — rules, move generation, game state. 
 src/index.css         Tailwind import + the base layer
 ```
 
-`src/game/` has its own `AGENTS.md` — read it before touching a rule. It is pure TypeScript and the
-bottom of this package's dependency graph: `react/` and `redux/` may import it, it may import
-neither, and it may not import a framework package either. `docs/rules.md` is where the rules it
-encodes are written down with their sources.
+`src/game/` is the bottom of this package's dependency graph and has its own `AGENTS.md` — read it
+before touching a rule.
 
 `src/react/` follows the locality rule from the root `AGENTS.md`. The same folder set recurses at
 every level, and a folder only appears once something needs it:
@@ -92,7 +90,7 @@ acceptance test except through a page.
 
 **Tests run on `node`, not `jsdom`.** Building a DOM was 75% of the time a run took, and nothing
 here needed one — components are not unit tested at all, and everything that is tested is a pure
-function. Dropping it took the suite from 2.3s to 0.4s.
+function. Dropping it cut the suite to roughly a fifth of its runtime.
 
 A hook test needs a DOM, so it opts in and pays for it alone, with two lines of its own at the top:
 
