@@ -90,6 +90,12 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
   }
   ```
 
+- **A filename is PascalCase and names its single export.** `StartingPieces.ts` exports
+  `startingPieces`, `PieceAt.ts` exports `pieceAt`, `Board.tsx` exports `Board`. A React hook is no
+  exception: `UseMoveSelection.ts` exports `useMoveSelection` — the file is named for what it
+  exports, and the export keeps the lower-case `use` that React and its lint rules require. A test
+  takes the name of its subject, so `UseMoveSelection.test.ts` sits beside it.
+
 - **A file lives as close to its caller as it can, in a subdirectory of it.** A helper used by one
   component goes in a folder beneath that component, never beside it; something several siblings
   share rises to their nearest common ancestor and no further. Depth is the signal — it tells you a

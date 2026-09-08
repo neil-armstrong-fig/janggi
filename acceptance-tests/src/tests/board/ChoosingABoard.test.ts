@@ -1,4 +1,4 @@
-import {expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
+import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
 /**
  * A board style paints the intersections and nothing else. The two that ship look nothing alike —
@@ -7,33 +7,41 @@ import {expect, given, then, when} from "@src/acceptance-criteria-mapping/Accept
  */
 given("a user is choosing a board", () => {
   when("a different board is chosen", () => {
-    then("it is the one now in use", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setBoardTo("Neon");
+    });
 
+    then("it is the one now in use", async ({janggi}) => {
       expect(await janggi.settings.selectedBoard()).toBe("Neon");
     });
 
     then("every piece is left standing where it was", async ({janggi}) => {
-      await janggi.settings.setBoardTo("Neon");
-
       expect(await janggi.board.countPieces()).toBe(32);
       expect(await janggi.board.pieceAt(5, 9)).toEqual({side: "cho", type: "general"});
       expect(await janggi.board.pieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});
     });
+  });
 
-    then("the pieces are still wearing the set that was chosen", async ({janggi}) => {
+  /** Its own `when` because the order is the point: the set is chosen first, so the board changing
+   * afterwards is what the criterion is about. */
+  when("the board is changed after a piece set was chosen", () => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setPieceSetTo("Hangul");
       await janggi.settings.setBoardTo("Neon");
+    });
 
+    then("the pieces are still wearing the set that was chosen", async ({janggi}) => {
       expect(await janggi.board.characterAt(5, 9)).toBe("초");
     });
   });
 
   when("the board is changed back", () => {
-    then("the original is in use again", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setBoardTo("Neon");
       await janggi.settings.setBoardTo("Classic");
+    });
 
+    then("the original is in use again", async ({janggi}) => {
       expect(await janggi.settings.selectedBoard()).toBe("Classic");
       expect(await janggi.board.countPieces()).toBe(32);
     });

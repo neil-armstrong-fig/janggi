@@ -21,7 +21,7 @@ export function OptionButton<Option extends WithName>({
       data-testid={`${pickerId}-option-${toSlug(option.name)}`}
       aria-pressed={selected}
       onClick={() => onSelect(option)}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
+      className={`shrink-0 cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium ${
         selected ? "bg-[#e7c88f] text-[#1c140b]" : "bg-white/10 text-white/70"
       }`}
     >

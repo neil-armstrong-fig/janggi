@@ -93,7 +93,32 @@ export class BoardPlaywright extends BaseComponent {
     return box?.width;
   }
 
+  /** Taps an intersection, the way a player does. `click` rather than `tap`, which needs a touch
+   * context the desktop project does not have. */
+  async tap(file: number, rank: number): Promise<void> {
+    await this.cellLocator(file, rank).click();
+  }
+
+  /** Rests the pointer on an intersection without tapping it. */
+  async hover(file: number, rank: number): Promise<void> {
+    await this.cellLocator(file, rank).hover();
+  }
+
+  /** Whether the piece on an intersection is the one currently picked up. */
+  async isSelected(file: number, rank: number): Promise<boolean> {
+    return (await this.cellLocator(file, rank).getAttribute("aria-pressed")) === "true";
+  }
+
+  /** Whether the board is offering this intersection as somewhere the selected piece may go. */
+  async canMoveTo(file: number, rank: number): Promise<boolean> {
+    return (await this.cellLocator(file, rank).getAttribute("data-can-move-to")) !== null;
+  }
+
   private pieceLocator(file: number, rank: number): Locator {
-    return this.container.getByTestId(`cell-f${file}r${rank}`).getByTestId("piece");
+    return this.cellLocator(file, rank).getByTestId("piece");
+  }
+
+  private cellLocator(file: number, rank: number): Locator {
+    return this.container.getByTestId(`cell-f${file}r${rank}`);
   }
 }

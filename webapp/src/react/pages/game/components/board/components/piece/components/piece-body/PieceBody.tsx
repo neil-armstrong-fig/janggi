@@ -8,9 +8,14 @@ import type {PieceBodyStyle} from "@src/react/pages/game/components/board/piece-
  */
 interface Props {
   readonly body: PieceBodyStyle;
+  /**
+   * Multiplies both outlines rather than setting a width, so a set that draws a hairline and one
+   * that draws a heavy edge both thicken by the same proportion and neither is redesigned by it.
+   */
+  readonly strokeScale: number;
 }
 
-export function PieceBody({body}: Props): React.JSX.Element {
+export function PieceBody({body, strokeScale}: Props): React.JSX.Element {
   const inlay = body.inlay;
 
   return (
@@ -20,7 +25,7 @@ export function PieceBody({body}: Props): React.JSX.Element {
         radius={RADIUS}
         fill={body.fill}
         stroke={body.stroke}
-        strokeWidth={body.strokeWidth}
+        strokeWidth={body.strokeWidth * strokeScale}
       />
 
       {inlay && (
@@ -29,7 +34,7 @@ export function PieceBody({body}: Props): React.JSX.Element {
           radius={RADIUS * (1 - inlay.inset)}
           fill={inlay.fill ?? "none"}
           stroke={inlay.stroke}
-          strokeWidth={inlay.strokeWidth}
+          strokeWidth={inlay.strokeWidth * strokeScale}
         />
       )}
     </>

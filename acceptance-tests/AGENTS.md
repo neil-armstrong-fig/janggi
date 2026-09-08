@@ -3,7 +3,7 @@
 Playwright runs the specs. Four layers, and imports only ever point downwards:
 
 ```
-src/tests/                        "@acceptance-criteria-mapping" and "@src/shared/*", nothing else
+src/tests/                        the mapping, "@src/shared/*" and @janggi/shared, nothing else
 src/acceptance-criteria-mapping/  src/dsl/ and src/shared/; never src/tests/
 src/dsl/                          itself and src/shared/; never upwards
 src/shared/                       helpers more than one layer needs — empty for now
@@ -88,6 +88,71 @@ given("a user opens the game for the first time", () => {
 
 `given`/`when` are `test.describe`; `then` is `test`, which is why only `then` receives the DSL.
 
+## Arrange in a `beforeEach`, assert in the `then`
+
+**A `then` states one criterion and checks it. It does not set anything up.** Whatever a `given` or a
+`when` says has happened is made to happen in a `beforeEach` on that block, so the criterion is the
+only thing in the test body:
+
+```ts
+when("cho selects one of its soldiers", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.board.tap(1, 7);
+  });
+
+  then("the point it stands on is shown as selected", async ({janggi}) => {
+    expect(await janggi.board.isSelected(1, 7)).toBe(true);
+  });
+```
+
+Otherwise every sibling criterion repeats the same three lines and the one line the spec is about is
+buried in them. `beforeEach` is exported from `AcceptanceCriteriaMapping` and receives the DSL and
+nothing else, exactly as a criterion does — Playwright rebuilds the fixtures per test, so it runs
+against the same `janggi` on a page genuinely back at the start.
+
+**A lint rule enforces it** (`no-restricted-syntax`, in this package's `eslint.config.js`): calling a
+DSL _action_ inside a `then` fails `pnpm checks`. It works because the DSL splits by name — an action
+is a verb (`tap`, `hover`, `setBoardTo`, `resizeWindowTo`), a query is not (`pieceAt`, `isSelected`,
+`countPieces`). **That list cannot be derived, so adding an action to the DSL means adding it to the
+rule too.**
+
+### `given.each` / `when.each`
+
+Where a criterion holds for every member of a set, `each` writes one suite per item:
+
+```ts
+when.each(
+  EVERY_PIECE_SET,
+  set => `the set in use is ${set}`,
+  set => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.setPieceSetTo(set);
+    });
+
+    then("it is the writing that changed and never the game", async ({janggi}) => { ... });
+  },
+);
+```
+
+**Playwright has no `test.each` or `describe.each`** — its answer to a parameterised test is a `for`
+loop around `test()`, and `each` is that loop with the naming kept. One suite per item beats one
+criterion looping inside itself: each gets its own page, a failure names the item that failed, and
+the arrangement goes in a `beforeEach` instead of tripping the rule above.
+
+Reading the list off the shared union — `PIECE_SET_NAMES` here — means a member added to the app is
+covered without anyone remembering to come back. A member _removed_ is still caught, because the
+`when`s naming each one individually stop compiling.
+
+One thing bites: a list declared in the spec rather than imported must sit **above** the `given`,
+not below it as a helper would. `each` runs when the file is collected, so a `const` underneath is
+still in the temporal dead zone.
+
+If the setup differs between criteria, that is a second `when`, not a shared one — see
+`ChoosingABoard.test.ts`, where "the board is changed" and "the board is changed after a piece set
+was chosen" are separate because the order is what one of them is about. The single exemption in the
+suite is the loop in `ChoosingAPieceSet.test.ts`, where choosing every set in turn _is_ the
+criterion; it carries a scoped `eslint-disable` saying so.
+
 **The root `AGENTS.md` ban on a wrapper `describe` does not apply to these specs.** There it stops a
 unit test file restating its own filename; here the `given`/`when` nesting _is_ the acceptance
 criterion, and it is expected on every spec — write the full three levels even when a `given` holds
@@ -96,7 +161,10 @@ any other.
 
 ## What a spec may reach
 
-The DSL, and nothing else — no `page`, `context`, `browser` or `testInfo`. Enforced three ways: the
+The DSL, and nothing else — no `page`, `context`, `browser` or `testInfo`. **`@janggi/shared` is the
+exception, and is meant to be used**: it holds the janggi vocabulary, so an assertion naming a piece
+type or a setting is checked against the same union the app is. `{side: "cho", type: "bishop"}` and
+`setPieceSetTo("Hanguul")` are both compile errors. Enforced three ways: the
 argument type, `withDslOnly` rebuilding the argument object at runtime, and a lint rule banning both
 Playwright and `@src/dsl/**` under `src/tests/`.
 

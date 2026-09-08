@@ -7,11 +7,32 @@ const playwrightPackages = ["@playwright/test", "playwright", "playwright-core"]
 export default [
   ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages: ["@janggi/shared"]}),
   {
-    // Specs see the mapping and `src/shared/` — nothing else. That keeps them readable as acceptance
-    // criteria and stops them reaching into the DSL, or Playwright, behind the mapping's back.
+    // Specs see the mapping, `src/shared/` and `@janggi/shared` — nothing else. That keeps them
+    // readable as acceptance criteria and stops them reaching into the DSL, or Playwright, behind
+    // the mapping's back, while still letting an assertion be typed in the game's own vocabulary.
     files: ["src/tests/**"],
     rules: {
+      // A `then` states one criterion and asserts it. Anything done TO the app before that
+      // assertion is the arrangement its `given` or `when` already names, and belongs in a
+      // `beforeEach` there — otherwise every sibling criterion repeats it and the one line the spec
+      // is about is buried.
+      //
+      // The DSL splits cleanly by name, which is what makes this checkable at all: an action is a
+      // verb (`tap`, `hover`, `setBoardTo`), a query is not (`pieceAt`, `isSelected`). Adding an
+      // action to the DSL means adding it here too — the list cannot be derived.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            'CallExpression[callee.name="then"] CallExpression[callee.property.name=/^(tap|hover|resizeWindowTo|navigateToPage|set[A-Z].*To)$/]',
+          message:
+            "Arrange in a beforeEach on the given or when, not inside a then. A criterion asserts; it does not set up.",
+        },
+      ],
       "no-restricted-imports": restrictedImports({
+        // The janggi vocabulary is the point of `shared/`: a spec that names a piece type or a
+        // setting should be checked against the same union the app is.
+        allowedPackages: ["@janggi/shared"],
         paths: playwrightPackages.map(name => ({
           name,
           message: "Specs talk to the DSL, never to Playwright. Ask for what you need as a fixture instead.",

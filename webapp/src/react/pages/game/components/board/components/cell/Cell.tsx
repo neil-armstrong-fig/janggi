@@ -1,6 +1,7 @@
 import {CellLines} from "@src/react/pages/game/components/board/components/cell/components/cell-lines/CellLines";
 import {CELL_SVG_PROPS} from "@src/react/pages/game/components/board/components/cell/utils/CellViewBox";
 import {Marker} from "@src/react/pages/game/components/board/components/cell/components/marker/Marker";
+import {MoveHint} from "@src/react/pages/game/components/board/components/cell/components/move-hint/MoveHint";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
@@ -17,21 +18,48 @@ import {toPositionKey} from "@src/game/board/utils/PositionKeys";
  *
  * A piece standing here is drawn over the lines rather than among them, in its own square element,
  * so it keeps its shape on a board whose cells are wider than they are tall.
+ *
+ * It is a `<button>` because it is tapped: a whole cell is a far bigger target than the piece drawn
+ * on it, which is why `Piece` stays `pointer-events-none` and lets the tap fall through to here.
+ * `aria-pressed` says which piece is in hand, matching what `OptionButton` already does.
  */
 interface Props {
   readonly position: Position;
   readonly style: BoardStyle;
   readonly pieceStyle: PieceSetStyle;
   readonly piece?: PieceIdentity;
+  readonly selected: boolean;
+  readonly canMoveTo: boolean;
+  readonly hovered: boolean;
+  readonly onTap: (position: Position) => void;
+  readonly onHover: (position: Position | undefined) => void;
 }
 
-export function Cell({position, style, pieceStyle, piece}: Props): React.JSX.Element {
+export function Cell({
+  position,
+  style,
+  pieceStyle,
+  piece,
+  selected,
+  canMoveTo,
+  hovered,
+  onTap,
+  onHover,
+}: Props): React.JSX.Element {
   const cellStyle = resolveCellStyle(style, position);
 
   return (
-    <div
+    <button
+      type="button"
       data-testid={`cell-${toPositionKey(position)}`}
-      className="relative h-full w-full"
+      aria-pressed={selected}
+      data-can-move-to={canMoveTo || undefined}
+      onClick={() => onTap(position)}
+      onPointerEnter={() => onHover(position)}
+      onPointerLeave={() => onHover(undefined)}
+      // Only where a tap does something: a piece to pick up or look at, or a point to put one on.
+      // Every other intersection is scenery, and a pointer over it would promise otherwise.
+      className={`relative h-full w-full ${piece || canMoveTo ? "cursor-pointer" : ""}`}
       style={{background: cellStyle.surface}}
     >
       <svg {...CELL_SVG_PROPS} className="h-full w-full">
@@ -40,7 +68,11 @@ export function Cell({position, style, pieceStyle, piece}: Props): React.JSX.Ele
         {cellStyle.marker && <Marker marker={cellStyle.marker} />}
       </svg>
 
-      {piece && <Piece piece={piece} style={pieceStyle} />}
-    </div>
+      {piece && <Piece piece={piece} style={pieceStyle} emphasised={hovered} />}
+
+      {selected && <span className="pointer-events-none absolute inset-0 bg-white/20" />}
+
+      {canMoveTo && <MoveHint overPiece={piece !== undefined} />}
+    </button>
   );
 }
