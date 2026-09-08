@@ -1,4 +1,4 @@
-import {expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
+import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
 /**
  * Janggi has no fixed opening position. Each player arranges their own back rank before the first
@@ -8,27 +8,33 @@ import {expect, given, then, when} from "@src/acceptance-criteria-mapping/Accept
  */
 given("a user is choosing how to arrange the pieces", () => {
   when("the inner elephant setup is chosen", () => {
-    then("each elephant stands beside a guard", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setBothSetupsTo("Inner Elephant");
+    });
 
+    then("each elephant stands beside a guard", async ({janggi}) => {
       expect(await janggi.board.pieceAt(3, 10)).toEqual({side: "cho", type: "elephant"});
       expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "horse"});
     });
   });
 
   when("the outer elephant setup is chosen", () => {
-    then("each flank's pair has swapped over", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setBothSetupsTo("Outer Elephant");
+    });
 
+    then("each flank's pair has swapped over", async ({janggi}) => {
       expect(await janggi.board.pieceAt(3, 10)).toEqual({side: "cho", type: "horse"});
       expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
     });
   });
 
   when("the chosen setup moves the chariots", () => {
-    then("they come in off the corners", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setBothSetupsTo("Central Chariot");
+    });
 
+    then("they come in off the corners", async ({janggi}) => {
       expect(await janggi.board.pieceAt(3, 10)).toEqual({side: "cho", type: "chariot"});
       expect(await janggi.board.pieceAt(1, 10)).toEqual({side: "cho", type: "elephant"});
     });
@@ -52,28 +58,34 @@ given("a user is choosing how to arrange the pieces", () => {
  */
 given("the two armies are arranged separately", () => {
   when("both choose the same asymmetric setup", () => {
-    then("their outer elephants stand on the same wing", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setBothSetupsTo("Left Elephant");
+    });
 
+    then("their outer elephants stand on the same wing", async ({janggi}) => {
       expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
       expect(await janggi.board.pieceAt(2, 1)).toEqual({side: "han", type: "elephant"});
     });
   });
 
   when("they choose opposite asymmetric setups", () => {
-    then("their outer elephants end up on opposite wings", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setChoSetupTo("Left Elephant");
       await janggi.settings.setHanSetupTo("Right Elephant");
+    });
 
+    then("their outer elephants end up on opposite wings", async ({janggi}) => {
       expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
       expect(await janggi.board.pieceAt(8, 1)).toEqual({side: "han", type: "elephant"});
     });
   });
 
   when("only one army changes its arrangement", () => {
-    then("the other one is left where it stood", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.settings.setChoSetupTo("Outer Elephant");
+    });
 
+    then("the other one is left where it stood", async ({janggi}) => {
       expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
       expect(await janggi.board.pieceAt(2, 1)).toEqual({side: "han", type: "horse"});
       expect(await janggi.settings.selectedHanSetup()).toBe("Inner Elephant");

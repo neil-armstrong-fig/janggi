@@ -16,7 +16,23 @@ interface Suite {
   (criteria: string, define: DefineSuite): void;
   only(criteria: string, define: DefineSuite): void;
   skip(criteria: string, define: DefineSuite): void;
+  /**
+   * The same block, once per item — for a criterion that holds for every member of a set.
+   *
+   * Playwright has no `test.each` or `describe.each`; its answer to a parameterised test is a `for`
+   * loop around `test()`, and this is that loop with the given/when/then naming kept. One suite per
+   * item beats one criterion looping inside itself: each gets its own page, a failure names the
+   * item that failed rather than the whole set, and the arrangement can sit in a `beforeEach` where
+   * it belongs.
+   */
+  each<Item>(items: readonly Item[], name: NameFor<Item>, define: DefineSuiteFor<Item>): void;
 }
+
+/** What one item of an `each` is called, as the `when` a reader sees in the report. */
+type NameFor<Item> = (item: Item) => string;
+
+/** The block an `each` repeats, handed the item it is being repeated for. */
+type DefineSuiteFor<Item> = (item: Item) => void;
 
 interface Criterion {
   (criteria: string, run: RunCriterion): void;
@@ -36,6 +52,23 @@ export const given = suite("given");
 export const when = suite("when");
 export const then = criterion("then");
 
+/**
+ * The arrangement a `given` or a `when` has just named, carried out before each criterion beneath
+ * it.
+ *
+ * A `when` says something happened. Without this, every `then` under it has to make it happen again
+ * in its own body, and the criterion — the one line that spec is actually about — ends up buried
+ * under setup it shares with its siblings. Anything a `then` does to the app before asserting
+ * belongs up here.
+ *
+ * It receives the DSL and nothing else, exactly as a criterion does. Playwright builds the fixtures
+ * fresh for each test, so this runs against the same `janggi` the criterion gets, on a page that is
+ * genuinely back at the start.
+ */
+export function beforeEach(arrange: RunCriterion): void {
+  test.beforeEach(withDslOnly(arrange));
+}
+
 export {expect} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 
 function suite(prefix: string): Suite {
@@ -47,6 +80,13 @@ function suite(prefix: string): Suite {
   };
   wrapped.skip = (criteria: string, define: DefineSuite): void => {
     test.describe.skip(`${prefix} ${criteria}`, define);
+  };
+  wrapped.each = <Item>(items: readonly Item[], name: NameFor<Item>, define: DefineSuiteFor<Item>): void => {
+    for (const item of items) {
+      test.describe(`${prefix} ${name(item)}`, () => {
+        define(item);
+      });
+    }
   };
 
   return wrapped;

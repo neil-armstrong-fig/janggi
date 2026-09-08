@@ -29,8 +29,8 @@ src/react/
           <Thing>.tsx
           components/        components only <Thing> renders, each in its own folder
           hooks/
-            <useThing>.ts    hooks only <Thing> calls
-            utils/           helpers only <useThing> calls
+            <UseThing>.ts    hooks only <Thing> calls, with its .test.ts beside it
+            utils/           helpers only <UseThing> calls
           types/
           utils/             plain functions, each with its .test.ts beside it
 ```

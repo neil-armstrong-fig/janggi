@@ -49,6 +49,42 @@ export class BoardDsl {
     }
   }
 
+  /** Taps an intersection, the way a player does — to pick a piece up, or to put it down. */
+  async tap(file: number, rank: number): Promise<void> {
+    try {
+      await this.board.tap(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to tap file ${file}, rank ${rank}`, error);
+    }
+  }
+
+  /** Rests the pointer on an intersection without tapping it. */
+  async hover(file: number, rank: number): Promise<void> {
+    try {
+      await this.board.hover(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to hover file ${file}, rank ${rank}`, error);
+    }
+  }
+
+  /** Whether the piece on an intersection is the one currently picked up. */
+  async isSelected(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isSelected(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is selected`, error);
+    }
+  }
+
+  /** Whether the board is offering this intersection as somewhere the selected piece may go. */
+  async canMoveTo(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.canMoveTo(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is a legal move`, error);
+    }
+  }
+
   /** How wide a piece is drawn, in pixels — the traditional set turns three different sizes. */
   async pieceWidthAt(file: number, rank: number): Promise<number | undefined> {
     try {

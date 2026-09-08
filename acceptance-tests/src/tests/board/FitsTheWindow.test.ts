@@ -1,4 +1,4 @@
-import {expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
+import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
 /**
  * The board is centred in whatever space the controls leave it, so a board that does not fit
@@ -8,25 +8,31 @@ import {expect, given, then, when} from "@src/acceptance-criteria-mapping/Accept
  */
 given("a user has the game open", () => {
   when("the window is short and wide", () => {
-    then("the whole board is still on screen", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.resizeWindowTo(1400, 420);
+    });
 
+    then("the whole board is still on screen", async ({janggi}) => {
       expect(await janggi.board.isFullyOnScreen()).toBe(true);
     });
   });
 
   when("the window is tall and narrow", () => {
-    then("the whole board is still on screen", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.resizeWindowTo(420, 1200);
+    });
 
+    then("the whole board is still on screen", async ({janggi}) => {
       expect(await janggi.board.isFullyOnScreen()).toBe(true);
     });
   });
 
   when("the window is barely bigger than the controls", () => {
-    then("the whole board is still on screen", async ({janggi}) => {
+    beforeEach(async ({janggi}) => {
       await janggi.resizeWindowTo(360, 300);
+    });
 
+    then("the whole board is still on screen", async ({janggi}) => {
       expect(await janggi.board.isFullyOnScreen()).toBe(true);
     });
   });

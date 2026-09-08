@@ -23,9 +23,11 @@ import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
 interface Props {
   readonly piece: PieceIdentity;
   readonly style: PieceSetStyle;
+  /** Drawn with a heavier outline, to answer the pointer resting on it. */
+  readonly emphasised: boolean;
 }
 
-export function Piece({piece, style}: Props): React.JSX.Element {
+export function Piece({piece, style, emphasised}: Props): React.JSX.Element {
   const pieceStyle = resolvePieceStyle(style, piece);
   const glyph = pieceStyle.glyph;
 
@@ -39,7 +41,7 @@ export function Piece({piece, style}: Props): React.JSX.Element {
         aria-label={pieceName(piece)}
         style={{height: `${pieceStyle.size * 100}%`, aspectRatio: 1}}
       >
-        <PieceBody body={pieceStyle.body} />
+        <PieceBody body={pieceStyle.body} strokeScale={emphasised ? EMPHASISED_STROKE_SCALE : 1} />
 
         {glyph.kind === "character" && (
           <CharacterGlyph character={characterFor(glyph.characters, piece)} glyph={glyph} />
@@ -50,3 +52,6 @@ export function Piece({piece, style}: Props): React.JSX.Element {
     </div>
   );
 }
+
+/** Enough to read as deliberate at a glance, and not so much that a heavy set turns into a blob. */
+const EMPHASISED_STROKE_SCALE = 2.25;
