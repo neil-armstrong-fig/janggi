@@ -359,8 +359,16 @@ only from the point at which it is noticed), and 자장 (moving your own general
 into check hands the decision to the opponent). Both are human-tournament rules
 about mistakes, not engine rules.
 
-Not implemented. It needs the enemy's full move generation, which is the natural
-next slice.
+**Implemented.** `webapp/src/game/IsInCheck.ts` asks whether any enemy piece
+attacks the general, `IsCheckmate.ts` is that plus having no legal reply, and
+`MovesFrom.ts` no longer offers a move that would leave its own general
+attacked — so a general can no longer be captured.
+
+Not implemented from this section: 묵장 and 자장, which are rules about human
+mistakes rather than about the position. Note that 자장 does **not** say moving
+into check is illegal — it says the mistake hands the decision to the opponent.
+Filtering the move out is a deliberate departure from the KJA text, and the same
+one every engine makes.
 
 ### 6.2 Bikjang (빅장) — **the sources genuinely disagree**
 
@@ -387,9 +395,63 @@ each other at any point in the game. That is a different rule, not a different
 wording of the same one, and it changes whether a mid-game bikjang is a draw or
 simply a position.
 
-**Decide this deliberately before implementing it.** Which reading to adopt is a
-product decision — tournament fidelity or the rule most online players expect —
-and it should be recorded here when it is made.
+**Decided: build both, and let the player choose in settings.** The two
+readings are different rules rather than different wordings, so picking one
+silently decides the game for everyone; a setting says which game is being
+played. The KJA reading makes material scoring a prerequisite, since it gates
+on each side holding under 30 points.
+
+**Validated, 2026-09-09 — and the apparent contradiction resolves.** Three
+findings, all from primary sources.
+
+**1. The KJA rule is current, not a 2013 relic.** The identical text is on the
+association's live site today, and it carries an exception this document was
+missing:
+
+> "빅장 규정: 기물이 각 30점 미만일 경우에 한하여 빅장을 부를 수 있다. (단,
+> 궁으로 상대 기물 취하면서 빅장이 되는 경우는 예외로 한다)"
+>
+> _Bikjang may be called only when each side is under 30 points. **Except where
+> the bikjang arises from the general capturing an enemy piece.**_
+
+**2. The 30-point threshold is a rule of the _points_ format, not of janggi.**
+This is what reconciles the sources. The KJA runs two match formats — 승부제
+(a friendly, decisive game) and 점수제 (the scored tournament game) — and says
+so explicitly of both bikjang and repetition:
+
+> "(단, 점수제방식에서는 동일수는 각 30점 미만에서 가능하다)"
+>
+> _Except that in the points format, a repeated move is only allowed below 30
+> points each._
+
+So there is no contradiction with en.wikipedia and pychess. **They describe the
+casual format, where bikjang is simply a draw; the KJA's threshold governs the
+scored tournament format.** An online game is the former, which is why no
+online implementation applies it.
+
+**3. A second federation has since abolished draws outright.** 대한장기연맹
+(`kojf.net`, distinct from the 대한장기협회 quoted above) revised its rules
+effective **2020-01-01**:
+
+> "(사)대한장기연맹에서 주관하는 모든 대회는 점수제 방식을 적용하여 무승부를
+> 없애고 완승 및 점수승 등으로 승부를 가린다."
+>
+> _Every tournament run by the federation applies the points format, abolishing
+> the draw and deciding by complete win or points win._
+
+Under those rules a bikjang cannot be a draw at all — it resolves on material.
+League points are 완승 7, 점수승 4, 점수패 2, 완패 0.
+
+**What this means for the setting.** The two options are not "correct vs
+popular" but **casual vs scored**, which is a better thing to put in front of a
+player. Label them that way. The scored option needs material scoring, and with
+it the 30-point threshold and the general-capture exception above.
+
+**Do not confuse a third body with either.** 한국장기연맹
+(`kingjanggi.or.kr`) publishes rules for **궁장기**, a reformed variant with
+piece promotion (진급) and a 왕장 general that can capture the enemy general. It
+is explicitly not the same game — it rejects "속국 문화인 한,초장기의 점수제" —
+and its regulations must not be read as janggi's.
 
 ### 6.3 The pass move (한수쉼)
 
@@ -408,6 +470,18 @@ describe passing as unrestricted:
 > game" — en.wikipedia
 
 A second real disagreement, and the same decision applies.
+
+**The 대한장기연맹 settled it for its own tournaments in 2022**, and the answer
+is neither of the above:
+
+> "한수 쉼은 행마(수)에 해당하지 않으며, 서로 연속으로 한수 쉼을 할 경우
+> 대국종료 후 점수로 승패 결정"
+>
+> _A pass is not a move, and if both players pass consecutively the game ends
+> and is decided on points._
+
+That makes two consecutive passes a terminating condition — which is the
+mechanism a scored format needs in place of a draw.
 
 **Its one settled consequence: stalemate does not exist.** A player with no
 legal move passes and the game continues.
@@ -473,6 +547,9 @@ but does not model the order or the prohibition on revising.
 | 대한장기협회, 대국규칙 / 대국규정 (archived) | `…/janggi_intro/e.php`, `…/janggi_intro/f.php`                                                | bikjang's 30-point condition, repetition, the pass gesture, scoring     | **Authoritative**, and the outlier on bikjang     |
 | en.wikipedia, Janggi                       | <https://en.wikipedia.org/wiki/Janggi>                                                        | board, per-piece cross-check, no cannon move at the start, values, 덤   | Good, and the fullest English text                |
 | pychess janggi documentation               | <https://github.com/gbtami/pychess-variants/blob/master/static/docs/janggi.md>                 | the cannon's palace-diagonal case; how a working engine adjudicates      | Good for implementation, weaker on nomenclature   |
+| 대한장기협회, live 대국규정                 | <http://www.kja.or.kr/business/business5.php>                                                 | the 30-point bikjang and repetition rules **as currently published**, and the general-capture exception | **Authoritative and current** — validated 2026-09-09 |
+| 대한장기연맹, 장기규칙 개정 (2020-01-01)    | <https://kojf.net/bbs/board.php?bo_table=board_notice&wr_id=478>                               | a second federation abolishing the draw outright; piece values; league points | **Authoritative** for that federation |
+| 대한장기연맹, 2022년도 대국규칙 개정        | <http://kojf.net/bbs/board.php?bo_table=board_notice&wr_id=706>                                | a pass is not a move; two consecutive passes end the game on points | **Authoritative** for that federation |
 | `docs/opening-setups.md`                   | this repository                                                                                | the setup phase, setup order, 맞상/엇상, opening advice                 | See its own confidence table                      |
 
 **Retrieval notes for anyone repeating this.** The KJA archive is **EUC-KR** —
@@ -495,6 +572,6 @@ do not spend the time again.
 | Neither side has a legal cannon move in the opening position                                   | **High** — asserted by en.wikipedia, and derived point by point in §5                          |
 | The 31 legal first moves in §5                                                                 | **High** — derived from the rules above; it is what the engine's tests assert                  |
 | Piece values, the 72-point total and Han's 1.5 덤                                              | **High** — the KJA's 대국규정, corroborated by en.wikipedia                                     |
-| Bikjang is an automatic draw whenever the generals face each other                             | **Low — sources conflict.** The KJA restricts it to below 30 points a side. See §6.2            |
-| A player may pass at any time, without restriction                                             | **Moderate** — en.wikipedia and pychess say so; the KJA's wording implies "when you have nothing" |
+| Bikjang is a draw in casual play, and gated on 30 points a side in the scored tournament format | **High** — the KJA's live site carries both, and the split by match format is what reconciles it with the English sources. See §6.2 |
+| A player may pass at any time, without restriction                                             | **Moderate** — en.wikipedia and pychess say so; the KJA implies "when you have nothing", and 대한장기연맹 made two consecutive passes end the game in 2022 |
 | Stalemate cannot occur, because a player with no move passes                                   | **High** — en.wikipedia states it, and it follows from the pass rule under either reading      |

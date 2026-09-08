@@ -18,6 +18,15 @@ import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 export class SettingsDsl {
   constructor(private readonly settings: SettingsPlaywright) {}
 
+  /** Whether either army's arrangement may still be changed. A back rank is set before play. */
+  async canChooseSetups(): Promise<boolean> {
+    try {
+      return await this.settings.hanSetup.isChoosable();
+    } catch (error) {
+      throw new DslError("Failed to check whether the setups can still be chosen", error);
+    }
+  }
+
   async setBoardTo(name: BoardStyleName): Promise<void> {
     try {
       await this.settings.board.choose(name);

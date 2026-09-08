@@ -143,9 +143,7 @@ on the board and the diagonals a chariot may run down are one list, not two.
 
 ## Current placeholders
 
-- `GameSlice.movesPlayed` is counted and read by nothing. It is meant to lock the setup pickers
-  once play begins; until it does, choosing a setup mid-game re-deals the board and hands the turn
-  back to cho. `restarted` is exported and dispatched by nothing, for the same missing control.
+- Nothing is persisted: a reload deals a new game.
 - `option-picker/` is prototype scaffolding for choosing a style, set or setup. A real settings
   screen replaces it.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a

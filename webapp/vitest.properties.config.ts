@@ -17,5 +17,12 @@ export default defineConfig({
     ...vitestBaseConfig.test,
     environment: "node",
     include: PROPERTY_TESTS,
+    /**
+     * Vitest's default is 5 seconds, which suits a unit test and not this. A property plays
+     * `PROPERTY_TEST_RUNS` whole games, the workflow turns that up to 5000 nightly, and checking
+     * for check makes every move markedly more expensive — so the honest fix for a timeout here is
+     * a longer clock, not fewer games.
+     */
+    testTimeout: 300_000,
   },
 });

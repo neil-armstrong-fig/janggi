@@ -24,6 +24,11 @@ export class HanSetupSettingPlaywright extends BaseComponent {
     };
   }
 
+  /** Whether the picker is still live — the pickers lock once a move has been played. */
+  async isChoosable(): Promise<boolean> {
+    return await this.options["Inner Elephant"].isEnabled();
+  }
+
   async choose(name: SetupName): Promise<void> {
     await this.options[name].click();
   }

@@ -12,6 +12,15 @@ import type {StatusPlaywright} from "@src/dsl/janggi/components/status/playwrigh
 export class StatusDsl {
   constructor(private readonly status: StatusPlaywright) {}
 
+  /** Deals a fresh game, abandoning whatever was being played. */
+  async startNewGame(): Promise<void> {
+    try {
+      await this.status.startNewGame();
+    } catch (error) {
+      throw new DslError("Failed to start a new game", error);
+    }
+  }
+
   /** Which army is to move. */
   async getTurn(): Promise<Side | undefined> {
     try {
