@@ -47,12 +47,12 @@ pnpm test:properties     # the property tests, which `pnpm checks` leaves out
 
 `pnpm checks` is the gate. It is `--max-warnings=0`, so a warning fails the build.
 
-**`pnpm checks` deliberately does not run the property tests.** They play thousands of randomly
-generated games against a fresh seed every run, so a failure is not reproducible from the same
-commit the way every other test here is — it means "these random games found something", which is
-worth investigating but is not a reason to block a deploy. `webapp/vitest.config.ts` excludes them
-and `webapp/vitest.properties.config.ts` runs only them; between the two every test file runs
-exactly once. Run them before finishing anything that touches `webapp/src/game/`.
+**`pnpm checks` deliberately leaves out the property tests.** A fresh seed every run means a
+failure is not reproducible from the same commit, so it must not gate a deploy — it means "these
+random games found something", which is worth investigating rather than blocking on.
+`webapp/vitest.config.ts` excludes them and `webapp/vitest.properties.config.ts` runs only them, so
+between the two every test file runs exactly once. Run them before finishing work in
+`webapp/src/game/`.
 
 ## How work is done here
 
@@ -179,8 +179,7 @@ violation fails `pnpm checks`:
 A workspace package added later is **denied by default**; add it to `allowedPackages` in that
 package's `eslint.config.js` to permit it. Packages also enforce their own internal layering — see
 the `AGENTS.md` in each. Inside `webapp/` that layering is `react/` → `redux/` → `game/`, one way
-only: the janggi engine in `webapp/src/game/` may not import React, Redux or anything in the folders
-that use them.
+only.
 
 Flat config replaces a rule rather than merging it, so **never write `"no-restricted-imports"`
 directly in an override** — call `restrictedImports({...})` from `shared/config/eslint.base.js`, or
@@ -239,13 +238,12 @@ ask first, naming the command you want to run and why.
 `.github/workflows/ci.yml` runs `checks`, then `acceptance-tests` against a production build served
 by `vite preview`, then deploys `main` to GitHub Pages. Deployment is gated on both.
 
-`.github/workflows/property-tests.yml` is separate and gates nothing. It runs the property tests on
-every push and pull request, nightly on a fresh seed, and on demand with a games-per-property input.
-It goes **red** on failure — a warning nobody sees is not worth running — but `deploy` needs only
-`checks` and `acceptance-tests`, both in `ci.yml`, so a red run there stops no release. A failure
-writes a job summary naming the properties that broke, the shrunk sequence of moves that broke them,
-and the seed to replay. If branch protection is ever turned on, leave this workflow out of the
-required checks or it becomes a gate by the back door.
+`.github/workflows/property-tests.yml` runs the property tests on every push and pull request,
+nightly, and on demand. It goes **red** on failure — a warning nobody sees is not worth running —
+but gates nothing, because `deploy` needs only `checks` and `acceptance-tests`. A failure writes a
+job summary naming what broke, the shrunk moves that broke it, and the seed to replay. **If branch
+protection is ever turned on, leave this workflow out of the required checks**, or it becomes a gate
+by the back door.
 
 Pages serves under the repository name, so the deploy job rebuilds with
 `BASE_PATH=/<repo>/`. That feeds Vite's `base` **and** the PWA manifest's `start_url`/`scope`. The
