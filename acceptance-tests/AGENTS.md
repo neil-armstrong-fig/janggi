@@ -171,6 +171,25 @@ Playwright and `@src/dsl/**` under `src/tests/`.
 **Do not work around it.** To give a spec a new capability, add the locator work to a
 `*Playwright`, then the one-line wrapper for it on the `*Dsl` beside it.
 
+## Name a method for how it reads in a spec
+
+A criterion should read as a sentence, so the method name has to carry its own grammar. Three
+shapes, and every method is one of them:
+
+| Shape                                  | Named                                                                | Reads as                                                 |
+| -------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Action** — does something to the app | a verb: `tap`, `hover`, `setBoardTo`, `resizeWindowTo`               | `await janggi.board.tap(1, 7)`                           |
+| **Question** — answers yes or no       | `is…` / `can…`: `isSelected`, `canMoveTo`, `isFullyOnScreen`         | `expect(await janggi.board.isSelected(1, 7)).toBe(true)` |
+| **Query** — fetches a value            | `get…`: `getPieceAt`, `getTurn`, `getSelectedBoard`, `getPieceCount` | `expect(await janggi.status.getTurn()).toBe("han")`      |
+
+A bare noun phrase — `turn()`, `pieceAt()` — reads like a property that happens to need brackets,
+and a verb that returns a value — `countPieces()` — reads like an instruction whose answer you are
+meant to ignore. Both were renamed for that reason.
+
+This is not only style: **the lint rule above tells an arrangement from an assertion by name**, so
+the split has to stay clean. A new method that fetches a value and is not called `get…` will slip
+past it.
+
 **A new fixture must also be named in `withDslOnly`'s destructuring**
 (`AcceptanceCriteriaMapping.ts`). Playwright reads that destructuring to decide which fixtures to
 build, so one missing from it is silently never constructed. There is one fixture — `janggi` — and

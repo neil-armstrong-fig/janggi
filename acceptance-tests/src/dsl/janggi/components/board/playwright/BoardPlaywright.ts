@@ -45,7 +45,7 @@ export class BoardPlaywright extends BaseComponent {
     );
   }
 
-  async countPieces(): Promise<number> {
+  async getPieceCount(): Promise<number> {
     await this.container.waitFor({state: "visible"});
 
     return await this.container.getByTestId("piece").count();
@@ -59,7 +59,7 @@ export class BoardPlaywright extends BaseComponent {
    * attribute is the contract: the character or drawing painted on the piece is whichever set is
    * being worn, and says nothing dependable about which piece it is.
    */
-  async pieceAt(file: number, rank: number): Promise<Piece | undefined> {
+  async getPieceAt(file: number, rank: number): Promise<Piece | undefined> {
     const piece = this.pieceLocator(file, rank);
 
     // Most of the board is empty, and asking an element that is not there for an attribute waits
@@ -76,7 +76,7 @@ export class BoardPlaywright extends BaseComponent {
    * The one thing on a piece that does change with the set, and so the only way to tell from
    * outside which of them is being worn.
    */
-  async characterAt(file: number, rank: number): Promise<string | undefined> {
+  async getCharacterAt(file: number, rank: number): Promise<string | undefined> {
     const character = this.pieceLocator(file, rank).locator("text");
     if ((await character.count()) === 0) return undefined;
 
@@ -87,7 +87,7 @@ export class BoardPlaywright extends BaseComponent {
    * How wide a piece is drawn, in pixels. A traditional set is turned in three sizes so that rank
    * is legible by feel before a character has been read; this is how a spec can see that.
    */
-  async pieceWidthAt(file: number, rank: number): Promise<number | undefined> {
+  async getPieceWidthAt(file: number, rank: number): Promise<number | undefined> {
     const box = await this.pieceLocator(file, rank).boundingBox();
 
     return box?.width;

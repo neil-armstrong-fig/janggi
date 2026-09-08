@@ -32,18 +32,18 @@ export class BoardDsl {
     }
   }
 
-  async countPieces(): Promise<number> {
+  async getPieceCount(): Promise<number> {
     try {
-      return await this.board.countPieces();
+      return await this.board.getPieceCount();
     } catch (error) {
       throw new DslError("Failed to count the pieces on the board", error);
     }
   }
 
   /** Which piece stands on an intersection, or undefined where none does. */
-  async pieceAt(file: number, rank: number): Promise<Piece | undefined> {
+  async getPieceAt(file: number, rank: number): Promise<Piece | undefined> {
     try {
-      return await this.board.pieceAt(file, rank);
+      return await this.board.getPieceAt(file, rank);
     } catch (error) {
       throw new DslError(`Failed to read the piece at file ${file}, rank ${rank}`, error);
     }
@@ -86,18 +86,18 @@ export class BoardDsl {
   }
 
   /** How wide a piece is drawn, in pixels — the traditional set turns three different sizes. */
-  async pieceWidthAt(file: number, rank: number): Promise<number | undefined> {
+  async getPieceWidthAt(file: number, rank: number): Promise<number | undefined> {
     try {
-      return await this.board.pieceWidthAt(file, rank);
+      return await this.board.getPieceWidthAt(file, rank);
     } catch (error) {
       throw new DslError(`Failed to measure the piece at file ${file}, rank ${rank}`, error);
     }
   }
 
   /** The character painted on a piece, or undefined where the set in use draws pictures instead. */
-  async characterAt(file: number, rank: number): Promise<string | undefined> {
+  async getCharacterAt(file: number, rank: number): Promise<string | undefined> {
     try {
-      return await this.board.characterAt(file, rank);
+      return await this.board.getCharacterAt(file, rank);
     } catch (error) {
       throw new DslError(`Failed to read the character at file ${file}, rank ${rank}`, error);
     }

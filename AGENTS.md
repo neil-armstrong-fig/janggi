@@ -68,8 +68,37 @@ let each name read as a sentence about the subject:
 it("covers the 90 intersections of 9 files and 10 ranks", () => {
 ```
 
-`describe` is for grouping that earns itself — cases needing a different setup, or a genuine split
-within one subject. A wrapper that only restates the filename is noise in every test report.
+### `describe` is a tool, not a house style
+
+Nesting earns itself when a level carries setup its tests would otherwise repeat. It costs something
+too — every level is another phrase the reader holds while reading the `it` — so it is worth paying
+for only where it buys that back. The test: **does the `describe` name say something the `it` names
+would otherwise each have to say?**
+
+- **Reach for it when the subject has states.** One `describe` per step, each doing a single thing
+  in `beforeEach` to the position its parent left behind, so each `it` asserts only what that step
+  changed. `webapp/src/game/PlayingAGame.test.ts` plays a game that way, and
+  `.../board/hooks/UseMoveSelection.test.ts` walks a piece being picked up and put down. Two blocks
+  at the same level then branch from one arrangement rather than replaying it by hand.
+
+- **Reach for it to split genuinely different setups.** `UseMoveSelection.test.ts` has two blocks at
+  the top level — `with cho to move` and `with han to move` — because the hook is a mirror of itself
+  once the turn has passed. Two top-level blocks are a split rather than a wrapper. A *single*
+  one can still earn itself where it carries a `beforeEach` every test needs —
+  `PlayingAGame.test.ts` opens with `describe("a new game")` for exactly that reason — but a
+  single block with no setup of its own is a wrapper by another name.
+
+- **Leave it alone for a plain function.** Most tests here need no arrangement at all. `ToSlug`,
+  `BoardPositions` and every mover in `game/moves/` are flat lists of `it(...)`, one per rule, each
+  building inline whatever tiny board it needs. A `describe` there adds a level that says nothing.
+
+- **Never as a filing cabinet.** If a level has no `beforeEach` and every `it` under it would read
+  the same without it, it is organising for its own sake. `PlayingRandomGames.test.ts` is the edge
+  worth knowing: one level deep, grouping properties by what they claim about — a move, a position,
+  a whole game — because those need different runners, and **no deeper**, because each property
+  generates its own games and there is no state to build up.
+
+A wrapper that only restates the filename is noise in every test report.
 
 This governs unit tests only. Acceptance specs are the opposite case — their `given`/`when` nesting
 is the specification rather than a restatement of the filename — so see `acceptance-tests/AGENTS.md`.

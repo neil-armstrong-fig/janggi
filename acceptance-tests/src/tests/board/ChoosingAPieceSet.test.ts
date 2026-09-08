@@ -15,20 +15,20 @@ given("a player is choosing a piece set", () => {
     });
 
     then("the pieces carry the hanja a real set is cut with", async ({janggi}) => {
-      expect(await janggi.board.characterAt(5, 9)).toBe("楚");
-      expect(await janggi.board.characterAt(5, 2)).toBe("漢");
+      expect(await janggi.board.getCharacterAt(5, 9)).toBe("楚");
+      expect(await janggi.board.getCharacterAt(5, 2)).toBe("漢");
     });
 
     then("the two armies keep their different words for a foot soldier", async ({janggi}) => {
-      expect(await janggi.board.characterAt(1, 7)).toBe("卒");
-      expect(await janggi.board.characterAt(1, 4)).toBe("兵");
+      expect(await janggi.board.getCharacterAt(1, 7)).toBe("卒");
+      expect(await janggi.board.getCharacterAt(1, 4)).toBe("兵");
     });
 
     /** The one set turned in three sizes, so rank can be read by feel before a character is. */
     then("rank is legible by size", async ({janggi}) => {
-      const general = await janggi.board.pieceWidthAt(5, 9);
-      const chariot = await janggi.board.pieceWidthAt(1, 10);
-      const soldier = await janggi.board.pieceWidthAt(1, 7);
+      const general = await janggi.board.getPieceWidthAt(5, 9);
+      const chariot = await janggi.board.getPieceWidthAt(1, 10);
+      const soldier = await janggi.board.getPieceWidthAt(1, 7);
 
       expect(general).toBeGreaterThan(chariot ?? 0);
       expect(chariot).toBeGreaterThan(soldier ?? 0);
@@ -41,15 +41,15 @@ given("a player is choosing a piece set", () => {
     });
 
     then("the same characters are shown", async ({janggi}) => {
-      expect(await janggi.board.characterAt(5, 9)).toBe("楚");
-      expect(await janggi.board.characterAt(1, 7)).toBe("卒");
+      expect(await janggi.board.getCharacterAt(5, 9)).toBe("楚");
+      expect(await janggi.board.getCharacterAt(1, 7)).toBe("卒");
     });
 
     /** Unlike the traditional set, a modern one turns everything but the general at one size. */
     then("only the general is drawn larger than the rest", async ({janggi}) => {
-      const general = await janggi.board.pieceWidthAt(5, 9);
-      const chariot = await janggi.board.pieceWidthAt(1, 10);
-      const soldier = await janggi.board.pieceWidthAt(1, 7);
+      const general = await janggi.board.getPieceWidthAt(5, 9);
+      const chariot = await janggi.board.getPieceWidthAt(1, 10);
+      const soldier = await janggi.board.getPieceWidthAt(1, 7);
 
       expect(general).toBeGreaterThan(chariot ?? 0);
       // Within a pixel of each other rather than exactly equal: a piece is sized against its grid
@@ -64,10 +64,10 @@ given("a player is choosing a piece set", () => {
     });
 
     then("each piece is spelled out in the Korean alphabet", async ({janggi}) => {
-      expect(await janggi.board.characterAt(5, 9)).toBe("초");
-      expect(await janggi.board.characterAt(5, 2)).toBe("한");
-      expect(await janggi.board.characterAt(1, 7)).toBe("졸");
-      expect(await janggi.board.characterAt(1, 4)).toBe("병");
+      expect(await janggi.board.getCharacterAt(5, 9)).toBe("초");
+      expect(await janggi.board.getCharacterAt(5, 2)).toBe("한");
+      expect(await janggi.board.getCharacterAt(1, 7)).toBe("졸");
+      expect(await janggi.board.getCharacterAt(1, 4)).toBe("병");
     });
   });
 
@@ -77,8 +77,8 @@ given("a player is choosing a piece set", () => {
     });
 
     then("the pieces carry no writing at all", async ({janggi}) => {
-      expect(await janggi.board.characterAt(5, 9)).toBeUndefined();
-      expect(await janggi.board.characterAt(1, 7)).toBeUndefined();
+      expect(await janggi.board.getCharacterAt(5, 9)).toBeUndefined();
+      expect(await janggi.board.getCharacterAt(1, 7)).toBeUndefined();
     });
   });
 
@@ -100,14 +100,14 @@ given("a player is choosing a piece set", () => {
     });
 
     then("the set chosen last is the one in use", async ({janggi}) => {
-      expect(await janggi.settings.selectedPieceSet()).toBe("Hanja");
-      expect(await janggi.board.characterAt(5, 9)).toBe("楚");
+      expect(await janggi.settings.getSelectedPieceSet()).toBe("Hanja");
+      expect(await janggi.board.getCharacterAt(5, 9)).toBe("楚");
     });
 
     then("the game standing on the board is untouched by any of it", async ({janggi}) => {
-      expect(await janggi.board.countPieces()).toBe(32);
-      expect(await janggi.board.pieceAt(5, 9)).toEqual({side: "cho", type: "general"});
-      expect(await janggi.board.pieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});
+      expect(await janggi.board.getPieceCount()).toBe(32);
+      expect(await janggi.board.getPieceAt(5, 9)).toEqual({side: "cho", type: "general"});
+      expect(await janggi.board.getPieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});
     });
   });
 
@@ -120,10 +120,10 @@ given("a player is choosing a piece set", () => {
       });
 
       then("it is the writing that changed and never the game", async ({janggi}) => {
-        expect(await janggi.settings.selectedPieceSet()).toBe(set);
-        expect(await janggi.board.countPieces()).toBe(32);
-        expect(await janggi.board.pieceAt(5, 9)).toEqual({side: "cho", type: "general"});
-        expect(await janggi.board.pieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});
+        expect(await janggi.settings.getSelectedPieceSet()).toBe(set);
+        expect(await janggi.board.getPieceCount()).toBe(32);
+        expect(await janggi.board.getPieceAt(5, 9)).toEqual({side: "cho", type: "general"});
+        expect(await janggi.board.getPieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});
       });
     },
   );

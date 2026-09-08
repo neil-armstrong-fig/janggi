@@ -12,13 +12,13 @@ given("a user is choosing a board", () => {
     });
 
     then("it is the one now in use", async ({janggi}) => {
-      expect(await janggi.settings.selectedBoard()).toBe("Neon");
+      expect(await janggi.settings.getSelectedBoard()).toBe("Neon");
     });
 
     then("every piece is left standing where it was", async ({janggi}) => {
-      expect(await janggi.board.countPieces()).toBe(32);
-      expect(await janggi.board.pieceAt(5, 9)).toEqual({side: "cho", type: "general"});
-      expect(await janggi.board.pieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});
+      expect(await janggi.board.getPieceCount()).toBe(32);
+      expect(await janggi.board.getPieceAt(5, 9)).toEqual({side: "cho", type: "general"});
+      expect(await janggi.board.getPieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});
     });
   });
 
@@ -31,7 +31,7 @@ given("a user is choosing a board", () => {
     });
 
     then("the pieces are still wearing the set that was chosen", async ({janggi}) => {
-      expect(await janggi.board.characterAt(5, 9)).toBe("초");
+      expect(await janggi.board.getCharacterAt(5, 9)).toBe("초");
     });
   });
 
@@ -42,8 +42,8 @@ given("a user is choosing a board", () => {
     });
 
     then("the original is in use again", async ({janggi}) => {
-      expect(await janggi.settings.selectedBoard()).toBe("Classic");
-      expect(await janggi.board.countPieces()).toBe(32);
+      expect(await janggi.settings.getSelectedBoard()).toBe("Classic");
+      expect(await janggi.board.getPieceCount()).toBe(32);
     });
   });
 });

@@ -13,8 +13,8 @@ given("a user is choosing how to arrange the pieces", () => {
     });
 
     then("each elephant stands beside a guard", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(3, 10)).toEqual({side: "cho", type: "elephant"});
-      expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "horse"});
+      expect(await janggi.board.getPieceAt(3, 10)).toEqual({side: "cho", type: "elephant"});
+      expect(await janggi.board.getPieceAt(2, 10)).toEqual({side: "cho", type: "horse"});
     });
   });
 
@@ -24,8 +24,8 @@ given("a user is choosing how to arrange the pieces", () => {
     });
 
     then("each flank's pair has swapped over", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(3, 10)).toEqual({side: "cho", type: "horse"});
-      expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
+      expect(await janggi.board.getPieceAt(3, 10)).toEqual({side: "cho", type: "horse"});
+      expect(await janggi.board.getPieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
     });
   });
 
@@ -35,17 +35,17 @@ given("a user is choosing how to arrange the pieces", () => {
     });
 
     then("they come in off the corners", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(3, 10)).toEqual({side: "cho", type: "chariot"});
-      expect(await janggi.board.pieceAt(1, 10)).toEqual({side: "cho", type: "elephant"});
+      expect(await janggi.board.getPieceAt(3, 10)).toEqual({side: "cho", type: "chariot"});
+      expect(await janggi.board.getPieceAt(1, 10)).toEqual({side: "cho", type: "elephant"});
     });
   });
 
   when("nothing has been chosen yet", () => {
     then("both armies open on the common setup, with a traditional set on the board", async ({janggi}) => {
-      expect(await janggi.settings.selectedHanSetup()).toBe("Inner Elephant");
-      expect(await janggi.settings.selectedChoSetup()).toBe("Inner Elephant");
-      expect(await janggi.settings.selectedPieceSet()).toBe("Traditional");
-      expect(await janggi.settings.selectedBoard()).toBe("Classic");
+      expect(await janggi.settings.getSelectedHanSetup()).toBe("Inner Elephant");
+      expect(await janggi.settings.getSelectedChoSetup()).toBe("Inner Elephant");
+      expect(await janggi.settings.getSelectedPieceSet()).toBe("Traditional");
+      expect(await janggi.settings.getSelectedBoard()).toBe("Classic");
     });
   });
 });
@@ -63,8 +63,8 @@ given("the two armies are arranged separately", () => {
     });
 
     then("their outer elephants stand on the same wing", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
-      expect(await janggi.board.pieceAt(2, 1)).toEqual({side: "han", type: "elephant"});
+      expect(await janggi.board.getPieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
+      expect(await janggi.board.getPieceAt(2, 1)).toEqual({side: "han", type: "elephant"});
     });
   });
 
@@ -75,8 +75,8 @@ given("the two armies are arranged separately", () => {
     });
 
     then("their outer elephants end up on opposite wings", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
-      expect(await janggi.board.pieceAt(8, 1)).toEqual({side: "han", type: "elephant"});
+      expect(await janggi.board.getPieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
+      expect(await janggi.board.getPieceAt(8, 1)).toEqual({side: "han", type: "elephant"});
     });
   });
 
@@ -86,9 +86,9 @@ given("the two armies are arranged separately", () => {
     });
 
     then("the other one is left where it stood", async ({janggi}) => {
-      expect(await janggi.board.pieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
-      expect(await janggi.board.pieceAt(2, 1)).toEqual({side: "han", type: "horse"});
-      expect(await janggi.settings.selectedHanSetup()).toBe("Inner Elephant");
+      expect(await janggi.board.getPieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
+      expect(await janggi.board.getPieceAt(2, 1)).toEqual({side: "han", type: "horse"});
+      expect(await janggi.settings.getSelectedHanSetup()).toBe("Inner Elephant");
     });
   });
 });

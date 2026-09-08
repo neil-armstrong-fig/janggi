@@ -7,6 +7,7 @@ import {BUILT_IN_STYLES, DEFAULT_STYLE} from "@src/react/pages/game/components/b
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
 import {SETUPS} from "@src/game/setups/Setups";
 import {OptionPicker} from "@src/react/pages/game/components/option-picker/OptionPicker";
+import {TurnIndicator} from "@src/react/pages/game/components/turn-indicator/TurnIndicator";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
 import {choSetupChosen, hanSetupChosen, moved} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
@@ -32,6 +33,8 @@ export function GamePage(): React.JSX.Element {
 
   return (
     <main className="flex h-full w-full flex-col gap-3 bg-[#1c140b] p-2">
+      <TurnIndicator sideToMove={game.sideToMove} />
+
       <div className="min-h-0 flex-1">
         <Board game={game} style={style} pieceStyle={pieceStyle} onMove={move => dispatch(moved(move))} />
       </div>
