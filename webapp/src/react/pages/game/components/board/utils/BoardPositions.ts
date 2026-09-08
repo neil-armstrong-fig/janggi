@@ -1,5 +1,5 @@
-import {FILES, RANKS} from "@src/react/pages/game/components/board/utils/BoardDimensions";
-import type {Position} from "@src/react/pages/game/components/board/types/Position";
+import {FILES, RANKS} from "@src/game/board/utils/BoardDimensions";
+import type {Position} from "@src/game/board/types/Position";
 
 /**
  * Every intersection of the board, in reading order — the order a CSS grid wants them in.

@@ -26,6 +26,37 @@ const hookTestingOnly = [
   },
 ];
 
+/**
+ * The engine in `src/game/` is the rules of janggi and nothing else. It has to stay runnable and
+ * testable with no React, no store and no DOM around it — that is what makes exhaustive
+ * move-generation tests cheap to write, and what would let it move to its own package, or to a
+ * server, without being unpicked first.
+ *
+ * Denying the packages and not only the folders is what makes "pure TypeScript" a rule rather than
+ * an intention: `@src/react` is already unreachable, but `import {useMemo} from "react"` would not
+ * be.
+ */
+const engineIsPure = [
+  {name: "react", message: "The engine must not import React. The rules do not depend on how they are drawn."},
+  {name: "react-dom", message: "The engine must not import React. The rules do not depend on how they are drawn."},
+  {
+    name: "react-redux",
+    message: "The engine must not import Redux. Where the state is kept is the store's problem, not the rules'.",
+  },
+  {
+    name: "@reduxjs/toolkit",
+    message: "The engine must not import Redux. Where the state is kept is the store's problem, not the rules'.",
+  },
+  {
+    name: "@testing-library/react",
+    message: "There is nothing to render here — an engine test calls the function and reads what comes back.",
+  },
+  {
+    name: "@testing-library/dom",
+    message: "There is nothing to render here — an engine test calls the function and reads what comes back.",
+  },
+];
+
 export default [
   ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages: ["@janggi/shared"]}),
   globalIgnores(["scripts/*"]),
@@ -70,6 +101,26 @@ export default [
             group: ["@src/react", "@src/react/**"],
             message:
               "The redux layer must not import from react/. Components depend on state, not the other way round.",
+          },
+        ],
+      }),
+    },
+  },
+  {
+    // The rules of janggi do not depend on how they are drawn or on where the state is kept.
+    // Components and the store read the engine; the engine never reaches back into either.
+    files: ["src/game/**"],
+    rules: {
+      // As above: flat config replaces this rule rather than merging it, so everything the blocks
+      // higher up would have contributed has to be listed here too.
+      "no-restricted-imports": restrictedImports({
+        allowedPackages: ["@janggi/shared"],
+        paths: engineIsPure,
+        patterns: [
+          {
+            group: ["@src/react", "@src/react/**", "@src/redux", "@src/redux/**"],
+            message:
+              "The engine must not import from react/ or redux/. It takes a game state and returns one; everything else is somebody else's job.",
           },
         ],
       }),

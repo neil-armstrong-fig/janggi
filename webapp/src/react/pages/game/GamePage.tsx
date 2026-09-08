@@ -5,11 +5,11 @@ import {
 } from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES, DEFAULT_STYLE} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
-import {DEFAULT_SETUP, SETUPS} from "@src/react/pages/game/components/board/setups/Setups";
+import {DEFAULT_SETUP, SETUPS} from "@src/game/setups/Setups";
 import {OptionPicker} from "@src/react/pages/game/components/option-picker/OptionPicker";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
-import type {Setup} from "@src/react/pages/game/components/board/setups/types/Setup";
-import {startingPieces} from "@src/react/pages/game/components/board/setups/utils/StartingPieces";
+import type {Setup} from "@src/game/setups/types/Setup";
+import {startingPieces} from "@src/game/setups/utils/StartingPieces";
 import {useMemo, useState} from "react";
 
 /**

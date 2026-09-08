@@ -8,5 +8,12 @@
       "@src/*": ["./src/*"]
     }
   },
-  "include": ["src", "vite.config.ts", "vitest.config.ts", "eslint.config.js", "prettier.config.js"]
+  "include": [
+    "src",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "vitest.properties.config.ts",
+    "eslint.config.js",
+    "prettier.config.js"
+  ]
 }
