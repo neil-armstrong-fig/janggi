@@ -1,11 +1,13 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
+import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {Position} from "@src/game/board/types/Position";
 import {FILES, RANKS} from "@src/game/board/utils/BoardDimensions";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {applyMove} from "@src/game/ApplyMove";
+import {canUndo} from "@src/game/record/CanUndo";
 import {describe, expect, it} from "vitest";
 import fc from "fast-check";
 import {isInPalace} from "@src/game/board/utils/Palaces";
@@ -16,7 +18,11 @@ import {newGame} from "@src/game/NewGame";
 import {opponentOf} from "@src/game/utils/OpponentOf";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {playMove} from "@src/game/record/PlayMove";
+import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
+import {redo} from "@src/game/record/Redo";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {undo} from "@src/game/record/Undo";
 
 /**
  * The rules asserted against games nobody wrote down.
@@ -149,6 +155,46 @@ describe("looking back over a game already played", () => {
       {numRuns: RUNS},
     );
   });
+
+  /**
+   * Taken back to the start one ply at a time, every position handed back is the one the game was
+   * played from at that point. A record that dropped a position, kept the wrong one or took two
+   * steps at once would part company from the played game somewhere along the way.
+   */
+  it("walks back through the very positions it was played from", () => {
+    fc.assert(
+      fc.property(gameChoices(), choices => {
+        const moves = playRandomGame(choices);
+        let played = recordOf(moves);
+
+        for (const {before} of [...moves].reverse()) {
+          played = undo(played);
+
+          expect(played.present).toEqual(before);
+        }
+
+        expect(canUndo(played)).toBe(false);
+        expect(played.present).toEqual(startingPosition());
+      }),
+      {numRuns: RUNS},
+    );
+  });
+
+  /** Undo and redo are each other's inverse, so a game taken back and played again is the same game. */
+  it("comes back to exactly where it was when every move taken back is played again", () => {
+    fc.assert(
+      fc.property(gameChoices(), choices => {
+        const moves = playRandomGame(choices);
+        const played = recordOf(moves);
+
+        const takenBack = moves.reduce(sofar => undo(sofar), played);
+        const playedAgain = moves.reduce(sofar => redo(sofar), takenBack);
+
+        expect(playedAgain).toEqual(played);
+      }),
+      {numRuns: RUNS},
+    );
+  });
 });
 
 describe("when asked for a move it never offered", () => {
@@ -265,6 +311,15 @@ function playRandomGame(choices: readonly number[]): PlayedMove[] {
   }
 
   return game;
+}
+
+/**
+ * The same game again, this time recorded. It replays the moves rather than folding the positions
+ * `playRandomGame` already has, so what comes back is a record built the only way a caller can build
+ * one — through `playMove`, with every position it keeps put there by the engine.
+ */
+function recordOf(moves: readonly PlayedMove[]): PlayedGame {
+  return moves.reduce((played, {move}) => playMove(played, move), playedGameFrom(startingPosition()));
 }
 
 function finalPositionOf(choices: readonly number[]): GameState {

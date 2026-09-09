@@ -1,7 +1,8 @@
 # AGENTS.md — the engine
 
-`src/game/` is the rules of janggi and nothing else. Pure TypeScript: no React, no Redux, no DOM,
-no clock, no I/O. A state goes in and a state comes out.
+`src/game/` is the rules of janggi, and `record/` beside them for stepping back through a game. Pure
+TypeScript either way: no React, no Redux, no DOM, no clock, no I/O. A state goes in and a state
+comes out.
 
 `docs/rules.md` is where those rules are written down, with sources. **Read it before changing a
 move rule** — every mover cites the section it implements, and several rules are contested between
@@ -27,6 +28,20 @@ types/            GameState, Move, Mover, Outcome
 board/            the 9x10 geometry: positions, dimensions, palaces. react/ reads this too
 setups/           the five opening arrangements and the 32 pieces they produce
 moves/            one generator per piece type, and what they share
+record/           taking a game back and playing it forward again
+```
+
+`record/` is the one folder here that is not a rule of janggi:
+
+```
+record/types/PlayedGame.ts   { past, present, future } — positions, not moves
+record/PlayedGameFrom.ts     playedGameFrom(game): PlayedGame
+record/PlayMove.ts           playMove(played, move): PlayedGame   — throws exactly as applyMove does
+record/RestTurn.ts           restTurn(played): PlayedGame         — throws exactly as pass does
+record/CanUndo.ts            canUndo(played): boolean
+record/Undo.ts               undo(played): PlayedGame             — throws when there is nothing to undo
+record/CanRedo.ts            canRedo(played): boolean
+record/Redo.ts               redo(played): PlayedGame             — throws when there is nothing to redo
 ```
 
 Those are the whole public surface; everything under `moves/` is reached through `MovesFrom.ts`'s
@@ -71,6 +86,21 @@ hold separate copies of that geometry.
 - **`GameState` must stay JSON-serialisable.** `pieces` is a flat array rather than a `Map` so it
   drops into a Redux slice, `structuredClone` or storage untouched. Index it per call with
   `piecesByPosition`; never store the index.
+- **A record keeps positions, not moves.** Undo is then a step between three lists with nothing to
+  replay, and a list of moves would have had to carry the `Move | "pass"` union the pass move was
+  kept out of `Move` to avoid. `PlayedGame` wraps `GameState` and is never a field on it — taking a
+  game back is not a rule, so nothing in `types/GameState.ts` changed to allow it. `past` happens to
+  be the position list repetition will want (`docs/rules.md` §6.4); that is an observation, not a
+  reason, and nothing is shaped for it.
+- **`undo` and `redo` never ask `outcomeOf`, and must not learn to.** `applyMove` and `pass` both
+  refuse once the game is decided; undo is what a player reaches for _because_ it is decided —
+  taking back the move that delivered 외통, or the second rested turn that settled the game on
+  points. Nothing is recomputed to do it: the position being restored was legal when it was played
+  and is the same value still. A guard added there by analogy would be a real bug, and
+  `PlayingAGame.test.ts` has two blocks that catch it.
+- **`playMove` and `restTurn` stay two verbs**, for the reason `applyMove` and `pass` are two: a
+  rested turn is not a move. What they leave behind is a position either way, which is why `undo`
+  takes one back without knowing which it undid, and why undo is one ply rather than one round.
 
 ## Testing
 
@@ -97,8 +127,10 @@ done — check and checkmate, the pass move, and scoring.
 
 A general can no longer be captured, because no move that leaves one attacked is ever offered.
 
-There is no move history and no captured pile. Adding a field to `GameState` before a rule asks for
-it fixes its shape too early — `consecutivePasses` is there because a rule asked.
+There is no move history and no captured pile **on `GameState`**. Adding a field to it before a rule
+asks for one fixes its shape too early — `consecutivePasses` is there because a rule asked, and
+`record/` keeps its positions in a wrapper around `GameState` precisely so that undo did not have to
+put a second one there.
 
 ## When Redux arrives
 
