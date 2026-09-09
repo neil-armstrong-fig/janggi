@@ -9,12 +9,16 @@ import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
+import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
 import {applyMove} from "@src/game/ApplyMove";
 import {beforeEach, describe, expect, it} from "vitest";
 import {callBikjang} from "@src/game/CallBikjang";
 import {canCallBikjang} from "@src/game/CanCallBikjang";
 import {canPass} from "@src/game/CanPass";
+import {canPlace} from "@src/game/setups/CanPlace";
 import {canRedo} from "@src/game/record/CanRedo";
+import {elephantPairingOf} from "@src/game/setups/ElephantPairingOf";
+import {isArranged} from "@src/game/setups/IsArranged";
 import {canUndo} from "@src/game/record/CanUndo";
 import {isBikjang} from "@src/game/IsBikjang";
 import {isCheckmate} from "@src/game/IsCheckmate";
@@ -24,8 +28,10 @@ import {legalMovesFor} from "@src/game/LegalMovesFor";
 import {materialFor} from "@src/game/MaterialFor";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
+import {newGameFrom} from "@src/game/setups/NewGameFrom";
 import {outcomeOf} from "@src/game/OutcomeOf";
 import {pass} from "@src/game/Pass";
+import {place} from "@src/game/setups/Place";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
 import {playMove} from "@src/game/record/PlayMove";
@@ -33,6 +39,7 @@ import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
 import {redo} from "@src/game/record/Redo";
 import {restTurn} from "@src/game/record/RestTurn";
 import {scoreFor} from "@src/game/ScoreFor";
+import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
 import {undo} from "@src/game/record/Undo";
 
 /**
@@ -1095,6 +1102,183 @@ describe("a scored endgame where a general takes its way into a bikjang", () => 
         expect(canCallBikjang(game)).toBe(true);
       });
     });
+  });
+});
+
+describe("a scored game being laid out", () => {
+  let phase: SetupPhase;
+
+  beforeEach(() => {
+    phase = setupPhaseFor("Scored");
+  });
+
+  it("lets han lay out first", () => {
+    expect(canPlace(phase, "han")).toBe(true);
+  });
+
+  it("makes cho wait, because cho answers what han has done", () => {
+    expect(canPlace(phase, "cho")).toBe(false);
+    expect(() => place(phase, "cho", setup("Inner Elephant"))).toThrow(/han lays out first/);
+  });
+
+  it("is not a game yet", () => {
+    expect(isArranged(phase)).toBe(false);
+    expect(() => newGameFrom(phase)).toThrow(/both armies/);
+  });
+
+  describe("when han has laid out", () => {
+    beforeEach(() => {
+      phase = place(phase, "han", setup("Left Elephant"));
+    });
+
+    it("refuses han a second thought", () => {
+      expect(canPlace(phase, "han")).toBe(false);
+      expect(() => place(phase, "han", setup("Right Elephant"))).toThrow(/may not lay out again/);
+    });
+
+    it("lets cho answer, now that there is something to answer", () => {
+      expect(canPlace(phase, "cho")).toBe(true);
+    });
+
+    it("is still not a game", () => {
+      expect(isArranged(phase)).toBe(false);
+      expect(() => newGameFrom(phase)).toThrow(/both armies/);
+    });
+
+    describe("when cho has answered", () => {
+      beforeEach(() => {
+        phase = place(phase, "cho", setup("Inner Elephant"));
+      });
+
+      it("lets cho think again, which is part of what the deom pays for", () => {
+        expect(canPlace(phase, "cho")).toBe(true);
+        expect(place(phase, "cho", setup("Right Elephant")).choSetup).toBe(setup("Right Elephant"));
+      });
+
+      it("still refuses han", () => {
+        expect(canPlace(phase, "han")).toBe(false);
+      });
+
+      it("is laid out", () => {
+        expect(isArranged(phase)).toBe(true);
+      });
+
+      describe("and the game it lays out", () => {
+        let game: GameState;
+
+        beforeEach(() => {
+          game = newGameFrom(phase);
+        });
+
+        it("stands thirty-two pieces on the board", () => {
+          expect(game.pieces).toHaveLength(32);
+        });
+
+        it("gives cho the first move, paid for with the deom", () => {
+          expect(game.sideToMove).toBe("cho");
+          expect(scoreFor(game, "han") - scoreFor(game, "cho")).toBe(1.5);
+        });
+
+        it("plays the scored game the phase was laid out for", () => {
+          expect(game.format).toBe("Scored");
+        });
+
+        it("arranges each army by its own choice", () => {
+          expect(pieceOn(game, 2, 1)).toEqual({side: "han", type: "elephant"});
+          expect(pieceOn(game, 3, 10)).toEqual({side: "cho", type: "elephant"});
+        });
+
+        it("offers cho thirty-one of them, exactly as any opening does", () => {
+          expect(legalMovesFor(game)).toHaveLength(31);
+        });
+
+        it("is an ordinary game, and plays on", () => {
+          expect(applyMove(game, move(1, 7, 1, 6)).sideToMove).toBe("han");
+        });
+      });
+    });
+  });
+});
+
+describe("a casual game being laid out", () => {
+  let phase: SetupPhase;
+
+  beforeEach(() => {
+    phase = setupPhaseFor("Casual");
+  });
+
+  it("lets either army lay out first, the order being a rule of the scored game alone", () => {
+    expect(canPlace(phase, "han")).toBe(true);
+    expect(canPlace(phase, "cho")).toBe(true);
+  });
+
+  it("is not a game yet", () => {
+    expect(isArranged(phase)).toBe(false);
+    expect(() => newGameFrom(phase)).toThrow(/both armies/);
+  });
+
+  describe("when cho has laid out first, which a scored game would have refused", () => {
+    beforeEach(() => {
+      phase = place(phase, "cho", setup("Outer Elephant"));
+    });
+
+    it("is still not a game", () => {
+      expect(isArranged(phase)).toBe(false);
+    });
+
+    it("lets cho think again", () => {
+      expect(canPlace(phase, "cho")).toBe(true);
+    });
+
+    describe("when han has answered", () => {
+      beforeEach(() => {
+        phase = place(phase, "han", setup("Inner Elephant"));
+      });
+
+      it("lets han think again too, where a scored game would not", () => {
+        expect(canPlace(phase, "han")).toBe(true);
+        expect(place(phase, "han", setup("Central Chariot")).hanSetup).toBe(setup("Central Chariot"));
+      });
+
+      it("lays out the casual game the phase was for", () => {
+        const game = newGameFrom(phase);
+
+        expect(game.format).toBe("Casual");
+        expect(game.pieces).toHaveLength(32);
+        expect(legalMovesFor(game)).toHaveLength(31);
+      });
+    });
+  });
+});
+
+describe("two armies choosing where their elephants stand", () => {
+  it("calls the same choice twice over eotsang, both armies developing on one wing", () => {
+    expect(elephantPairingOf(setup("Left Elephant"), setup("Left Elephant"))).toBe("eotsang");
+    expect(elephantPairingOf(setup("Right Elephant"), setup("Right Elephant"))).toBe("eotsang");
+  });
+
+  it("calls opposite choices matsang, the outer elephants coming to face each other", () => {
+    expect(elephantPairingOf(setup("Left Elephant"), setup("Right Elephant"))).toBe("matsang");
+    expect(elephantPairingOf(setup("Right Elephant"), setup("Left Elephant"))).toBe("matsang");
+  });
+
+  it("classifies nothing unless both armies chose a gwima setup", () => {
+    expect(elephantPairingOf(setup("Inner Elephant"), setup("Left Elephant"))).toBeUndefined();
+    expect(elephantPairingOf(setup("Left Elephant"), setup("Outer Elephant"))).toBeUndefined();
+    expect(elephantPairingOf(setup("Inner Elephant"), setup("Outer Elephant"))).toBeUndefined();
+    expect(elephantPairingOf(setup("Central Chariot"), setup("Central Chariot"))).toBeUndefined();
+  });
+
+  it("bars nothing: a matsang is laid out and played like any other game", () => {
+    const laidOut = place(
+      place(setupPhaseFor("Scored"), "han", setup("Left Elephant")),
+      "cho",
+      setup("Right Elephant"),
+    );
+
+    expect(elephantPairingOf(setup("Left Elephant"), setup("Right Elephant"))).toBe("matsang");
+    expect(isArranged(laidOut)).toBe(true);
+    expect(legalMovesFor(newGameFrom(laidOut))).toHaveLength(31);
   });
 });
 

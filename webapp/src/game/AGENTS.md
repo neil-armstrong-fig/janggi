@@ -15,9 +15,12 @@ did. The engine needs a home the specs cannot reach.
 ## Layout
 
 ```
-NewGame.ts        newGame(hanSetup, choSetup): GameState
+NewGame.ts        newGame(hanSetup, choSetup, format): GameState
 MovesFrom.ts      movesFrom(state, from): readonly Position[]
+LegalMovesFor.ts  legalMovesFor(state): readonly Move[]
 ApplyMove.ts      applyMove(state, move): GameState      — throws on an illegal move
+IsInCheck.ts      isInCheck(state, side): boolean
+IsCheckmate.ts    isCheckmate(state, side): boolean
 CanPass.ts        canPass(state): boolean
 Pass.ts           pass(state): GameState                 — throws when the turn may not be rested
 IsBikjang.ts      isBikjang(state): boolean              — the two generals facing down an open file
@@ -30,7 +33,8 @@ ScoreFor.ts       scoreFor(state, side): number          — that plus Han's 덤
 
 types/            GameState, Move, Mover, Outcome, Standing
 board/            the 9x10 geometry: positions, dimensions, palaces. react/ reads this too
-setups/           the five opening arrangements and the 32 pieces they produce
+setups/           the five opening arrangements, the phase in which the two players
+                  choose them, and the 32 pieces they produce
 moves/            one generator per piece type, and what they share
 record/           taking a game back and playing it forward again
 ```
@@ -46,6 +50,19 @@ record/CanUndo.ts            canUndo(played): boolean
 record/Undo.ts               undo(played): PlayedGame             — throws when there is nothing to undo
 record/CanRedo.ts            canRedo(played): boolean
 record/Redo.ts               redo(played): PlayedGame             — throws when there is nothing to redo
+record/CallBikjangIn.ts      callBikjangIn(played): PlayedGame    — throws exactly as callBikjang does
+```
+
+`setups/` holds the phase before the game, which **is** a rule of janggi — `docs/rules.md` §6.6:
+
+```
+setups/types/SetupPhase.ts        { format, hanSetup, choSetup } — what each player has chosen
+setups/SetupPhaseFor.ts           setupPhaseFor(format): SetupPhase    — nobody has chosen yet
+setups/CanPlace.ts                canPlace(phase, side): boolean
+setups/Place.ts                   place(phase, side, setup): SetupPhase — throws
+setups/IsArranged.ts              isArranged(phase): phase is ArrangedSetupPhase
+setups/NewGameFrom.ts             newGameFrom(phase): GameState        — throws until arranged
+setups/ElephantPairingOf.ts       elephantPairingOf(hanSetup, choSetup): ElephantPairing | undefined
 ```
 
 Those are the whole public surface; everything under `moves/` is reached through `MovesFrom.ts`'s
@@ -91,6 +108,20 @@ hold separate copies of that geometry.
   `outcomeOf`, `canPass`, `applyMove` and everything in `record/`. It is asked for rather than
   defaulted, because `docs/rules.md` §6.2's whole point is that picking a reading silently decides
   the game for every player.
+- **The setup phase is a phase, not a position.** `SetupPhase` wraps the two choices and the format
+  the way `PlayedGame` wraps a game, and `GameState` gained nothing — its bar ("a rule asked and the
+  board cannot answer") is not even reached, because before the game there is no board. The order —
+  Han lays out first and may not revise, Cho answers and may keep answering — is a regulation of
+  official play, so `canPlace` enforces it in the **scored** format alone and a casual game keeps
+  choosing freely. Neither setup is defaulted: with `DEFAULT_SETUP` already in place the rule would
+  not weaken, it would vanish, and every test of it would pass saying nothing.
+
+- **The elephant pairing is classified, and nothing is barred.** `elephantPairingOf` says whether two
+  arrangements come to 맞상 or 엇상 and refuses no one, which is `isRepetition`'s posture — the ban
+  on 맞상 in official play is a professional's claim with no rulebook text behind it
+  (`docs/opening-setups.md` §5.4). It reads the elephant _files_ rather than the setup's name,
+  because which shape a name denotes is the one thing that research rates Low confidence.
+
 - **Bikjang is called, and repetition is reported.** Neither ends a game on its own. `callBikjang`
   is an entry point beside `pass` for the same reason `pass` is one beside `applyMove` — a player
   does it, and it moves nothing — and `isRepetition` answers a question without acting on it,
@@ -140,10 +171,10 @@ number.
 
 ## What is not modelled yet
 
-Nothing that is a rule of play. What `docs/rules.md` §6 still lists is 묵장 and 자장, which are
-tournament rules about human mistakes rather than about a position, and §6.6's setup order — Han
-arranging first and not revising — which is a rule about the phase before the game and belongs to
-whatever screen runs it. 맞상/엇상 is a classification of the two chosen setups, not a rule.
+Nothing that is a rule of play, and nothing about a position either. What `docs/rules.md` §6 still
+lists is 묵장 and 자장, and that is the whole of it: they are tournament rules about human mistakes —
+a check both players overlooked, and a general moved into one — rather than rules about a board.
+Neither can arise on screen anyway, because a move that overlooks a check is never offered.
 
 Everything else is here: the seven pieces, check and checkmate, the pass move, scoring, bikjang and
 repetition.

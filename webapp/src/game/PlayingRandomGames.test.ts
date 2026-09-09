@@ -4,24 +4,32 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {Position} from "@src/game/board/types/Position";
 import {FILES, RANKS} from "@src/game/board/utils/BoardDimensions";
+import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
+import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {applyMove} from "@src/game/ApplyMove";
+import {canPlace} from "@src/game/setups/CanPlace";
 import {canUndo} from "@src/game/record/CanUndo";
 import {describe, expect, it} from "vitest";
 import fc from "fast-check";
 import {isInPalace} from "@src/game/board/utils/Palaces";
+import {isArranged} from "@src/game/setups/IsArranged";
 import {isRepetition} from "@src/game/IsRepetition";
 import {legalMovesFor} from "@src/game/LegalMovesFor";
 import {materialFor} from "@src/game/MaterialFor";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
+import {newGameFrom} from "@src/game/setups/NewGameFrom";
 import {opponentOf} from "@src/game/utils/OpponentOf";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
+import {place} from "@src/game/setups/Place";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
 import {playMove} from "@src/game/record/PlayMove";
 import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
 import {redo} from "@src/game/record/Redo";
+import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
 import {standingOf} from "@src/game/utils/StandingOf";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 import {undo} from "@src/game/record/Undo";
@@ -285,6 +293,58 @@ it("counts the same replies to an opening move as to its mirror image", () => {
 });
 
 /**
+ * The setup phase, put through orderings nobody scripted.
+ *
+ * `setups/CanPlace.test.ts` walks the four states the scored rule has by hand. What it cannot do is
+ * try them in an arbitrary order — and the one thing that must hold however the two players poke at
+ * it is that the question and the act agree: `place` throws exactly when `canPlace` said no, and
+ * `newGameFrom` succeeds exactly when `isArranged` said yes. A `place` that stopped consulting
+ * `canPlace` would still pass every scripted test of `canPlace` itself.
+ */
+describe("a setup phase laid out in any order at all", () => {
+  it("throws from place exactly when canPlace said no", () => {
+    fc.assert(
+      fc.property(formats(), placements(), (format, placements) => {
+        let phase = setupPhaseFor(format);
+
+        for (const {side, setup} of placements) {
+          const allowed = canPlace(phase, side);
+
+          if (!allowed) {
+            expect(() => place(phase, side, setup)).toThrow();
+            continue;
+          }
+
+          phase = place(phase, side, setup);
+          expect(phase[side === "han" ? "hanSetup" : "choSetup"]).toBe(setup);
+        }
+      }),
+      {numRuns: RUNS},
+    );
+  });
+
+  it("starts a game exactly when both armies have laid out", () => {
+    fc.assert(
+      fc.property(formats(), placements(), (format, placements) => {
+        const phase = placements.reduce(
+          (so_far, {side, setup}) => (canPlace(so_far, side) ? place(so_far, side, setup) : so_far),
+          setupPhaseFor(format),
+        );
+
+        if (!isArranged(phase)) {
+          expect(() => newGameFrom(phase)).toThrow();
+
+          return;
+        }
+
+        expect(newGameFrom(phase).pieces).toHaveLength(32);
+      }),
+      {numRuns: RUNS},
+    );
+  });
+});
+
+/**
  * Runs `check` after every move of many randomly played, wholly legal games.
  *
  * A failure is rethrown naming the moves that led to it. Without that, a counterexample is the list
@@ -398,6 +458,18 @@ function mirrorOf(name: string): string {
 
 function startingPosition(): GameState {
   return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
+}
+
+/** Either match format, so the scored ordering and the casual free-for-all are both exercised. */
+function formats(): fc.Arbitrary<MatchFormat> {
+  return fc.constantFrom(...MATCH_FORMATS);
+}
+
+/** Any run of "this army chooses that arrangement", in any order, repeats and all. */
+function placements(): fc.Arbitrary<{side: Side; setup: Setup}[]> {
+  return fc.array(fc.record({side: fc.constantFrom<Side>("han", "cho"), setup: fc.constantFrom(...SETUPS)}), {
+    maxLength: 8,
+  });
 }
 
 function setup(name: string): Setup {

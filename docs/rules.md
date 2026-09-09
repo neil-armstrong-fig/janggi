@@ -346,9 +346,10 @@ from the opening.
 ## 6. The endgame rules, and where the sources disagree
 
 Everything above is encoded in `webapp/src/game/`, and as of 2026-09-09 so is
-everything below that is a rule of play. Each item says what was decided where
-the sources conflict, and the two that remain unimplemented say why they are not
-rules of a position at all.
+everything below that is a rule of play — §6.6's setup phase included, which was
+the last of them. Each item says what was decided where the sources conflict.
+What is left unimplemented is 묵장 and 자장 in §6.1, and they say for themselves
+why they are not rules of a position at all.
 
 ### 6.1 Check and checkmate
 
@@ -676,10 +677,62 @@ not what an endgame is recognised by.
 
 ### 6.6 The setup phase
 
-Han lays out its back rank first and may not revise; Cho then answers and moves
-first. Quoted and sourced in `opening-setups.md` §4. The app lets both armies be
-arranged freely and independently, which reaches every position the rule does,
-but does not model the order or the prohibition on revising.
+> "후수자가 먼저 기물을 차리고 선수자가 나중에 차린다. 이때 후수자는 馬와 象의
+> 배치를 바꿔 다시 차릴 수 없다." — 대한장기협회, 대국규정, 「판차림의 순서」
+
+Han lays out its back rank first and may not revise; Cho then answers, having
+seen it, and moves first. Cho's three privileges — choosing last, changing that
+choice before the first move, and moving first — are what Han's 1.5 덤 pays for.
+Quoted, translated and corroborated in `opening-setups.md` §4.
+
+**Implemented, and gated on the match format.** `webapp/src/game/setups/` holds
+the phase: `types/SetupPhase.ts` is a format and what each player has chosen so
+far, `SetupPhaseFor.ts` starts one with nobody having chosen, `CanPlace.ts` is
+the rule, `Place.ts` is a player choosing, `IsArranged.ts` says when there is a
+board, and `NewGameFrom.ts` deals the game. Four decisions:
+
+- **The order is enforced in the scored format only.** The clause above is a
+  regulation of official play, from the same 대국규정 as §6.2's 30-point
+  threshold, so it is gated exactly as that is: in a **casual** game either army
+  may lay out first and either may think again, which is what the app already
+  did. Casual play was not quietly changed to satisfy a tournament rule.
+
+- **It is a wrapper beside `GameState`, never a field on it.** `GameState`'s bar
+  is "a rule asked and the board cannot answer", and that bar is not even
+  reached — the phase before the game is not a position, and there is no board
+  yet. Same reasoning as `record/`'s `PlayedGame`, and `GameState` is untouched.
+
+- **Neither setup is defaulted.** With `DEFAULT_SETUP` sitting in `hanSetup` from
+  the first instant, Han could never lay out, Cho could always answer,
+  `isArranged` would be a constant `true` and `newGameFrom` could never throw:
+  the rule would not weaken, it would vanish, and every test of it would pass
+  saying nothing. `DEFAULT_SETUP` is what a board shows before anyone chooses,
+  which belongs to the store.
+
+- **`newGame` is unchanged and still the one place a starting position is
+  described.** `newGameFrom` is the setup phase's route to it and re-derives
+  nothing; a test walks all twenty-five pairs of arrangements through both doors
+  and compares, so they cannot drift.
+
+**맞상 / 엇상 is classified, and nothing is barred.**
+`setups/ElephantPairingOf.ts` says whether two chosen arrangements come to 맞상
+(the outer elephants facing down the diagonal, and so bound to trade) or 엇상
+(both developing on one wing), or to neither — it is defined only where both
+players chose a 귀마 arrangement, which is all `opening-setups.md` §7's table
+classifies. It is read off the elephant *files* rather than the setup's name,
+because which physical shape a name denotes is the one thing that research rates
+Low confidence while §7's table calls itself convention-independent.
+
+§5.4 has a professional saying twice that 맞상 is barred from official play, but
+that clause was not in the archived KJA 대국규칙 or 대국규정 read in full. So
+this reports and refuses nothing, in either format — the posture §6.4 takes on
+repetition, and for the same reason: there is no referee here. A mutation that
+*added* the bar is one of the tests, so the decision cannot be undone by
+accident.
+
+**Not shown.** Nothing on screen runs the setup phase yet: the two pickers still
+deal a game through `redux/game/utils/DealtGame.ts` calling `newGame` directly,
+in either format. The engine's door is built and not yet opened.
 
 ---
 
@@ -720,4 +773,6 @@ do not spend the time again.
 | A bikjang is *called* rather than befalling the players automatically                          | **Moderate** — the KJA says "부를 수 있다" outright and pychess has the player to move choose, but en.wikipedia reads as though facing alone draws. The engine takes the call in both formats; see §6.2 |
 | A position may not stand a third time, unless each side is under 30 points                      | **High** — 대한장기협회's 대국규정 states both halves in one clause. What the engine does *about* it — refuse the move, adjudicate nothing — is a decision rather than a source; see §6.4 |
 | A player may pass at any time, without restriction                                             | **Moderate** — en.wikipedia and pychess say so; the KJA implies "when you have nothing", and 대한장기연맹 made two consecutive passes end the game in 2022. The engine takes the unrestricted reading, and bars a pass only while in check — a rule no source states, derived in §6.3 |
+| Han lays out first, Cho answers having seen it, and Han may not revise         | **High** — the KJA's 대국규정 「판차림의 순서」 states all three in one clause, and en.wikipedia, namu.wiki, pychess and chessvariants all corroborate it. That the engine enforces it in the *scored* format alone is a decision rather than a source; see §6.6 |
+| 맞상 is barred from official play                                              | **Low** — asserted twice by 장하영 프로 in newspaper columns, and **not present** in the archived KJA 대국규칙 or 대국규정 read in full. Which is why the engine classifies the pairing and refuses nothing; see §6.6 and `opening-setups.md` §5.4 |
 | Stalemate cannot occur, because a player with no move passes                                   | **High** — en.wikipedia states it, and it follows from the pass rule under either reading      |
