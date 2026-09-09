@@ -212,6 +212,11 @@ Corroborated by:
 **This does not affect the naming**, but it has a real consequence: **Cho is the
 one who decides which of the two possible 귀마-vs-귀마 shapes the game becomes.**
 
+**Implemented**, in the scored format only — `webapp/src/game/setups/CanPlace.ts`,
+with the reasoning in `docs/rules.md` §6.6. A casual game leaves both armies
+freely and repeatedly choosable, because this clause is a regulation of official
+play rather than a rule of janggi.
+
 Piece values used for the tie-break scoring, for completeness: 차 13, 포 7, 마 5,
 상 3, 사 3, 졸/병 2, general 0; Han's 덤 is 1.5.
 
@@ -377,6 +382,12 @@ pages in full and **found no such clause**. Treat this as a well-sourced claim
 about tournament practice from a professional, not a verified rulebook rule. It
 may live in a tournament-specific regulation, or in the 대한장기연맹's separate
 2019 rules revision, neither of which I retrieved.
+
+**What was done about it: classified, never barred.**
+`webapp/src/game/setups/ElephantPairingOf.ts` answers 맞상 / 엇상 / neither, and
+no format refuses an arrangement on the strength of it. A claim this well sourced
+deserves to be computable; a claim with no rulebook text behind it does not get
+to stop a player choosing. `docs/rules.md` §6.6 and §8 record the decision.
 
 ---
 
@@ -724,10 +735,18 @@ Recorded so nobody re-does them.
    arrangements using the table in §7. If you want tournament fidelity, consider
    flagging or disallowing 맞상 when both sides choose 귀마 setups (§5.4, with its
    caveat).
+
+   **Taken, and by half.** The classification is computed, off the elephant files
+   rather than the setup names, so it never touches §6's naming dispute. The
+   parenthetical was not taken: nothing is disallowed, for the caveat's own
+   reason. See §5.4 above.
 5. **Setup order:** Han (red) places first, then Cho (blue), and Han may not
    revise afterwards; Cho then moves first and Han receives 1.5 덤 points. If you
    implement the setup phase faithfully, Cho is the player who decides whether the
    game becomes 맞상.
+
+   **Taken, in the scored format.** `webapp/src/game/setups/` runs the phase and
+   `docs/rules.md` §6.6 says why a casual game is not held to it.
 
 ---
 

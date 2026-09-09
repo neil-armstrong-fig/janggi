@@ -32,7 +32,9 @@ export interface GameState {
    * when a bikjang may be called and whether one draws or settles on points, `docs/rules.md` §6.2.
    *
    * Dealt with the setups rather than threaded through the rules: it cannot change mid-game any
-   * more than a back rank can, so `newGame` takes it and `dealtGame` is the one route to a new one.
+   * more than a back rank can, so `newGame` takes it, and the setup phase reaches the same place
+   * through `setups/NewGameFrom.ts`. It also decides whether that phase enforces an order at all —
+   * `setups/CanPlace.ts` and `docs/rules.md` §6.6.
    */
   readonly format: MatchFormat;
 
