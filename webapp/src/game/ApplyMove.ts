@@ -1,6 +1,7 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
 import {movesFrom} from "@src/game/MovesFrom";
+import {outcomeOf} from "@src/game/OutcomeOf";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
 import {positionAfter} from "@src/game/utils/PositionAfter";
@@ -14,8 +15,12 @@ import {toPositionKey} from "@src/game/board/utils/PositionKeys";
  * replayable and lets a caller hold on to any position it likes.
  *
  * This is the rules; `positionAfter` beside it is the transition alone. Everything here is the
- * checking: that a piece is there, that it is that army's turn, and that the move is one the piece
- * may make.
+ * checking: that the game is still going, that a piece is there, that it is that army's turn, and
+ * that the move is one the piece may make.
+ *
+ * The first of those is newer than the rest. Until the pass move arrived nothing needed it — after
+ * a mate there are no legal moves, so every move already threw — but two rested turns stop a game
+ * whose position still has plenty to play. See `docs/rules.md` §6.3.
  *
  * **It throws on an illegal move rather than returning undefined.** `parsePieceKey` returns
  * undefined because its input is a string off a DOM attribute and genuinely untrusted; a move is
@@ -24,6 +29,8 @@ import {toPositionKey} from "@src/game/board/utils/PositionKeys";
  * happen onto everything downstream.
  */
 export function applyMove(state: GameState, move: Move): GameState {
+  if (outcomeOf(state).kind !== "undecided") throw new Error("The game is over, so there is nothing left to play");
+
   const moving = pieceAt(piecesByPosition(state.pieces), move.from);
 
   if (!moving) throw new Error(`No piece stands on ${toPositionKey(move.from)}`);

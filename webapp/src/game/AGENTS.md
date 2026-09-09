@@ -17,15 +17,20 @@ did. The engine needs a home the specs cannot reach.
 NewGame.ts        newGame(hanSetup, choSetup): GameState
 MovesFrom.ts      movesFrom(state, from): readonly Position[]
 ApplyMove.ts      applyMove(state, move): GameState      — throws on an illegal move
+CanPass.ts        canPass(state): boolean
+Pass.ts           pass(state): GameState                 — throws when the turn may not be rested
+OutcomeOf.ts      outcomeOf(state): Outcome              — how the game ended, or that it has not
+MaterialFor.ts    materialFor(state, side): number       — the piece score, no 덤 in it
+ScoreFor.ts       scoreFor(state, side): number          — that plus Han's 덤
 
-types/            GameState, Move, Mover
+types/            GameState, Move, Mover, Outcome
 board/            the 9x10 geometry: positions, dimensions, palaces. react/ reads this too
 setups/           the five opening arrangements and the 32 pieces they produce
 moves/            one generator per piece type, and what they share
 ```
 
-Those three exports are the whole public surface; everything under `moves/` is reached through
-`MovesFrom.ts`'s dispatch table.
+Those are the whole public surface; everything under `moves/` is reached through `MovesFrom.ts`'s
+dispatch table.
 
 `board/` is the one part `react/` imports, and that is deliberate: the diagonals drawn inside a
 palace **are** the lines pieces travel along, so `CellShapes.ts` and `PalaceDiagonals.ts` must not
@@ -50,6 +55,16 @@ hold separate copies of that geometry.
   the soldier, `slideAlong` to the chariot.
 - **`movesFrom` ignores whose turn it is**, so a board can light up either army's options. The turn
   is a rule of the game and lives in `applyMove`.
+- **A pass is not a `Move` and is not in `legalMovesFor`** — "한수 쉼은 행마(수)에 해당하지
+  않으며". It has its own entry point, `pass`, with `canPass` standing to it as `movesFrom` stands
+  to `applyMove`. Keeping it out of the move list is what leaves the 31 openings and `isCheckmate`
+  saying what they always said.
+- **A result is derived, never stored.** `outcomeOf` reads the position and the pass count;
+  `GameState` carries no result, the same way it carries no "in check". The one thing it does carry
+  is `consecutivePasses`, because a rested turn leaves no mark on the board to read it off.
+- **Material is summed off the board.** Every setup deals the same sixteen pieces, so what is
+  missing is what was taken and there is no captured pile to keep. `materialFor` is the piece score
+  bikjang's threshold will want; `scoreFor` is that plus the 덤, which is what a game is won on.
 - **`applyMove` throws** on an illegal move. Its input is not untrusted the way `parsePieceKey`'s is
   — the caller has just been handed the legal destinations — so an illegal move is a bug at the call
   site, not a case to thread through every caller.
@@ -75,14 +90,15 @@ number.
 
 ## What is not modelled yet
 
-Bikjang, the pass move, repetition, and scoring — each recorded in `docs/rules.md` §6 with its
-source, and where sources disagree, the disagreement. Two need a decision before they need code.
-Check and checkmate are done: `isInCheck`, `isCheckmate` and `legalMovesFor`.
+Bikjang and repetition, both recorded in `docs/rules.md` §6.2 and §6.4 with their sources and the
+disagreement between them. Bikjang needs the casual-or-scored setting decided before it needs code;
+repetition needs a position history, which `GameState` still does not carry. Everything else is
+done — check and checkmate, the pass move, and scoring.
 
 A general can no longer be captured, because no move that leaves one attacked is ever offered.
 
-There is also no move history and no captured pile, because nothing needs them yet. Adding a field
-to `GameState` before a rule asks for it fixes its shape too early.
+There is no move history and no captured pile. Adding a field to `GameState` before a rule asks for
+it fixes its shape too early — `consecutivePasses` is there because a rule asked.
 
 ## When Redux arrives
 
@@ -93,3 +109,7 @@ moved: (state, action: PayloadAction<Move>) => applyMove(state, action.payload);
 ```
 
 The store imports the engine, never the reverse — which the lint boundary enforces.
+
+Nothing on screen uses `pass`, `outcomeOf` or either score yet: this layer landed engine-first and
+the UI follows. `react/…/turn-indicator/utils/GameStatusOf.ts` still asks `isCheckmate` itself, and
+relaying `outcomeOf` instead is the first thing that hookup should do.

@@ -10,6 +10,7 @@ const chariotFacingASoldier: GameState = {
     {piece: {side: "han", type: "soldier"}, position: {file: 1, rank: 7}},
   ],
   sideToMove: "cho",
+  consecutivePasses: 0,
 };
 
 it("stands the piece on the point it moved to", () => {
@@ -54,6 +55,13 @@ it("refuses a move by the army whose turn it is not", () => {
   expect(() => applyMove(chariotFacingASoldier, {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}})).toThrow(
     /cho to move/,
   );
+});
+
+/** Two rested turns stop a game whose position still has plenty to play. `docs/rules.md` §6.3. */
+it("refuses a move once both armies have rested a turn and ended the game", () => {
+  const stopped: GameState = {...chariotFacingASoldier, consecutivePasses: 2};
+
+  expect(() => applyMove(stopped, {from: {file: 1, rank: 10}, to: {file: 1, rank: 8}})).toThrow("The game is over");
 });
 
 it("refuses a move from a point with no piece on it", () => {

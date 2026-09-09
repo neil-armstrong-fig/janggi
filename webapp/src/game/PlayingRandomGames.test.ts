@@ -10,6 +10,7 @@ import {describe, expect, it} from "vitest";
 import fc from "fast-check";
 import {isInPalace} from "@src/game/board/utils/Palaces";
 import {legalMovesFor} from "@src/game/LegalMovesFor";
+import {materialFor} from "@src/game/MaterialFor";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
 import {opponentOf} from "@src/game/utils/OpponentOf";
@@ -77,6 +78,22 @@ describe("after every move of a random game", () => {
     afterEveryMove(({before, move, after}) => {
       expect(pieceOn(after, move.to)).toEqual(pieceOn(before, move.from));
       expect(pieceOn(after, move.from)).toBeUndefined();
+    });
+  });
+
+  /**
+   * Material is seven numbers read off a board, which is the shape of thing that is right where
+   * somebody checked it and wrong two ranks over. It can only fall, only for the army that lost a
+   * piece, and only by what that piece was worth.
+   */
+  it("has left the moving army's material alone, and the other's down by exactly what it lost", () => {
+    afterEveryMove(({before, move, after}) => {
+      const moving = before.sideToMove;
+      const losing = opponentOf(moving);
+      const taken = pieceOn(before, move.to);
+
+      expect(materialFor(after, moving)).toBe(materialFor(before, moving));
+      expect(materialFor(after, losing)).toBe(materialFor(before, losing) - (taken ? worthOf(taken) : 0));
     });
   });
 
@@ -256,6 +273,17 @@ function finalPositionOf(choices: readonly number[]): GameState {
 
 function gameChoices(): fc.Arbitrary<number[]> {
   return fc.array(fc.nat({max: MOST_MOVES_ON_OFFER}), {maxLength: MOVES_PER_GAME});
+}
+
+/** What one piece of that kind counts for, weighed on a board with nothing else standing on it. */
+function worthOf(piece: Piece): number {
+  const alone: GameState = {
+    pieces: [{piece, position: {file: 1, rank: 1}}],
+    sideToMove: piece.side,
+    consecutivePasses: 0,
+  };
+
+  return materialFor(alone, piece.side);
 }
 
 function pieceOn(state: GameState, position: Position): Piece | undefined {

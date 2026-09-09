@@ -15,6 +15,9 @@ import {toPositionKey} from "@src/game/board/utils/PositionKeys";
  * whether the move is allowed, so going through `applyMove` would ask `movesFrom` whether the move
  * is legal in the middle of working out whether the move is legal — and recurse forever.
  *
+ * A move is what a rested turn is not, so playing one puts `consecutivePasses` back to nought: two
+ * passes end a game only when nothing came between them.
+ *
  * Returns the state unchanged if nothing stands on `from`, since there is no move to make.
  */
 export function positionAfter(state: GameState, move: Move): GameState {
@@ -24,6 +27,7 @@ export function positionAfter(state: GameState, move: Move): GameState {
   return {
     pieces: [...state.pieces.filter(stillStanding(move)), {piece: moving, position: move.to}],
     sideToMove: opponentOf(state.sideToMove),
+    consecutivePasses: 0,
   };
 }
 

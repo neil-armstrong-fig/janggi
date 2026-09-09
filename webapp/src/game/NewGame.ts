@@ -13,5 +13,6 @@ export function newGame(hanSetup: Setup, choSetup: Setup): GameState {
   return {
     pieces: startingPieces(hanSetup, choSetup),
     sideToMove: "cho",
+    consecutivePasses: 0,
   };
 }

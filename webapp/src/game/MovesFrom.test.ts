@@ -118,7 +118,7 @@ it("offers only the moves that answer a check", () => {
 });
 
 function position(...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove: "cho"};
+  return {pieces, sideToMove: "cho", consecutivePasses: 0};
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {

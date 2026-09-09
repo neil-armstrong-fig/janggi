@@ -72,13 +72,14 @@ it("is not mate on the other army's turn", () => {
       han("chariot", 5, 3),
     ),
     sideToMove: "han",
+    consecutivePasses: 0,
   };
 
   expect(isCheckmate(hanToMove, "cho")).toBe(false);
 });
 
 function choToMove(...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove: "cho"};
+  return {pieces, sideToMove: "cho", consecutivePasses: 0};
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {
