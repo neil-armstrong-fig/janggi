@@ -4,12 +4,15 @@ import type {File, Rank} from "@src/game/board/types/Position";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
+import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {applyMove} from "@src/game/ApplyMove";
 import {beforeEach, describe, expect, it} from "vitest";
 import {canPass} from "@src/game/CanPass";
+import {canRedo} from "@src/game/record/CanRedo";
+import {canUndo} from "@src/game/record/CanUndo";
 import {isCheckmate} from "@src/game/IsCheckmate";
 import {isInCheck} from "@src/game/IsInCheck";
 import {legalMovesFor} from "@src/game/LegalMovesFor";
@@ -20,7 +23,12 @@ import {outcomeOf} from "@src/game/OutcomeOf";
 import {pass} from "@src/game/Pass";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {playMove} from "@src/game/record/PlayMove";
+import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
+import {redo} from "@src/game/record/Redo";
+import {restTurn} from "@src/game/record/RestTurn";
 import {scoreFor} from "@src/game/ScoreFor";
+import {undo} from "@src/game/record/Undo";
 
 /**
  * End to end test for the entire game engine.
@@ -30,10 +38,13 @@ import {scoreFor} from "@src/game/ScoreFor";
  * is what makes it cheap to ask "and what if han had answered differently instead" without replaying
  * the opening by hand each time.
  *
- * Two starting points, both top-level: a real opening, and endgames built piece by piece. An
- * endgame has to be constructed — searching the engine confirms no check exists before ply three
- * and a mate is far deeper than that, so playing to one from the opening is neither possible in a
- * readable number of moves nor worth the run time.
+ * Every top-level block is a starting point of its own: a real opening, and endgames built piece by
+ * piece. An endgame has to be constructed — searching the engine confirms no check exists before ply
+ * three and a mate is far deeper than that, so playing to one from the opening is neither possible
+ * in a readable number of moves nor worth the run time.
+ *
+ * The last three blocks play through a `PlayedGame` rather than a bare `GameState`, because taking a
+ * game back is the one thing the rules alone cannot show.
  *
  * The root `AGENTS.md` ban on a wrapper `describe` does not apply here. That rule stops a unit test
  * file restating the one export it is named after; this file is named after no export, and every
@@ -501,6 +512,264 @@ describe("an endgame both players agree to stop", () => {
           expect(outcomeOf(game)).toEqual({kind: "pointsWin", winner: "han", scores: {cho: 2, han: 14.5}});
         });
       });
+    });
+  });
+});
+
+/**
+ * Taking a game back, which is not a rule of janggi at all — no source has anything to say about it,
+ * and this engine allows it unconditionally. What makes it worth playing out end to end is that
+ * nothing new has to be remembered to do it: `applyMove` and `pass` already hand back a fresh
+ * `GameState` and leave the one they were given alone, so a record has only to keep them.
+ */
+describe("a game being taken back", () => {
+  let played: PlayedGame;
+  let opening: GameState;
+
+  beforeEach(() => {
+    opening = newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+    played = playedGameFrom(opening);
+  });
+
+  it("stands on the position it was started from", () => {
+    expect(played.present).toEqual(opening);
+  });
+
+  it("has nothing to take back before anyone has played", () => {
+    expect(canUndo(played)).toBe(false);
+    expect(canRedo(played)).toBe(false);
+  });
+
+  it("refuses to take back a game nobody has played", () => {
+    expect(() => undo(played)).toThrow();
+  });
+
+  describe("when cho sweeps its edge soldier", () => {
+    beforeEach(() => {
+      played = playMove(played, move(1, 7, 1, 6));
+    });
+
+    it("stands on the position the move reached", () => {
+      expect(played.present).toEqual(applyMove(opening, move(1, 7, 1, 6)));
+    });
+
+    it("keeps the position it was played from", () => {
+      expect(played.past).toEqual([opening]);
+    });
+
+    it("can be taken back, and has nothing yet to play again", () => {
+      expect(canUndo(played)).toBe(true);
+      expect(canRedo(played)).toBe(false);
+    });
+
+    describe("and the move is taken back", () => {
+      let afterTheMove: GameState;
+
+      beforeEach(() => {
+        afterTheMove = played.present;
+        played = undo(played);
+      });
+
+      it("puts every piece back where it stood", () => {
+        expect(played.present).toEqual(opening);
+      });
+
+      it("gives cho the move again", () => {
+        expect(played.present.sideToMove).toBe("cho");
+      });
+
+      it("has nothing left to take back", () => {
+        expect(canUndo(played)).toBe(false);
+        expect(() => undo(played)).toThrow();
+      });
+
+      it("offers the move again", () => {
+        expect(canRedo(played)).toBe(true);
+      });
+
+      describe("and it is played again", () => {
+        beforeEach(() => {
+          played = redo(played);
+        });
+
+        it("reaches the very position it left", () => {
+          expect(played.present).toEqual(afterTheMove);
+        });
+
+        it("has nothing left to play again", () => {
+          expect(canRedo(played)).toBe(false);
+          expect(() => redo(played)).toThrow();
+        });
+      });
+
+      /** The branch that was taken back is gone, not kept beside the one actually played. */
+      describe("and cho sweeps the other edge soldier instead", () => {
+        beforeEach(() => {
+          played = playMove(played, move(9, 7, 9, 6));
+        });
+
+        it("forgets the move that was taken back", () => {
+          expect(canRedo(played)).toBe(false);
+        });
+
+        it("stands on the move that was actually played", () => {
+          expect(pieceOn(played.present, 9, 6)).toEqual({side: "cho", type: "soldier"});
+          expect(pieceOn(played.present, 1, 6)).toBeUndefined();
+        });
+      });
+    });
+
+    describe("and the two soldiers meet and cho takes", () => {
+      beforeEach(() => {
+        played = playMove(played, move(1, 4, 1, 5));
+        played = playMove(played, move(1, 6, 1, 5));
+      });
+
+      it("has the han soldier off the board", () => {
+        expect(played.present.pieces).toHaveLength(31);
+        expect(materialFor(played.present, "han")).toBe(70);
+      });
+
+      describe("and the capture is taken back", () => {
+        beforeEach(() => {
+          played = undo(played);
+        });
+
+        it("stands the taken soldier back on the board", () => {
+          expect(played.present.pieces).toHaveLength(32);
+          expect(pieceOn(played.present, 1, 5)).toEqual({side: "han", type: "soldier"});
+        });
+
+        it("gives han back the two points it cost", () => {
+          expect(materialFor(played.present, "han")).toBe(72);
+        });
+
+        it("gives cho the move it took with", () => {
+          expect(played.present.sideToMove).toBe("cho");
+        });
+      });
+    });
+
+    /** A rested turn is a position like any other, so one ply of undo covers it without knowing. */
+    describe("and han rests the turn", () => {
+      beforeEach(() => {
+        played = restTurn(played);
+      });
+
+      it("counts the rested turn", () => {
+        expect(played.present.consecutivePasses).toBe(1);
+      });
+
+      describe("and the rested turn is taken back", () => {
+        beforeEach(() => {
+          played = undo(played);
+        });
+
+        it("forgets the rest", () => {
+          expect(played.present.consecutivePasses).toBe(0);
+        });
+
+        it("hands han back the turn it rested", () => {
+          expect(played.present.sideToMove).toBe("han");
+        });
+      });
+    });
+  });
+});
+
+/**
+ * The case undo exists for, and the one every other entry point refuses: `applyMove` and `pass` both
+ * throw once `outcomeOf` has decided the game. Undo must not, because the move worth taking back is
+ * usually the one that ended it.
+ *
+ * The position is the one "an endgame both players agree to stop" plays out, at the point where the
+ * second rested turn has just settled it on points.
+ */
+describe("a game taken back after it was settled on points", () => {
+  let played: PlayedGame;
+
+  beforeEach(() => {
+    played = playedGameFrom(
+      position(
+        "cho",
+        cho("general", 5, 9),
+        cho("chariot", 1, 8),
+        cho("soldier", 5, 7),
+        han("general", 4, 2),
+        han("chariot", 1, 3),
+      ),
+    );
+    played = restTurn(restTurn(played));
+  });
+
+  it("is over, with no turn left to rest", () => {
+    expect(outcomeOf(played.present)).toEqual({kind: "pointsWin", winner: "cho", scores: {cho: 15, han: 14.5}});
+    expect(() => pass(played.present)).toThrow();
+  });
+
+  it("can still be taken back, the game being over only for playing on", () => {
+    expect(canUndo(played)).toBe(true);
+  });
+
+  describe("when the second rested turn is taken back", () => {
+    beforeEach(() => {
+      played = undo(played);
+    });
+
+    it("carries the game on again", () => {
+      expect(outcomeOf(played.present)).toEqual({kind: "undecided"});
+    });
+
+    it("hands han back the turn it rested", () => {
+      expect(played.present.sideToMove).toBe("han");
+      expect(played.present.consecutivePasses).toBe(1);
+    });
+
+    it("lets han take the chariot instead", () => {
+      expect(() => applyMove(played.present, move(1, 3, 1, 8))).not.toThrow();
+    });
+  });
+});
+
+/** The other ending, taken back the same way: a mate is a position, and undo does not read it. */
+describe("a game taken back after mate", () => {
+  let played: PlayedGame;
+
+  beforeEach(() => {
+    played = playedGameFrom(
+      position(
+        "han",
+        cho("general", 5, 9),
+        han("general", 5, 2),
+        han("chariot", 4, 1),
+        han("chariot", 6, 1),
+        han("chariot", 1, 3),
+      ),
+    );
+    played = playMove(played, move(1, 3, 5, 3));
+  });
+
+  it("is mate, with nothing at all for cho to play", () => {
+    expect(isCheckmate(played.present, "cho")).toBe(true);
+    expect(legalMovesFor(played.present)).toEqual([]);
+  });
+
+  describe("when the mating move is taken back", () => {
+    beforeEach(() => {
+      played = undo(played);
+    });
+
+    it("is no longer mate", () => {
+      expect(isCheckmate(played.present, "cho")).toBe(false);
+    });
+
+    it("stands the chariot back on the point it came from", () => {
+      expect(pieceOn(played.present, 1, 3)).toEqual({side: "han", type: "chariot"});
+      expect(pieceOn(played.present, 5, 3)).toBeUndefined();
+    });
+
+    it("leaves the mate there to be played again", () => {
+      expect(canRedo(played)).toBe(true);
     });
   });
 });
