@@ -10,7 +10,7 @@ import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 
-const opening = newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+const opening = newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 
 it("gives nothing for a point with no piece standing on it", () => {
   expect(movesFrom(opening, {file: 5, rank: 5})).toEqual([]);
@@ -118,7 +118,15 @@ it("offers only the moves that answer a check", () => {
 });
 
 function position(...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove: "cho", consecutivePasses: 0};
+  return {
+    pieces,
+    sideToMove: "cho",
+    format: "Casual",
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {

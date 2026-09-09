@@ -25,14 +25,23 @@ interface PointsWin {
 }
 
 /**
+ * 빅장 — the two generals came to face each other down an open file and the call was made, in a
+ * game being played casually. The one drawn ending janggi has, and only in that format: the scored
+ * format abolishes the draw, so a called bikjang there is a `PointsWin` like any other.
+ */
+interface Bikjang {
+  readonly kind: "bikjang";
+}
+
+/**
  * How a game of janggi has ended, or that it has not.
  *
- * Two endings so far. Checkmate is the one janggi is normally won by; a points win is what two
- * consecutive passes reach, and is the only reason the 덤 exists. Bikjang and repetition would add
- * more — both are recorded in `docs/rules.md` §6.2 and §6.4 and neither is modelled.
+ * Three endings. Checkmate is the one janggi is normally won by; a points win is what two
+ * consecutive passes reach, and what a bikjang comes to in a scored game; a bikjang called in a
+ * casual game is the only draw, which is why the kind names the ending rather than the result.
  *
- * There is no draw here, and that is not an omission: the endings built so far cannot produce one.
- * A draw arrives with bikjang, along with the casual-or-scored setting that decides whether it is a
- * draw at all.
+ * Repetition is deliberately not here. `docs/rules.md` §6.4 decided that the engine reports a
+ * repetition and refuses the move that would make one, but does not end a game on it — who is at
+ * fault is clause ②'s judgement about intent, and that is a referee's to make.
  */
-export type Outcome = Undecided | Checkmate | PointsWin;
+export type Outcome = Undecided | Checkmate | PointsWin | Bikjang;

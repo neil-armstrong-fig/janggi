@@ -52,6 +52,39 @@ it("gives a points win to han on the 덤 alone when the boards are level", () =>
   expect(outcomeOf(state)).toEqual({kind: "pointsWin", winner: "han", scores: {cho: 13, han: 14.5}});
 });
 
+/**
+ * A bikjang is called rather than befalling anyone, so the position alone decides nothing — every
+ * endgame in this file already stands two bare generals down file 5. See `docs/rules.md` §6.2.
+ */
+it("is undecided while a bikjang stands uncalled", () => {
+  const state = restedTurns(0, cho("general", 5, 9), han("general", 5, 2));
+
+  expect(outcomeOf(state)).toEqual({kind: "undecided"});
+});
+
+it("is a draw once a bikjang has been called in a casual game", () => {
+  const state = called(restedTurns(0, cho("general", 5, 9), han("general", 5, 2)));
+
+  expect(outcomeOf(state)).toEqual({kind: "bikjang"});
+});
+
+/** 대한장기연맹 abolished the draw outright in 2020, so the same call settles on points instead. */
+it("is a points win once a bikjang has been called in a scored game", () => {
+  const bare = restedTurns(0, cho("general", 5, 9), han("general", 5, 2));
+  const state: GameState = {...called(bare), format: "Scored"};
+
+  expect(outcomeOf(state)).toEqual({kind: "pointsWin", winner: "han", scores: {cho: 0, han: 1.5}});
+});
+
+/** 완승 is a complete win, and it is asked first so that nothing recorded after it can take it away. */
+it("is a checkmate ahead of a call, whatever else the state carries", () => {
+  expect(outcomeOf(called(matedGame()))).toEqual({kind: "checkmate", winner: "han"});
+});
+
+function called(state: GameState): GameState {
+  return {...state, bikjangCalled: true};
+}
+
 function matedGame(): GameState {
   return restedTurns(
     0,
@@ -64,7 +97,15 @@ function matedGame(): GameState {
 }
 
 function restedTurns(consecutivePasses: number, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove: "cho", consecutivePasses};
+  return {
+    pieces,
+    sideToMove: "cho",
+    format: "Casual",
+    consecutivePasses,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {

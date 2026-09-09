@@ -31,7 +31,15 @@ it("records a game already under way just as readily as one about to start", () 
 });
 
 function toMove(sideToMove: Side, consecutivePasses: number, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove, consecutivePasses};
+  return {
+    pieces,
+    sideToMove,
+    format: "Casual",
+    consecutivePasses,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {

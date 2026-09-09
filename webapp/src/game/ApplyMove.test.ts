@@ -3,6 +3,7 @@ import {applyMove} from "@src/game/ApplyMove";
 import {expect, it} from "vitest";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {standingOf} from "@src/game/utils/StandingOf";
 
 const chariotFacingASoldier: GameState = {
   pieces: [
@@ -10,7 +11,11 @@ const chariotFacingASoldier: GameState = {
     {piece: {side: "han", type: "soldier"}, position: {file: 1, rank: 7}},
   ],
   sideToMove: "cho",
+  format: "Casual",
   consecutivePasses: 0,
+  seen: [],
+  reachedByAGeneralCapture: false,
+  bikjangCalled: false,
 };
 
 it("stands the piece on the point it moved to", () => {
@@ -30,6 +35,25 @@ it("takes the enemy piece that was standing where it landed", () => {
 
   expect(after.pieces).toHaveLength(1);
   expect(pieceAt(piecesByPosition(after.pieces), {file: 1, rank: 7})).toEqual({side: "cho", type: "chariot"});
+});
+
+/** What `seen` is for: the history repetition is measured against. See `docs/rules.md` §6.4. */
+it("remembers the position it was played from", () => {
+  const after = applyMove(chariotFacingASoldier, {from: {file: 1, rank: 10}, to: {file: 1, rank: 8}});
+
+  expect(after.seen).toEqual([standingOf(chariotFacingASoldier)]);
+});
+
+/**
+ * A capture cannot be undone by playing on, so no position from before one can ever come round
+ * again and there is nothing left worth remembering. It is also what keeps the list short.
+ */
+it("forgets where the game has been once a piece is taken", () => {
+  const played = applyMove(chariotFacingASoldier, {from: {file: 1, rank: 10}, to: {file: 1, rank: 8}});
+  const taken = applyMove({...played, sideToMove: "cho"}, {from: {file: 1, rank: 8}, to: {file: 1, rank: 7}});
+
+  expect(played.seen).toHaveLength(1);
+  expect(taken.seen).toEqual([]);
 });
 
 it("hands the turn to the other army", () => {

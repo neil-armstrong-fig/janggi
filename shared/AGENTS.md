@@ -12,7 +12,8 @@ compile, run, and quietly never match.
 
 ```
 src/janggi/pieces/      Side, PieceType, Piece, PieceKey, and the two functions that convert
-src/janggi/settings/    BoardStyleName, PieceSetName, SetupName — the built-ins, by name
+src/janggi/settings/    BoardStyleName, PieceSetName, SetupName, MovableHighlightName,
+                        MatchFormat — the built-ins, by name
 ```
 
 The settings unions are the **built-ins only**. A `BoardStyle`'s own `name` stays a plain string
@@ -20,7 +21,10 @@ because a user-authored style may be called anything; the union is what a built-
 so the webapp cannot ship one that is not listed and a spec cannot ask for one that does not exist.
 
 **Vocabulary, not rules.** Types, names and the conversions between them belong here. The engine —
-move generation, check detection, bikjang — does **not**, however tempting: `acceptance-tests` can
+move generation, check detection, bikjang — does **not**, however tempting. `MatchFormat` is the
+line drawn exactly: the two names a player picks between are vocabulary and live here, while what
+casual and scored actually _do_ to a bikjang or a repetition is the engine's, in `webapp/src/game/`.
+The reason is the one below: `acceptance-tests` can
 import anything in this package, and a spec that recomputed its expected outcome from the same code
 under test would agree with it no matter what either of them did. The engine needs a home the tests
 cannot reach.

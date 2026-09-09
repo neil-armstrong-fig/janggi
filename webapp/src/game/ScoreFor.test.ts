@@ -43,7 +43,7 @@ it("separates two armies that are level on the board", () => {
 });
 
 function newGameFromInnerElephant(): GameState {
-  return newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+  return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 }
 
 function setup(name: string): Setup {
@@ -54,7 +54,15 @@ function setup(name: string): Setup {
 }
 
 function choToMove(...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove: "cho", consecutivePasses: 0};
+  return {
+    pieces,
+    sideToMove: "cho",
+    format: "Casual",
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {

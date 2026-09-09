@@ -11,10 +11,15 @@ import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
  * before anyone moves, so changing one cannot be folded into a game already under way. Keeping the
  * three in one place is what stops one of them leaving a record of the game before it behind, which
  * would offer a player the chance to take back a move belonging to a game that no longer exists.
+ *
+ * The match format is fixed at casual here, which is the game every online implementation plays
+ * and the one `docs/rules.md` §6.2 calls the casual reading. It is the engine's to vary and not
+ * yet the player's: a picker hands it in when the setting reaches the screen, and it arrives the
+ * same way a setup does, by dealing a new game rather than changing one under way.
  */
 export function dealtGame(hanSetup: Setup, choSetup: Setup): GameSliceState {
   return {
-    played: playedGameFrom(newGame(hanSetup, choSetup)),
+    played: playedGameFrom(newGame(hanSetup, choSetup, "Casual")),
     hanSetup,
     choSetup,
   };

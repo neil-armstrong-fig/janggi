@@ -11,6 +11,7 @@ import {canUndo} from "@src/game/record/CanUndo";
 import {describe, expect, it} from "vitest";
 import fc from "fast-check";
 import {isInPalace} from "@src/game/board/utils/Palaces";
+import {isRepetition} from "@src/game/IsRepetition";
 import {legalMovesFor} from "@src/game/LegalMovesFor";
 import {materialFor} from "@src/game/MaterialFor";
 import {movesFrom} from "@src/game/MovesFrom";
@@ -21,6 +22,7 @@ import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
 import {playMove} from "@src/game/record/PlayMove";
 import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
 import {redo} from "@src/game/record/Redo";
+import {standingOf} from "@src/game/utils/StandingOf";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 import {undo} from "@src/game/record/Undo";
 
@@ -103,6 +105,32 @@ describe("after every move of a random game", () => {
     });
   });
 
+  /**
+   * `seen` is the history repetition is measured against, and a capture empties it because nothing
+   * from before one can ever come round again. Nothing else may empty it, and nothing may lose an
+   * entry — a game that forgot where it had been would let a barred repetition through.
+   */
+  it("has remembered the position it left, unless the move took a piece", () => {
+    afterEveryMove(({before, move, after}) => {
+      const taken = pieceOn(before, move.to);
+
+      expect(after.seen).toEqual(taken ? [] : [...before.seen, standingOf(before)]);
+    });
+  });
+
+  /**
+   * "동일한 수를 3회 이상 반복할 수 없다", exempt below thirty points a side — `docs/rules.md` §6.4.
+   * A random game plays only moves the engine offered, so reaching a barred third standing means
+   * the filter in `movesFrom` let one through.
+   */
+  it("has never stood a third time in a position, while either army is on thirty or more", () => {
+    afterEveryMove(({before, after}) => {
+      const exempt = materialFor(before, "cho") < 30 && materialFor(before, "han") < 30;
+
+      if (!exempt) expect(isRepetition(after)).toBe(false);
+    });
+  });
+
   it("has never let a soldier lose ground", () => {
     afterEveryMove(({before, move}) => {
       const marching = pieceOn(before, move.from);
@@ -121,6 +149,17 @@ describe("in every position a random game reaches", () => {
       const occupied = after.pieces.map(({position}) => toPositionKey(position));
 
       expect(new Set(occupied).size).toBe(occupied.length);
+    });
+  });
+
+  /**
+   * A standing is what two positions are compared by, so it has to answer for the position and
+   * nothing else about the game that reached it — including the history hanging off it.
+   */
+  it("tells a position from the one before it, and reads nothing of how the game got there", () => {
+    afterEveryMove(({before, after}) => {
+      expect(standingOf(after)).not.toBe(standingOf(before));
+      expect(standingOf(after)).toBe(standingOf({...after, seen: [], consecutivePasses: 1}));
     });
   });
 
@@ -335,7 +374,11 @@ function worthOf(piece: Piece): number {
   const alone: GameState = {
     pieces: [{piece, position: {file: 1, rank: 1}}],
     sideToMove: piece.side,
+    format: "Casual",
     consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
   };
 
   return materialFor(alone, piece.side);
@@ -354,7 +397,7 @@ function mirrorOf(name: string): string {
 }
 
 function startingPosition(): GameState {
-  return newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+  return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 }
 
 function setup(name: string): Setup {
