@@ -85,6 +85,20 @@ export class BoardDsl {
     }
   }
 
+  /**
+   * Whether the board is marking the piece on this intersection as one its owner may move now.
+   *
+   * Not to be confused with `canMoveTo`, which asks about a destination for the piece already in
+   * hand. This asks about the piece standing here, and is answered for the army whose turn it is.
+   */
+  async canBeMoved(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.canBeMoved(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the piece at file ${file}, rank ${rank} can be moved`, error);
+    }
+  }
+
   /** How wide a piece is drawn, in pixels — the traditional set turns three different sizes. */
   async getPieceWidthAt(file: number, rank: number): Promise<number | undefined> {
     try {

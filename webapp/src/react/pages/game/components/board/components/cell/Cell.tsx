@@ -1,11 +1,13 @@
 import {CellLines} from "@src/react/pages/game/components/board/components/cell/components/cell-lines/CellLines";
 import {CELL_SVG_PROPS} from "@src/react/pages/game/components/board/components/cell/utils/CellViewBox";
 import {Marker} from "@src/react/pages/game/components/board/components/cell/components/marker/Marker";
+import {MovableMark} from "@src/react/pages/game/components/board/components/cell/components/movable-mark/MovableMark";
 import {MoveHint} from "@src/react/pages/game/components/board/components/cell/components/move-hint/MoveHint";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
+import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/cell/types/MovableEmphasis";
 import type {Position} from "@src/game/board/types/Position";
 import {cellShapeAt} from "@src/react/pages/game/components/board/utils/CellShapes";
 import {resolveCellStyle} from "@src/react/pages/game/components/board/components/cell/utils/ResolveCellStyle";
@@ -30,6 +32,8 @@ interface Props {
   readonly piece?: PieceIdentity;
   readonly selected: boolean;
   readonly canMoveTo: boolean;
+  /** How loudly to mark the piece here as one its owner may move, or undefined not to. */
+  readonly movable?: MovableEmphasis;
   readonly hovered: boolean;
   readonly onTap: (position: Position) => void;
   readonly onHover: (position: Position | undefined) => void;
@@ -42,6 +46,7 @@ export function Cell({
   piece,
   selected,
   canMoveTo,
+  movable,
   hovered,
   onTap,
   onHover,
@@ -54,6 +59,7 @@ export function Cell({
       data-testid={`cell-${toPositionKey(position)}`}
       aria-pressed={selected}
       data-can-move-to={canMoveTo || undefined}
+      data-can-be-moved={movable}
       onClick={() => onTap(position)}
       onPointerEnter={() => onHover(position)}
       onPointerLeave={() => onHover(undefined)}
@@ -67,6 +73,8 @@ export function Cell({
 
         {cellStyle.marker && <Marker marker={cellStyle.marker} />}
       </svg>
+
+      {movable && <MovableMark emphasis={movable} />}
 
       {piece && <Piece piece={piece} style={pieceStyle} emphasised={hovered} />}
 

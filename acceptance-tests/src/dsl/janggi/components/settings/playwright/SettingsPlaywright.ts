@@ -1,6 +1,7 @@
 import {BoardSettingPlaywright} from "@src/dsl/janggi/components/settings/components/board-setting/playwright/BoardSettingPlaywright";
 import {ChoSetupSettingPlaywright} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/playwright/ChoSetupSettingPlaywright";
 import {HanSetupSettingPlaywright} from "@src/dsl/janggi/components/settings/components/han-setup-setting/playwright/HanSetupSettingPlaywright";
+import {MovableHighlightSettingPlaywright} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/playwright/MovableHighlightSettingPlaywright";
 import type {Page} from "@playwright/test";
 import {PieceSetSettingPlaywright} from "@src/dsl/janggi/components/settings/components/piece-set-setting/playwright/PieceSetSettingPlaywright";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
@@ -16,6 +17,7 @@ export class SettingsPlaywright extends BaseComponent {
   readonly pieceSet: PieceSetSettingPlaywright;
   readonly hanSetup: HanSetupSettingPlaywright;
   readonly choSetup: ChoSetupSettingPlaywright;
+  readonly movableHighlight: MovableHighlightSettingPlaywright;
 
   constructor(page: Page) {
     super(page);
@@ -24,5 +26,6 @@ export class SettingsPlaywright extends BaseComponent {
     this.pieceSet = new PieceSetSettingPlaywright(page);
     this.hanSetup = new HanSetupSettingPlaywright(page);
     this.choSetup = new ChoSetupSettingPlaywright(page);
+    this.movableHighlight = new MovableHighlightSettingPlaywright(page);
   }
 }

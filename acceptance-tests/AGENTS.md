@@ -39,14 +39,22 @@ src/dsl/
         SettingsDsl.ts
         playwright/SettingsPlaywright.ts
         components/
+          board-setting/BoardSettingDsl.ts
           board-setting/playwright/BoardSettingPlaywright.ts
-          piece-set-setting/playwright/PieceSetSettingPlaywright.ts
-          han-setup-setting/playwright/HanSetupSettingPlaywright.ts
-          cho-setup-setting/playwright/ChoSetupSettingPlaywright.ts
+          piece-set-setting/PieceSetSettingDsl.ts
+          ... and so on, one folder per setting
 ```
 
-A component with no spec-facing surface of its own has no `*Dsl` half — the three pickers are
-reached through `SettingsDsl`, which is the only thing a spec talks to.
+**A setting is its own DSL, reached as a member of its parent** — `janggi.settings.board.setTo(...)`
+rather than `janggi.settings.setBoardTo(...)`. A spec then says which control it means before it
+says what to do with it, and a picker's methods, its error messages and its test ids all sit in one
+folder instead of spread across a parent that grew by two methods per setting.
+
+What stays on the parent is only what belongs to no single child: `setBothSetupsTo` and
+`canChooseSetups` each reach across both armies' pickers.
+
+A child that is only ever driven through its parent still gets its own `*Dsl`. The exception is a
+component with genuinely nothing to say — none exist here today.
 
 The same shape repeats at every depth: a thing owns its `playwright/` counterpart, and everything
 inside that thing goes in its `components/` folder. So a piece of the board would be
@@ -112,7 +120,7 @@ against the same `janggi` on a page genuinely back at the start.
 
 **A lint rule enforces it** (`no-restricted-syntax`, in this package's `eslint.config.js`): calling a
 DSL _action_ inside a `then` fails `pnpm checks`. It works because the DSL splits by name — an action
-is a verb (`tap`, `hover`, `setBoardTo`, `resizeWindowTo`), a query is not (`pieceAt`, `isSelected`,
+is a verb (`tap`, `hover`, `setTo`, `resizeWindowTo`), a query is not (`pieceAt`, `isSelected`,
 `countPieces`). **That list cannot be derived, so adding an action to the DSL means adding it to the
 rule too.**
 
@@ -178,7 +186,7 @@ shapes, and every method is one of them:
 
 | Shape                                  | Named                                                                | Reads as                                                 |
 | -------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------- |
-| **Action** — does something to the app | a verb: `tap`, `hover`, `setBoardTo`, `resizeWindowTo`               | `await janggi.board.tap(1, 7)`                           |
+| **Action** — does something to the app | a verb: `tap`, `hover`, `setTo`, `resizeWindowTo`                    | `await janggi.board.tap(1, 7)`                           |
 | **Question** — answers yes or no       | `is…` / `can…`: `isSelected`, `canMoveTo`, `isFullyOnScreen`         | `expect(await janggi.board.isSelected(1, 7)).toBe(true)` |
 | **Query** — fetches a value            | `get…`: `getPieceAt`, `getTurn`, `getSelectedBoard`, `getPieceCount` | `expect(await janggi.status.getTurn()).toBe("han")`      |
 
