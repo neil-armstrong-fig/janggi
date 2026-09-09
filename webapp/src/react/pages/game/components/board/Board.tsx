@@ -6,6 +6,9 @@ import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/utils/Boar
 import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
+import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/cell/types/MovableEmphasis";
+import type {Position, PositionKey} from "@src/game/board/types/Position";
+import {movablePieces} from "@src/react/pages/game/components/board/utils/MovablePieces";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
@@ -27,14 +30,20 @@ interface Props {
   readonly game: GameState;
   readonly style: BoardStyle;
   readonly pieceStyle: PieceSetStyle;
+  /** Whether to mark the pieces the army to move may actually move. A player's own setting. */
+  readonly highlightMovable: boolean;
   readonly onMove: (move: Move) => void;
 }
 
-export function Board({game, style, pieceStyle, onMove}: Props): React.JSX.Element {
+export function Board({game, style, pieceStyle, highlightMovable, onMove}: Props): React.JSX.Element {
   const placedPieces = useMemo(() => piecesByPosition(game.pieces), [game.pieces]);
 
   const {selected, hovered, destinations, tap, hover} = useMoveSelection(game, onMove);
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
+
+  // On [game] rather than on every render: the board re-renders as the pointer crosses it, and
+  // asking the engine for every legal move on the board is not something to do per hover.
+  const movable = useMemo(() => (highlightMovable ? movablePieces(game) : NOTHING), [game, highlightMovable]);
   const heldKey = selected && toPositionKey(selected);
   const hoveredKey = hovered && toPositionKey(hovered);
 
@@ -64,6 +73,7 @@ export function Board({game, style, pieceStyle, onMove}: Props): React.JSX.Eleme
             piece={pieceAt(placedPieces, position)}
             selected={heldKey === toPositionKey(position)}
             canMoveTo={reachable.has(toPositionKey(position))}
+            movable={emphasisFor(movable, position, selected !== undefined)}
             hovered={hoveredKey === toPositionKey(position)}
             onTap={tap}
             onHover={hover}
@@ -73,5 +83,25 @@ export function Board({game, style, pieceStyle, onMove}: Props): React.JSX.Eleme
     </div>
   );
 }
+
+/**
+ * How loudly to mark one intersection, or undefined to leave it alone.
+ *
+ * Faint while a piece is in hand: the alternatives stay legible, which is the point of the mark
+ * when a general is under attack, but the piece being held and the points it may reach are what
+ * should carry the eye.
+ */
+function emphasisFor(
+  movable: ReadonlySet<PositionKey>,
+  position: Position,
+  holding: boolean,
+): MovableEmphasis | undefined {
+  if (!movable.has(toPositionKey(position))) return undefined;
+
+  return holding ? "faint" : "full";
+}
+
+/** A stable empty set, so turning the mark off does not hand every cell a new one each render. */
+const NOTHING: ReadonlySet<PositionKey> = new Set();
 
 const BOARD_ASPECT_RATIO = (FILE_COUNT * CELL_ASPECT_RATIO) / RANK_COUNT;

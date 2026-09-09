@@ -11,7 +11,7 @@ import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
 given("a player is choosing a piece set", () => {
   when("the traditional set is chosen", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setPieceSetTo("Traditional");
+      await janggi.settings.pieceSet.setTo("Traditional");
     });
 
     then("the pieces carry the hanja a real set is cut with", async ({janggi}) => {
@@ -37,7 +37,7 @@ given("a player is choosing a piece set", () => {
 
   when("the hanja set is chosen", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setPieceSetTo("Hanja");
+      await janggi.settings.pieceSet.setTo("Hanja");
     });
 
     then("the same characters are shown", async ({janggi}) => {
@@ -60,7 +60,7 @@ given("a player is choosing a piece set", () => {
 
   when("the hangul set is chosen", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setPieceSetTo("Hangul");
+      await janggi.settings.pieceSet.setTo("Hangul");
     });
 
     then("each piece is spelled out in the Korean alphabet", async ({janggi}) => {
@@ -73,7 +73,7 @@ given("a player is choosing a piece set", () => {
 
   when("the modern set is chosen", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setPieceSetTo("Modern");
+      await janggi.settings.pieceSet.setTo("Modern");
     });
 
     then("the pieces carry no writing at all", async ({janggi}) => {
@@ -94,13 +94,13 @@ given("a player is choosing a piece set", () => {
    */
   when("the set is changed several times over", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setPieceSetTo("Hangul");
-      await janggi.settings.setPieceSetTo("Modern");
-      await janggi.settings.setPieceSetTo("Hanja");
+      await janggi.settings.pieceSet.setTo("Hangul");
+      await janggi.settings.pieceSet.setTo("Modern");
+      await janggi.settings.pieceSet.setTo("Hanja");
     });
 
     then("the set chosen last is the one in use", async ({janggi}) => {
-      expect(await janggi.settings.getSelectedPieceSet()).toBe("Hanja");
+      expect(await janggi.settings.pieceSet.getSelected()).toBe("Hanja");
       expect(await janggi.board.getCharacterAt(5, 9)).toBe("楚");
     });
 
@@ -116,11 +116,11 @@ given("a player is choosing a piece set", () => {
     set => `the set in use is ${set}`,
     set => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.setPieceSetTo(set);
+        await janggi.settings.pieceSet.setTo(set);
       });
 
       then("it is the writing that changed and never the game", async ({janggi}) => {
-        expect(await janggi.settings.getSelectedPieceSet()).toBe(set);
+        expect(await janggi.settings.pieceSet.getSelected()).toBe(set);
         expect(await janggi.board.getPieceCount()).toBe(32);
         expect(await janggi.board.getPieceAt(5, 9)).toEqual({side: "cho", type: "general"});
         expect(await janggi.board.getPieceAt(1, 10)).toEqual({side: "cho", type: "chariot"});

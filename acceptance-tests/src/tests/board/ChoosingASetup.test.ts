@@ -42,10 +42,10 @@ given("a user is choosing how to arrange the pieces", () => {
 
   when("nothing has been chosen yet", () => {
     then("both armies open on the common setup, with a traditional set on the board", async ({janggi}) => {
-      expect(await janggi.settings.getSelectedHanSetup()).toBe("Inner Elephant");
-      expect(await janggi.settings.getSelectedChoSetup()).toBe("Inner Elephant");
-      expect(await janggi.settings.getSelectedPieceSet()).toBe("Traditional");
-      expect(await janggi.settings.getSelectedBoard()).toBe("Classic");
+      expect(await janggi.settings.hanSetup.getSelected()).toBe("Inner Elephant");
+      expect(await janggi.settings.choSetup.getSelected()).toBe("Inner Elephant");
+      expect(await janggi.settings.pieceSet.getSelected()).toBe("Traditional");
+      expect(await janggi.settings.board.getSelected()).toBe("Classic");
     });
   });
 });
@@ -70,8 +70,8 @@ given("the two armies are arranged separately", () => {
 
   when("they choose opposite asymmetric setups", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setChoSetupTo("Left Elephant");
-      await janggi.settings.setHanSetupTo("Right Elephant");
+      await janggi.settings.choSetup.setTo("Left Elephant");
+      await janggi.settings.hanSetup.setTo("Right Elephant");
     });
 
     then("their outer elephants end up on opposite wings", async ({janggi}) => {
@@ -82,13 +82,13 @@ given("the two armies are arranged separately", () => {
 
   when("only one army changes its arrangement", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setChoSetupTo("Outer Elephant");
+      await janggi.settings.choSetup.setTo("Outer Elephant");
     });
 
     then("the other one is left where it stood", async ({janggi}) => {
       expect(await janggi.board.getPieceAt(2, 10)).toEqual({side: "cho", type: "elephant"});
       expect(await janggi.board.getPieceAt(2, 1)).toEqual({side: "han", type: "horse"});
-      expect(await janggi.settings.getSelectedHanSetup()).toBe("Inner Elephant");
+      expect(await janggi.settings.hanSetup.getSelected()).toBe("Inner Elephant");
     });
   });
 });

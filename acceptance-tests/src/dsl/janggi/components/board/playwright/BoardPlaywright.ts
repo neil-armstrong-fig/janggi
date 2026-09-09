@@ -114,6 +114,11 @@ export class BoardPlaywright extends BaseComponent {
     return (await this.cellLocator(file, rank).getAttribute("data-can-move-to")) !== null;
   }
 
+  /** Whether the board is marking the piece on this intersection as one its owner may move now. */
+  async canBeMoved(file: number, rank: number): Promise<boolean> {
+    return (await this.cellLocator(file, rank).getAttribute("data-can-be-moved")) !== null;
+  }
+
   private pieceLocator(file: number, rank: number): Locator {
     return this.cellLocator(file, rank).getByTestId("piece");
   }

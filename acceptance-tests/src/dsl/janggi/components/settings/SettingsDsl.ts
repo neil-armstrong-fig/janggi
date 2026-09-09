@@ -1,99 +1,59 @@
-import type {BoardStyleName} from "@janggi/shared/janggi/settings/BoardStyleName";
+import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
+import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/ChoSetupSettingDsl";
 import {DslError} from "@src/dsl/errors/DslError";
-import type {PieceSetName} from "@janggi/shared/janggi/settings/PieceSetName";
+import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/han-setup-setting/HanSetupSettingDsl";
+import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
+import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
 import type {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 
 /**
  * The controls under the board, reached as `janggi.settings`.
  *
+ * One member per setting, so a spec says which control it means before it says what to do with it —
+ * `janggi.settings.board.setTo("Neon")`. Each member is its own DSL beside its own `*Playwright`,
+ * which is what keeps a picker's methods, its error messages and its test ids in one place instead
+ * of spread across a class that grows by two methods every time a setting is added.
+ *
  * A setting is named by the label a player reads on the button, and the names come from
  * `@janggi/shared` — so a spec says what a user would say, and asking for a style the app does not
  * ship is a compile error rather than a click that silently times out.
  *
- * `setBothSetupsTo` is the one method here that is not a single call down: the two armies arrange
- * themselves separately, and a spec that does not care about the difference should not have to say
- * so twice.
+ * What is left here is only what belongs to no single picker: the two methods below each reach
+ * across both armies' setups.
  */
 export class SettingsDsl {
-  constructor(private readonly settings: SettingsPlaywright) {}
+  readonly board: BoardSettingDsl;
+  readonly pieceSet: PieceSetSettingDsl;
+  readonly hanSetup: HanSetupSettingDsl;
+  readonly choSetup: ChoSetupSettingDsl;
+  readonly movableHighlight: MovableHighlightSettingDsl;
 
-  /** Whether either army's arrangement may still be changed. A back rank is set before play. */
-  async canChooseSetups(): Promise<boolean> {
-    try {
-      return await this.settings.hanSetup.isChoosable();
-    } catch (error) {
-      throw new DslError("Failed to check whether the setups can still be chosen", error);
-    }
-  }
-
-  async setBoardTo(name: BoardStyleName): Promise<void> {
-    try {
-      await this.settings.board.choose(name);
-    } catch (error) {
-      throw new DslError(`Failed to set the board to "${name}"`, error);
-    }
-  }
-
-  async getSelectedBoard(): Promise<BoardStyleName | undefined> {
-    try {
-      return await this.settings.board.getSelected();
-    } catch (error) {
-      throw new DslError("Failed to read which board is selected", error);
-    }
-  }
-
-  async setPieceSetTo(name: PieceSetName): Promise<void> {
-    try {
-      await this.settings.pieceSet.choose(name);
-    } catch (error) {
-      throw new DslError(`Failed to set the pieces to "${name}"`, error);
-    }
-  }
-
-  async getSelectedPieceSet(): Promise<PieceSetName | undefined> {
-    try {
-      return await this.settings.pieceSet.getSelected();
-    } catch (error) {
-      throw new DslError("Failed to read which piece set is selected", error);
-    }
-  }
-
-  async setHanSetupTo(name: SetupName): Promise<void> {
-    try {
-      await this.settings.hanSetup.choose(name);
-    } catch (error) {
-      throw new DslError(`Failed to set Han's setup to "${name}"`, error);
-    }
-  }
-
-  async getSelectedHanSetup(): Promise<SetupName | undefined> {
-    try {
-      return await this.settings.hanSetup.getSelected();
-    } catch (error) {
-      throw new DslError("Failed to read which setup Han has chosen", error);
-    }
-  }
-
-  async setChoSetupTo(name: SetupName): Promise<void> {
-    try {
-      await this.settings.choSetup.choose(name);
-    } catch (error) {
-      throw new DslError(`Failed to set Cho's setup to "${name}"`, error);
-    }
-  }
-
-  async getSelectedChoSetup(): Promise<SetupName | undefined> {
-    try {
-      return await this.settings.choSetup.getSelected();
-    } catch (error) {
-      throw new DslError("Failed to read which setup Cho has chosen", error);
-    }
+  constructor(settings: SettingsPlaywright) {
+    this.board = new BoardSettingDsl(settings.board);
+    this.pieceSet = new PieceSetSettingDsl(settings.pieceSet);
+    this.hanSetup = new HanSetupSettingDsl(settings.hanSetup);
+    this.choSetup = new ChoSetupSettingDsl(settings.choSetup);
+    this.movableHighlight = new MovableHighlightSettingDsl(settings.movableHighlight);
   }
 
   /** Both armies at once, for a spec that only cares that they match. */
   async setBothSetupsTo(name: SetupName): Promise<void> {
-    await this.setHanSetupTo(name);
-    await this.setChoSetupTo(name);
+    await this.hanSetup.setTo(name);
+    await this.choSetup.setTo(name);
+  }
+
+  /**
+   * Whether either army's arrangement may still be changed. A back rank is set before play.
+   *
+   * Asks both pickers rather than one. They lock together on the same move count, so asking one
+   * would pass just as happily if the other had been left live.
+   */
+  async canChooseSetups(): Promise<boolean> {
+    try {
+      return (await this.hanSetup.isChoosable()) && (await this.choSetup.isChoosable());
+    } catch (error) {
+      throw new DslError("Failed to check whether the setups can still be chosen", error);
+    }
   }
 }

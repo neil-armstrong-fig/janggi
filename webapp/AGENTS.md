@@ -127,7 +127,22 @@ piece-styles/    how a piece is painted — PieceSetStyle over PieceStyle
 ```
 
 Both are **plain data**: a default plus a map of per-position or per-piece overrides, with one
-component that turns that data into pixels. Everything a style needs travels inside the style —
+component that turns that data into pixels.
+
+A cell can carry **three marks**, and none of them is a `CellStyle` field — a board style is plain
+data a user may author, and whose turn it is has no business written into one. They are overlay
+elements in `Cell`: `MovableMark` rings a piece its owner may move this turn, the selected wash
+fills the cell of the piece in hand, and `MoveHint` puts a dot or a ring where that piece may go.
+Only the first is switchable — the "Moves" picker — because in the opening it marks most of an army,
+and earns itself in check and against a pin.
+
+`MovableMark` is a **ring at the edge of the cell, not a disc behind the piece.** A disc was the
+first attempt and the modern sets killed it: their pieces are themselves discs of very nearly the
+same size, so the mark was hidden by the thing it marked, and the octagonal sets only showed it
+through their corners. A set may draw a piece in any shape at up to 0.94 of the cell, so a mark that
+must be visible on all of them belongs outside all of them.
+
+Everything a style needs travels inside the style —
 including the marks. A `CharacterGlyphStyle` carries its own `CharacterSet` and a
 `PictographGlyphStyle` its own `PictographSet`, so `CharacterGlyph` is handed one character and
 `Pictograph` one path. Neither knows hanja or hangul exist, and a set someone writes can bring its

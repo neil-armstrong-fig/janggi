@@ -7,6 +7,8 @@ import {BUILT_IN_STYLES, DEFAULT_STYLE} from "@src/react/pages/game/components/b
 import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
 import {SETUPS} from "@src/game/setups/Setups";
 import {NewGameButton} from "@src/react/pages/game/components/new-game-button/NewGameButton";
+import {DEFAULT_MOVABLE_HIGHLIGHT, MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights";
+import type {MovableHighlight} from "@src/react/pages/game/types/MovableHighlight";
 import {OptionPicker} from "@src/react/pages/game/components/option-picker/OptionPicker";
 import {TurnIndicator} from "@src/react/pages/game/components/turn-indicator/TurnIndicator";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
@@ -29,6 +31,7 @@ import {useState} from "react";
 export function GamePage(): React.JSX.Element {
   const [style, setStyle] = useState<BoardStyle>(DEFAULT_STYLE);
   const [pieceStyle, setPieceStyle] = useState<PieceSetStyle>(DEFAULT_PIECE_STYLE);
+  const [movableHighlight, setMovableHighlight] = useState<MovableHighlight>(DEFAULT_MOVABLE_HIGHLIGHT);
   const {game, hanSetup, choSetup, movesPlayed} = useAppSelector(state => state.game);
   const dispatch = useAppDispatch();
 
@@ -41,7 +44,13 @@ export function GamePage(): React.JSX.Element {
       </div>
 
       <div className="min-h-0 flex-1">
-        <Board game={game} style={style} pieceStyle={pieceStyle} onMove={move => dispatch(moved(move))} />
+        <Board
+          game={game}
+          style={style}
+          pieceStyle={pieceStyle}
+          highlightMovable={movableHighlight.shown}
+          onMove={move => dispatch(moved(move))}
+        />
       </div>
 
       <div data-testid="settings" className="flex shrink-0 flex-col gap-2">
@@ -53,6 +62,15 @@ export function GamePage(): React.JSX.Element {
           options={BUILT_IN_PIECE_STYLES}
           selected={pieceStyle}
           onSelect={setPieceStyle}
+        />
+
+        <OptionPicker
+          id="movable-highlight"
+          label="Moves"
+          ariaLabel="Highlight the pieces that can move"
+          options={MOVABLE_HIGHLIGHTS}
+          selected={movableHighlight}
+          onSelect={setMovableHighlight}
         />
 
         <OptionPicker
