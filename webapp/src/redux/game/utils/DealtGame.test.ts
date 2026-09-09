@@ -9,15 +9,16 @@ const inner = setup("Inner Elephant");
 const outer = setup("Outer Elephant");
 
 it("deals both armies onto the board in full", () => {
-  expect(dealtGame(inner, inner).game.pieces).toHaveLength(32);
+  expect(dealtGame(inner, inner).played.present.pieces).toHaveLength(32);
 });
 
 it("gives cho the first move", () => {
-  expect(dealtGame(inner, inner).game.sideToMove).toBe("cho");
+  expect(dealtGame(inner, inner).played.present.sideToMove).toBe("cho");
 });
 
-it("starts a game nobody has moved in yet", () => {
-  expect(dealtGame(inner, inner).turnsTaken).toBe(0);
+it("starts a game nobody has moved in yet, with nothing to take back or play again", () => {
+  expect(dealtGame(inner, inner).played.past).toEqual([]);
+  expect(dealtGame(inner, inner).played.future).toEqual([]);
 });
 
 it("remembers the two setups it dealt from, so the game can be dealt again", () => {
@@ -46,7 +47,7 @@ it("deals a new game every time rather than handing back the one before", () => 
 });
 
 function typeAt(state: GameSliceState, file: number, rank: number): PieceType | undefined {
-  return state.game.pieces.find(({position}) => position.file === file && position.rank === rank)?.piece.type;
+  return state.played.present.pieces.find(({position}) => position.file === file && position.rank === rank)?.piece.type;
 }
 
 function setup(name: string): Setup {

@@ -57,6 +57,42 @@ export class StatusDsl {
     }
   }
 
+  /** Takes the last thing played back, whether that was a move or a rested turn. */
+  async undo(): Promise<void> {
+    try {
+      await this.status.undo();
+    } catch (error) {
+      throw new DslError("Failed to take the last turn back", error);
+    }
+  }
+
+  /** Whether there is anything to take back. */
+  async canUndo(): Promise<boolean> {
+    try {
+      return await this.status.canUndo();
+    } catch (error) {
+      throw new DslError("Failed to read whether there is anything to take back", error);
+    }
+  }
+
+  /** Plays again the turn that was most recently taken back. */
+  async redo(): Promise<void> {
+    try {
+      await this.status.redo();
+    } catch (error) {
+      throw new DslError("Failed to play the turn that was taken back again", error);
+    }
+  }
+
+  /** Whether anything taken back is waiting to be played again. */
+  async canRedo(): Promise<boolean> {
+    try {
+      return await this.status.canRedo();
+    } catch (error) {
+      throw new DslError("Failed to read whether there is anything to play again", error);
+    }
+  }
+
   /** What one army is worth in points, Han's 덤 counted in. */
   async getScore(side: Side): Promise<number> {
     try {
