@@ -17,7 +17,7 @@ it("gives cho the first move", () => {
 });
 
 it("starts a game nobody has moved in yet", () => {
-  expect(dealtGame(inner, inner).movesPlayed).toBe(0);
+  expect(dealtGame(inner, inner).turnsTaken).toBe(0);
 });
 
 it("remembers the two setups it dealt from, so the game can be dealt again", () => {

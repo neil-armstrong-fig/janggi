@@ -39,6 +39,33 @@ export class StatusDsl {
     }
   }
 
+  /** Rests the turn — 한수쉼 — playing nothing and handing the move to the other army. */
+  async pass(): Promise<void> {
+    try {
+      await this.status.pass();
+    } catch (error) {
+      throw new DslError("Failed to rest the turn", error);
+    }
+  }
+
+  /** Whether the army to move may rest the turn, rather than being obliged to play something. */
+  async canPass(): Promise<boolean> {
+    try {
+      return await this.status.canPass();
+    } catch (error) {
+      throw new DslError("Failed to read whether the turn may be rested", error);
+    }
+  }
+
+  /** What one army is worth in points, Han's 덤 counted in. */
+  async getScore(side: Side): Promise<number> {
+    try {
+      return await this.status.getScore(side);
+    } catch (error) {
+      throw new DslError(`Failed to read ${side}'s score`, error);
+    }
+  }
+
   /** Which army is to move. */
   async getTurn(): Promise<Side | undefined> {
     try {

@@ -50,12 +50,27 @@ it("prefers the win to the check, a mate being both", () => {
   expect(gameStatusOf(mated).kind).not.toBe("inCheck");
 });
 
+/** Both players rested a turn, so the game stopped and the score settled it — han's 덤 here. */
+it("says who won on points once both armies have rested a turn", () => {
+  const stopped = stoppedGame(cho("general", 5, 9), cho("chariot", 1, 10), han("general", 5, 2), han("chariot", 1, 1));
+
+  expect(gameStatusOf(stopped)).toEqual({kind: "wonOnPoints", by: "han"});
+});
+
+it("still says whose move it is after only one rested turn", () => {
+  expect(gameStatusOf({...opening(), consecutivePasses: 1})).toEqual({kind: "toMove", side: "cho"});
+});
+
 function opening(): GameState {
   return newGame(setup("Inner Elephant"), setup("Inner Elephant"));
 }
 
 function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameState {
   return {pieces, sideToMove, consecutivePasses: 0};
+}
+
+function stoppedGame(...pieces: readonly PlacedPiece[]): GameState {
+  return {...position("cho", ...pieces), consecutivePasses: 2};
 }
 
 function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {

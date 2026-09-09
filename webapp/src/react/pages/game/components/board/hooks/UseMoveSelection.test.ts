@@ -233,6 +233,44 @@ describe("with the side to move mated", () => {
 });
 
 /**
+ * The opposite of a mate, and the reason `gameIsOver` exists: two rested turns stop the game while
+ * the board is still full of legal moves, so nothing here filters itself out for free.
+ */
+describe("with the game stopped by two rested turns", () => {
+  beforeEach(() => {
+    selection = renderOn({...openingGame(), consecutivePasses: 2});
+  });
+
+  describe("when a piece the army to move owns is reached for", () => {
+    beforeEach(() => {
+      act(() => selection.current.tap(CHO_SOLDIER));
+    });
+
+    it("does not pick it up", () => {
+      expect(selection.current.selected).toBeUndefined();
+    });
+
+    it("offers it nowhere to go", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+
+    it("reports no move", () => {
+      expect(played).toEqual([]);
+    });
+  });
+
+  describe("when the pointer merely rests on a piece", () => {
+    beforeEach(() => {
+      act(() => selection.current.hover(CHO_SOLDIER));
+    });
+
+    it("shows nowhere, the game being over", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+  });
+});
+
+/**
  * What `renderHook` hands back, named here because the type that names it cannot be imported: the
  * lint rule allows only `renderHook`, `act`, `waitFor` and `cleanup` from `@testing-library/react`.
  */

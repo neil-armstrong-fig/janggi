@@ -1,6 +1,7 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
 import type {Position} from "@src/game/board/types/Position";
+import {gameIsOver} from "@src/react/pages/game/components/board/utils/GameIsOver";
 import {movesFrom} from "@src/game/MovesFrom";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
@@ -30,13 +31,16 @@ export interface MoveSelection {
  * Which point is lit up is **UI state, not game state**, so it lives here rather than in the store.
  * The engine is asked what may happen and told what did; it is never asked to remember a highlight.
  * `movesFrom` is also the gate: `applyMove` throws on an illegal move, so nothing is ever offered
- * that it would refuse.
+ * that it would refuse. A game stopped by two rested turns is the one case `movesFrom` cannot see —
+ * the position still has moves in it and the game does not want them — so `gameIsOver` closes the
+ * board over the top of it, and nothing is picked up or offered after that.
  */
 export function useMoveSelection(game: GameState, onMove: (move: Move) => void): MoveSelection {
   const [selected, setSelected] = useState<Position | undefined>(undefined);
   const [hovered, setHovered] = useState<Position | undefined>(undefined);
 
-  const asking = selected ?? hovered;
+  const over = gameIsOver(game);
+  const asking = over ? undefined : (selected ?? hovered);
   const destinations = useMemo(() => (asking ? movesFrom(game, asking) : NOWHERE), [game, asking]);
 
   return {
@@ -46,6 +50,8 @@ export function useMoveSelection(game: GameState, onMove: (move: Move) => void):
     hover: setHovered,
 
     tap(position: Position): void {
+      if (over) return;
+
       if (selected && isAmong(destinations, position)) {
         onMove({from: selected, to: position});
         setSelected(undefined);

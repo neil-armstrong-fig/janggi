@@ -521,6 +521,14 @@ Stalemate accordingly cannot end a game: `isCheckmate` asks for a check as well
 as an empty move list, and `PlayingAGame.test.ts` builds a position with neither
 a legal move nor a check and rests the turn out of it.
 
+**Shown.** A Pass control sits beside New game and greys out when the turn may
+not be rested; the turn line says "Han wins on points" once both players have
+rested one. A control rather than a gesture on the board, because resting a turn
+is the one thing a player does that touches no intersection.
+`acceptance-tests/…/game/PassingATurn.test.ts` plays the whole of it by tapping,
+including the ending — which, from the opening position, hands the game to Han
+on the 덤 alone.
+
 ### 6.4 Repetition
 
 > "① 동일한 수를 3회 이상 반복할 수 없다. 단, 기물의 총 점수가 각각 30점 미만일
@@ -575,9 +583,12 @@ and the board is a complete record. A captured *pile* — the pieces themselves,
 to draw beside the board — is a display, and would want the starting army to
 subtract from; the score does not.
 
-Not implemented from this section: the piece score is not yet shown to a player,
-and the 30-point threshold it exists to serve belongs to bikjang in §6.2, which
-is not modelled.
+**Shown.** A line under the turn reads "Cho 72 · Han 73.5" from the first move,
+Han's 덤 folded into the figure rather than shown apart, so the two are directly
+comparable — which is the whole point of a half point that cannot be tied.
+
+Not implemented from this section: the 30-point threshold the piece score exists
+to serve belongs to bikjang in §6.2, which is not modelled.
 
 ### 6.6 The setup phase
 

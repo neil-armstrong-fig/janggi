@@ -24,7 +24,7 @@ export default [
         "error",
         {
           selector:
-            'CallExpression[callee.name="then"] CallExpression[callee.property.name=/^(tap|hover|resizeWindowTo|navigateToPage|setTo|set[A-Z].*To|startNewGame)$/]',
+            'CallExpression[callee.name="then"] CallExpression[callee.property.name=/^(tap|hover|resizeWindowTo|navigateToPage|setTo|set[A-Z].*To|startNewGame|pass)$/]',
           message:
             "Arrange in a beforeEach on the given or when, not inside a then. A criterion asserts; it does not set up.",
         },
