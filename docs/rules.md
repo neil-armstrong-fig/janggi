@@ -485,9 +485,20 @@ transcription:
   opponent has replied and the bikjang still stands, it may be called: it no
   longer *arose from* the capture.
 
-**Not shown.** Nothing of this is on screen yet — the setting has no picker and
-there is no control to make the call, so every game the app deals is casual and
-no bikjang can be called in it. That is the next slice.
+**Shown.** A "Format" picker sits with the two setup pickers under the board and
+locks with them once play has begun, because a format is settled before a game
+the way a back rank is; changing it deals a fresh game. A **Bikjang** control
+sits beside Pass and is enabled exactly when `canCallBikjang` says so, and the
+turn line reads "Drawn by bikjang" when a casual call lands — the one draw the
+app can show.
+
+`acceptance-tests/…/game/CallingABikjang.test.ts` plays the whole of it by
+tapping, both formats included. That is possible because **a bikjang is two moves
+from the opening position**: file 5 holds nothing but the two generals and a
+soldier each, and a soldier may step sideways from the very first move. The same
+position is a draw for the asking in a casual game and uncallable in a scored one
+at seventy-two points a side, which is the setting proved by playing it rather
+than by reading the picker.
 
 **Do not confuse a third body with either.** 한국장기연맹
 (`kingjanggi.or.kr`) publishes rules for **궁장기**, a reformed variant with
@@ -619,8 +630,12 @@ make not being a legal move, and in a perpetual check it falls on whichever side
 would complete the third standing first — the closest an engine with no referee
 gets to 반복장군. It is not special-cased.
 
-**Not shown.** Nothing of this reaches the screen: a barred move simply is not
-offered, and no message says why.
+**Not shown, and nothing is planned.** A barred move is simply not offered, the
+way a move that would leave a general in check is not, and no message says why.
+`acceptance-tests/…/game/RepeatingAPosition.test.ts` exists because of that: a
+barred move looks exactly like a move that was never legal, so without a spec
+playing the eight plies out there would be nothing showing the rule reaches the
+board at all.
 
 ### 6.5 Scoring, piece values and the 덤
 

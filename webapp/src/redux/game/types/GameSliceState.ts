@@ -1,11 +1,14 @@
+import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {Setup} from "@src/game/setups/types/Setup";
 
 /**
  * The game being played, and the two arrangements it was dealt from.
  *
- * The setups live here rather than beside the board style because they are not a preference — they
- * decide the starting position, so they are part of the game.
+ * The setups and the match format live here rather than beside the board style because they are not
+ * preferences — the setups decide the starting position and the format decides which of janggi's two
+ * games is being played, so both are part of the game. Each is settled before play and each is
+ * *dealt*: changing one starts a fresh game rather than altering the one under way.
  *
  * `played` is the whole record rather than a bare `GameState`, so the store holds where the game has
  * been as well as where it is. Everything that reads a position reads `played.present`.
@@ -25,4 +28,5 @@ export interface GameSliceState {
   readonly played: PlayedGame;
   readonly hanSetup: Setup;
   readonly choSetup: Setup;
+  readonly format: MatchFormat;
 }

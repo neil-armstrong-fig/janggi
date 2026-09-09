@@ -2,6 +2,7 @@ import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/bo
 import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/ChoSetupSettingDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/han-setup-setting/HanSetupSettingDsl";
+import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
 import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
 import type {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
@@ -28,6 +29,7 @@ export class SettingsDsl {
   readonly hanSetup: HanSetupSettingDsl;
   readonly choSetup: ChoSetupSettingDsl;
   readonly movableHighlight: MovableHighlightSettingDsl;
+  readonly matchFormat: MatchFormatSettingDsl;
 
   constructor(settings: SettingsPlaywright) {
     this.board = new BoardSettingDsl(settings.board);
@@ -35,6 +37,7 @@ export class SettingsDsl {
     this.hanSetup = new HanSetupSettingDsl(settings.hanSetup);
     this.choSetup = new ChoSetupSettingDsl(settings.choSetup);
     this.movableHighlight = new MovableHighlightSettingDsl(settings.movableHighlight);
+    this.matchFormat = new MatchFormatSettingDsl(settings.matchFormat);
   }
 
   /** Both armies at once, for a spec that only cares that they match. */

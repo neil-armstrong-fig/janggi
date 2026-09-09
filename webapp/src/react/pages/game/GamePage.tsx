@@ -1,3 +1,4 @@
+import {BikjangButton} from "@src/react/pages/game/components/bikjang-button/BikjangButton";
 import {Board} from "@src/react/pages/game/components/board/Board";
 import {
   BUILT_IN_PIECE_STYLES,
@@ -8,6 +9,7 @@ import type {BoardStyle} from "@src/react/pages/game/components/board/cell-style
 import {SETUPS} from "@src/game/setups/Setups";
 import {NewGameButton} from "@src/react/pages/game/components/new-game-button/NewGameButton";
 import {DEFAULT_MOVABLE_HIGHLIGHT, MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights";
+import {MATCH_FORMAT_OPTIONS} from "@src/react/pages/game/utils/MatchFormats";
 import type {MovableHighlight} from "@src/react/pages/game/types/MovableHighlight";
 import {OptionPicker} from "@src/react/pages/game/components/option-picker/OptionPicker";
 import {TurnIndicator} from "@src/react/pages/game/components/turn-indicator/TurnIndicator";
@@ -16,11 +18,14 @@ import {PassButton} from "@src/react/pages/game/components/pass-button/PassButto
 import {RedoButton} from "@src/react/pages/game/components/redo-button/RedoButton";
 import {Scoreboard} from "@src/react/pages/game/components/scoreboard/Scoreboard";
 import {UndoButton} from "@src/react/pages/game/components/undo-button/UndoButton";
+import {canCallBikjang} from "@src/game/CanCallBikjang";
 import {canPass} from "@src/game/CanPass";
 import {canRedo} from "@src/game/record/CanRedo";
 import {canUndo} from "@src/game/record/CanUndo";
 import {
+  bikjangCalled,
   choSetupChosen,
+  formatChosen,
   hanSetupChosen,
   moved,
   passed,
@@ -44,17 +49,22 @@ import {useState} from "react";
  * The game itself comes from the store; the board style and the piece set stay in local state,
  * because those are preferences about how the game is drawn rather than part of the game.
  *
- * Resting a turn is a control rather than a gesture on the board, because it is the one thing a
- * player does that touches no intersection — and the one way out of a position with nothing to
- * play, janggi having no stalemate.
+ * Resting a turn and calling a bikjang are controls rather than gestures on the board, because they
+ * are the two things a player does that touch no intersection. Resting is also the one way out of a
+ * position with nothing to play, janggi having no stalemate.
  *
- * The controls row wraps, because five of them and a scoreboard do not fit across a phone.
+ * Which of janggi's two games is being played is a picker beside the setups rather than beside the
+ * board style, because it is not a preference about how the game is drawn: it decides whether a
+ * bikjang may be called at all and whether one draws. Like a back rank it is settled before play,
+ * so it locks on the same question the setups do.
+ *
+ * The controls row wraps, because six of them and a scoreboard do not fit across a phone.
  */
 export function GamePage(): React.JSX.Element {
   const [style, setStyle] = useState<BoardStyle>(DEFAULT_STYLE);
   const [pieceStyle, setPieceStyle] = useState<PieceSetStyle>(DEFAULT_PIECE_STYLE);
   const [movableHighlight, setMovableHighlight] = useState<MovableHighlight>(DEFAULT_MOVABLE_HIGHLIGHT);
-  const {played, hanSetup, choSetup} = useAppSelector(state => state.game);
+  const {played, hanSetup, choSetup, format} = useAppSelector(state => state.game);
   const game = played.present;
   const dispatch = useAppDispatch();
 
@@ -67,6 +77,8 @@ export function GamePage(): React.JSX.Element {
           <Scoreboard game={game} />
 
           <PassButton enabled={canPass(game)} onPass={() => dispatch(passed())} />
+
+          <BikjangButton enabled={canCallBikjang(game)} onCall={() => dispatch(bikjangCalled())} />
 
           <UndoButton enabled={canUndo(played)} onUndo={() => dispatch(takenBack())} />
 
@@ -86,7 +98,10 @@ export function GamePage(): React.JSX.Element {
         />
       </div>
 
-      <div data-testid="settings" className="flex shrink-0 flex-col gap-2">
+      {/* Capped and scrollable rather than shrink-0: six rows of pills are taller than a short
+          window has to spare, and settings that push the board off the top of the screen are worse
+          than settings you have to scroll to. A real settings screen is what actually fixes this. */}
+      <div data-testid="settings" className="flex max-h-[45%] shrink-0 flex-col gap-2 overflow-y-auto">
         <OptionPicker id="board-style" label="Board" options={BUILT_IN_STYLES} selected={style} onSelect={setStyle} />
 
         <OptionPicker
@@ -104,6 +119,16 @@ export function GamePage(): React.JSX.Element {
           options={MOVABLE_HIGHLIGHTS}
           selected={movableHighlight}
           onSelect={setMovableHighlight}
+        />
+
+        <OptionPicker
+          id="match-format"
+          disabled={playHasBegun(played)}
+          label="Format"
+          ariaLabel="Which of janggi's two games is being played"
+          options={MATCH_FORMAT_OPTIONS}
+          selected={{name: format}}
+          onSelect={option => dispatch(formatChosen(option.name))}
         />
 
         <OptionPicker

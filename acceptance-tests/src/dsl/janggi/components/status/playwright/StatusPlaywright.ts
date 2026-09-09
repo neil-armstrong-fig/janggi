@@ -10,6 +10,7 @@ export class StatusPlaywright extends BaseComponent {
   private readonly passTurn: Locator;
   private readonly takeBack: Locator;
   private readonly playAgain: Locator;
+  private readonly bikjang: Locator;
   private readonly scores: Locator;
 
   constructor(page: Page) {
@@ -20,6 +21,7 @@ export class StatusPlaywright extends BaseComponent {
     this.passTurn = page.getByTestId("pass");
     this.takeBack = page.getByTestId("undo");
     this.playAgain = page.getByTestId("redo");
+    this.bikjang = page.getByTestId("bikjang");
     this.scores = page.getByTestId("scores");
   }
 
@@ -52,6 +54,24 @@ export class StatusPlaywright extends BaseComponent {
     await this.passTurn.waitFor({state: "visible"});
 
     return await this.passTurn.isEnabled();
+  }
+
+  async callBikjang(): Promise<void> {
+    await this.bikjang.click();
+  }
+
+  /** Whether a bikjang may be called, which the control says by being enabled or not. */
+  async canCallBikjang(): Promise<boolean> {
+    await this.bikjang.waitFor({state: "visible"});
+
+    return await this.bikjang.isEnabled();
+  }
+
+  /** Whether the game ended drawn, which only a called bikjang in a casual game does. */
+  async isDrawn(): Promise<boolean> {
+    await this.container.waitFor({state: "visible"});
+
+    return (await this.container.getAttribute("data-drawn")) !== null;
   }
 
   async undo(): Promise<void> {

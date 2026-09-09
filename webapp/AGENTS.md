@@ -79,9 +79,19 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
   being undecided — taking back the turn that ended a game is the ordinary reason to reach for one.
   `src/game/AGENTS.md` says why the engine keeps it that way.
 - **The board closes when the game does.** A mate needs no help, having no legal move in it; a game
-  stopped by two rested turns is full of moves the rules will not accept, so `gameIsOver` in
-  `board/utils/` is asked before a piece is marked, picked up or offered anywhere. Without it the
-  board lights a piece up and `applyMove` throws when it is put down.
+  stopped by two rested turns or by a called bikjang is full of moves the rules will not accept, so
+  `gameIsOver` in `board/utils/` is asked before a piece is marked, picked up or offered anywhere.
+  Without it the board lights a piece up and `applyMove` throws when it is put down.
+- **A setting that is part of the game is dealt, not applied.** The two setups and the match format
+  all go through `dealtGame`, which starts a fresh game rather than changing the one under way, and
+  all three pickers lock on `playHasBegun` for the same reason: a back rank is arranged before play,
+  and which of janggi's two games is being played is settled before it too. Contrast the board
+  style, the piece set and the movable-piece mark, which are preferences about how a game is drawn
+  and live in `GamePage`'s own state.
+- **Something a player does that touches no intersection is a control, not a gesture.** Resting a
+  turn and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in the row above
+  the board — each enabled off a pure question the engine answers (`canPass`, `canCallBikjang`), and
+  disabled rather than hidden so the row does not reflow under a thumb.
 - `BASE_PATH` sets where the app is served from (`/` locally, `/<repo>/` on GitHub Pages) and drives
   the PWA manifest's `start_url`/`scope`. Do not hardcode absolute asset paths.
 - Tailwind v4 has no config file — use utilities in JSX, and put genuinely global rules in the
@@ -190,8 +200,11 @@ on the board and the diagonals a chariot may run down are one list, not two.
 ## Current placeholders
 
 - Nothing is persisted: a reload deals a new game.
-- `option-picker/` is prototype scaffolding for choosing a style, set or setup. A real settings
-  screen replaces it.
+- `option-picker/` is prototype scaffolding for choosing a style, set, setup or format. A real
+  settings screen replaces it, and it is now overdue: six rows of pills are taller than a short
+  window has to spare, so the block is capped at 45% of the height and scrolls. `FitsTheWindow` is
+  what catches a seventh row pushing the board off the top of the screen — it did exactly that when
+  the format picker was added.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
   maskable variant are still to do.
 - No Korean font is bundled, so the character sets fall back to whatever the device has, and the
