@@ -58,10 +58,17 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
   with `acceptance-tests/` — renaming one breaks specs.
 - Redux: use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped
   `react-redux` hooks. Add state as a slice via `createSlice`.
-- **A fact the engine can work out is derived where it is shown, never stored.** Check and the
-  winner are not fields on `GameState` and not slices — `turn-indicator/utils/GameStatusOf.ts` asks
-  the engine on every render and returns one discriminated union, and `TurnIndicator` renders it.
-  Storing either would mean a second copy of the position's truth to keep in step with the position.
+- **A fact the engine can work out is derived where it is shown, never stored.** Check, the winner
+  and each army's score are not fields on `GameState` and not slices — `GameStatusOf.ts` asks the
+  engine on every render and returns one discriminated union, `Scoreboard` asks `scoreFor` the same
+  way, and both are rendered straight out. Storing any of them would mean a second copy of the
+  position's truth to keep in step with the position. `GameStatusOf` goes one further and relays the
+  engine's own `outcomeOf` rather than deciding a result here, adding only the one state the engine
+  has no opinion about — a general under attack while the game goes on.
+- **The board closes when the game does.** A mate needs no help, having no legal move in it; a game
+  stopped by two rested turns is full of moves the rules will not accept, so `gameIsOver` in
+  `board/utils/` is asked before a piece is marked, picked up or offered anywhere. Without it the
+  board lights a piece up and `applyMove` throws when it is put down.
 - `BASE_PATH` sets where the app is served from (`/` locally, `/<repo>/` on GitHub Pages) and drives
   the PWA manifest's `start_url`/`scope`. Do not hardcode absolute asset paths.
 - Tailwind v4 has no config file — use utilities in JSX, and put genuinely global rules in the

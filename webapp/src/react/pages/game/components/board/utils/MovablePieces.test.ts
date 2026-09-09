@@ -18,6 +18,16 @@ it("marks the army to move, and only that army", () => {
   expect(movable.has(toPositionKey({file: 1, rank: 1}))).toBe(false);
 });
 
+/**
+ * A mate needs no guard — a mated army has no legal move, so nothing is marked anyway. A game
+ * stopped by two rested turns is the case that does: the position is still full of moves.
+ */
+it("marks nothing at all once both armies have rested a turn and stopped the game", () => {
+  const stopped: GameState = {...opening(), consecutivePasses: 2};
+
+  expect(movablePieces(stopped).size).toBe(0);
+});
+
 it("marks nothing on an empty point", () => {
   expect(movablePieces(opening()).has(toPositionKey({file: 5, rank: 5}))).toBe(false);
 });

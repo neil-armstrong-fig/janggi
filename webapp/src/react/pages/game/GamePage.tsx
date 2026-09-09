@@ -12,7 +12,10 @@ import type {MovableHighlight} from "@src/react/pages/game/types/MovableHighligh
 import {OptionPicker} from "@src/react/pages/game/components/option-picker/OptionPicker";
 import {TurnIndicator} from "@src/react/pages/game/components/turn-indicator/TurnIndicator";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
-import {choSetupChosen, hanSetupChosen, moved, restarted} from "@src/redux/game/GameSlice";
+import {PassButton} from "@src/react/pages/game/components/pass-button/PassButton";
+import {Scoreboard} from "@src/react/pages/game/components/scoreboard/Scoreboard";
+import {canPass} from "@src/game/CanPass";
+import {choSetupChosen, hanSetupChosen, moved, passed, restarted} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useState} from "react";
 
@@ -27,20 +30,30 @@ import {useState} from "react";
  *
  * The game itself comes from the store; the board style and the piece set stay in local state,
  * because those are preferences about how the game is drawn rather than part of the game.
+ *
+ * Resting a turn is a control rather than a gesture on the board, because it is the one thing a
+ * player does that touches no intersection — and the one way out of a position with nothing to
+ * play, janggi having no stalemate.
  */
 export function GamePage(): React.JSX.Element {
   const [style, setStyle] = useState<BoardStyle>(DEFAULT_STYLE);
   const [pieceStyle, setPieceStyle] = useState<PieceSetStyle>(DEFAULT_PIECE_STYLE);
   const [movableHighlight, setMovableHighlight] = useState<MovableHighlight>(DEFAULT_MOVABLE_HIGHLIGHT);
-  const {game, hanSetup, choSetup, movesPlayed} = useAppSelector(state => state.game);
+  const {game, hanSetup, choSetup, turnsTaken} = useAppSelector(state => state.game);
   const dispatch = useAppDispatch();
 
   return (
     <main className="flex h-full w-full flex-col gap-3 bg-[#1c140b] p-2">
-      <div className="flex shrink-0 items-center justify-center gap-3">
+      <div className="flex shrink-0 flex-col items-center gap-1">
         <TurnIndicator game={game} />
 
-        <NewGameButton onStart={() => dispatch(restarted())} />
+        <div className="flex items-center gap-3">
+          <Scoreboard game={game} />
+
+          <PassButton enabled={canPass(game)} onPass={() => dispatch(passed())} />
+
+          <NewGameButton onStart={() => dispatch(restarted())} />
+        </div>
       </div>
 
       <div className="min-h-0 flex-1">
@@ -75,7 +88,7 @@ export function GamePage(): React.JSX.Element {
 
         <OptionPicker
           id="han-setup"
-          disabled={movesPlayed > 0}
+          disabled={turnsTaken > 0}
           label="Han"
           ariaLabel="Han's opening setup"
           options={SETUPS}
@@ -85,7 +98,7 @@ export function GamePage(): React.JSX.Element {
 
         <OptionPicker
           id="cho-setup"
-          disabled={movesPlayed > 0}
+          disabled={turnsTaken > 0}
           label="Cho"
           ariaLabel="Cho's opening setup"
           options={SETUPS}

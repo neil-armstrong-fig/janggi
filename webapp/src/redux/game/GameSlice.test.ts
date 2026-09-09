@@ -3,7 +3,7 @@ import type {Move} from "@src/game/types/Move";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {expect, it} from "vitest";
-import {choSetupChosen, gameReducer, moved, restarted} from "@src/redux/game/GameSlice";
+import {choSetupChosen, gameReducer, moved, passed, restarted} from "@src/redux/game/GameSlice";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 
 /**
@@ -28,7 +28,19 @@ it("hands the turn to the other army", () => {
 });
 
 it("counts the move", () => {
-  expect(gameReducer(opening(), moved(CHO_OPENING)).movesPlayed).toBe(1);
+  expect(gameReducer(opening(), moved(CHO_OPENING)).turnsTaken).toBe(1);
+});
+
+it("rests the turn on the game, handing the move over without touching the board", () => {
+  const after = gameReducer(opening(), passed());
+
+  expect(after.game.sideToMove).toBe("han");
+  expect(after.game.pieces).toEqual(opening().game.pieces);
+});
+
+/** A pass is not a move, but it is a turn — and a back rank is arranged strictly before play. */
+it("counts a rested turn too, so the setups lock behind it", () => {
+  expect(gameReducer(opening(), passed()).turnsTaken).toBe(1);
 });
 
 /** `applyMove` throws rather than returning undefined, and the reducer must not swallow that — a
@@ -53,7 +65,7 @@ it("deals a fresh game when one is restarted, giving the first move back to cho"
 
   expect(after.game.pieces).toHaveLength(32);
   expect(after.game.sideToMove).toBe("cho");
-  expect(after.movesPlayed).toBe(0);
+  expect(after.turnsTaken).toBe(0);
 });
 
 /**
@@ -68,7 +80,7 @@ it("deals a fresh game when either army's setup is chosen", () => {
 
   expect(after.choSetup.name).toBe("Outer Elephant");
   expect(after.game.sideToMove).toBe("cho");
-  expect(after.movesPlayed).toBe(0);
+  expect(after.turnsTaken).toBe(0);
   expect(pieceOn(after, 1, 7)).toEqual({side: "cho", type: "soldier"});
 });
 

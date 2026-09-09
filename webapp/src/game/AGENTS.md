@@ -110,6 +110,11 @@ moved: (state, action: PayloadAction<Move>) => applyMove(state, action.payload);
 
 The store imports the engine, never the reverse — which the lint boundary enforces.
 
-Nothing on screen uses `pass`, `outcomeOf` or either score yet: this layer landed engine-first and
-the UI follows. `react/…/turn-indicator/utils/GameStatusOf.ts` still asks `isCheckmate` itself, and
-relaying `outcomeOf` instead is the first thing that hookup should do.
+`GameStatusOf.ts` relays `outcomeOf` rather than deciding a result of its own, and adds only the one
+state the engine has no opinion about — a general under attack while the game goes on. **How a game
+ends is this package's to say**, and a second copy of it up there is exactly what would drift.
+
+One thing the engine deliberately does not do for the board: `legalMovesFor` keeps answering after
+two rested turns have stopped the game, because `isCheckmate` asks it whether a check has any reply
+and that question is about the position rather than about whether anyone is still playing. The board
+closes itself over the top, in `react/…/board/utils/GameIsOver.ts`.

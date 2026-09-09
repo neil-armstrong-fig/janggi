@@ -7,12 +7,16 @@ import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 export class StatusPlaywright extends BaseComponent {
   readonly container: Locator;
   private readonly newGame: Locator;
+  private readonly passTurn: Locator;
+  private readonly scores: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.container = page.getByTestId("turn");
     this.newGame = page.getByTestId("new-game");
+    this.passTurn = page.getByTestId("pass");
+    this.scores = page.getByTestId("scores");
   }
 
   /** Whether the army to move is in check. */
@@ -33,6 +37,27 @@ export class StatusPlaywright extends BaseComponent {
 
   async startNewGame(): Promise<void> {
     await this.newGame.click();
+  }
+
+  async pass(): Promise<void> {
+    await this.passTurn.click();
+  }
+
+  /** Whether the turn may be rested, which the control says by being enabled or not. */
+  async canPass(): Promise<boolean> {
+    await this.passTurn.waitFor({state: "visible"});
+
+    return await this.passTurn.isEnabled();
+  }
+
+  /**
+   * What one army is worth, read off an attribute rather than off the words, so the line can be
+   * reworded without breaking a spec. A missing attribute is a NaN, which no assertion will match.
+   */
+  async getScore(side: Side): Promise<number> {
+    await this.scores.waitFor({state: "visible"});
+
+    return Number(await this.scores.getAttribute(`data-${side}`));
   }
 
   /**
