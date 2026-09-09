@@ -27,7 +27,16 @@ interface WonOnPoints {
   readonly by: Side;
 }
 
-export type GameStatus = ToMove | InCheck | Won | WonOnPoints;
+/**
+ * The two generals faced each other and the call was made, in a game being played casually — 빅장,
+ * and the one drawn ending janggi has. A scored game reaches `WonOnPoints` from the same call
+ * instead, there being no draw in that format to reach.
+ */
+interface Drawn {
+  readonly kind: "drawn";
+}
+
+export type GameStatus = ToMove | InCheck | Won | WonOnPoints | Drawn;
 
 /**
  * What the game has to say about itself, in the one form a player needs told.
@@ -50,6 +59,8 @@ export function gameStatusOf(game: GameState): GameStatus {
   if (outcome.kind === "checkmate") return {kind: "won", by: outcome.winner};
 
   if (outcome.kind === "pointsWin") return {kind: "wonOnPoints", by: outcome.winner};
+
+  if (outcome.kind === "bikjang") return {kind: "drawn"};
 
   if (isInCheck(game, game.sideToMove)) return {kind: "inCheck", side: game.sideToMove};
 

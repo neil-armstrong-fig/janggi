@@ -61,6 +61,30 @@ it("still says whose move it is after only one rested turn", () => {
   expect(gameStatusOf({...opening(), consecutivePasses: 1})).toEqual({kind: "toMove", side: "cho"});
 });
 
+/**
+ * The one drawn ending janggi has, and only in a casual game — a scored one settles the same call on
+ * points. This is where the two are told apart, since neither is reachable through the turn line.
+ */
+it("is drawn once a bikjang has been called in a casual game", () => {
+  const called = {...position("cho", cho("general", 5, 9), han("general", 5, 2)), bikjangCalled: true};
+
+  expect(gameStatusOf(called)).toEqual({kind: "drawn"});
+});
+
+it("is won on points by the same call in a scored game, there being no draw to reach", () => {
+  const bare = position("cho", cho("general", 5, 9), han("general", 5, 2));
+  const called: GameState = {...bare, format: "Scored", bikjangCalled: true};
+
+  expect(gameStatusOf(called)).toEqual({kind: "wonOnPoints", by: "han"});
+});
+
+/** A bikjang standing on the board decides nothing until somebody calls it. */
+it("is still someone's move while a bikjang stands uncalled", () => {
+  const facing = position("cho", cho("general", 5, 9), han("general", 5, 2));
+
+  expect(gameStatusOf(facing)).toEqual({kind: "toMove", side: "cho"});
+});
+
 function opening(): GameState {
   return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 }

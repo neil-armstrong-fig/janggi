@@ -5,8 +5,8 @@ import {gameStatusOf} from "@src/react/pages/game/components/turn-indicator/util
 import {sideName} from "@src/react/pages/game/components/utils/SideNames";
 
 /**
- * Whose turn it is, whether their general is under attack, and who won — by checkmate, or on points
- * once both players have rested a turn.
+ * Whose turn it is, whether their general is under attack, and how the game ended — a checkmate, a
+ * win on points once both players have rested a turn, or a draw where a bikjang was called.
  *
  * Without it a board waiting for the other army is indistinguishable from one that has stopped
  * responding: your own pieces simply refuse to be picked up and nothing says why. A mate is the
@@ -30,6 +30,7 @@ export function TurnIndicator({game}: Props): React.JSX.Element {
       data-testid="turn"
       data-side={winner ?? sideOf(status)}
       data-in-check={status.kind === "inCheck" ? "" : undefined}
+      data-drawn={status.kind === "drawn" ? "" : undefined}
       data-winner={winner}
       aria-live="polite"
       className={`shrink-0 text-center text-xs tracking-wide uppercase ${status.kind === "toMove" ? "text-white/60" : "text-amber-300"}`}
@@ -45,6 +46,8 @@ function announcementOf(status: GameStatus): string {
       return `${sideName(status.by)} wins`;
     case "wonOnPoints":
       return `${sideName(status.by)} wins on points`;
+    case "drawn":
+      return "Drawn by bikjang";
     case "inCheck":
       return `${sideName(status.side)} is in check`;
     case "toMove":

@@ -3,7 +3,17 @@ import type {Move} from "@src/game/types/Move";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {expect, it} from "vitest";
-import {choSetupChosen, gameReducer, moved, passed, playedAgain, restarted, takenBack} from "@src/redux/game/GameSlice";
+import {
+  bikjangCalled,
+  choSetupChosen,
+  formatChosen,
+  gameReducer,
+  moved,
+  passed,
+  playedAgain,
+  restarted,
+  takenBack,
+} from "@src/redux/game/GameSlice";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 
 /**
@@ -112,6 +122,35 @@ it("deals a fresh game when either army's setup is chosen", () => {
   expect(after.played.present.sideToMove).toBe("cho");
   expect(after.played.past).toEqual([]);
   expect(pieceOn(after, 1, 7)).toEqual({side: "cho", type: "soldier"});
+});
+
+/**
+ * A bikjang cannot be called from the opening — the two soldiers on file 5 stand between the
+ * generals — so the wiring is checked by the throw coming through rather than being swallowed. The
+ * control is disabled off `canCallBikjang`, which is what stops it being dispatched. That a real
+ * bikjang can be reached and called is `CallingABikjang.test.ts`'s job.
+ */
+it("refuses a call when the generals are not facing each other", () => {
+  expect(() => gameReducer(opening(), bikjangCalled())).toThrow(/not facing each other/);
+});
+
+/** A format is dealt, not applied, exactly as a setup is — so choosing one starts the game over. */
+it("deals a fresh game in the chosen format", () => {
+  const played = gameReducer(opening(), moved(CHO_OPENING));
+
+  const after = gameReducer(played, formatChosen("Scored"));
+
+  expect(after.format).toBe("Scored");
+  expect(after.played.present.format).toBe("Scored");
+  expect(after.played.present.sideToMove).toBe("cho");
+  expect(after.played.past).toEqual([]);
+});
+
+it("keeps the format when a game is restarted or a setup is chosen", () => {
+  const scored = gameReducer(opening(), formatChosen("Scored"));
+
+  expect(gameReducer(scored, restarted()).format).toBe("Scored");
+  expect(gameReducer(scored, choSetupChosen(setup("Outer Elephant"))).format).toBe("Scored");
 });
 
 function opening(): GameSliceState {

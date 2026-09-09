@@ -57,6 +57,33 @@ export class StatusDsl {
     }
   }
 
+  /** Calls the bikjang the two generals are standing in — 빅장, which stops the game. */
+  async callBikjang(): Promise<void> {
+    try {
+      await this.status.callBikjang();
+    } catch (error) {
+      throw new DslError("Failed to call the bikjang", error);
+    }
+  }
+
+  /** Whether there is a bikjang on the board that this format lets the players call. */
+  async canCallBikjang(): Promise<boolean> {
+    try {
+      return await this.status.canCallBikjang();
+    } catch (error) {
+      throw new DslError("Failed to read whether a bikjang may be called", error);
+    }
+  }
+
+  /** Whether the game ended in a draw. */
+  async isDrawn(): Promise<boolean> {
+    try {
+      return await this.status.isDrawn();
+    } catch (error) {
+      throw new DslError("Failed to read whether the game was drawn", error);
+    }
+  }
+
   /** Takes the last thing played back, whether that was a move or a rested turn. */
   async undo(): Promise<void> {
     try {
