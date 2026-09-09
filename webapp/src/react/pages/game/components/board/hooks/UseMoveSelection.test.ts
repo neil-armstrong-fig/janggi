@@ -9,6 +9,7 @@ import type {Setup} from "@src/game/setups/types/Setup";
 import {act, renderHook} from "@testing-library/react";
 import {applyMove} from "@src/game/ApplyMove";
 import {beforeEach, describe, expect, it} from "vitest";
+import {isCheckmate} from "@src/game/IsCheckmate";
 import {newGame} from "@src/game/NewGame";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 import {useMoveSelection} from "@src/react/pages/game/components/board/hooks/UseMoveSelection";
@@ -30,6 +31,9 @@ const ANOTHER_CHO_SOLDIER: Position = {file: 3, rank: 7};
 const FORWARD: Position = {file: 1, rank: 6};
 const SIDEWAYS: Position = {file: 2, rank: 7};
 const EMPTY_POINT: Position = {file: 5, rank: 5};
+
+const MATED_GENERAL: Position = {file: 5, rank: 9};
+const MATED_CHARIOT: Position = {file: 9, rank: 10};
 
 /** Forward is `rank + 1` for han, against cho's `rank - 1`. See docs/rules.md §1. */
 const HAN_SOLDIER: Position = {file: 1, rank: 4};
@@ -200,6 +204,34 @@ describe("with han to move", () => {
   });
 });
 
+describe("with the side to move mated", () => {
+  beforeEach(() => {
+    selection = renderOn(matedGame());
+  });
+
+  describe("when the mated general is picked up", () => {
+    beforeEach(() => {
+      act(() => selection.current.tap(MATED_GENERAL));
+    });
+
+    /** Nothing special happens at mate: `movesFrom` filters out every move that leaves the general
+     * attacked, and at mate that is all of them. The board refuses the game for free. */
+    it("is offered nowhere to go", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+  });
+
+  describe("when a piece far from the mate is picked up", () => {
+    beforeEach(() => {
+      act(() => selection.current.tap(MATED_CHARIOT));
+    });
+
+    it("is offered nowhere either, no piece being able to answer the check", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+  });
+});
+
 /**
  * What `renderHook` hands back, named here because the type that names it cannot be imported: the
  * lint rule allows only `renderHook`, `act`, `waitFor` and `cleanup` from `@testing-library/react`.
@@ -222,6 +254,29 @@ function openingGame(): GameState {
 /** The opening with cho's first move played, so it is han's turn. */
 function afterChoOpens(): GameState {
   return applyMove(openingGame(), {from: CHO_SOLDIER, to: FORWARD});
+}
+
+/**
+ * A position cho is mated in: han's chariots hold the two palace corners and the third has come
+ * down file 5. Constructed rather than played, a mate being far deeper than any readable move list,
+ * and checked here so that a change to the rules cannot quietly turn it back into a game.
+ */
+function matedGame(): GameState {
+  const game: GameState = {
+    sideToMove: "cho",
+    pieces: [
+      {piece: {side: "cho", type: "general"}, position: MATED_GENERAL},
+      {piece: {side: "cho", type: "chariot"}, position: MATED_CHARIOT},
+      {piece: {side: "han", type: "general"}, position: {file: 5, rank: 2}},
+      {piece: {side: "han", type: "chariot"}, position: {file: 4, rank: 1}},
+      {piece: {side: "han", type: "chariot"}, position: {file: 6, rank: 1}},
+      {piece: {side: "han", type: "chariot"}, position: {file: 5, rank: 3}},
+    ],
+  };
+
+  if (!isCheckmate(game, "cho")) throw new Error("The position this test is built on is no longer a mate");
+
+  return game;
 }
 
 function points(positions: readonly Position[]): string[] {

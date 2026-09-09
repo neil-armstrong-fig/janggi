@@ -364,6 +364,12 @@ attacks the general, `IsCheckmate.ts` is that plus having no legal reply, and
 `MovesFrom.ts` no longer offers a move that would leave its own general
 attacked — so a general can no longer be captured.
 
+**Shown.** The turn line above the board says "Han is in check" and, once there
+is no reply, "Han wins"; `react/…/turn-indicator/utils/GameStatusOf.ts` derives
+both from the two predicates above rather than storing them. Neither 묵장 nor
+자장 can arise on screen, because a move that overlooks a check is not offered
+in the first place.
+
 Not implemented from this section: 묵장 and 자장, which are rules about human
 mistakes rather than about the position. Note that 자장 does **not** say moving
 into check is illegal — it says the mistake hands the decision to the opponent.
