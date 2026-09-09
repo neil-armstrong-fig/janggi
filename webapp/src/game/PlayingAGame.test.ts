@@ -9,13 +9,18 @@ import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {applyMove} from "@src/game/ApplyMove";
 import {beforeEach, describe, expect, it} from "vitest";
+import {canPass} from "@src/game/CanPass";
 import {isCheckmate} from "@src/game/IsCheckmate";
 import {isInCheck} from "@src/game/IsInCheck";
 import {legalMovesFor} from "@src/game/LegalMovesFor";
+import {materialFor} from "@src/game/MaterialFor";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
+import {outcomeOf} from "@src/game/OutcomeOf";
+import {pass} from "@src/game/Pass";
 import {pieceAt} from "@src/game/board/utils/PieceAt";
 import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {scoreFor} from "@src/game/ScoreFor";
 
 /**
  * End to end test for the entire game engine.
@@ -204,6 +209,17 @@ describe("a new game", () => {
         it("takes the piece off the board altogether", () => {
           expect(game.pieces).toHaveLength(31);
         });
+
+        it("costs han the two points a soldier is worth", () => {
+          expect(materialFor(game, "cho")).toBe(72);
+          expect(materialFor(game, "han")).toBe(70);
+        });
+
+        /** The armies opened level on the board; the 덤 is why the scores were never level. */
+        it("leaves han behind on points even with the 덤 counted in", () => {
+          expect(scoreFor(game, "cho")).toBe(72);
+          expect(scoreFor(game, "han")).toBe(71.5);
+        });
       });
     });
   });
@@ -243,6 +259,15 @@ describe("an endgame of one chariot against a bare general", () => {
       const answers = legalMovesFor(game).map(candidate => applyMove(game, candidate));
 
       expect(answers.every(after => !isInCheck(after, "han"))).toBe(true);
+    });
+
+    /**
+     * A check has to be answered, and resting a move does not answer it. Were a player allowed to
+     * pass out of check there could be no 외통 at all, since a mated general would simply sit still.
+     */
+    it("does not let han rest the move instead of answering", () => {
+      expect(canPass(game)).toBe(false);
+      expect(() => pass(game)).toThrow();
     });
 
     describe("and the general steps off the file", () => {
@@ -330,6 +355,156 @@ describe("an endgame where a cannon has nothing to jump", () => {
   });
 });
 
+/**
+ * Janggi has no stalemate: a player with nothing to play rests the move and the game goes on, which
+ * is why `isCheckmate` asks for a check as well as an empty move list. See `docs/rules.md` §6.3.
+ *
+ * Cho's general is boxed into a palace corner by two chariots that cover its three exits without
+ * attacking the corner itself — one holds file 5, which is (5,10) and (5,9), and the other rank 9,
+ * which is (4,9) and (5,9) again. (3,10) is outside the palace, so nothing is left.
+ */
+describe("an endgame where the side to move has nothing to play", () => {
+  let game: GameState;
+
+  beforeEach(() => {
+    game = position("cho", cho("general", 4, 10), han("general", 5, 2), han("chariot", 5, 5), han("chariot", 9, 9));
+  });
+
+  it("leaves cho nothing at all to play", () => {
+    expect(legalMovesFor(game)).toEqual([]);
+  });
+
+  it("is not check, the corner lying on neither chariot's line", () => {
+    expect(isInCheck(game, "cho")).toBe(false);
+  });
+
+  it("is not mate either, an empty move list being fatal only while in check", () => {
+    expect(isCheckmate(game, "cho")).toBe(false);
+  });
+
+  it("lets cho rest the move", () => {
+    expect(canPass(game)).toBe(true);
+  });
+
+  describe("when cho rests the move", () => {
+    let before: GameState;
+
+    beforeEach(() => {
+      before = game;
+      game = pass(game);
+    });
+
+    it("hands the turn to han", () => {
+      expect(game.sideToMove).toBe("han");
+    });
+
+    it("leaves every piece where it stood, a pass moving nothing", () => {
+      expect(game.pieces).toEqual(before.pieces);
+    });
+
+    it("carries the game on, one pass being no ending", () => {
+      expect(outcomeOf(game)).toEqual({kind: "undecided"});
+    });
+  });
+});
+
+/**
+ * Two passes in a row end the game and it is decided on points — 대한장기연맹's 2022 revision, and
+ * the first ending in janggi that reaches the 덤. See `docs/rules.md` §6.3 and §6.5.
+ *
+ * Cho is a soldier up on the board and han has its 1.5, so the whole game hangs on half a point.
+ * That is what the half point is for: a scored game cannot tie.
+ */
+describe("an endgame both players agree to stop", () => {
+  let game: GameState;
+
+  beforeEach(() => {
+    game = position(
+      "cho",
+      cho("general", 5, 9),
+      cho("chariot", 1, 8),
+      cho("soldier", 5, 7),
+      han("general", 4, 2),
+      han("chariot", 1, 3),
+    );
+  });
+
+  it("has cho a soldier up on the board", () => {
+    expect(materialFor(game, "cho")).toBe(15);
+    expect(materialFor(game, "han")).toBe(13);
+  });
+
+  it("has the 덤 leaving han half a point short rather than two", () => {
+    expect(scoreFor(game, "cho")).toBe(15);
+    expect(scoreFor(game, "han")).toBe(14.5);
+  });
+
+  it("is undecided while there is still a game to play", () => {
+    expect(outcomeOf(game)).toEqual({kind: "undecided"});
+  });
+
+  describe("when cho rests the move", () => {
+    beforeEach(() => {
+      game = pass(game);
+    });
+
+    it("counts the one pass", () => {
+      expect(game.consecutivePasses).toBe(1);
+    });
+
+    it("hands the turn to han", () => {
+      expect(game.sideToMove).toBe("han");
+    });
+
+    it("is still undecided, one pass being only one player's agreement", () => {
+      expect(outcomeOf(game)).toEqual({kind: "undecided"});
+    });
+
+    describe("and han rests the move as well", () => {
+      beforeEach(() => {
+        game = pass(game);
+      });
+
+      it("ends the game on points, won by the side ahead", () => {
+        expect(outcomeOf(game)).toEqual({kind: "pointsWin", winner: "cho", scores: {cho: 15, han: 14.5}});
+      });
+
+      it("refuses a move once it is over", () => {
+        expect(() => applyMove(game, move(1, 3, 1, 8))).toThrow();
+      });
+
+      it("refuses a third pass once it is over", () => {
+        expect(() => pass(game)).toThrow();
+      });
+    });
+
+    describe("and han takes the chariot instead", () => {
+      beforeEach(() => {
+        game = applyMove(game, move(1, 3, 1, 8));
+      });
+
+      it("puts han a chariot ahead", () => {
+        expect(materialFor(game, "cho")).toBe(2);
+        expect(materialFor(game, "han")).toBe(13);
+      });
+
+      it("forgets the pass, a move having come between", () => {
+        expect(game.consecutivePasses).toBe(0);
+      });
+
+      describe("and the two then rest a move each", () => {
+        beforeEach(() => {
+          game = pass(pass(game));
+        });
+
+        it("ends it the other way, han being ahead on the board as well as the 덤", () => {
+          expect(outcomeOf(game)).toEqual({kind: "pointsWin", winner: "han", scores: {cho: 2, han: 14.5}});
+        });
+      });
+    });
+  });
+});
+
 function pieceOn(state: GameState, file: File, rank: Rank): Piece | undefined {
   return pieceAt(piecesByPosition(state.pieces), {file, rank});
 }
@@ -355,7 +530,7 @@ function setup(name: string): Setup {
 
 /** A board built piece by piece, for a state no opening reaches in a readable number of moves. */
 function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove};
+  return {pieces, sideToMove, consecutivePasses: 0};
 }
 
 function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {

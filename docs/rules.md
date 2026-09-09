@@ -495,8 +495,31 @@ legal move passes and the game continues.
 > "Stalemate does not result in the end of a game in janggi; if a player has no
 > legal move left, he is just forced to pass." — en.wikipedia
 
-Not implemented. It is the smallest of these to add, and it changes the shape of
-`Move` — a pass is not a `from`/`to` pair.
+**Implemented.** `webapp/src/game/Pass.ts` rests a turn and `CanPass.ts` says
+whether one may be rested. Three decisions are encoded, and each is a choice
+rather than a transcription:
+
+- **A pass is not a `Move`.** `Move` stays a `from`/`to` pair and `pass(state)`
+  is its own entry point beside `applyMove` — "한수 쉼은 행마(수)에 해당하지
+  않으며", a pass is not a move. It is therefore not in `legalMovesFor`, which
+  is what leaves the 31 openings of §5 and `isCheckmate` saying what they said
+  before.
+
+- **Passing is unrestricted, except while in check.** The unrestricted half is
+  en.wikipedia's and pychess's reading, taken over the KJA's narrower "자기
+  차례에 둘 것이 없어". The check half is in **no source** and is derived: were a
+  player allowed to rest out of check, a mated general would simply sit still
+  and 외통 could not exist.
+
+- **Two passes in a row stop the game, and it is settled on points**, per the
+  대한장기연맹 revision quoted above. `OutcomeOf.ts` reads the count that
+  `GameState.consecutivePasses` keeps; any move puts it back to nought, in
+  `positionAfter`. This is the first ending that reaches the 덤 of §6.5, and the
+  reason that half point exists.
+
+Stalemate accordingly cannot end a game: `isCheckmate` asks for a check as well
+as an empty move list, and `PlayingAGame.test.ts` builds a position with neither
+a legal move nor a check and rests the turn out of it.
 
 ### 6.4 Repetition
 
@@ -516,6 +539,15 @@ after the third repetition, other repetitions go to material counting.
 Not implemented, and it needs a position history, which `GameState` deliberately
 does not carry yet.
 
+**Decided, 2026-09-09: report it, do not adjudicate.** `isRepetition` will say
+that a position has come round for the third time and `applyMove` will refuse
+the move that makes it, exempt below 30 points a side as clause ① has it. Who
+is at fault stays a referee's call, because clause ② — "반복수를 악용하여 이득을
+취할 수 없다" — is a judgement about intent and the engine has no referee.
+pychess's mechanical resolution (perpetual check loses for the checking side,
+everything else goes to material) is pychess's decision and not any
+federation's, so it is not taken.
+
 ### 6.5 Scoring, piece values and the 덤
 
 Used to decide a game that reaches the time limit or a drawn-material ending,
@@ -533,8 +565,19 @@ Each army's pieces total **72**. Han receives **1.5 points (덤, deom)** in
 compensation for Cho moving first and choosing its setup last, so Han starts on
 **73.5** — the half point exists so a scored game cannot tie.
 
-Not implemented. Nothing yet keeps captured pieces, and `GameState` holds only
-the pieces still on the board.
+**Implemented.** `webapp/src/game/MaterialFor.ts` holds the table and sums one
+army's remaining pieces; `ScoreFor.ts` adds Han's 덤 on top, so a new game stands
+at 72 against 73.5. `OutcomeOf.ts` decides a stopped game by comparing the two.
+
+**Nothing keeps captured pieces, and nothing needs to.** Every setup deals the
+same sixteen, so what an army is missing is exactly what has been taken from it
+and the board is a complete record. A captured *pile* — the pieces themselves,
+to draw beside the board — is a display, and would want the starting army to
+subtract from; the score does not.
+
+Not implemented from this section: the piece score is not yet shown to a player,
+and the 30-point threshold it exists to serve belongs to bikjang in §6.2, which
+is not modelled.
 
 ### 6.6 The setup phase
 
@@ -579,5 +622,5 @@ do not spend the time again.
 | The 31 legal first moves in §5                                                                 | **High** — derived from the rules above; it is what the engine's tests assert                  |
 | Piece values, the 72-point total and Han's 1.5 덤                                              | **High** — the KJA's 대국규정, corroborated by en.wikipedia                                     |
 | Bikjang is a draw in casual play, and gated on 30 points a side in the scored tournament format | **High** — the KJA's live site carries both, and the split by match format is what reconciles it with the English sources. See §6.2 |
-| A player may pass at any time, without restriction                                             | **Moderate** — en.wikipedia and pychess say so; the KJA implies "when you have nothing", and 대한장기연맹 made two consecutive passes end the game in 2022 |
+| A player may pass at any time, without restriction                                             | **Moderate** — en.wikipedia and pychess say so; the KJA implies "when you have nothing", and 대한장기연맹 made two consecutive passes end the game in 2022. The engine takes the unrestricted reading, and bars a pass only while in check — a rule no source states, derived in §6.3 |
 | Stalemate cannot occur, because a player with no move passes                                   | **High** — en.wikipedia states it, and it follows from the pass rule under either reading      |

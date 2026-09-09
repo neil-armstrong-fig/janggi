@@ -73,7 +73,7 @@ function opening(): GameState {
 }
 
 function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove};
+  return {pieces, sideToMove, consecutivePasses: 0};
 }
 
 function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {

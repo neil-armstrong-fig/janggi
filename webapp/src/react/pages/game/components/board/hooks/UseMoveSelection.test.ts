@@ -264,6 +264,7 @@ function afterChoOpens(): GameState {
 function matedGame(): GameState {
   const game: GameState = {
     sideToMove: "cho",
+    consecutivePasses: 0,
     pieces: [
       {piece: {side: "cho", type: "general"}, position: MATED_GENERAL},
       {piece: {side: "cho", type: "chariot"}, position: MATED_CHARIOT},
