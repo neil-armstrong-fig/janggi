@@ -8,7 +8,8 @@ Vite + React 19 + Redux Toolkit + Tailwind v4, client-side rendered, installable
 src/main.tsx          entry — createRoot + <Provider store>
 src/react/            components, nested by who uses them
 src/redux/            Store.ts, typed Hooks.ts, one folder per slice
-src/game/             the janggi engine — rules, move generation, game state. No React, no Redux
+src/game/             the janggi engine — rules, move generation, game state, and the record a
+                      game is taken back through. No React, no Redux
 src/index.css         Tailwind import + the base layer
 ```
 
@@ -65,6 +66,18 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
   position's truth to keep in step with the position. `GameStatusOf` goes one further and relays the
   engine's own `outcomeOf` rather than deciding a result here, adding only the one state the engine
   has no opinion about — a general under attack while the game goes on.
+
+  `playHasBegun` in `pages/game/utils/` is the same rule applied late: the store used to carry a
+  `turnsTaken` counter to lock the setup pickers, and a counter that only ever climbs went wrong the
+  moment a game could be taken back — a board returned to its starting position would have sat there
+  with the arrangement that produced it out of reach. It reads `played.past` instead, so it falls
+  again as the game does.
+
+- **The store holds a `PlayedGame`, not a `GameState`.** `state.game.played.present` is the
+  position, and everything drawn takes that. The record beside it is what `UndoButton` and
+  `RedoButton` act on, and those two are the only controls in here **not** gated on the game still
+  being undecided — taking back the turn that ended a game is the ordinary reason to reach for one.
+  `src/game/AGENTS.md` says why the engine keeps it that way.
 - **The board closes when the game does.** A mate needs no help, having no legal move in it; a game
   stopped by two rested turns is full of moves the rules will not accept, so `gameIsOver` in
   `board/utils/` is asked before a piece is marked, picked up or offered anywhere. Without it the

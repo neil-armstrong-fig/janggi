@@ -8,6 +8,8 @@ export class StatusPlaywright extends BaseComponent {
   readonly container: Locator;
   private readonly newGame: Locator;
   private readonly passTurn: Locator;
+  private readonly takeBack: Locator;
+  private readonly playAgain: Locator;
   private readonly scores: Locator;
 
   constructor(page: Page) {
@@ -16,6 +18,8 @@ export class StatusPlaywright extends BaseComponent {
     this.container = page.getByTestId("turn");
     this.newGame = page.getByTestId("new-game");
     this.passTurn = page.getByTestId("pass");
+    this.takeBack = page.getByTestId("undo");
+    this.playAgain = page.getByTestId("redo");
     this.scores = page.getByTestId("scores");
   }
 
@@ -48,6 +52,28 @@ export class StatusPlaywright extends BaseComponent {
     await this.passTurn.waitFor({state: "visible"});
 
     return await this.passTurn.isEnabled();
+  }
+
+  async undo(): Promise<void> {
+    await this.takeBack.click();
+  }
+
+  /** Whether there is anything to take back, which the control says by being enabled or not. */
+  async canUndo(): Promise<boolean> {
+    await this.takeBack.waitFor({state: "visible"});
+
+    return await this.takeBack.isEnabled();
+  }
+
+  async redo(): Promise<void> {
+    await this.playAgain.click();
+  }
+
+  /** Whether anything taken back is waiting to be played again. */
+  async canRedo(): Promise<boolean> {
+    await this.playAgain.waitFor({state: "visible"});
+
+    return await this.playAgain.isEnabled();
   }
 
   /**

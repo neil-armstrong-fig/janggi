@@ -13,9 +13,22 @@ import {OptionPicker} from "@src/react/pages/game/components/option-picker/Optio
 import {TurnIndicator} from "@src/react/pages/game/components/turn-indicator/TurnIndicator";
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
 import {PassButton} from "@src/react/pages/game/components/pass-button/PassButton";
+import {RedoButton} from "@src/react/pages/game/components/redo-button/RedoButton";
 import {Scoreboard} from "@src/react/pages/game/components/scoreboard/Scoreboard";
+import {UndoButton} from "@src/react/pages/game/components/undo-button/UndoButton";
 import {canPass} from "@src/game/CanPass";
-import {choSetupChosen, hanSetupChosen, moved, passed, restarted} from "@src/redux/game/GameSlice";
+import {canRedo} from "@src/game/record/CanRedo";
+import {canUndo} from "@src/game/record/CanUndo";
+import {
+  choSetupChosen,
+  hanSetupChosen,
+  moved,
+  passed,
+  playedAgain,
+  restarted,
+  takenBack,
+} from "@src/redux/game/GameSlice";
+import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useState} from "react";
 
@@ -34,12 +47,15 @@ import {useState} from "react";
  * Resting a turn is a control rather than a gesture on the board, because it is the one thing a
  * player does that touches no intersection — and the one way out of a position with nothing to
  * play, janggi having no stalemate.
+ *
+ * The controls row wraps, because five of them and a scoreboard do not fit across a phone.
  */
 export function GamePage(): React.JSX.Element {
   const [style, setStyle] = useState<BoardStyle>(DEFAULT_STYLE);
   const [pieceStyle, setPieceStyle] = useState<PieceSetStyle>(DEFAULT_PIECE_STYLE);
   const [movableHighlight, setMovableHighlight] = useState<MovableHighlight>(DEFAULT_MOVABLE_HIGHLIGHT);
-  const {game, hanSetup, choSetup, turnsTaken} = useAppSelector(state => state.game);
+  const {played, hanSetup, choSetup} = useAppSelector(state => state.game);
+  const game = played.present;
   const dispatch = useAppDispatch();
 
   return (
@@ -47,10 +63,14 @@ export function GamePage(): React.JSX.Element {
       <div className="flex shrink-0 flex-col items-center gap-1">
         <TurnIndicator game={game} />
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <Scoreboard game={game} />
 
           <PassButton enabled={canPass(game)} onPass={() => dispatch(passed())} />
+
+          <UndoButton enabled={canUndo(played)} onUndo={() => dispatch(takenBack())} />
+
+          <RedoButton enabled={canRedo(played)} onRedo={() => dispatch(playedAgain())} />
 
           <NewGameButton onStart={() => dispatch(restarted())} />
         </div>
@@ -88,7 +108,7 @@ export function GamePage(): React.JSX.Element {
 
         <OptionPicker
           id="han-setup"
-          disabled={turnsTaken > 0}
+          disabled={playHasBegun(played)}
           label="Han"
           ariaLabel="Han's opening setup"
           options={SETUPS}
@@ -98,7 +118,7 @@ export function GamePage(): React.JSX.Element {
 
         <OptionPicker
           id="cho-setup"
-          disabled={turnsTaken > 0}
+          disabled={playHasBegun(played)}
           label="Cho"
           ariaLabel="Cho's opening setup"
           options={SETUPS}
