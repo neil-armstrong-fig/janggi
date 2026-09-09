@@ -248,6 +248,31 @@ pgrep -a claude
 Each session is one line carrying `--permission-prompt-tool`. More than one and you are not alone —
 ask first, naming the command you want to run and why.
 
+## Keeping the context small
+
+Every tool result stays in the context and is re-read on each API call that follows it, so a large
+one is not paid for once — it is paid for again on every later call in the session. Across this
+project's sessions, 3.5M tokens of content were re-read 1.05B times. What the work costs is set
+mostly by how much you put in front of yourself and how long you leave it there.
+
+- **Read the part of a file you need, not the file.** `grep -n` to find it, `sed -n '120,180p'` to
+  read it. `cat` on a source file was the single largest source of context here, and a
+  `for f in …; do cat "$f"; done` sweep over a directory is the worst form of it — those averaged
+  1,400 tokens and reached 4,400.
+
+- **This file is already in your context, and so is the `AGENTS.md` for the package you are in.**
+  Both are loaded before your first turn. `cat AGENTS.md` happened 32 times across these sessions,
+  at roughly 4,000 tokens each, and told the reader nothing it had not already been given.
+
+- **Keep these files worth what they cost.** Every session pays for this one in full before it does
+  anything at all. A paragraph that restates what the code already says, or that documents something
+  since changed, is charged to every session from here on — so when you add to an `AGENTS.md`, take
+  out whatever it supersedes.
+
+- **A batched check is the cheap shape — keep using it.** `pnpm checks` averages ~150 tokens a run
+  because it is quiet when it passes: one command that answers the whole question, piped through
+  `tail` when it might not be quiet. Never skip a check to save context; skipping is what costs.
+
 ## Ask before
 
 - **Adding or upgrading any dependency.** Versions are exact-pinned, several deliberately (see
