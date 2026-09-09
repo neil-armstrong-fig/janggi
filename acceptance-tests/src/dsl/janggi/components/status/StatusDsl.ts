@@ -12,6 +12,24 @@ import type {StatusPlaywright} from "@src/dsl/janggi/components/status/playwrigh
 export class StatusDsl {
   constructor(private readonly status: StatusPlaywright) {}
 
+  /** Whether the army to move is in check. */
+  async isInCheck(): Promise<boolean> {
+    try {
+      return await this.status.isInCheck();
+    } catch (error) {
+      throw new DslError("Failed to read whether the army to move is in check", error);
+    }
+  }
+
+  /** The army that has won, or undefined while the game is still being played. */
+  async getWinner(): Promise<Side | undefined> {
+    try {
+      return await this.status.getWinner();
+    } catch (error) {
+      throw new DslError("Failed to read which army has won", error);
+    }
+  }
+
   /** Deals a fresh game, abandoning whatever was being played. */
   async startNewGame(): Promise<void> {
     try {

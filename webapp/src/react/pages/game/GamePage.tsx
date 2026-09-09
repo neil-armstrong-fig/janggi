@@ -35,7 +35,7 @@ export function GamePage(): React.JSX.Element {
   return (
     <main className="flex h-full w-full flex-col gap-3 bg-[#1c140b] p-2">
       <div className="flex shrink-0 items-center justify-center gap-3">
-        <TurnIndicator sideToMove={game.sideToMove} />
+        <TurnIndicator game={game} />
 
         <NewGameButton onStart={() => dispatch(restarted())} />
       </div>

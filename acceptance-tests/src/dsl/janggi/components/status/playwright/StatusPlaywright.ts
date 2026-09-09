@@ -15,6 +15,22 @@ export class StatusPlaywright extends BaseComponent {
     this.newGame = page.getByTestId("new-game");
   }
 
+  /** Whether the army to move is in check. */
+  async isInCheck(): Promise<boolean> {
+    await this.container.waitFor({state: "visible"});
+
+    return (await this.container.getAttribute("data-in-check")) !== null;
+  }
+
+  /** The army that has won, or undefined while the game is still being played. */
+  async getWinner(): Promise<Side | undefined> {
+    await this.container.waitFor({state: "visible"});
+
+    const winner = await this.container.getAttribute("data-winner");
+
+    return SIDES.find(candidate => candidate === winner);
+  }
+
   async startNewGame(): Promise<void> {
     await this.newGame.click();
   }

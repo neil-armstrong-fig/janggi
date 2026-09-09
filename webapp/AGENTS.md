@@ -58,6 +58,10 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
   with `acceptance-tests/` — renaming one breaks specs.
 - Redux: use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped
   `react-redux` hooks. Add state as a slice via `createSlice`.
+- **A fact the engine can work out is derived where it is shown, never stored.** Check and the
+  winner are not fields on `GameState` and not slices — `turn-indicator/utils/GameStatusOf.ts` asks
+  the engine on every render and returns one discriminated union, and `TurnIndicator` renders it.
+  Storing either would mean a second copy of the position's truth to keep in step with the position.
 - `BASE_PATH` sets where the app is served from (`/` locally, `/<repo>/` on GitHub Pages) and drives
   the PWA manifest's `start_url`/`scope`. Do not hardcode absolute asset paths.
 - Tailwind v4 has no config file — use utilities in JSX, and put genuinely global rules in the
@@ -81,6 +85,13 @@ catch a real defect. Component and page behaviour is covered by the Playwright s
 React Testing Library **is** used for hooks. `renderHook` on a custom hook is a genuine unit test:
 a hook has inputs, state transitions and a return value, and none of that is reachable from an
 acceptance test except through a page.
+
+**Where a state cannot be _reached_ by tapping, unit test the pure function underneath it** and let
+the acceptance spec cover only what a player can actually do. A checkmate is far deeper than anyone
+can tap out, so `WinningAGame.test.ts` drives a real check through the UI and stops there, while
+`GameStatusOf.test.ts` beside the component covers the win. Do that rather than adding a way to seed
+a position: a test-only door into the app is shipped code no player can reach, and every spec then
+leans on it instead of on the app.
 
 | Code                                 | Tested by                                |
 | ------------------------------------ | ---------------------------------------- |
