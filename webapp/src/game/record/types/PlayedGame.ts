@@ -14,9 +14,13 @@ import type {GameState} from "@src/game/types/GameState";
  * say what may happen next, and taking a game back is not a rule of janggi at all — it is what lets
  * a caller step through one.
  *
- * `past` happens to be the position list `isRepetition` will want when repetition is modelled
- * (`docs/rules.md` §6.4). That is an observation and not a reason: nothing here is shaped for it,
- * because that rule has not asked yet.
+ * `past` holds the same positions `isRepetition` asks about, and deliberately is **not** where it
+ * asks them. Repetition is a rule of janggi, so it is measured on `GameState.seen`, which every
+ * entry point can see; `movesFrom` and `applyMove` take a position rather than a record, and a rule
+ * enforced only here would be one a caller holding a bare `GameState` never met. What that leaves
+ * is undo getting repetition right for nothing: `seen` rides on each position restored, so taking a
+ * move back rewinds the history with it, and nothing here had to learn the rule to do it. See
+ * `docs/rules.md` §6.4.
  */
 export interface PlayedGame {
   /** Every position the game has left behind, oldest first. */

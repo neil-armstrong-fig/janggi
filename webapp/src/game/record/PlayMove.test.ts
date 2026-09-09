@@ -72,7 +72,15 @@ function move(fromFile: File, fromRank: Rank, toFile: File, toRank: Rank): Move 
 }
 
 function toMove(sideToMove: Side, consecutivePasses: number, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove, consecutivePasses};
+  return {
+    pieces,
+    sideToMove,
+    format: "Casual",
+    consecutivePasses,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {

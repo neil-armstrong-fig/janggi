@@ -1,4 +1,5 @@
 import type {GameState} from "@src/game/types/GameState";
+import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Move} from "@src/game/types/Move";
 import type {File, Rank} from "@src/game/board/types/Position";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
@@ -10,11 +11,15 @@ import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {applyMove} from "@src/game/ApplyMove";
 import {beforeEach, describe, expect, it} from "vitest";
+import {callBikjang} from "@src/game/CallBikjang";
+import {canCallBikjang} from "@src/game/CanCallBikjang";
 import {canPass} from "@src/game/CanPass";
 import {canRedo} from "@src/game/record/CanRedo";
 import {canUndo} from "@src/game/record/CanUndo";
+import {isBikjang} from "@src/game/IsBikjang";
 import {isCheckmate} from "@src/game/IsCheckmate";
 import {isInCheck} from "@src/game/IsInCheck";
+import {isRepetition} from "@src/game/IsRepetition";
 import {legalMovesFor} from "@src/game/LegalMovesFor";
 import {materialFor} from "@src/game/MaterialFor";
 import {movesFrom} from "@src/game/MovesFrom";
@@ -54,7 +59,7 @@ describe("a new game", () => {
   let game: GameState;
 
   beforeEach(() => {
-    game = newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+    game = newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
   });
 
   it("stands thirty-two pieces on the board", () => {
@@ -527,7 +532,7 @@ describe("a game being taken back", () => {
   let opening: GameState;
 
   beforeEach(() => {
-    opening = newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+    opening = newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
     played = playedGameFrom(opening);
   });
 
@@ -774,6 +779,325 @@ describe("a game taken back after mate", () => {
   });
 });
 
+/**
+ * "동일한 수를 3회 이상 반복할 수 없다. 단, 기물의 총 점수가 각각 30점 미만일 때에는 동일수를
+ * 반복할 수 있다" — the same position may not stand a third time unless each side is under thirty
+ * points. See `docs/rules.md` §6.4.
+ *
+ * Played from the real opening rather than a built endgame, because the exemption is measured on
+ * material and a new game stands at seventy-two a side. Both generals step off their palace centres
+ * and back onto them, which is the shortest circuit that changes nothing: four plies return the
+ * opening position, and a second circuit would stand it there a third time.
+ */
+describe("a game shuffling back and forth", () => {
+  let game: GameState;
+
+  beforeEach(() => {
+    game = newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
+  });
+
+  it("has left no position behind before anyone has played", () => {
+    expect(game.seen).toEqual([]);
+  });
+
+  it("bars nothing while both armies stand at seventy-two", () => {
+    expect(legalMovesFor(game)).toHaveLength(31);
+  });
+
+  describe("when both generals step off their palace centres and back", () => {
+    beforeEach(() => {
+      game = applyMove(game, move(5, 9, 5, 10));
+      game = applyMove(game, move(5, 2, 5, 1));
+      game = applyMove(game, move(5, 10, 5, 9));
+      game = applyMove(game, move(5, 1, 5, 2));
+    });
+
+    it("stands on the opening position again, with cho to move", () => {
+      expect(game.sideToMove).toBe("cho");
+      expect(pieceOn(game, 5, 9)).toEqual({side: "cho", type: "general"});
+      expect(pieceOn(game, 5, 2)).toEqual({side: "han", type: "general"});
+    });
+
+    it("has kept the four positions it left behind, no piece having been taken", () => {
+      expect(game.seen).toHaveLength(4);
+    });
+
+    it("is no repetition yet, a position standing twice being allowed", () => {
+      expect(isRepetition(game)).toBe(false);
+    });
+
+    it("still offers the step that would bring it round again", () => {
+      expect(movesFrom(game, {file: 5, rank: 9})).toContainEqual({file: 5, rank: 10});
+    });
+
+    describe("and the two shuffle round once more", () => {
+      beforeEach(() => {
+        game = applyMove(game, move(5, 9, 5, 10));
+        game = applyMove(game, move(5, 2, 5, 1));
+        game = applyMove(game, move(5, 10, 5, 9));
+      });
+
+      it("stands one ply from the opening position for the third time", () => {
+        expect(game.seen).toHaveLength(7);
+        expect(game.sideToMove).toBe("han");
+      });
+
+      /** Its guards hold the two corners beside it, so the barred step is the whole of its choice. */
+      it("leaves han's general nowhere to go, its only step being the one that would repeat", () => {
+        expect(movesFrom(game, {file: 5, rank: 1})).toEqual([]);
+      });
+
+      it("refuses that step when it is played anyway", () => {
+        expect(() => applyMove(game, move(5, 1, 5, 2))).toThrow(/cannot move/);
+      });
+
+      it("offers only moves it will then accept", () => {
+        expect(() => legalMovesFor(game).forEach(candidate => applyMove(game, candidate))).not.toThrow();
+      });
+
+      it("is no ending — han has a whole army left to play", () => {
+        expect(legalMovesFor(game).length).toBeGreaterThan(0);
+        expect(outcomeOf(game)).toEqual({kind: "undecided"});
+      });
+
+      describe("and han plays something else", () => {
+        beforeEach(() => {
+          game = applyMove(game, move(1, 4, 1, 5));
+        });
+
+        it("carries the game on with the circuit broken", () => {
+          expect(game.sideToMove).toBe("cho");
+          expect(isRepetition(game)).toBe(false);
+        });
+      });
+    });
+  });
+});
+
+/**
+ * Clause ①'s exemption: under thirty points a side, a position may come round as often as the two
+ * players like. Two bare generals and a chariot each is thirteen apiece, so the same circuit that
+ * was barred from the opening is allowed here — and `isRepetition` still reports it, which is the
+ * whole of "report, do not adjudicate". See `docs/rules.md` §6.4.
+ */
+describe("an endgame where repeating is allowed", () => {
+  let game: GameState;
+
+  beforeEach(() => {
+    game = position("cho", cho("general", 4, 9), cho("chariot", 1, 5), han("general", 6, 2), han("chariot", 9, 5));
+  });
+
+  it("has both armies under thirty points", () => {
+    expect(materialFor(game, "cho")).toBe(13);
+    expect(materialFor(game, "han")).toBe(13);
+  });
+
+  describe("when the two generals shuffle round twice", () => {
+    beforeEach(() => {
+      game = shuffled(shuffled(game));
+    });
+
+    it("stands on the position it started from for the third time", () => {
+      expect(isRepetition(game)).toBe(true);
+    });
+
+    it("offered the move that brought it there rather than barring it", () => {
+      expect(outcomeOf(game)).toEqual({kind: "undecided"});
+      expect(legalMovesFor(game).length).toBeGreaterThan(0);
+    });
+
+    it("would go round again, the exemption not running out", () => {
+      expect(movesFrom(game, {file: 4, rank: 9})).toContainEqual({file: 4, rank: 10});
+    });
+  });
+});
+
+/**
+ * 빅장. The two generals come to face each other down an open file, and in a **casual** game either
+ * player may call it and take the draw — en.wikipedia's and pychess's reading. It is a call rather
+ * than an automatic ending, which is why the position alone leaves the game undecided. See
+ * `docs/rules.md` §6.2.
+ */
+describe("an endgame where the generals face each other", () => {
+  let game: GameState;
+
+  beforeEach(() => {
+    game = position("cho", cho("general", 5, 9), cho("chariot", 1, 8), han("general", 5, 2), han("chariot", 9, 3));
+  });
+
+  it("stands the two generals down an open file", () => {
+    expect(isBikjang(game)).toBe(true);
+  });
+
+  it("is undecided all the same, a bikjang being called rather than befalling anyone", () => {
+    expect(outcomeOf(game)).toEqual({kind: "undecided"});
+  });
+
+  it("lets cho call it", () => {
+    expect(canCallBikjang(game)).toBe(true);
+  });
+
+  describe("when cho calls it", () => {
+    let before: GameState;
+
+    beforeEach(() => {
+      before = game;
+      game = callBikjang(game);
+    });
+
+    it("ends the game as a draw", () => {
+      expect(outcomeOf(game)).toEqual({kind: "bikjang"});
+    });
+
+    it("leaves every piece where it stood, a call moving nothing", () => {
+      expect(game.pieces).toEqual(before.pieces);
+    });
+
+    it("refuses a move once it is over", () => {
+      expect(() => applyMove(game, move(1, 8, 1, 7))).toThrow(/game is over/);
+    });
+
+    it("refuses a rested turn once it is over", () => {
+      expect(canPass(game)).toBe(false);
+      expect(() => pass(game)).toThrow(/game is over/);
+    });
+  });
+
+  describe("and cho steps its general aside instead", () => {
+    beforeEach(() => {
+      game = applyMove(game, move(5, 9, 4, 9));
+    });
+
+    it("breaks the bikjang", () => {
+      expect(isBikjang(game)).toBe(false);
+    });
+
+    it("leaves han nothing to call", () => {
+      expect(canCallBikjang(game)).toBe(false);
+    });
+  });
+});
+
+/**
+ * The same position under the KJA's scored format, where bikjang may only be called with each side
+ * under thirty points — "기물이 각 30점 미만일 경우에 한하여 빅장을 부를 수 있다" — and where the
+ * ending is 점수승 rather than a draw, a scored game having no draw to reach. See `docs/rules.md`
+ * §6.2.
+ */
+describe("an endgame where the generals face each other in a scored game", () => {
+  let game: GameState;
+
+  beforeEach(() => {
+    game = scored(
+      "han",
+      cho("general", 5, 9),
+      cho("chariot", 1, 8),
+      cho("chariot", 2, 8),
+      cho("cannon", 3, 8),
+      han("general", 5, 2),
+      han("chariot", 1, 3),
+    );
+  });
+
+  it("stands the two generals down an open file all the same", () => {
+    expect(isBikjang(game)).toBe(true);
+  });
+
+  it("has cho still over thirty points", () => {
+    expect(materialFor(game, "cho")).toBe(33);
+    expect(materialFor(game, "han")).toBe(13);
+  });
+
+  it("does not let it be called, the threshold being the scored format's whole point", () => {
+    expect(canCallBikjang(game)).toBe(false);
+  });
+
+  describe("and han's chariot takes one of cho's", () => {
+    beforeEach(() => {
+      game = applyMove(game, move(1, 3, 1, 8));
+    });
+
+    it("brings cho under thirty", () => {
+      expect(materialFor(game, "cho")).toBe(20);
+    });
+
+    it("lets cho call it now", () => {
+      expect(canCallBikjang(game)).toBe(true);
+    });
+
+    describe("and cho calls it", () => {
+      beforeEach(() => {
+        game = callBikjang(game);
+      });
+
+      it("settles it on points rather than drawing it", () => {
+        expect(outcomeOf(game)).toEqual({
+          kind: "pointsWin",
+          winner: "cho",
+          scores: {cho: 20, han: 14.5},
+        });
+      });
+    });
+  });
+});
+
+/**
+ * "단, 궁으로 상대 기물 취하면서 빅장이 되는 경우는 예외로 한다" — the one exception the KJA's live
+ * site carries: a bikjang the general took its way into may not be called. It lasts exactly the one
+ * ply, the way a pass count is put back by a move. See `docs/rules.md` §6.2.
+ */
+describe("a scored endgame where a general takes its way into a bikjang", () => {
+  let game: GameState;
+
+  beforeEach(() => {
+    game = scored(
+      "han",
+      cho("general", 5, 9),
+      cho("soldier", 5, 3),
+      cho("chariot", 1, 8),
+      han("general", 5, 2),
+      han("chariot", 9, 3),
+    );
+  });
+
+  it("is no bikjang while the soldier stands between them", () => {
+    expect(isBikjang(game)).toBe(false);
+  });
+
+  describe("when han's general takes the soldier", () => {
+    beforeEach(() => {
+      game = applyMove(game, move(5, 2, 5, 3));
+    });
+
+    it("brings the two generals face to face", () => {
+      expect(isBikjang(game)).toBe(true);
+    });
+
+    it("has both armies under thirty points", () => {
+      expect(materialFor(game, "cho")).toBe(13);
+      expect(materialFor(game, "han")).toBe(13);
+    });
+
+    it("does not let cho call it, the general having taken its way there", () => {
+      expect(canCallBikjang(game)).toBe(false);
+    });
+
+    describe("and cho plays elsewhere", () => {
+      beforeEach(() => {
+        game = applyMove(game, move(1, 8, 1, 7));
+      });
+
+      it("still stands the generals face to face", () => {
+        expect(isBikjang(game)).toBe(true);
+      });
+
+      it("lets han call it now, the exception having lasted one ply", () => {
+        expect(canCallBikjang(game)).toBe(true);
+      });
+    });
+  });
+});
+
 function pieceOn(state: GameState, file: File, rank: Rank): Piece | undefined {
   return pieceAt(piecesByPosition(state.pieces), {file, rank});
 }
@@ -799,7 +1123,32 @@ function setup(name: string): Setup {
 
 /** A board built piece by piece, for a state no opening reaches in a readable number of moves. */
 function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove, consecutivePasses: 0};
+  return constructed("Casual", sideToMove, pieces);
+}
+
+/** The same, playing the KJA's scored format — where bikjang is gated and there is no draw. */
+function scored(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameState {
+  return constructed("Scored", sideToMove, pieces);
+}
+
+function constructed(format: MatchFormat, sideToMove: Side, pieces: readonly PlacedPiece[]): GameState {
+  return {
+    pieces,
+    sideToMove,
+    format,
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
+}
+
+/**
+ * One circuit of the shortest thing that changes nothing: each general steps off its point and back
+ * onto it. Four plies, and the position handed in is the position handed back.
+ */
+function shuffled(game: GameState): GameState {
+  return [move(4, 9, 4, 10), move(6, 2, 6, 1), move(4, 10, 4, 9), move(6, 1, 6, 2)].reduce(applyMove, game);
 }
 
 function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {

@@ -62,11 +62,19 @@ it("still says whose move it is after only one rested turn", () => {
 });
 
 function opening(): GameState {
-  return newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+  return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 }
 
 function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove, consecutivePasses: 0};
+  return {
+    pieces,
+    sideToMove,
+    format: "Casual",
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function stoppedGame(...pieces: readonly PlacedPiece[]): GameState {

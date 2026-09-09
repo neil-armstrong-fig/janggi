@@ -12,15 +12,27 @@ import {scoreFor} from "@src/game/ScoreFor";
  * turns rested to reach it, not a second thing to keep in step with them. `GameState` therefore
  * carries no result field.
  *
- * The order matters. Checkmate is asked first because it outranks a points win — 완승 is a complete
- * win and nothing about the material can take it away.
+ * The order matters. Checkmate is asked first because it outranks everything else — 완승 is a
+ * complete win and nothing about the material can take it away.
  */
 export function outcomeOf(state: GameState): Outcome {
   if (isCheckmate(state, state.sideToMove)) return {kind: "checkmate", winner: opponentOf(state.sideToMove)};
 
+  if (state.bikjangCalled) return calledBikjang(state);
+
   if (state.consecutivePasses >= PASSES_THAT_STOP_A_GAME) return decidedOnPoints(state);
 
   return {kind: "undecided"};
+}
+
+/**
+ * What a called bikjang comes to, which is the one place the two match formats end a game
+ * differently. Casually it is the draw every English source describes; under the KJA's scored
+ * format there is no draw to reach — 대한장기연맹 abolished it outright in 2020 — so the same call
+ * settles on points. See `docs/rules.md` §6.2.
+ */
+function calledBikjang(state: GameState): Outcome {
+  return state.format === "Casual" ? {kind: "bikjang"} : decidedOnPoints(state);
 }
 
 /**

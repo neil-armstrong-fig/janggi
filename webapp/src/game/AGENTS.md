@@ -20,11 +20,15 @@ MovesFrom.ts      movesFrom(state, from): readonly Position[]
 ApplyMove.ts      applyMove(state, move): GameState      — throws on an illegal move
 CanPass.ts        canPass(state): boolean
 Pass.ts           pass(state): GameState                 — throws when the turn may not be rested
+IsBikjang.ts      isBikjang(state): boolean              — the two generals facing down an open file
+CanCallBikjang.ts canCallBikjang(state): boolean
+CallBikjang.ts    callBikjang(state): GameState          — throws when there is no call to make
+IsRepetition.ts   isRepetition(state): boolean           — this position standing a third time
 OutcomeOf.ts      outcomeOf(state): Outcome              — how the game ended, or that it has not
 MaterialFor.ts    materialFor(state, side): number       — the piece score, no 덤 in it
 ScoreFor.ts       scoreFor(state, side): number          — that plus Han's 덤
 
-types/            GameState, Move, Mover, Outcome
+types/            GameState, Move, Mover, Outcome, Standing
 board/            the 9x10 geometry: positions, dimensions, palaces. react/ reads this too
 setups/           the five opening arrangements and the 32 pieces they produce
 moves/            one generator per piece type, and what they share
@@ -74,9 +78,25 @@ hold separate copies of that geometry.
   않으며". It has its own entry point, `pass`, with `canPass` standing to it as `movesFrom` stands
   to `applyMove`. Keeping it out of the move list is what leaves the 31 openings and `isCheckmate`
   saying what they always said.
-- **A result is derived, never stored.** `outcomeOf` reads the position and the pass count;
-  `GameState` carries no result, the same way it carries no "in check". The one thing it does carry
-  is `consecutivePasses`, because a rested turn leaves no mark on the board to read it off.
+- **A result is derived, never stored.** `outcomeOf` reads the position, the pass count and whether
+  a bikjang was called; `GameState` carries no result, the same way it carries no "in check".
+- **A field arrives on `GameState` when a rule asks and the board cannot answer** — and not before.
+  That is the whole of the bar, and all four fields below the board meet it: a rested turn, a call,
+  and the fact that the general was the piece that took all leave the pieces exactly as they were,
+  and which of the two match formats is being played is not a fact about the position at all.
+  `seen` is the same test applied to history — a position the game has left behind is gone from the
+  board by definition.
+- **The format is dealt, not threaded.** It cannot change mid-game any more than a back rank can, so
+  `newGame` takes it and it rides on the state, rather than becoming a second argument to
+  `outcomeOf`, `canPass`, `applyMove` and everything in `record/`. It is asked for rather than
+  defaulted, because `docs/rules.md` §6.2's whole point is that picking a reading silently decides
+  the game for every player.
+- **Bikjang is called, and repetition is reported.** Neither ends a game on its own. `callBikjang`
+  is an entry point beside `pass` for the same reason `pass` is one beside `applyMove` — a player
+  does it, and it moves nothing — and `isRepetition` answers a question without acting on it,
+  because who is at fault in a repetition is clause ②'s judgement about intent and there is no
+  referee here. What the engine _does_ do is refuse the move that would make one, in `movesFrom`,
+  so that a board never lights up a point `applyMove` would then throw on.
 - **Material is summed off the board.** Every setup deals the same sixteen pieces, so what is
   missing is what was taken and there is no captured pile to keep. `materialFor` is the piece score
   bikjang's threshold will want; `scoreFor` is that plus the 덤, which is what a game is won on.
@@ -120,10 +140,13 @@ number.
 
 ## What is not modelled yet
 
-Bikjang and repetition, both recorded in `docs/rules.md` §6.2 and §6.4 with their sources and the
-disagreement between them. Bikjang needs the casual-or-scored setting decided before it needs code;
-repetition needs a position history, which `GameState` still does not carry. Everything else is
-done — check and checkmate, the pass move, and scoring.
+Nothing that is a rule of play. What `docs/rules.md` §6 still lists is 묵장 and 자장, which are
+tournament rules about human mistakes rather than about a position, and §6.6's setup order — Han
+arranging first and not revising — which is a rule about the phase before the game and belongs to
+whatever screen runs it. 맞상/엇상 is a classification of the two chosen setups, not a rule.
+
+Everything else is here: the seven pieces, check and checkmate, the pass move, scoring, bikjang and
+repetition.
 
 A general can no longer be captured, because no move that leaves one attacked is ever offered.
 

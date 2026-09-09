@@ -79,7 +79,15 @@ it("is not mate on the other army's turn", () => {
 });
 
 function choToMove(...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove: "cho", consecutivePasses: 0};
+  return {
+    pieces,
+    sideToMove: "cho",
+    format: "Casual",
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {

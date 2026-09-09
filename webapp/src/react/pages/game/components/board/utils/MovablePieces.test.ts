@@ -79,11 +79,19 @@ it("marks only the pieces that can answer a check", () => {
 });
 
 function opening(): GameState {
-  return newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+  return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 }
 
 function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove, consecutivePasses: 0};
+  return {
+    pieces,
+    sideToMove,
+    format: "Casual",
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {

@@ -14,9 +14,10 @@ code already says. Two so far:
 - **`docs/opening-setups.md`** — the rules of janggi are not uniform on how a player's opening
   arrangement is named, and `setups/Setups.ts` had to pick a reading.
 - **`docs/rules.md`** — how every piece moves, sourced from the Korea Janggi Association's own
-  pages, plus the rules the engine does **not** implement yet. The endgame rules genuinely conflict
-  between sources: bikjang and the pass move are described one way by both Wikipedias and another
-  by the KJA's regulations, and each needs a decision rather than a guess.
+  pages, plus the endgame rules and what was decided where the sources conflict. That conflict is
+  real and is the reason the file exists: bikjang, the pass move and repetition are described one
+  way by both Wikipedias and another by the KJA's regulations. §6.2 settles it — the two readings
+  belong to two match formats, casual and scored, and the engine builds both.
 
 Add a document here only when the reasoning is too long to sit in a comment and losing it would mean
 someone re-deriving it; link it from the code it justifies.

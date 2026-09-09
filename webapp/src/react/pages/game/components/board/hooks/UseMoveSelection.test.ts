@@ -286,7 +286,7 @@ function renderOn(game: GameState): Rendered {
 }
 
 function openingGame(): GameState {
-  return newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+  return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 }
 
 /** The opening with cho's first move played, so it is han's turn. */
@@ -302,7 +302,11 @@ function afterChoOpens(): GameState {
 function matedGame(): GameState {
   const game: GameState = {
     sideToMove: "cho",
+    format: "Casual",
     consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
     pieces: [
       {piece: {side: "cho", type: "general"}, position: MATED_GENERAL},
       {piece: {side: "cho", type: "chariot"}, position: MATED_CHARIOT},

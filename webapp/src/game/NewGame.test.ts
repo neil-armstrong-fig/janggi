@@ -7,11 +7,11 @@ const inner = setup("Inner Elephant");
 const left = setup("Left Elephant");
 
 it("gives cho the first move", () => {
-  expect(newGame(inner, inner).sideToMove).toBe("cho");
+  expect(newGame(inner, inner, "Casual").sideToMove).toBe("cho");
 });
 
 it("opens with the thirty-two pieces the two setups arrange", () => {
-  const {pieces} = newGame(inner, inner);
+  const {pieces} = newGame(inner, inner, "Casual");
 
   expect(pieces).toHaveLength(32);
   expect(pieces.filter(({piece}) => piece.side === "han")).toHaveLength(16);
@@ -19,7 +19,7 @@ it("opens with the thirty-two pieces the two setups arrange", () => {
 });
 
 it("lets each army be arranged separately", () => {
-  const {pieces} = newGame(inner, left);
+  const {pieces} = newGame(inner, left, "Casual");
 
   expect(typeAt(pieces, 2, 1)).toBe("horse");
   expect(typeAt(pieces, 2, 10)).toBe("elephant");

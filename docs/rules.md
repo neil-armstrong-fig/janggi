@@ -343,10 +343,12 @@ from the opening.
 
 ---
 
-## 6. Rules the engine does not implement yet
+## 6. The endgame rules, and where the sources disagree
 
-Everything above is encoded in `webapp/src/game/`. Everything below is not, and
-each item says why it is not simply a matter of typing it in.
+Everything above is encoded in `webapp/src/game/`, and as of 2026-09-09 so is
+everything below that is a rule of play. Each item says what was decided where
+the sources conflict, and the two that remain unimplemented say why they are not
+rules of a position at all.
 
 ### 6.1 Check and checkmate
 
@@ -453,6 +455,40 @@ popular" but **casual vs scored**, which is a better thing to put in front of a
 player. Label them that way. The scored option needs material scoring, and with
 it the 30-point threshold and the general-capture exception above.
 
+**Implemented.** `MatchFormat` in `shared/` is the two names, `GameState.format`
+is which game is being played, and `webapp/src/game/IsBikjang.ts` is the position
+alone — two generals down one file with nothing between them.
+`CanCallBikjang.ts` is where the formats part company and `CallBikjang.ts` is the
+call itself. Four decisions are encoded, and each is a choice rather than a
+transcription:
+
+- **A bikjang is *called*, not befallen.** `isBikjang` being true leaves the game
+  `undecided`; only `callBikjang` ends it. Both readings describe something a
+  player *does* — "빅장을 부를 수 있다", and pychess's player who declines to move
+  away — and making it automatic would end every game in which two generals
+  happen to see each other, including a great many nobody meant to stop. It is
+  therefore an entry point beside `pass`, with `canCallBikjang` standing to it as
+  `canPass` stands to `pass`, and it moves nothing and takes nobody's turn.
+
+- **The format decides what the call settles**, and it is the only place in the
+  engine where the two formats differ in an outcome: a casual game draws — the
+  one drawn ending janggi has, `Outcome`'s `bikjang` kind — and a scored one
+  settles on points, 대한장기연맹 having abolished the draw outright in 2020.
+
+- **The threshold and the exception are the scored format's alone**, because that
+  is where the KJA states them. Casually the generals facing each other is the
+  whole of the condition.
+
+- **The general-capture exception lasts exactly one ply.**
+  `GameState.reachedByAGeneralCapture` is set by `positionAfter` and cleared by
+  the next move, the way any move puts the pass count back to nought. Once the
+  opponent has replied and the bikjang still stands, it may be called: it no
+  longer *arose from* the capture.
+
+**Not shown.** Nothing of this is on screen yet — the setting has no picker and
+there is no control to make the call, so every game the app deals is casual and
+no bikjang can be called in it. That is the next slice.
+
 **Do not confuse a third body with either.** 한국장기연맹
 (`kingjanggi.or.kr`) publishes rules for **궁장기**, a reformed variant with
 piece promotion (진급) and a 왕장 general that can capture the enemy general. It
@@ -544,17 +580,47 @@ repeats three times, a referee is called to determine who is at fault". pychess
 resolves it mechanically instead: perpetual check loses for the checking player
 after the third repetition, other repetitions go to material counting.
 
-Not implemented, and it needs a position history, which `GameState` deliberately
-does not carry yet.
+**Decided, 2026-09-09: report it, do not adjudicate.** Who is at fault stays a
+referee's call, because clause ② — "반복수를 악용하여 이득을 취할 수 없다" — is a
+judgement about intent and the engine has no referee. pychess's mechanical
+resolution (perpetual check loses for the checking side, everything else goes to
+material) is pychess's decision and not any federation's, so it is not taken.
 
-**Decided, 2026-09-09: report it, do not adjudicate.** `isRepetition` will say
-that a position has come round for the third time and `applyMove` will refuse
-the move that makes it, exempt below 30 points a side as clause ① has it. Who
-is at fault stays a referee's call, because clause ② — "반복수를 악용하여 이득을
-취할 수 없다" — is a judgement about intent and the engine has no referee.
-pychess's mechanical resolution (perpetual check loses for the checking side,
-everything else goes to material) is pychess's decision and not any
-federation's, so it is not taken.
+**Implemented.** `webapp/src/game/IsRepetition.ts` says whether the position now
+standing is standing for the third time, and `MovesFrom.ts` does not offer the
+move that would put it there — so `applyMove` refuses it without a rule of its
+own, and a board never lights up a point the rules will not take. Four decisions:
+
+- **The history is on `GameState`, as `seen`.** Repetition is a rule of janggi,
+  and every entry point takes a position rather than a record, so measuring it on
+  `record/`'s `past` would have left it a rule only a caller holding a record ever
+  met. What `record/` gets in exchange is undo for nothing: `seen` rides on each
+  position restored, so taking a move back rewinds the history with it.
+
+- **A capture empties it.** A capture cannot be undone by playing on, so no
+  position from before one can come round again — which is what keeps `seen` a
+  handful of entries rather than the whole game, and is the same reasoning behind
+  chess's halfmove clock.
+
+- **A standing is the board and the side to move**, and nothing else —
+  `utils/StandingOf.ts`. Sorted, because the order of `pieces` is meaningless and
+  does not survive a move. It is not called a position key: `Position` here is one
+  intersection of the board.
+
+- **The exemption sits with the refusal, not with the report.** `isRepetition`
+  answers the plain factual question, so a UI can put it on screen; whether a
+  repetition is *allowed* is `underThirtyPointsEach`, asked in `movesFrom`, which
+  is clause ①'s "각각 30점 미만" and the same threshold bikjang uses in §6.2.
+
+**One consequence, recorded rather than fixed.** If the only reply to a check
+would stand the game in a position for the third time, there is no legal move and
+`isCheckmate` says mate. That is the honest reading of a move a player may not
+make not being a legal move, and in a perpetual check it falls on whichever side
+would complete the third standing first — the closest an engine with no referee
+gets to 반복장군. It is not special-cased.
+
+**Not shown.** Nothing of this reaches the screen: a barred move simply is not
+offered, and no message says why.
 
 ### 6.5 Scoring, piece values and the 덤
 
@@ -587,8 +653,11 @@ subtract from; the score does not.
 Han's 덤 folded into the figure rather than shown apart, so the two are directly
 comparable — which is the whole point of a half point that cannot be tied.
 
-Not implemented from this section: the 30-point threshold the piece score exists
-to serve belongs to bikjang in §6.2, which is not modelled.
+The 30-point threshold this piece score exists to serve is
+`webapp/src/game/utils/UnderThirtyPointsEach.ts`, one function because it is one
+rule with one number, quoted twice: bikjang in §6.2 and repetition in §6.4. It
+reads `materialFor` rather than `scoreFor`, the 덤 being what a game is won on and
+not what an endgame is recognised by.
 
 ### 6.6 The setup phase
 
@@ -633,5 +702,7 @@ do not spend the time again.
 | The 31 legal first moves in §5                                                                 | **High** — derived from the rules above; it is what the engine's tests assert                  |
 | Piece values, the 72-point total and Han's 1.5 덤                                              | **High** — the KJA's 대국규정, corroborated by en.wikipedia                                     |
 | Bikjang is a draw in casual play, and gated on 30 points a side in the scored tournament format | **High** — the KJA's live site carries both, and the split by match format is what reconciles it with the English sources. See §6.2 |
+| A bikjang is *called* rather than befalling the players automatically                          | **Moderate** — the KJA says "부를 수 있다" outright and pychess has the player to move choose, but en.wikipedia reads as though facing alone draws. The engine takes the call in both formats; see §6.2 |
+| A position may not stand a third time, unless each side is under 30 points                      | **High** — 대한장기협회's 대국규정 states both halves in one clause. What the engine does *about* it — refuse the move, adjudicate nothing — is a decision rather than a source; see §6.4 |
 | A player may pass at any time, without restriction                                             | **Moderate** — en.wikipedia and pychess say so; the KJA implies "when you have nothing", and 대한장기연맹 made two consecutive passes end the game in 2022. The engine takes the unrestricted reading, and bars a pass only while in check — a rule no source states, derived in §6.3 |
 | Stalemate cannot occur, because a player with no move passes                                   | **High** — en.wikipedia states it, and it follows from the pass rule under either reading      |

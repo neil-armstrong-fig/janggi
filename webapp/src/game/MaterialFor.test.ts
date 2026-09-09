@@ -27,13 +27,13 @@ it("gives the general nothing, a game in which it can be taken being over alread
 });
 
 it("counts a fresh army at seventy-two", () => {
-  const game = newGame(setup("Inner Elephant"), setup("Inner Elephant"));
+  const game = newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 
   expect(materialFor(game, "cho")).toBe(72);
 });
 
 it("counts both armies alike, even from different setups, every one dealing the same sixteen", () => {
-  const game = newGame(setup("Central Chariot"), setup("Left Elephant"));
+  const game = newGame(setup("Central Chariot"), setup("Left Elephant"), "Casual");
 
   expect(materialFor(game, "han")).toBe(materialFor(game, "cho"));
 });
@@ -64,7 +64,15 @@ function setup(name: string): Setup {
 }
 
 function choToMove(...pieces: readonly PlacedPiece[]): GameState {
-  return {pieces, sideToMove: "cho", consecutivePasses: 0};
+  return {
+    pieces,
+    sideToMove: "cho",
+    format: "Casual",
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+  };
 }
 
 function cho(type: PieceType, file: number, rank: number): PlacedPiece {
