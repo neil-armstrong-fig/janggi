@@ -1,9 +1,9 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Outcome} from "@src/game/types/Outcome";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {isCheckmate} from "@src/game/IsCheckmate";
+import {isCheckmate} from "@src/game/check/IsCheckmate";
 import {opponentOf} from "@src/game/utils/OpponentOf";
-import {scoreFor} from "@src/game/ScoreFor";
+import {scoreFor} from "@src/game/scoring/ScoreFor";
 
 /**
  * Whether the game is over, and if it is, how.

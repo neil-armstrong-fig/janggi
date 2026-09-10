@@ -19,25 +19,39 @@ NewGame.ts        newGame(hanSetup, choSetup, format): GameState
 MovesFrom.ts      movesFrom(state, from): readonly Position[]
 LegalMovesFor.ts  legalMovesFor(state): readonly Move[]
 ApplyMove.ts      applyMove(state, move): GameState      — throws on an illegal move
-IsInCheck.ts      isInCheck(state, side): boolean
-IsCheckmate.ts    isCheckmate(state, side): boolean
-CanPass.ts        canPass(state): boolean
-Pass.ts           pass(state): GameState                 — throws when the turn may not be rested
-IsBikjang.ts      isBikjang(state): boolean              — the two generals facing down an open file
-CanCallBikjang.ts canCallBikjang(state): boolean
-CallBikjang.ts    callBikjang(state): GameState          — throws when there is no call to make
-IsRepetition.ts   isRepetition(state): boolean           — this position standing a third time
 OutcomeOf.ts      outcomeOf(state): Outcome              — how the game ended, or that it has not
-MaterialFor.ts    materialFor(state, side): number       — the piece score, no 덤 in it
-ScoreFor.ts       scoreFor(state, side): number          — that plus Han's 덤
 
-types/            GameState, Move, Mover, Outcome, Standing
+types/            GameState, Move, Outcome, Standing
 board/            the 9x10 geometry: positions, dimensions, palaces. react/ reads this too
 setups/           the five opening arrangements, the phase in which the two players
                   choose them, and the 32 pieces they produce
 moves/            one generator per piece type, and what they share
 record/           taking a game back and playing it forward again
+bikjang/ check/ passing/ repetition/ scoring/    a rule family each, below
 ```
+
+Those five files at the root are the whole of the loop: deal a game, ask what a piece may do, ask
+what the army may do, do it, and ask whether that ended anything. Everything else is a rule family
+in a folder of its own, and **each folder holds the question together with the transition it
+guards** — the pairing the doc comments already describe, "`canPass` stands to `pass` as `movesFrom`
+stands to `applyMove`":
+
+```
+bikjang/IsBikjang.ts        isBikjang(state): boolean         — the two generals down an open file
+bikjang/CanCallBikjang.ts   canCallBikjang(state): boolean    — where the two formats part company
+bikjang/CallBikjang.ts      callBikjang(state): GameState     — throws when there is no call to make
+check/IsInCheck.ts          isInCheck(state, side): boolean
+check/IsCheckmate.ts        isCheckmate(state, side): boolean — that plus having no legal reply
+passing/CanPass.ts          canPass(state): boolean
+passing/Pass.ts             pass(state): GameState            — throws when the turn may not be rested
+repetition/IsRepetition.ts  isRepetition(state): boolean      — this position standing a third time
+scoring/MaterialFor.ts      materialFor(state, side): number  — the piece score, no 덤 in it
+scoring/ScoreFor.ts         scoreFor(state, side): number     — that plus Han's 덤
+```
+
+Those ten are entry points exactly as the five at the root are; the folder says which rule they
+belong to, not that they are private. `react/` calls into `check/`, `passing/`, `bikjang/` and
+`scoring/` directly.
 
 `record/` is the one folder here that is not a rule of janggi:
 
@@ -67,7 +81,7 @@ setups/ElephantPairingOf.ts       elephantPairingOf(hanSetup, choSetup): Elephan
 ```
 
 Those are the whole public surface; everything under `moves/` is reached through `MovesFrom.ts`'s
-dispatch table.
+dispatch table, and `moves/types/Mover.ts` is the shape they all match.
 
 `board/` is the one part `react/` imports, and that is deliberate: the diagonals drawn inside a
 palace **are** the lines pieces travel along, so `CellShapes.ts` and `PalaceDiagonals.ts` must not
@@ -75,7 +89,11 @@ hold separate copies of that geometry.
 
 ## Conventions particular to here
 
-- **A mover is `getLegal<Piece>Moves` and matches the `Mover` type** —
+- **A new rule joins a family folder; the root is not where things land.** The five files at the
+  root are the loop, and nothing joins them unless it is part of it. Anything else goes under the
+  family it belongs to — carrying its question with it, where it has one — or brings a new folder
+  of its own, the way `repetition/` holds a single file because the rule is a single rule.
+- **A mover is `getLegal<Piece>Moves` and matches the `Mover` type** (`moves/types/Mover.ts`) —
   `(pieces, from, side) => readonly Position[]`. It is handed the board already indexed and told
   which army is moving, never a whole `GameState`, so a movement rule cannot accidentally depend on
   whose turn it is. The two shared bodies — `getPalaceStepMoves`, `getStepThenTurnMoves` — take the

@@ -144,6 +144,21 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
   file's blast radius before you open it, and it is what stops a folder becoming a bag of loose
   parts. See `webapp/AGENTS.md` for the shape this produces.
 
+- **A folder's root is its table of contents.** What stays at the top is the handful of entry points
+  that say what is in there and where to start reading; everything else drops into a subfolder named
+  for the subject it belongs to. `webapp/src/game/` is the worked example — five files at its root
+  are the whole loop (deal a game, ask what a piece may do, ask what the army may do, do it, judge
+  what that did), and every other rule sits under `bikjang/`, `check/`, `passing/`, `repetition/` or
+  `scoring/`, each holding a question together with the transition it guards. **Around six files is
+  where a folder starts reading as a bucket** rather than as a list — a smell worth going to look
+  at, not a limit to enforce, and a test beside its subject does not count towards it.
+
+- **Name a folder for its subject, not its shape.** `bikjang/`, `record/` and `status/` say what is
+  inside them; `buttons/`, `helpers/` and `styles/` describe the form of the files and leave a
+  reader no wiser. A group that can only be named for its shape is usually one that should not be a
+  folder at all — that is the test that kept the five control buttons in `status/`, beside the turn
+  line and the scoreboard they belong with, rather than under a `buttons/` of their own.
+
 - **A union of literals is read off the list, not written twice.** Where a type needs a runtime
   list of its own members — to iterate, or to validate a string against — declare the list `as
   const` and derive the type from it, so the two cannot drift apart.
