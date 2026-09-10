@@ -1,6 +1,7 @@
 import {BoardDsl} from "@src/dsl/janggi/components/board/BoardDsl";
 import {DslError} from "@src/dsl/errors/DslError";
-import type {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
+import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
+import type {Page} from "@playwright/test";
 import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
 import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
 
@@ -8,7 +9,9 @@ import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
  * The application under test, and the whole of what a spec is handed.
  *
  * Every object in the DSL is a pair: the `*Dsl` here, and the `*Playwright` beside it in
- * `playwright/` that actually drives the browser. This half holds no locators. Each method is a
+ * `playwright/` that actually drives the browser. Each `*Dsl` is handed the page, builds its own
+ * counterpart with it, and then never touches it again — the page reaches a method only through
+ * that counterpart. This half holds no locators. Each method is a
  * call straight down into its own counterpart, wrapped in a `try`/`catch` that rethrows a
  * `DslError` naming the intention, so a failure reads as a sentence rather than as a raw timeout.
  * Most are one-to-one; occasionally one sequences two calls or decides something between them, and
@@ -25,14 +28,18 @@ import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
  * says what any of them is about.
  */
 export class JanggiDsl {
+  private readonly janggi: JanggiPlaywright;
+
   readonly board: BoardDsl;
   readonly settings: SettingsDsl;
   readonly status: StatusDsl;
 
-  constructor(private readonly janggi: JanggiPlaywright) {
-    this.board = new BoardDsl(janggi.board);
-    this.settings = new SettingsDsl(janggi.settings);
-    this.status = new StatusDsl(janggi.status);
+  constructor(page: Page) {
+    this.janggi = new JanggiPlaywright(page);
+
+    this.board = new BoardDsl(page);
+    this.settings = new SettingsDsl(page);
+    this.status = new StatusDsl(page);
   }
 
   async navigateToPage(): Promise<void> {

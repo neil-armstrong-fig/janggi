@@ -20,6 +20,19 @@ Every arrow above is a lint rule, so a violation fails `pnpm checks`.
   the intention, so a failure reads as "Failed to read the piece at file 5, rank 2" rather than as a
   raw locator timeout. Most are one-to-one; occasionally one sequences two calls or decides
   something between them, and that exception is why the layer is written by hand.
+
+  **It takes a `Page` and builds its own counterpart with it, privately, in the constructor** — and
+  that is the only thing it may do with a page. It never keeps one, so the page is out of scope in
+  every method and the browser can only be reached through the counterpart. Both halves are lint
+  rules: `Page` is the single name a `*Dsl` may import from `@playwright/test`, and storing it or
+  reaching `this.page` is a `no-restricted-syntax` error.
+
+  The point of doing it there rather than being handed a counterpart is that **the pairing is then
+  genuinely one-to-one**. A parent used to have to hold its children's `*Playwright` objects so it
+  could pass them down, which put a construction detail in its public API and made the tree read as
+  `Dsl → parent Playwright → child Playwright` even though no call ever went that way. Now a parent
+  builds its children from the same page it was given, and a `*Playwright` is nobody's parent.
+
 - **`playwright/<Thing>Playwright.ts`** — the locators, clicks and waits. It catches nothing: let
   Playwright's error out and let the `*Dsl` name what was being attempted. Wrapping in both places
   buries the real cause.
@@ -63,9 +76,49 @@ inside that thing goes in its `components/` folder. So a piece of the board woul
 how deep, a folder tells you what it is by the same two names.
 
 **Only a `playwright/` folder may import Playwright**, and that is a lint rule rather than a
-convention — a locator written in a `*Dsl` will not compile past `pnpm checks`. A `*Dsl` imports the
-counterpart beside it and no other object's. `AcceptanceTestFixtures` is the single exception, since
-handing the browser to the DSL has to happen somewhere.
+convention — a locator written in a `*Dsl` will not compile past `pnpm checks`. The one exception is
+the `Page` a `*Dsl` names in its constructor, above; `Locator`, `expect` and the rest stay out. A
+`*Dsl` builds the counterpart beside it and no other object's. `AcceptanceTestFixtures` is exempt
+from all of it, since handing the browser to the DSL has to happen somewhere.
+
+`JanggiPlaywright` and `SettingsPlaywright` are worth looking at together for what a `*Playwright`
+is **not**: neither holds another component. Each owns only its own part of the screen — the browser
+and the window for one, the 맞상/엇상 line for the other — and the areas beneath them are built by
+their own `*Dsl`s.
+
+## How a `*Dsl` is laid out
+
+The counterpart first, then the children, and the constructor in the same order as the members — so
+the two read down the file the same way:
+
+```ts
+export class SettingsDsl {
+  private readonly settings: SettingsPlaywright;
+
+  readonly board: BoardSettingDsl;
+  readonly pieceSet: PieceSetSettingDsl;
+
+  constructor(page: Page) {
+    this.settings = new SettingsPlaywright(page);
+
+    this.board = new BoardSettingDsl(page);
+    this.pieceSet = new PieceSetSettingDsl(page);
+  }
+```
+
+The blank line is the point: **the counterpart and the children are two different things.** The
+first is this object's own half of the pair, private and the only route to the browser; the rest are
+areas of the screen that happen to hang off this one, public because a spec reaches them by name.
+Running them together as one block reads as though the counterpart were another child.
+
+A `*Dsl` with no children — every picker — is the same rule with nothing after the blank line: one
+private field, a one-line constructor, and no separator to draw.
+
+**`*Playwright` constructors take the page and set up locators; some take it and do nothing else.**
+`BasePage` and `BaseComponent` both declare a `protected` constructor, so a subclass that has no
+locators of its own still has to write `constructor(page) { super(page) }` to be constructible at
+all. `JanggiPlaywright` is the one such case today, and it says so in a comment — without it the
+constructor reads as deletable boilerplate, and deleting it stops `JanggiDsl` compiling.
 
 ## Where a method goes
 

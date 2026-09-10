@@ -1,6 +1,7 @@
+import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import type {StatusPlaywright} from "@src/dsl/janggi/components/status/playwright/StatusPlaywright";
+import {StatusPlaywright} from "@src/dsl/janggi/components/status/playwright/StatusPlaywright";
 
 /**
  * What the game says about itself, reached as `janggi.status`.
@@ -10,7 +11,23 @@ import type {StatusPlaywright} from "@src/dsl/janggi/components/status/playwrigh
  * taken — belongs here too.
  */
 export class StatusDsl {
-  constructor(private readonly status: StatusPlaywright) {}
+  private readonly status: StatusPlaywright;
+
+  constructor(page: Page) {
+    this.status = new StatusPlaywright(page);
+  }
+
+  /**
+   * Whether the board is still being laid out rather than played — the scored game's 판차림 phase,
+   * in which Han arranges first and Cho answers. `getTurn` says which army it is waiting on.
+   */
+  async isLayingOut(): Promise<boolean> {
+    try {
+      return await this.status.isLayingOut();
+    } catch (error) {
+      throw new DslError("Failed to read whether the board is still being laid out", error);
+    }
+  }
 
   /** Whether the army to move is in check. */
   async isInCheck(): Promise<boolean> {

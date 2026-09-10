@@ -88,17 +88,41 @@ export default [
     // — and this is what stops the halves growing back together: a locator, a click or a wait
     // outside a `playwright/` folder cannot even be written.
     //
-    // `AcceptanceTestFixtures` is the one exception, and is exempt only because it is not under
+    // The one thing a `*Dsl` may name is `Page`, and only to build its own counterpart with in its
+    // constructor. That is what makes the pairing one-to-one: every `*Dsl` owns exactly one
+    // `*Playwright`, privately, rather than being handed one by a parent that had to hold it.
+    // `no-restricted-syntax` below is the other half of the rule — the page may be passed on, never
+    // kept, so it is out of scope in every method and the browser can only be reached through the
+    // counterpart.
+    //
+    // `AcceptanceTestFixtures` is exempt from all of it, and only because it is not under
     // `src/dsl/`: handing the browser to the DSL has to happen somewhere.
     files: ["src/dsl/**"],
     ignores: ["src/dsl/**/playwright/**"],
     rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: 'MemberExpression[object.type="ThisExpression"][property.name="page"]',
+          message:
+            "A *Dsl may not reach the page from a method. Take it in the constructor, build the *Playwright beside this file with it, and go through that.",
+        },
+        {
+          selector: 'PropertyDefinition[key.name="page"], TSParameterProperty > Identifier[name="page"]',
+          message:
+            "A *Dsl may not keep the page. Take it as a plain constructor parameter, build the *Playwright beside this file with it, and let it go out of scope.",
+        },
+      ],
       "no-restricted-imports": restrictedImports({
         allowedPackages: ["@janggi/shared"],
         paths: playwrightPackages.map(name => ({
           name,
+          // `Page` is the exception, and only in `@playwright/test`: a *Dsl needs to be able to
+          // name the thing it passes to its counterpart's constructor. Nothing else — a `Locator`
+          // or an `expect` here would be the halves growing back together.
+          ...(name === "@playwright/test" ? {allowImportNames: ["Page"]} : {}),
           message:
-            "Only a `playwright/` folder may import Playwright. Put the locator work in the *Playwright beside this file and call it from here.",
+            "Only a `playwright/` folder may import Playwright, apart from the `Page` a *Dsl constructor passes to its counterpart. Put the locator work in the *Playwright beside this file and call it from here.",
         })),
         patterns: [
           {

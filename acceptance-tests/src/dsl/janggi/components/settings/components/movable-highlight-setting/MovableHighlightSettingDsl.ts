@@ -1,10 +1,15 @@
+import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
-import type {MovableHighlightSettingPlaywright} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/playwright/MovableHighlightSettingPlaywright";
+import {MovableHighlightSettingPlaywright} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/playwright/MovableHighlightSettingPlaywright";
 
 /** The picker for marking the pieces that can move, reached as `janggi.settings.movableHighlight`. */
 export class MovableHighlightSettingDsl {
-  constructor(private readonly movableHighlight: MovableHighlightSettingPlaywright) {}
+  private readonly movableHighlight: MovableHighlightSettingPlaywright;
+
+  constructor(page: Page) {
+    this.movableHighlight = new MovableHighlightSettingPlaywright(page);
+  }
 
   async setTo(name: MovableHighlightName): Promise<void> {
     try {

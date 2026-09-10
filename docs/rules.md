@@ -728,11 +728,32 @@ that clause was not in the archived KJA 대국규칙 or 대국규정 read in ful
 this reports and refuses nothing, in either format — the posture §6.4 takes on
 repetition, and for the same reason: there is no referee here. A mutation that
 *added* the bar is one of the tests, so the decision cannot be undone by
-accident.
+accident. On screen it is a line of text and nothing else: no control is disabled
+by it, and a matsang game is laid out and played like any other.
 
-**Not shown.** Nothing on screen runs the setup phase yet: the two pickers still
-deal a game through `redux/game/utils/DealtGame.ts` calling `newGame` directly,
-in either format. The engine's door is built and not yet opened.
+The two names live in `shared/` beside `MatchFormat`, for the same reason — a
+screen shows them and a spec asserts them, so they are vocabulary, while the rule
+that decides which of the two a board has come to stays in the engine.
+
+**Shown.** The two setup pickers run the phase. In a **scored** game they open
+empty, Cho's waits until Han has chosen, Han's closes the moment it is used, and
+the turn line reads "Han to lay out" then "Cho to lay out" — nothing on the board
+may be touched, and Pass and Bikjang stay disabled, until both have chosen. In a
+**casual** game none of that happens: the board is dealt on the common
+arrangement with both pickers live, exactly as before the rule existed.
+
+The store holds the engine's `SetupPhase` whole (`redux/game/types/GameSliceState.ts`)
+rather than three loose fields, because the rule reads all three together. One
+seam is worth knowing: a board still being laid out has no game on it, and
+something has still to be drawn, so `redux/game/utils/BoardShownFor.ts` stands
+`DEFAULT_SETUP` in for the army that has not chosen. **That is the only place a
+default touches this**, and it is a display decision — the rule's input is the
+phase, where an unchosen army stays `undefined`. `redux/game/utils/FreshPhaseFor.ts`
+is the other half: it is what makes a casual game start already arranged and a
+scored one start empty.
+
+The 맞상/엇상 line sits under the two pickers and names the pairing where the game
+has a name for one, and is absent entirely where it does not.
 
 ---
 

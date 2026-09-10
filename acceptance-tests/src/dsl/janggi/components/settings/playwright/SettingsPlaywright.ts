@@ -1,34 +1,42 @@
-import {BoardSettingPlaywright} from "@src/dsl/janggi/components/settings/components/board-setting/playwright/BoardSettingPlaywright";
-import {ChoSetupSettingPlaywright} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/playwright/ChoSetupSettingPlaywright";
-import {HanSetupSettingPlaywright} from "@src/dsl/janggi/components/settings/components/han-setup-setting/playwright/HanSetupSettingPlaywright";
-import {MatchFormatSettingPlaywright} from "@src/dsl/janggi/components/settings/components/match-format-setting/playwright/MatchFormatSettingPlaywright";
-import {MovableHighlightSettingPlaywright} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/playwright/MovableHighlightSettingPlaywright";
-import type {Page} from "@playwright/test";
-import {PieceSetSettingPlaywright} from "@src/dsl/janggi/components/settings/components/piece-set-setting/playwright/PieceSetSettingPlaywright";
+import type {Locator, Page} from "@playwright/test";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
+import {ELEPHANT_PAIRINGS} from "@janggi/shared/janggi/settings/ElephantPairing";
+import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 
 /**
- * The controls under the board. Each picker is its own component, so each one names its own test
- * ids and its own option type and nothing has to be looked up in a helper to read either.
+ * The controls under the board — the part of them that belongs to no single picker, which today is
+ * the 맞상/엇상 line beneath the two setup pickers.
  *
- * The two armies get a picker each because they arrange their back ranks separately.
+ * It holds no other component. Each picker is built by its own `*Dsl` from the page, so this is the
+ * counterpart of `SettingsDsl` and nothing else's parent.
  */
 export class SettingsPlaywright extends BaseComponent {
-  readonly board: BoardSettingPlaywright;
-  readonly pieceSet: PieceSetSettingPlaywright;
-  readonly hanSetup: HanSetupSettingPlaywright;
-  readonly choSetup: ChoSetupSettingPlaywright;
-  readonly movableHighlight: MovableHighlightSettingPlaywright;
-  readonly matchFormat: MatchFormatSettingPlaywright;
+  private readonly elephantPairing: Locator;
 
   constructor(page: Page) {
     super(page);
 
-    this.board = new BoardSettingPlaywright(page);
-    this.pieceSet = new PieceSetSettingPlaywright(page);
-    this.hanSetup = new HanSetupSettingPlaywright(page);
-    this.choSetup = new ChoSetupSettingPlaywright(page);
-    this.movableHighlight = new MovableHighlightSettingPlaywright(page);
-    this.matchFormat = new MatchFormatSettingPlaywright(page);
+    this.elephantPairing = page.getByTestId("elephant-pairing");
+  }
+
+  /**
+   * Whether the line is on screen at all. Distinct from `getElephantPairing` returning nothing: an
+   * empty line with no pairing on it would answer the same there, and is a blank row under the
+   * pickers rather than the absence the design intends.
+   */
+  async isElephantPairingShown(): Promise<boolean> {
+    return (await this.elephantPairing.count()) > 0;
+  }
+
+  /**
+   * How the two chosen arrangements sit against each other, or nothing where the pairing is not one
+   * the game has a name for.
+   */
+  async getElephantPairing(): Promise<ElephantPairing | undefined> {
+    if ((await this.elephantPairing.count()) === 0) return undefined;
+
+    const pairing = await this.elephantPairing.getAttribute("data-pairing");
+
+    return ELEPHANT_PAIRINGS.find(candidate => candidate === pairing);
   }
 }

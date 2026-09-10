@@ -15,7 +15,11 @@ interface Props<Option extends WithName> {
   /** Read out in place of the label, where the label alone is too terse to stand on its own. */
   readonly ariaLabel?: string;
   readonly options: readonly Option[];
-  readonly selected: Option;
+  /**
+   * The option in use, or nothing where no choice has been made yet — a scored game's setup pickers
+   * open empty, because laying out is an act rather than a default.
+   */
+  readonly selected: Option | undefined;
   /** A picker whose choice is no longer available — a setup, once play has begun. */
   readonly disabled?: boolean;
   readonly onSelect: (option: Option) => void;
@@ -42,7 +46,7 @@ export function OptionPicker<Option extends WithName>({
             key={option.name}
             pickerId={id}
             option={option}
-            selected={option.name === selected.name}
+            selected={option.name === selected?.name}
             disabled={disabled}
             onSelect={onSelect}
           />

@@ -63,6 +63,7 @@ setups/Place.ts                   place(phase, side, setup): SetupPhase — thro
 setups/IsArranged.ts              isArranged(phase): phase is ArrangedSetupPhase
 setups/NewGameFrom.ts             newGameFrom(phase): GameState        — throws until arranged
 setups/ElephantPairingOf.ts       elephantPairingOf(hanSetup, choSetup): ElephantPairing | undefined
+                                  (the two names are `@janggi/shared` vocabulary; the rule is here)
 ```
 
 Those are the whole public surface; everything under `moves/` is reached through `MovesFrom.ts`'s

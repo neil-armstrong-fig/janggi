@@ -383,9 +383,10 @@ about tournament practice from a professional, not a verified rulebook rule. It
 may live in a tournament-specific regulation, or in the 대한장기연맹's separate
 2019 rules revision, neither of which I retrieved.
 
-**What was done about it: classified, never barred.**
-`webapp/src/game/setups/ElephantPairingOf.ts` answers 맞상 / 엇상 / neither, and
-no format refuses an arrangement on the strength of it. A claim this well sourced
+**What was done about it: classified, shown, never barred.**
+`webapp/src/game/setups/ElephantPairingOf.ts` answers 맞상 / 엇상 / neither, a line
+under the two setup pickers names it for the player, and no format refuses an
+arrangement on the strength of it. A claim this well sourced
 deserves to be computable; a claim with no rulebook text behind it does not get
 to stop a player choosing. `docs/rules.md` §6.6 and §8 record the decision.
 
@@ -737,7 +738,9 @@ Recorded so nobody re-does them.
    caveat).
 
    **Taken, and by half.** The classification is computed, off the elephant files
-   rather than the setup names, so it never touches §6's naming dispute. The
+   rather than the setup names, so it never touches §6's naming dispute, and it is
+   shown under the two pickers — recommendation 3's "label by the resulting
+   formation" answered in the one place the ambiguity does not reach. The
    parenthetical was not taken: nothing is disallowed, for the caveat's own
    reason. See §5.4 above.
 5. **Setup order:** Han (red) places first, then Cho (blue), and Han may not
@@ -745,8 +748,10 @@ Recorded so nobody re-does them.
    implement the setup phase faithfully, Cho is the player who decides whether the
    game becomes 맞상.
 
-   **Taken, in the scored format.** `webapp/src/game/setups/` runs the phase and
-   `docs/rules.md` §6.6 says why a casual game is not held to it.
+   **Taken, in the scored format.** `webapp/src/game/setups/` runs the phase, the
+   two pickers on screen enforce its order, and `docs/rules.md` §6.6 says why a
+   casual game is not held to it. Cho really is the player who decides whether the
+   game becomes 맞상: Han's picker has closed by the time Cho's opens.
 
 ---
 

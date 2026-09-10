@@ -1,12 +1,13 @@
 import type {PayloadAction} from "@reduxjs/toolkit";
 import {createSlice} from "@reduxjs/toolkit";
 import {DEFAULT_MATCH_FORMAT} from "@janggi/shared/janggi/settings/MatchFormat";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Move} from "@src/game/types/Move";
 import type {Setup} from "@src/game/setups/types/Setup";
 import {dealtGame} from "@src/redux/game/utils/DealtGame";
+import {freshPhaseFor} from "@src/redux/game/utils/FreshPhaseFor";
+import {place} from "@src/game/setups/Place";
 import {callBikjangIn} from "@src/game/record/CallBikjangIn";
 import {playMove} from "@src/game/record/PlayMove";
 import {redo} from "@src/game/record/Redo";
@@ -25,7 +26,19 @@ import {undo} from "@src/game/record/Undo";
  *
  * `formatChosen` deals a fresh game exactly as the two setup actions do, and for the same reason:
  * which of janggi's two games is being played is settled before it starts, not switched half way
- * through one.
+ * through one. It deals a fresh *phase* too, rather than carrying the arrangements across, because
+ * the two formats do not begin the same way — a scored game is laid out by its players and a casual
+ * one is simply dealt. `freshPhaseFor` is where that difference lives.
+ *
+ * `hanSetupChosen` and `choSetupChosen` go through the engine's `place`, which **throws** when the
+ * army may not lay out now — Han reaching for a second arrangement in a scored game, or Cho
+ * answering a board Han has not laid out yet. Nothing here catches it, for the same reason
+ * `takenBack` does not check `canUndo`: the picker is disabled off `canPlace`, so a dispatch that
+ * could throw is a bug at the control rather than a case to handle here.
+ *
+ * `restarted` re-deals from the phase as it stands, so a new game keeps both arrangements. In a
+ * scored game that is the rule rather than a convenience — Han may not revise, and starting again is
+ * not a way round it. Picking a format is.
  *
  * `takenBack` and `playedAgain` are two more of the same shape, and they are *not* gated on whether
  * the game is over the way `moved` and `passed` are: taking back the turn that ended a game is the
@@ -34,7 +47,7 @@ import {undo} from "@src/game/record/Undo";
  */
 export const gameSlice = createSlice({
   name: "game",
-  initialState: dealtGame(DEFAULT_SETUP, DEFAULT_SETUP, DEFAULT_MATCH_FORMAT),
+  initialState: dealtGame(freshPhaseFor(DEFAULT_MATCH_FORMAT)),
   reducers: {
     moved: (state, action: PayloadAction<Move>): GameSliceState => ({
       ...state,
@@ -50,15 +63,15 @@ export const gameSlice = createSlice({
     playedAgain: (state): GameSliceState => ({...state, played: redo(state.played)}),
 
     hanSetupChosen: (state, action: PayloadAction<Setup>): GameSliceState =>
-      dealtGame(action.payload, state.choSetup, state.format),
+      dealtGame(place(state.phase, "han", action.payload)),
 
     choSetupChosen: (state, action: PayloadAction<Setup>): GameSliceState =>
-      dealtGame(state.hanSetup, action.payload, state.format),
+      dealtGame(place(state.phase, "cho", action.payload)),
 
-    formatChosen: (state, action: PayloadAction<MatchFormat>): GameSliceState =>
-      dealtGame(state.hanSetup, state.choSetup, action.payload),
+    formatChosen: (_state, action: PayloadAction<MatchFormat>): GameSliceState =>
+      dealtGame(freshPhaseFor(action.payload)),
 
-    restarted: (state): GameSliceState => dealtGame(state.hanSetup, state.choSetup, state.format),
+    restarted: (state): GameSliceState => dealtGame(state.phase),
   },
 });
 

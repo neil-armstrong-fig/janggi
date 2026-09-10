@@ -271,6 +271,45 @@ describe("with the game stopped by two rested turns", () => {
 });
 
 /**
+ * A scored board still being laid out: `docs/rules.md` §6.6. `gameIsOver` cannot see this one at
+ * all — the position is an ordinary opening full of legal moves, and what makes it untouchable is
+ * that nobody has finished arranging it.
+ */
+describe("with the board still being laid out", () => {
+  beforeEach(() => {
+    selection = renderOn(openingGame(), false);
+  });
+
+  describe("when a piece the army to move owns is reached for", () => {
+    beforeEach(() => {
+      act(() => selection.current.tap(CHO_SOLDIER));
+    });
+
+    it("does not pick it up, there being no game to play yet", () => {
+      expect(selection.current.selected).toBeUndefined();
+    });
+
+    it("offers it nowhere to go", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+
+    it("reports no move", () => {
+      expect(played).toEqual([]);
+    });
+  });
+
+  describe("when the pointer merely rests on a piece", () => {
+    beforeEach(() => {
+      act(() => selection.current.hover(CHO_SOLDIER));
+    });
+
+    it("shows nowhere, there being nothing to teach about a game nobody has arranged", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+  });
+});
+
+/**
  * What `renderHook` hands back, named here because the type that names it cannot be imported: the
  * lint rule allows only `renderHook`, `act`, `waitFor` and `cleanup` from `@testing-library/react`.
  */
@@ -278,11 +317,16 @@ interface Rendered {
   readonly current: MoveSelection;
 }
 
-/** Renders the hook on a position, recording any move it reports rather than applying one. */
-function renderOn(game: GameState): Rendered {
+/**
+ * Renders the hook on a position, recording any move it reports rather than applying one.
+ *
+ * `playable` is what a finished setup phase would have said. Every block but the last is about a
+ * board with a game on it, so it defaults to that and only the laying-out block passes otherwise.
+ */
+function renderOn(game: GameState, playable = true): Rendered {
   played = [];
 
-  return renderHook(() => useMoveSelection(game, move => played.push(move))).result;
+  return renderHook(() => useMoveSelection(game, move => played.push(move), playable)).result;
 }
 
 function openingGame(): GameState {
