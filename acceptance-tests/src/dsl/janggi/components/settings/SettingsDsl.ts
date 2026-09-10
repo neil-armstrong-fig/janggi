@@ -5,7 +5,9 @@ import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components
 import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
 import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
-import type {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
+import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
+import type {Page} from "@playwright/test";
+import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 
 /**
@@ -24,6 +26,8 @@ import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
  * across both armies' setups.
  */
 export class SettingsDsl {
+  private readonly settings: SettingsPlaywright;
+
   readonly board: BoardSettingDsl;
   readonly pieceSet: PieceSetSettingDsl;
   readonly hanSetup: HanSetupSettingDsl;
@@ -31,13 +35,15 @@ export class SettingsDsl {
   readonly movableHighlight: MovableHighlightSettingDsl;
   readonly matchFormat: MatchFormatSettingDsl;
 
-  constructor(settings: SettingsPlaywright) {
-    this.board = new BoardSettingDsl(settings.board);
-    this.pieceSet = new PieceSetSettingDsl(settings.pieceSet);
-    this.hanSetup = new HanSetupSettingDsl(settings.hanSetup);
-    this.choSetup = new ChoSetupSettingDsl(settings.choSetup);
-    this.movableHighlight = new MovableHighlightSettingDsl(settings.movableHighlight);
-    this.matchFormat = new MatchFormatSettingDsl(settings.matchFormat);
+  constructor(page: Page) {
+    this.settings = new SettingsPlaywright(page);
+
+    this.board = new BoardSettingDsl(page);
+    this.pieceSet = new PieceSetSettingDsl(page);
+    this.hanSetup = new HanSetupSettingDsl(page);
+    this.choSetup = new ChoSetupSettingDsl(page);
+    this.movableHighlight = new MovableHighlightSettingDsl(page);
+    this.matchFormat = new MatchFormatSettingDsl(page);
   }
 
   /** Both armies at once, for a spec that only cares that they match. */
@@ -57,6 +63,27 @@ export class SettingsDsl {
       return (await this.hanSetup.isChoosable()) && (await this.choSetup.isChoosable());
     } catch (error) {
       throw new DslError("Failed to check whether the setups can still be chosen", error);
+    }
+  }
+
+  /**
+   * Whether the two arrangements have come to 맞상 or 엇상, or to neither — the classification that
+   * falls out of both choices rather than out of either one, which is why it is here.
+   */
+  /** Whether the pairing line is shown at all — it is absent where there is no pairing to name. */
+  async isElephantPairingShown(): Promise<boolean> {
+    try {
+      return await this.settings.isElephantPairingShown();
+    } catch (error) {
+      throw new DslError("Failed to check whether the pairing line is shown", error);
+    }
+  }
+
+  async getElephantPairing(): Promise<ElephantPairing | undefined> {
+    try {
+      return await this.settings.getElephantPairing();
+    } catch (error) {
+      throw new DslError("Failed to read how the two arrangements pair up", error);
     }
   }
 }

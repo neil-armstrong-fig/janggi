@@ -1,7 +1,19 @@
 import type {GameState} from "@src/game/types/GameState";
+import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
+import {isArranged} from "@src/game/setups/IsArranged";
 import {isInCheck} from "@src/game/IsInCheck";
 import {outcomeOf} from "@src/game/OutcomeOf";
+
+/**
+ * The board is still being laid out — 판차림 — and this is the army it is waiting on. Only a scored
+ * game ever reaches it: `docs/rules.md` §6.6's order is a regulation of official play, so a casual
+ * game is dealt with both back ranks already out and never sits here.
+ */
+interface LayingOut {
+  readonly kind: "layingOut";
+  readonly side: Side;
+}
 
 /** Whose move it is, and nothing hanging over them. */
 interface ToMove {
@@ -36,7 +48,7 @@ interface Drawn {
   readonly kind: "drawn";
 }
 
-export type GameStatus = ToMove | InCheck | Won | WonOnPoints | Drawn;
+export type GameStatus = LayingOut | ToMove | InCheck | Won | WonOnPoints | Drawn;
 
 /**
  * What the game has to say about itself, in the one form a player needs told.
@@ -52,8 +64,15 @@ export type GameStatus = ToMove | InCheck | Won | WonOnPoints | Drawn;
  * A pure function rather than logic inside the component, because a checkmate cannot be tapped out
  * in a readable number of moves and so cannot be reached by an acceptance test. This is where that
  * case is covered.
+ *
+ * The phase is asked **first**, and outranks everything the position has to say. A board still being
+ * laid out has a `GameState` only because something has to be drawn — `BoardShownFor.ts` — and
+ * announcing "Cho to move" over a game nobody has arranged yet would be a lie about a board that
+ * will not answer a tap.
  */
-export function gameStatusOf(game: GameState): GameStatus {
+export function gameStatusOf(game: GameState, phase: SetupPhase): GameStatus {
+  if (!isArranged(phase)) return {kind: "layingOut", side: layingOutNext(phase)};
+
   const outcome = outcomeOf(game);
 
   if (outcome.kind === "checkmate") return {kind: "won", by: outcome.winner};
@@ -65,4 +84,12 @@ export function gameStatusOf(game: GameState): GameStatus {
   if (isInCheck(game, game.sideToMove)) return {kind: "inCheck", side: game.sideToMove};
 
   return {kind: "toMove", side: game.sideToMove};
+}
+
+/**
+ * Which army the board is waiting on. Han lays out first — 후수자가 먼저 기물을 차리고 — so an
+ * unfinished phase is waiting on Han until Han has chosen, and on Cho after that.
+ */
+function layingOutNext(phase: SetupPhase): Side {
+  return phase.hanSetup === undefined ? "han" : "cho";
 }

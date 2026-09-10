@@ -1,5 +1,6 @@
 import {BikjangButton} from "@src/react/pages/game/components/bikjang-button/BikjangButton";
 import {Board} from "@src/react/pages/game/components/board/Board";
+import {ElephantPairingLine} from "@src/react/pages/game/components/elephant-pairing/ElephantPairingLine";
 import {
   BUILT_IN_PIECE_STYLES,
   DEFAULT_PIECE_STYLE,
@@ -20,6 +21,8 @@ import {Scoreboard} from "@src/react/pages/game/components/scoreboard/Scoreboard
 import {UndoButton} from "@src/react/pages/game/components/undo-button/UndoButton";
 import {canCallBikjang} from "@src/game/CanCallBikjang";
 import {canPass} from "@src/game/CanPass";
+import {canPlace} from "@src/game/setups/CanPlace";
+import {isArranged} from "@src/game/setups/IsArranged";
 import {canRedo} from "@src/game/record/CanRedo";
 import {canUndo} from "@src/game/record/CanUndo";
 import {
@@ -44,7 +47,14 @@ import {useState} from "react";
  *
  * The two armies get a control each because they genuinely choose separately: Han lays out first,
  * Cho answers, and whether the elephants end up on the same wing or facing each other across the
- * board is the result of those two choices rather than of one setting. See `Setups.ts`.
+ * board is the result of those two choices rather than of one setting. See `Setups.ts`, and the
+ * line under the two pickers, which names that pairing where the game has a name for it.
+ *
+ * In a **scored** game that order is a rule — `docs/rules.md` §6.6 — so the two pickers open empty,
+ * Cho's waits for Han, Han's closes the moment it is used, and nothing on the board may be touched
+ * until both have chosen. In a **casual** game none of that applies: the pieces are simply dealt on
+ * the common arrangement and either army may be re-chosen until the first move. `laidOut` is the one
+ * question the difference comes down to here; the rule itself is `canPlace`.
  *
  * The game itself comes from the store; the board style and the piece set stay in local state,
  * because those are preferences about how the game is drawn rather than part of the game.
@@ -64,21 +74,25 @@ export function GamePage(): React.JSX.Element {
   const [style, setStyle] = useState<BoardStyle>(DEFAULT_STYLE);
   const [pieceStyle, setPieceStyle] = useState<PieceSetStyle>(DEFAULT_PIECE_STYLE);
   const [movableHighlight, setMovableHighlight] = useState<MovableHighlight>(DEFAULT_MOVABLE_HIGHLIGHT);
-  const {played, hanSetup, choSetup, format} = useAppSelector(state => state.game);
+  const {played, phase} = useAppSelector(state => state.game);
   const game = played.present;
   const dispatch = useAppDispatch();
+
+  // A scored board is still being laid out until both armies have chosen, and until then there is
+  // no game here to play — the pieces on screen are only what `boardShownFor` is painting.
+  const laidOut = isArranged(phase);
 
   return (
     <main className="flex h-full w-full flex-col gap-3 bg-[#1c140b] p-2">
       <div className="flex shrink-0 flex-col items-center gap-1">
-        <TurnIndicator game={game} />
+        <TurnIndicator game={game} phase={phase} />
 
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <Scoreboard game={game} />
 
-          <PassButton enabled={canPass(game)} onPass={() => dispatch(passed())} />
+          <PassButton enabled={laidOut && canPass(game)} onPass={() => dispatch(passed())} />
 
-          <BikjangButton enabled={canCallBikjang(game)} onCall={() => dispatch(bikjangCalled())} />
+          <BikjangButton enabled={laidOut && canCallBikjang(game)} onCall={() => dispatch(bikjangCalled())} />
 
           <UndoButton enabled={canUndo(played)} onUndo={() => dispatch(takenBack())} />
 
@@ -94,6 +108,7 @@ export function GamePage(): React.JSX.Element {
           style={style}
           pieceStyle={pieceStyle}
           highlightMovable={movableHighlight.shown}
+          playable={laidOut}
           onMove={move => dispatch(moved(move))}
         />
       </div>
@@ -127,29 +142,31 @@ export function GamePage(): React.JSX.Element {
           label="Format"
           ariaLabel="Which of janggi's two games is being played"
           options={MATCH_FORMAT_OPTIONS}
-          selected={{name: format}}
+          selected={{name: phase.format}}
           onSelect={option => dispatch(formatChosen(option.name))}
         />
 
         <OptionPicker
           id="han-setup"
-          disabled={playHasBegun(played)}
+          disabled={playHasBegun(played) || !canPlace(phase, "han")}
           label="Han"
           ariaLabel="Han's opening setup"
           options={SETUPS}
-          selected={hanSetup}
+          selected={phase.hanSetup}
           onSelect={setup => dispatch(hanSetupChosen(setup))}
         />
 
         <OptionPicker
           id="cho-setup"
-          disabled={playHasBegun(played)}
+          disabled={playHasBegun(played) || !canPlace(phase, "cho")}
           label="Cho"
           ariaLabel="Cho's opening setup"
           options={SETUPS}
-          selected={choSetup}
+          selected={phase.choSetup}
           onSelect={setup => dispatch(choSetupChosen(setup))}
         />
+
+        <ElephantPairingLine hanSetup={phase.hanSetup} choSetup={phase.choSetup} />
       </div>
     </main>
   );

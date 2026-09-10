@@ -1,10 +1,15 @@
-import type {BoardSettingPlaywright} from "@src/dsl/janggi/components/settings/components/board-setting/playwright/BoardSettingPlaywright";
+import type {Page} from "@playwright/test";
+import {BoardSettingPlaywright} from "@src/dsl/janggi/components/settings/components/board-setting/playwright/BoardSettingPlaywright";
 import type {BoardStyleName} from "@janggi/shared/janggi/settings/BoardStyleName";
 import {DslError} from "@src/dsl/errors/DslError";
 
 /** The board picker, reached as `janggi.settings.board`. */
 export class BoardSettingDsl {
-  constructor(private readonly board: BoardSettingPlaywright) {}
+  private readonly board: BoardSettingPlaywright;
+
+  constructor(page: Page) {
+    this.board = new BoardSettingPlaywright(page);
+  }
 
   async setTo(name: BoardStyleName): Promise<void> {
     try {

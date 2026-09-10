@@ -32,18 +32,26 @@ interface Props {
   readonly pieceStyle: PieceSetStyle;
   /** Whether to mark the pieces the army to move may actually move. A player's own setting. */
   readonly highlightMovable: boolean;
+  /**
+   * Whether there is a game here to play at all. False while a scored board is still being laid out
+   * — the pieces are drawn, but nothing on them may be touched until both armies have chosen.
+   */
+  readonly playable: boolean;
   readonly onMove: (move: Move) => void;
 }
 
-export function Board({game, style, pieceStyle, highlightMovable, onMove}: Props): React.JSX.Element {
+export function Board({game, style, pieceStyle, highlightMovable, playable, onMove}: Props): React.JSX.Element {
   const placedPieces = useMemo(() => piecesByPosition(game.pieces), [game.pieces]);
 
-  const {selected, hovered, destinations, tap, hover} = useMoveSelection(game, onMove);
+  const {selected, hovered, destinations, tap, hover} = useMoveSelection(game, onMove, playable);
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
 
   // On [game] rather than on every render: the board re-renders as the pointer crosses it, and
   // asking the engine for every legal move on the board is not something to do per hover.
-  const movable = useMemo(() => (highlightMovable ? movablePieces(game) : NOTHING), [game, highlightMovable]);
+  const movable = useMemo(
+    () => (highlightMovable ? movablePieces(game, playable) : NOTHING),
+    [game, highlightMovable, playable],
+  );
   const heldKey = selected && toPositionKey(selected);
   const hoveredKey = hovered && toPositionKey(hovered);
 

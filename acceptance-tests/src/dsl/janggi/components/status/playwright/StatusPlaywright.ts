@@ -25,6 +25,19 @@ export class StatusPlaywright extends BaseComponent {
     this.scores = page.getByTestId("scores");
   }
 
+  /**
+   * Whether the game is still being laid out — 판차림 — rather than played. Only a scored game ever
+   * says so; a casual one puts the usual arrangement out and starts.
+   *
+   * `getTurn` names the army it is waiting on either way, so a spec asks this first and then asks
+   * whose go it is.
+   */
+  async isLayingOut(): Promise<boolean> {
+    await this.container.waitFor({state: "visible"});
+
+    return (await this.container.getAttribute("data-laying-out")) !== null;
+  }
+
   /** Whether the army to move is in check. */
   async isInCheck(): Promise<boolean> {
     await this.container.waitFor({state: "visible"});

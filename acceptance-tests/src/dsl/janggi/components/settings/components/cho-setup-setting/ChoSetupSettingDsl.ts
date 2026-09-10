@@ -1,5 +1,6 @@
+import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
-import type {ChoSetupSettingPlaywright} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/playwright/ChoSetupSettingPlaywright";
+import {ChoSetupSettingPlaywright} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/playwright/ChoSetupSettingPlaywright";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 
 /**
@@ -9,7 +10,11 @@ import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
  * answers — so a spec that cares about the difference has to be able to say which it means.
  */
 export class ChoSetupSettingDsl {
-  constructor(private readonly setup: ChoSetupSettingPlaywright) {}
+  private readonly setup: ChoSetupSettingPlaywright;
+
+  constructor(page: Page) {
+    this.setup = new ChoSetupSettingPlaywright(page);
+  }
 
   async setTo(name: SetupName): Promise<void> {
     try {

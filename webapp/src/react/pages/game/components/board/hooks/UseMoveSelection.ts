@@ -34,13 +34,17 @@ export interface MoveSelection {
  * that it would refuse. A game stopped by two rested turns is the one case `movesFrom` cannot see —
  * the position still has moves in it and the game does not want them — so `gameIsOver` closes the
  * board over the top of it, and nothing is picked up or offered after that.
+ *
+ * `playable` closes it from the other end, and is a fact no position carries: a scored board still
+ * being laid out has pieces on it only because something must be drawn, and none of them is anybody's
+ * to pick up until both armies have chosen. See `docs/rules.md` §6.6.
  */
-export function useMoveSelection(game: GameState, onMove: (move: Move) => void): MoveSelection {
+export function useMoveSelection(game: GameState, onMove: (move: Move) => void, playable: boolean): MoveSelection {
   const [selected, setSelected] = useState<Position | undefined>(undefined);
   const [hovered, setHovered] = useState<Position | undefined>(undefined);
 
-  const over = gameIsOver(game);
-  const asking = over ? undefined : (selected ?? hovered);
+  const closed = !playable || gameIsOver(game);
+  const asking = closed ? undefined : (selected ?? hovered);
   const destinations = useMemo(() => (asking ? movesFrom(game, asking) : NOWHERE), [game, asking]);
 
   return {
@@ -50,7 +54,7 @@ export function useMoveSelection(game: GameState, onMove: (move: Move) => void):
     hover: setHovered,
 
     tap(position: Position): void {
-      if (over) return;
+      if (closed) return;
 
       if (selected && isAmong(destinations, position)) {
         onMove({from: selected, to: position});

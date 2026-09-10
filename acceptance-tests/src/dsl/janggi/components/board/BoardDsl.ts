@@ -1,4 +1,5 @@
-import type {BoardPlaywright} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
+import type {Page} from "@playwright/test";
+import {BoardPlaywright} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 
@@ -13,7 +14,11 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
  * here to drive the browser with even by accident.
  */
 export class BoardDsl {
-  constructor(private readonly board: BoardPlaywright) {}
+  private readonly board: BoardPlaywright;
+
+  constructor(page: Page) {
+    this.board = new BoardPlaywright(page);
+  }
 
   async isVisible(): Promise<boolean> {
     try {

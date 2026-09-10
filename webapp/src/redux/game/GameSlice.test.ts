@@ -8,6 +8,7 @@ import {
   choSetupChosen,
   formatChosen,
   gameReducer,
+  hanSetupChosen,
   moved,
   passed,
   playedAgain,
@@ -94,8 +95,8 @@ it("refuses a move by the army whose turn it is not", () => {
 it("leaves the setups alone when a move is played", () => {
   const after = gameReducer(opening(), moved(CHO_OPENING));
 
-  expect(after.hanSetup).toBe(opening().hanSetup);
-  expect(after.choSetup).toBe(opening().choSetup);
+  expect(after.phase.hanSetup).toBe(opening().phase.hanSetup);
+  expect(after.phase.choSetup).toBe(opening().phase.choSetup);
 });
 
 it("deals a fresh game when one is restarted, giving the first move back to cho", () => {
@@ -118,7 +119,7 @@ it("deals a fresh game when either army's setup is chosen", () => {
 
   const after = gameReducer(played, choSetupChosen(setup("Outer Elephant")));
 
-  expect(after.choSetup.name).toBe("Outer Elephant");
+  expect(after.phase.choSetup?.name).toBe("Outer Elephant");
   expect(after.played.present.sideToMove).toBe("cho");
   expect(after.played.past).toEqual([]);
   expect(pieceOn(after, 1, 7)).toEqual({side: "cho", type: "soldier"});
@@ -140,7 +141,7 @@ it("deals a fresh game in the chosen format", () => {
 
   const after = gameReducer(played, formatChosen("Scored"));
 
-  expect(after.format).toBe("Scored");
+  expect(after.phase.format).toBe("Scored");
   expect(after.played.present.format).toBe("Scored");
   expect(after.played.present.sideToMove).toBe("cho");
   expect(after.played.past).toEqual([]);
@@ -148,9 +149,55 @@ it("deals a fresh game in the chosen format", () => {
 
 it("keeps the format when a game is restarted or a setup is chosen", () => {
   const scored = gameReducer(opening(), formatChosen("Scored"));
+  const hanHasLaidOut = gameReducer(scored, hanSetupChosen(setup("Left Elephant")));
 
-  expect(gameReducer(scored, restarted()).format).toBe("Scored");
-  expect(gameReducer(scored, choSetupChosen(setup("Outer Elephant"))).format).toBe("Scored");
+  expect(gameReducer(scored, restarted()).phase.format).toBe("Scored");
+  expect(gameReducer(hanHasLaidOut, choSetupChosen(setup("Outer Elephant"))).phase.format).toBe("Scored");
+});
+
+/**
+ * Choosing the scored format hands the board back to its players to lay out — `docs/rules.md` §6.6.
+ * A casual game is not held to that order, so it is dealt with both armies already arranged, which
+ * is what the app has always done and what every criterion written before this rule still asserts.
+ */
+it("deals a scored game with nobody having laid out, and a casual one with both", () => {
+  const scored = gameReducer(opening(), formatChosen("Scored"));
+
+  expect(scored.phase.hanSetup).toBeUndefined();
+  expect(scored.phase.choSetup).toBeUndefined();
+  expect(opening().phase.hanSetup?.name).toBe("Inner Elephant");
+  expect(opening().phase.choSetup?.name).toBe("Inner Elephant");
+});
+
+/**
+ * The reducers go through the engine's `place`, which throws rather than quietly ignoring a choice
+ * the rule refuses. The pickers are disabled off `canPlace`, so reaching one is a bug at the
+ * control — the same contract `moved` and `takenBack` already have.
+ */
+it("refuses cho a board han has not laid out yet", () => {
+  const scored = gameReducer(opening(), formatChosen("Scored"));
+
+  expect(() => gameReducer(scored, choSetupChosen(setup("Outer Elephant")))).toThrow(/han lays out first/);
+});
+
+it("refuses han a second arrangement in a scored game", () => {
+  const scored = gameReducer(opening(), formatChosen("Scored"));
+  const hanHasLaidOut = gameReducer(scored, hanSetupChosen(setup("Left Elephant")));
+
+  expect(() => gameReducer(hanHasLaidOut, hanSetupChosen(setup("Right Elephant")))).toThrow(/may not lay out again/);
+});
+
+/** Starting again is not a way round it: the arrangements stand, and han still may not revise. */
+it("keeps both arrangements when a scored game is restarted", () => {
+  const scored = gameReducer(opening(), formatChosen("Scored"));
+  const hanHasLaidOut = gameReducer(scored, hanSetupChosen(setup("Left Elephant")));
+  const laidOut = gameReducer(hanHasLaidOut, choSetupChosen(setup("Inner Elephant")));
+
+  const after = gameReducer(laidOut, restarted());
+
+  expect(after.phase.hanSetup?.name).toBe("Left Elephant");
+  expect(after.phase.choSetup?.name).toBe("Inner Elephant");
+  expect(after.played.past).toEqual([]);
 });
 
 function opening(): GameSliceState {

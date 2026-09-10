@@ -73,6 +73,18 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
   with the arrangement that produced it out of reach. It reads `played.past` instead, so it falls
   again as the game does.
 
+- **The store holds the setup phase, not two loose setups.** `state.game.phase` is the engine's
+  `SetupPhase` — the format and what each army has chosen, where "has not chosen" is a real state
+  and not a default. A scored game sits in it until both have laid out, and while it does there is
+  no game on the board: `isArranged` is what gates the board, Pass and Bikjang, and `canPlace` is
+  what locks each picker. A casual game is dealt already arranged and never sits there, because the
+  order is a regulation of official play — `docs/rules.md` §6.6.
+
+  `redux/game/utils/BoardShownFor.ts` is the one seam worth knowing. A half-laid-out board still has
+  to be drawn, so it stands `DEFAULT_SETUP` in for the army that has not chosen. That is a display
+  decision and stays on this side of the line — the engine refuses to know about a default, because
+  a phase handed one could never be waiting on anybody.
+
 - **The store holds a `PlayedGame`, not a `GameState`.** `state.game.played.present` is the
   position, and everything drawn takes that. The record beside it is what `UndoButton` and
   `RedoButton` act on, and those two are the only controls in here **not** gated on the game still

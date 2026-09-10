@@ -98,6 +98,10 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
 given("a scored game has reached the same position", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.matchFormat.setTo("Scored");
+    // A scored game is laid out before it is played — han first, then cho. Until both have, the
+    // board answers nothing, and the criteria below would pass for the wrong reason.
+    await janggi.settings.hanSetup.setTo("Inner Elephant");
+    await janggi.settings.choSetup.setTo("Inner Elephant");
     await janggi.board.tap(5, 7);
     await janggi.board.tap(4, 7);
     await janggi.board.tap(5, 4);
@@ -116,7 +120,11 @@ given("a scored game has reached the same position", () => {
   });
 });
 
-/** The format is a rule of the match, so it is settled before play the way a back rank is. */
+/**
+ * The format is a rule of the match, so it is settled before play the way a back rank is — and
+ * choosing the scored one hands the board back to its players to lay out, which is why the deal
+ * below leaves it waiting rather than ready. `LayingOutTheBoard.test.ts` is that rule's own spec.
+ */
 given("a game is about to start", () => {
   when("nothing has been played yet", () => {
     then("the format is casual, which is the game played online", async ({janggi}) => {
@@ -139,7 +147,7 @@ given("a game is about to start", () => {
 
     then("the board is dealt afresh, a format being no more changeable mid-game than a back rank", async ({janggi}) => {
       expect(await janggi.board.getPieceCount()).toBe(32);
-      expect(await janggi.status.getTurn()).toBe("cho");
+      expect(await janggi.status.isLayingOut()).toBe(true);
     });
   });
 

@@ -13,12 +13,17 @@ compile, run, and quietly never match.
 ```
 src/janggi/pieces/      Side, PieceType, Piece, PieceKey, and the two functions that convert
 src/janggi/settings/    BoardStyleName, PieceSetName, SetupName, MovableHighlightName,
-                        MatchFormat — the built-ins, by name
+                        MatchFormat, ElephantPairing — the built-ins, by name
 ```
 
 The settings unions are the **built-ins only**. A `BoardStyle`'s own `name` stays a plain string
 because a user-authored style may be called anything; the union is what a built-in must be called,
 so the webapp cannot ship one that is not listed and a spec cannot ask for one that does not exist.
+
+`ElephantPairing` is the one entry here that names something nobody picks: 맞상 and 엇상 are read
+off the two chosen setups rather than chosen themselves. It is here for the same reason as the rest
+— a line under the pickers shows the name and a spec asserts it — while `elephantPairingOf`, which
+decides which of the two a board has come to, stays in the engine.
 
 **Vocabulary, not rules.** Types, names and the conversions between them belong here. The engine —
 move generation, check detection, bikjang — does **not**, however tempting. `MatchFormat` is the

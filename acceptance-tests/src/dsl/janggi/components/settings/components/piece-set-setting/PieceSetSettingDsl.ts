@@ -1,10 +1,15 @@
+import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {PieceSetName} from "@janggi/shared/janggi/settings/PieceSetName";
-import type {PieceSetSettingPlaywright} from "@src/dsl/janggi/components/settings/components/piece-set-setting/playwright/PieceSetSettingPlaywright";
+import {PieceSetSettingPlaywright} from "@src/dsl/janggi/components/settings/components/piece-set-setting/playwright/PieceSetSettingPlaywright";
 
 /** The piece-set picker, reached as `janggi.settings.pieceSet`. */
 export class PieceSetSettingDsl {
-  constructor(private readonly pieceSet: PieceSetSettingPlaywright) {}
+  private readonly pieceSet: PieceSetSettingPlaywright;
+
+  constructor(page: Page) {
+    this.pieceSet = new PieceSetSettingPlaywright(page);
+  }
 
   async setTo(name: PieceSetName): Promise<void> {
     try {

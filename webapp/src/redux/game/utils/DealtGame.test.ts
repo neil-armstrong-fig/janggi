@@ -2,37 +2,40 @@ import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
+import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
 import {dealtGame} from "@src/redux/game/utils/DealtGame";
 import {expect, it} from "vitest";
+import {place} from "@src/game/setups/Place";
+import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
 
 const inner = setup("Inner Elephant");
 const outer = setup("Outer Elephant");
 
 it("deals both armies onto the board in full", () => {
-  expect(dealtGame(inner, inner, "Casual").played.present.pieces).toHaveLength(32);
+  expect(dealtGame(laidOut(inner, inner)).played.present.pieces).toHaveLength(32);
 });
 
 it("gives cho the first move", () => {
-  expect(dealtGame(inner, inner, "Casual").played.present.sideToMove).toBe("cho");
+  expect(dealtGame(laidOut(inner, inner)).played.present.sideToMove).toBe("cho");
 });
 
 it("starts a game nobody has moved in yet, with nothing to take back or play again", () => {
-  expect(dealtGame(inner, inner, "Casual").played.past).toEqual([]);
-  expect(dealtGame(inner, inner, "Casual").played.future).toEqual([]);
+  expect(dealtGame(laidOut(inner, inner)).played.past).toEqual([]);
+  expect(dealtGame(laidOut(inner, inner)).played.future).toEqual([]);
 });
 
-it("remembers the two setups it dealt from, so the game can be dealt again", () => {
-  const dealt = dealtGame(inner, outer, "Casual");
+it("keeps the phase it dealt from, so the pickers know what has been chosen", () => {
+  const dealt = dealtGame(laidOut(inner, outer));
 
-  expect(dealt.hanSetup).toBe(inner);
-  expect(dealt.choSetup).toBe(outer);
+  expect(dealt.phase.hanSetup).toBe(inner);
+  expect(dealt.phase.choSetup).toBe(outer);
 });
 
 /** Which of the two games is being played is dealt with the setups, and the position carries it. */
 it("deals the game in the format it was asked for, and says so both ways", () => {
-  const dealt = dealtGame(inner, inner, "Scored");
+  const dealt = dealtGame(laidOut(inner, inner, "Scored"));
 
-  expect(dealt.format).toBe("Scored");
+  expect(dealt.phase.format).toBe("Scored");
   expect(dealt.played.present.format).toBe("Scored");
 });
 
@@ -40,19 +43,37 @@ it("deals the game in the format it was asked for, and says so both ways", () =>
  * outer one on file 2. Each army being arranged by its own choice is the whole point of two
  * pickers. */
 it("arranges each army by its own setup rather than by one of them twice", () => {
-  const dealt = dealtGame(inner, outer, "Casual");
+  const dealt = dealtGame(laidOut(inner, outer));
 
   expect(typeAt(dealt, 3, 1)).toBe("elephant");
   expect(typeAt(dealt, 2, 10)).toBe("elephant");
 });
 
 it("deals a new game every time rather than handing back the one before", () => {
-  const first = dealtGame(inner, inner, "Casual");
-  const second = dealtGame(inner, inner, "Casual");
+  const first = dealtGame(laidOut(inner, inner));
+  const second = dealtGame(laidOut(inner, inner));
 
   expect(second).not.toBe(first);
   expect(second).toEqual(first);
 });
+
+/**
+ * A scored board mid-arrangement still has to be drawn, so a full board comes back — with the army
+ * that has chosen standing on its own choice and the one that has not on the common arrangement.
+ * The phase keeps saying nobody chose for cho, which is what the pickers read.
+ */
+it("deals a board to look at while a scored game is still being laid out", () => {
+  const dealt = dealtGame(place(setupPhaseFor("Scored"), "han", outer));
+
+  expect(dealt.played.present.pieces).toHaveLength(32);
+  expect(typeAt(dealt, 2, 1)).toBe("elephant");
+  expect(typeAt(dealt, 3, 10)).toBe("elephant");
+  expect(dealt.phase.choSetup).toBeUndefined();
+});
+
+function laidOut(hanSetup: Setup, choSetup: Setup, format: SetupPhase["format"] = "Casual"): SetupPhase {
+  return place(place(setupPhaseFor(format), "han", hanSetup), "cho", choSetup);
+}
 
 function typeAt(state: GameSliceState, file: number, rank: number): PieceType | undefined {
   return state.played.present.pieces.find(({position}) => position.file === file && position.rank === rank)?.piece.type;

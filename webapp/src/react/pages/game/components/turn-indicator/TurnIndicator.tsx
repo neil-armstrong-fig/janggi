@@ -1,4 +1,5 @@
 import type {GameState} from "@src/game/types/GameState";
+import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {GameStatus} from "@src/react/pages/game/components/turn-indicator/utils/GameStatusOf";
 import {gameStatusOf} from "@src/react/pages/game/components/turn-indicator/utils/GameStatusOf";
@@ -19,16 +20,23 @@ import {sideName} from "@src/react/pages/game/components/utils/SideNames";
  */
 interface Props {
   readonly game: GameState;
+  /**
+   * How far the board has got in being laid out. It is here rather than derived from `game` because
+   * a position cannot say whether anyone chose it — a scored board waiting on Han looks exactly like
+   * one both players arranged that way.
+   */
+  readonly phase: SetupPhase;
 }
 
-export function TurnIndicator({game}: Props): React.JSX.Element {
-  const status = gameStatusOf(game);
+export function TurnIndicator({game, phase}: Props): React.JSX.Element {
+  const status = gameStatusOf(game, phase);
   const winner = winnerOf(status);
 
   return (
     <p
       data-testid="turn"
       data-side={winner ?? sideOf(status)}
+      data-laying-out={status.kind === "layingOut" ? "" : undefined}
       data-in-check={status.kind === "inCheck" ? "" : undefined}
       data-drawn={status.kind === "drawn" ? "" : undefined}
       data-winner={winner}
@@ -52,6 +60,8 @@ function announcementOf(status: GameStatus): string {
       return `${sideName(status.side)} is in check`;
     case "toMove":
       return `${sideName(status.side)} to move`;
+    case "layingOut":
+      return `${sideName(status.side)} to lay out`;
   }
 }
 
@@ -62,9 +72,9 @@ function winnerOf(status: GameStatus): Side | undefined {
   return undefined;
 }
 
-/** The army the line is about while the game is still going, which is the one to move. */
+/** The army the line is about while there is no result yet — the one to move, or to lay out. */
 function sideOf(status: GameStatus): Side | undefined {
-  if (status.kind === "toMove" || status.kind === "inCheck") return status.side;
+  if (status.kind === "toMove" || status.kind === "inCheck" || status.kind === "layingOut") return status.side;
 
   return undefined;
 }

@@ -1,28 +1,20 @@
 import type {Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
-import {BoardPlaywright} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
-import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
-import {StatusPlaywright} from "@src/dsl/janggi/components/status/playwright/StatusPlaywright";
 
 /**
  * The app, and the only screen it has. The bottom of the stack: this is the layer that actually
  * drives Playwright, and the only one that may.
  *
- * It owns the browser — opening the app and the window it is viewed through — and composes one
- * component per area of the screen. Nothing here catches anything: a failure comes out as whatever
- * Playwright threw, and `JanggiDsl` above is what turns it into a sentence about the intention.
+ * It owns the browser — opening the app, and the window it is viewed through — and nothing else.
+ * The areas of the screen are not its children: each one's `*Dsl` builds its own counterpart from
+ * the same page, so this is the counterpart of `JanggiDsl` and no other object's parent. Nothing
+ * here catches anything: a failure comes out as whatever Playwright threw, and `JanggiDsl` above is
+ * what turns it into a sentence about the intention.
  */
 export class JanggiPlaywright extends BasePage {
-  readonly board: BoardPlaywright;
-  readonly settings: SettingsPlaywright;
-  readonly status: StatusPlaywright;
-
+  /** Declared only because `BasePage`'s constructor is protected; there is nothing of its own to set up. */
   constructor(page: Page) {
     super(page);
-
-    this.board = new BoardPlaywright(page);
-    this.settings = new SettingsPlaywright(page);
-    this.status = new StatusPlaywright(page);
   }
 
   /**

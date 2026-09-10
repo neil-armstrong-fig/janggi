@@ -1,6 +1,5 @@
 import {test as base} from "@playwright/test";
 import {JanggiDsl} from "@src/dsl/janggi/JanggiDsl";
-import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 
 /**
  * The DSL objects a spec can ask for. Each one arrives ready to use — navigated, and wrapped so the
@@ -10,8 +9,10 @@ import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
  * through a member of that rather than through a fixture of its own. A second fixture here would
  * mean a second thing to navigate and keep in step; a second member on `JanggiDsl` costs nothing.
  *
- * Handing the browser to Playwright's half of the DSL happens here, which is why this is the only
- * file outside a `playwright/` folder that names a `Page` at all — a lint rule keeps it that way.
+ * Handing the browser to the DSL happens here: `JanggiDsl` takes the page, builds its own
+ * `*Playwright` counterpart with it and passes the same page down to each area, which does the same.
+ * A `*Dsl` may name a `Page` for that and for nothing else — it never stores one, so `this.page`
+ * cannot be reached from a method, and a lint rule says so as well.
  */
 export interface AcceptanceTestFixtures {
   janggi: JanggiDsl;
@@ -19,7 +20,7 @@ export interface AcceptanceTestFixtures {
 
 export const test = base.extend<AcceptanceTestFixtures>({
   janggi: async ({page}, use) => {
-    const janggi = new JanggiDsl(new JanggiPlaywright(page));
+    const janggi = new JanggiDsl(page);
     await janggi.navigateToPage();
 
     await use(janggi);
