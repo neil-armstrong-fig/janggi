@@ -1,6 +1,6 @@
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import {advanced} from "@src/game/record/utils/Advanced";
-import {pass} from "@src/game/Pass";
+import {pass} from "@src/game/passing/Pass";
 
 /**
  * The record after a rested turn — 한수쉼, and `pass`'s counterpart to `playMove`.

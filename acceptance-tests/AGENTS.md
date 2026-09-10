@@ -75,6 +75,13 @@ inside that thing goes in its `components/` folder. So a piece of the board woul
 `janggi/components/board/components/<thing>/playwright/<Thing>Playwright.ts` beside it — no matter
 how deep, a folder tells you what it is by the same two names.
 
+**This tree and the app's are deliberately the same shape.** `janggi/components/` is `board/`,
+`settings/` and `status/`, and those are the three sections
+`webapp/src/react/pages/game/components/` is divided into. The app was brought into line with the
+DSL rather than the other way round — the specs had the better vocabulary first, having always
+described the page the way a player sees it. Split or rename a section on one side and do the same
+on the other, or the two drift into different names for one screen.
+
 **Only a `playwright/` folder may import Playwright**, and that is a lint rule rather than a
 convention — a locator written in a `*Dsl` will not compile past `pnpm checks`. The one exception is
 the `Page` a `*Dsl` names in its constructor, above; `Locator`, `expect` and the rest stay out. A

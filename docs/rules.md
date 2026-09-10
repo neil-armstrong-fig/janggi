@@ -362,10 +362,10 @@ only from the point at which it is noticed), and 자장 (moving your own general
 into check hands the decision to the opponent). Both are human-tournament rules
 about mistakes, not engine rules.
 
-**Implemented.** `webapp/src/game/IsInCheck.ts` asks whether any enemy piece
-attacks the general, `IsCheckmate.ts` is that plus having no legal reply, and
-`MovesFrom.ts` no longer offers a move that would leave its own general
-attacked — so a general can no longer be captured.
+**Implemented.** `webapp/src/game/check/IsInCheck.ts` asks whether any enemy
+piece attacks the general, `check/IsCheckmate.ts` is that plus having no legal
+reply, and `MovesFrom.ts` no longer offers a move that would leave its own
+general attacked — so a general can no longer be captured.
 
 **Shown.** The turn line above the board says "Han is in check" and, once there
 is no reply, "Han wins"; `react/…/turn-indicator/utils/GameStatusOf.ts` derives
@@ -457,11 +457,11 @@ player. Label them that way. The scored option needs material scoring, and with
 it the 30-point threshold and the general-capture exception above.
 
 **Implemented.** `MatchFormat` in `shared/` is the two names, `GameState.format`
-is which game is being played, and `webapp/src/game/IsBikjang.ts` is the position
-alone — two generals down one file with nothing between them.
-`CanCallBikjang.ts` is where the formats part company and `CallBikjang.ts` is the
-call itself. Four decisions are encoded, and each is a choice rather than a
-transcription:
+is which game is being played, and `webapp/src/game/bikjang/IsBikjang.ts` is the
+position alone — two generals down one file with nothing between them.
+`bikjang/CanCallBikjang.ts` is where the formats part company and
+`bikjang/CallBikjang.ts` is the call itself. Four decisions are encoded, and each
+is a choice rather than a transcription:
 
 - **A bikjang is *called*, not befallen.** `isBikjang` being true leaves the game
   `undecided`; only `callBikjang` ends it. Both readings describe something a
@@ -543,9 +543,9 @@ legal move passes and the game continues.
 > "Stalemate does not result in the end of a game in janggi; if a player has no
 > legal move left, he is just forced to pass." — en.wikipedia
 
-**Implemented.** `webapp/src/game/Pass.ts` rests a turn and `CanPass.ts` says
-whether one may be rested. Three decisions are encoded, and each is a choice
-rather than a transcription:
+**Implemented.** `webapp/src/game/passing/Pass.ts` rests a turn and
+`passing/CanPass.ts` says whether one may be rested. Three decisions are encoded,
+and each is a choice rather than a transcription:
 
 - **A pass is not a `Move`.** `Move` stays a `from`/`to` pair and `pass(state)`
   is its own entry point beside `applyMove` — "한수 쉼은 행마(수)에 해당하지
@@ -598,10 +598,11 @@ judgement about intent and the engine has no referee. pychess's mechanical
 resolution (perpetual check loses for the checking side, everything else goes to
 material) is pychess's decision and not any federation's, so it is not taken.
 
-**Implemented.** `webapp/src/game/IsRepetition.ts` says whether the position now
-standing is standing for the third time, and `MovesFrom.ts` does not offer the
-move that would put it there — so `applyMove` refuses it without a rule of its
-own, and a board never lights up a point the rules will not take. Four decisions:
+**Implemented.** `webapp/src/game/repetition/IsRepetition.ts` says whether the
+position now standing is standing for the third time, and `MovesFrom.ts` does not
+offer the move that would put it there — so `applyMove` refuses it without a rule
+of its own, and a board never lights up a point the rules will not take. Four
+decisions:
 
 - **The history is on `GameState`, as `seen`.** Repetition is a rule of janggi,
   and every entry point takes a position rather than a record, so measuring it on
@@ -655,9 +656,10 @@ Each army's pieces total **72**. Han receives **1.5 points (덤, deom)** in
 compensation for Cho moving first and choosing its setup last, so Han starts on
 **73.5** — the half point exists so a scored game cannot tie.
 
-**Implemented.** `webapp/src/game/MaterialFor.ts` holds the table and sums one
-army's remaining pieces; `ScoreFor.ts` adds Han's 덤 on top, so a new game stands
-at 72 against 73.5. `OutcomeOf.ts` decides a stopped game by comparing the two.
+**Implemented.** `webapp/src/game/scoring/MaterialFor.ts` holds the table and
+sums one army's remaining pieces; `scoring/ScoreFor.ts` adds Han's 덤 on top, so
+a new game stands at 72 against 73.5. `OutcomeOf.ts` decides a stopped game by
+comparing the two.
 
 **Nothing keeps captured pieces, and nothing needs to.** Every setup deals the
 same sixteen, so what an army is missing is exactly what has been taken from it

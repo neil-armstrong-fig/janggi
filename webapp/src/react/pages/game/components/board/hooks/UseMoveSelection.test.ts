@@ -9,7 +9,7 @@ import type {Setup} from "@src/game/setups/types/Setup";
 import {act, renderHook} from "@testing-library/react";
 import {applyMove} from "@src/game/ApplyMove";
 import {beforeEach, describe, expect, it} from "vitest";
-import {isCheckmate} from "@src/game/IsCheckmate";
+import {isCheckmate} from "@src/game/check/IsCheckmate";
 import {newGame} from "@src/game/NewGame";
 import {toPositionKey} from "@src/game/board/utils/PositionKeys";
 import {useMoveSelection} from "@src/react/pages/game/components/board/hooks/UseMoveSelection";

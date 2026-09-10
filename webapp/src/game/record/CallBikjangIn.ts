@@ -1,6 +1,6 @@
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import {advanced} from "@src/game/record/utils/Advanced";
-import {callBikjang} from "@src/game/CallBikjang";
+import {callBikjang} from "@src/game/bikjang/CallBikjang";
 
 /**
  * The record after a bikjang is called — `callBikjang`'s counterpart to `playMove` and `restTurn`.

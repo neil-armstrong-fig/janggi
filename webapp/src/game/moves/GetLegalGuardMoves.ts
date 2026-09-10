@@ -1,4 +1,4 @@
-import type {Mover} from "@src/game/types/Mover";
+import type {Mover} from "@src/game/moves/types/Mover";
 import {getPalaceStepMoves} from "@src/game/moves/utils/GetPalaceStepMoves";
 
 /**

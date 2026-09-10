@@ -4,7 +4,7 @@ import {getLegalElephantMoves} from "@src/game/moves/GetLegalElephantMoves";
 import {getLegalGeneralMoves} from "@src/game/moves/GetLegalGeneralMoves";
 import {getLegalGuardMoves} from "@src/game/moves/GetLegalGuardMoves";
 import {getLegalHorseMoves} from "@src/game/moves/GetLegalHorseMoves";
-import type {Mover} from "@src/game/types/Mover";
+import type {Mover} from "@src/game/moves/types/Mover";
 import type {PieceLookup} from "@src/game/board/types/PieceLookup";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Position} from "@src/game/board/types/Position";

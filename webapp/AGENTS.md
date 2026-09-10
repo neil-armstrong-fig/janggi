@@ -38,9 +38,18 @@ src/react/
 
 Anything shared by two siblings moves up to the folder that contains them both, and no higher.
 
-Name a folder for what is in it, not for the shape of it. Tailwind means presentation lives in the
-JSX, so a folder called `styles/` reads as CSS and is almost always wrong — `board/cell-styles/`
-and `board/piece-styles/` hold the data describing how cells and pieces are painted, and say so.
+**A page is divided into sections before it is divided into components.** `pages/game/` is
+`Status`, `Board` and `Settings`, and every control lives under whichever of the three draws it —
+`status/components/pass-button/`, `settings/components/option-picker/`. That is the same locality
+rule one level up, and it is what keeps a page's `components/` from becoming a flat list of
+everything on screen; it also matches how `acceptance-tests/` already names the page, whose DSL is
+`components/{board,settings,status}`. Reach for a new section when a page grows a region that is
+genuinely its own, not to file loose components.
+
+Naming a folder for its subject rather than its shape (root `AGENTS.md`) bites here in one
+particular way: Tailwind means presentation lives in the JSX, so a folder called `styles/` reads as
+CSS and is almost always wrong — `board/cell-styles/` and `board/piece-styles/` hold the data
+describing how cells and pieces are painted, and say so.
 
 ## Conventions
 
@@ -54,7 +63,8 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
 - **A component's props interface is called `Props`, and is not exported.** One component per file
   means there is nothing to collide with, so `BoardProps` only says twice what the filename already
   says once. A generic component constrains it against a named type rather than an inline one —
-  `Props<Option extends WithName>` in `option-picker/`, never `Option extends {name: string}`.
+  `Props<Option extends WithName>` in `settings/components/option-picker/`, never
+  `Option extends {name: string}`.
 - **Every element an acceptance test needs gets a `data-testid`.** That attribute is the contract
   with `acceptance-tests/` — renaming one breaks specs.
 - Redux: use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped
@@ -67,11 +77,11 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
   engine's own `outcomeOf` rather than deciding a result here, adding only the one state the engine
   has no opinion about — a general under attack while the game goes on.
 
-  `playHasBegun` in `pages/game/utils/` is the same rule applied late: the store used to carry a
-  `turnsTaken` counter to lock the setup pickers, and a counter that only ever climbs went wrong the
-  moment a game could be taken back — a board returned to its starting position would have sat there
-  with the arrangement that produced it out of reach. It reads `played.past` instead, so it falls
-  again as the game does.
+  `playHasBegun` in `components/settings/utils/` is the same rule applied late: the store used to
+  carry a `turnsTaken` counter to lock the setup pickers, and a counter that only ever climbs went
+  wrong the moment a game could be taken back — a board returned to its starting position would have
+  sat there with the arrangement that produced it out of reach. It reads `played.past` instead, so
+  it falls again as the game does.
 
 - **The store holds the setup phase, not two loose setups.** `state.game.phase` is the engine's
   `SetupPhase` — the format and what each army has chosen, where "has not chosen" is a real state
@@ -100,10 +110,17 @@ and `board/piece-styles/` hold the data describing how cells and pieces are pain
   and which of janggi's two games is being played is settled before it too. Contrast the board
   style, the piece set and the movable-piece mark, which are preferences about how a game is drawn
   and live in `GamePage`'s own state.
+- **A page section reads the store; a component below it takes props.** `Status` and `Settings`
+  call `useAppSelector`/`useAppDispatch` themselves, so `GamePage` hands them nothing that is part
+  of the game and the dozen props that would otherwise be drilled through it do not exist. Below
+  that line every component stays pure and knows nothing about Redux — which is what lets `Piece`,
+  `Scoreboard` and the rest be reasoned about from their props alone. `GamePage` keeps only the
+  board style, the piece set and the movable-piece mark, because those are not in the store at all
+  and both `Board` and `Settings` need them.
 - **Something a player does that touches no intersection is a control, not a gesture.** Resting a
-  turn and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in the row above
-  the board — each enabled off a pure question the engine answers (`canPass`, `canCallBikjang`), and
-  disabled rather than hidden so the row does not reflow under a thumb.
+  turn and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in `Status`, the
+  row above the board — each enabled off a pure question the engine answers (`canPass`,
+  `canCallBikjang`), and disabled rather than hidden so the row does not reflow under a thumb.
 - `BASE_PATH` sets where the app is served from (`/` locally, `/<repo>/` on GitHub Pages) and drives
   the PWA manifest's `start_url`/`scope`. Do not hardcode absolute asset paths.
 - Tailwind v4 has no config file — use utilities in JSX, and put genuinely global rules in the
@@ -217,11 +234,11 @@ on the board and the diagonals a chariot may run down are one list, not two.
 ## Current placeholders
 
 - Nothing is persisted: a reload deals a new game.
-- `option-picker/` is prototype scaffolding for choosing a style, set, setup or format. A real
-  settings screen replaces it, and it is now overdue: six rows of pills are taller than a short
-  window has to spare, so the block is capped at 45% of the height and scrolls. `FitsTheWindow` is
-  what catches a seventh row pushing the board off the top of the screen — it did exactly that when
-  the format picker was added.
+- `settings/components/option-picker/` is prototype scaffolding for choosing a style, set, setup or
+  format. `Settings` is the panel it fills, not yet a real settings _screen_, and that screen is now
+  overdue: six rows of pills are taller than a short window has to spare, so the block is capped at
+  45% of the height and scrolls. `FitsTheWindow` is what catches a seventh row pushing the board off
+  the top of the screen — it did exactly that when the format picker was added.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
   maskable variant are still to do.
 - No Korean font is bundled, so the character sets fall back to whatever the device has, and the

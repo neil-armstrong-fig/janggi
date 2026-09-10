@@ -1,5 +1,5 @@
 import type {GameState} from "@src/game/types/GameState";
-import {materialFor} from "@src/game/MaterialFor";
+import {materialFor} from "@src/game/scoring/MaterialFor";
 
 /**
  * Whether both armies have fallen under thirty points.
