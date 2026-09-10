@@ -178,6 +178,11 @@ fills the cell of the piece in hand, and `MoveHint` puts a dot or a ring where t
 Only the first is switchable — the "Moves" picker — because in the opening it marks most of an army,
 and earns itself in check and against a pin.
 
+**The cell `<svg>` is `preserveAspectRatio="none"`,** so it stretches with the cell and a `<circle>`
+drawn inside it comes out an ellipse. That is why both `Piece` and `MoveHint` use a square overlay
+`div` of their own rather than another element in that svg — anything that must stay round has to
+sit outside it.
+
 `MovableMark` is a **ring at the edge of the cell, not a disc behind the piece.** A disc was the
 first attempt and the modern sets killed it: their pieces are themselves discs of very nearly the
 same size, so the mark was hidden by the thing it marked, and the octagonal sets only showed it
@@ -222,6 +227,21 @@ on the board and the diagonals a chariot may run down are one list, not two.
 - No Korean font is bundled, so the character sets fall back to whatever the device has, and the
   traditional set approximates Cho's cursive script by leaning it. A self-hosted subset face would
   fix both.
+
+## Decided against
+
+Written down so they are not re-opened as though they were oversights.
+
+- **Keyboard navigation.** Mouse and touch are the interaction model here. A consequence worth
+  knowing before you "fix" it: a cell is a `<button>`, and an occupied one takes its accessible name
+  from the piece's own `aria-label`, so an **empty cell is a button with no accessible name**. That
+  is known and accepted, not a defect.
+- **Visual regression snapshots.** The board's pixels churn constantly while it is being designed,
+  and a suite that goes red on every restyle teaches people to ignore it. This is why the piece sets
+  are tested by character and by size rather than by appearance — and why Traditional and Hanja are
+  not fully separable by acceptance test at all: they write the same characters, so a spec tells
+  them apart by the selected setting plus the size distribution, and the wood-versus-disc difference
+  goes uncovered.
 
 ## The icon
 

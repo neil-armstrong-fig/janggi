@@ -86,12 +86,16 @@ hold separate copies of that geometry.
   _attacks_, which is the right question for check, because a pinned piece still gives check.
 - **The filter cannot go through `applyMove`.** `applyMove` validates by asking `movesFrom`, so
   filtering with it would recurse forever. `positionAfter` is the transition with nothing checked,
-  and exists for that reason.
+  and exists for that reason — do not "simplify" it away.
 - **`moves/utils/` holds only what two or more movers share.** A helper with one caller is a
   `function` declaration below that caller in the mover's own file — `FORWARD_RANK_STEP` belongs to
   the soldier, `slideAlong` to the chariot.
 - **`movesFrom` ignores whose turn it is**, so a board can light up either army's options. The turn
-  is a rule of the game and lives in `applyMove`.
+  is a rule of the game and lives in `applyMove`. That makes it a **precondition on the caller**: a
+  point offered by `movesFrom` is only playable if the caller asked about a piece the army to move
+  owns. `useMoveSelection` re-derives what it holds on every render for exactly this reason — a
+  piece held across an undo is one the position no longer agrees is anybody's, and offering its
+  moves would light up points `applyMove` then throws on.
 - **A pass is not a `Move` and is not in `legalMovesFor`** — "한수 쉼은 행마(수)에 해당하지
   않으며". It has its own entry point, `pass`, with `canPass` standing to it as `movesFrom` stands
   to `applyMove`. Keeping it out of the move list is what leaves the 31 openings and `isCheckmate`
@@ -170,6 +174,35 @@ preserve when editing it:
 `docs/rules.md` §5. If a count changes, a rule has changed — find out which before editing the
 number.
 
+**Construct an interesting position; do not search for a line to it.** Walking `legalMovesFor` for
+a check was tried and works, but the shortest one is 3 plies deep and needs Han to walk its general
+out for no reason, which reads as nonsense in a test — and a mate is far deeper than that. Keep the
+one fact the search bought, that **no check exists before ply 3**, and build everything else piece
+by piece in a `beforeEach`. Construction is what bought a mate played into, a general stepping out
+of check, and a cannon that gives check only once a soldier steps across to screen it.
+
+**fast-check's arrays are biased short**, so at the default RUNS most generated games end after a
+few plies and never reach a capture at all. Every property keyed on "did this move take a piece" is
+therefore weaker than it looks — a mutation that stopped a capture clearing the repetition history
+passed the whole property suite, and only bit at RUNS=500. Raise RUNS when you are touching capture
+behaviour, and do not read a green default run as cover.
+
+**There is no perft table for janggi.** Chess, shogi and xiangqi all have published counts of the
+positions reachable in N moves; janggi has none, which is why invariants over random games carry the
+property suite instead of an external oracle. The one oracle that exists is Fairy-Stockfish, which
+supports janggi and ships `tests/perft.sh` — worth a one-off offline cross-check of movement-only
+counts, never CI: it is a C++ binary, and its janggi takes positions on the endgame rules
+`docs/rules.md` §6 records as contested.
+
+**The two filters in `movesFrom` are what the suite costs.** The check filter made the properties
+about 7x slower and repetition another 1.9x on top, so `vitest.properties.config.ts` sets a 300s
+`testTimeout` — Vitest's 5s default is a unit-test clock, and one property plays every game twice.
+If it ever has to be faster, **the fix is not to weaken the rule**: the standing `positionAfter`
+appends is the parent's and identical for every candidate, so counting a candidate's standing in
+`state.seen` rather than `after.seen` gives the same answer and lets the append move out into
+`applyMove` and `pass`, leaving the check filter's throwaway positions free. It has been left where
+it is because `positionAfter` is the one place a transition is described.
+
 ## What is not modelled yet
 
 Nothing that is a rule of play, and nothing about a position either. What `docs/rules.md` §6 still
@@ -187,9 +220,9 @@ asks for one fixes its shape too early — `consecutivePasses` is there because 
 `record/` keeps its positions in a wrapper around `GameState` precisely so that undo did not have to
 put a second one there.
 
-## When Redux arrives
+## The store above it
 
-The engine owns the rules; the store owns the state. A reducer should be one line into here:
+The engine owns the rules; the store owns the state, and a reducer is one line into here:
 
 ```ts
 moved: (state, action: PayloadAction<Move>) => applyMove(state, action.payload);

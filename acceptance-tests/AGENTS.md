@@ -283,6 +283,47 @@ sampling, since React mounts after `goto` resolves:
 await this.container.waitFor({state: "visible"}); // not locator.isVisible()
 ```
 
+### The contract, written out
+
+Rename any of these in the webapp and specs break. Listed rather than counted, because a count of
+them went stale twice while it was being kept.
+
+- **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `scores`, `elephant-pairing`, and
+  the controls `new-game`, `pass`, `bikjang`, `undo`, `redo`. On the last four the `disabled`
+  attribute is part of the contract: they are disabled rather than hidden.
+- **`data-testid`, composed** — `cell-f<file>r<rank>`, and `<id>-picker` with an
+  `<id>-picker-option-<slug>` for each option. The six ids are `board-style`, `piece-style`,
+  `movable-highlight`, `match-format`, `han-setup`, `cho-setup`.
+- **On a piece** — `data-piece`, written `<side>-<type>` and parsed back into a `Piece` by
+  `@janggi/shared`.
+- **On a cell** — `aria-pressed` (the piece in hand), `data-can-move-to` (a legal destination) and
+  `data-can-be-moved` (a piece its owner may move now; the value is the emphasis, `full` or `faint`,
+  and no spec asserts on which).
+- **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn` and
+  `data-laying-out`, each present only while it applies.
+- **On the scores** — `data-cho` and `data-han`, each army's score with the 덤 folded in.
+- **On the pairing line** — `data-pairing`.
+
+The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`; nothing stores
+them. `BoardPlaywright` composes the cell id to find a piece.
+
+**An attribute that is absent and an element that is absent read the same.** A DSL question reading
+`data-pairing` off a missing element gets "no pairing", which is indistinguishable from a blank row
+being drawn — which is exactly how a mutation that always rendered the pairing line failed to fell
+anything. Where that matters, add an `is…Shown()` question beside the value one.
+
+### Traps
+
+- **`.tap()` needs `hasTouch`** and the desktop project has none, so it fails there. Use `.click()`,
+  which both projects run.
+- **`playwright test --list | tail -1` gives the spec count with no dev server running** — the
+  cheapest way to confirm a slice that should not have changed behaviour did not change it.
+- **The dev server dies with the session that started it.** If every spec fails at once, check
+  `curl localhost:3000` before debugging anything.
+- **`getCharacterAt` reaches into a piece's `<text>` element.** It is the one DSL method coupled to
+  how a piece is rendered rather than to a `data-` attribute, and it is what makes the piece sets
+  testable at all — it breaks if a glyph stops being `<text>`.
+
 ## Running
 
 ```bash

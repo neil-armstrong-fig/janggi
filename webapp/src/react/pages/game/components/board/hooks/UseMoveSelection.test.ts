@@ -42,6 +42,7 @@ const HAN_SIDEWAYS: Position = {file: 2, rank: 4};
 
 let selection: Rendered;
 let played: Move[];
+let showing: (game: GameState, playable?: boolean) => void;
 
 describe("with cho to move", () => {
   beforeEach(() => {
@@ -310,6 +311,49 @@ describe("with the board still being laid out", () => {
 });
 
 /**
+ * The board is replaced wholesale by every reducer in `GameSlice`, so a piece can still be held
+ * when the position it was picked up on has gone. Undo is the sharp case: it hands back a board on
+ * which it is the *other* army's turn, and `movesFrom` deliberately answers for either army — so a
+ * held piece that is no longer anybody's to move would light up points `applyMove` then throws on.
+ */
+describe("when the board changes under a piece being held", () => {
+  beforeEach(() => {
+    selection = renderOn(afterChoOpens());
+    act(() => selection.current.tap(HAN_SOLDIER));
+  });
+
+  describe("and the move that gave han the turn is taken back", () => {
+    beforeEach(() => {
+      showing(openingGame());
+    });
+
+    it("holds nothing, the turn having passed back to cho", () => {
+      expect(selection.current.selected).toBeUndefined();
+    });
+
+    it("offers the soldier nowhere, though it still stands there", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+
+    it("plays nothing when a point that soldier could have reached is tapped", () => {
+      act(() => selection.current.tap(HAN_FORWARD));
+
+      expect(played).toEqual([]);
+    });
+  });
+
+  describe("and the board is handed back with no game on it to play", () => {
+    beforeEach(() => {
+      showing(afterChoOpens(), false);
+    });
+
+    it("holds nothing, so nothing is drawn as picked up on a board nobody may touch", () => {
+      expect(selection.current.selected).toBeUndefined();
+    });
+  });
+});
+
+/**
  * What `renderHook` hands back, named here because the type that names it cannot be imported: the
  * lint rule allows only `renderHook`, `act`, `waitFor` and `cleanup` from `@testing-library/react`.
  */
@@ -326,7 +370,20 @@ interface Rendered {
 function renderOn(game: GameState, playable = true): Rendered {
   played = [];
 
-  return renderHook(() => useMoveSelection(game, move => played.push(move), playable)).result;
+  const {result, rerender} = renderHook(
+    (shown: Shown) => useMoveSelection(shown.game, move => played.push(move), shown.playable),
+    {initialProps: {game, playable}},
+  );
+
+  showing = (next, stillPlayable = true) => act(() => rerender({game: next, playable: stillPlayable}));
+
+  return result;
+}
+
+/** What the hook is re-rendered on, so a test can change the board out from under it. */
+interface Shown {
+  readonly game: GameState;
+  readonly playable: boolean;
 }
 
 function openingGame(): GameState {

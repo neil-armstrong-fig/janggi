@@ -60,6 +60,18 @@ between the two every test file runs exactly once. Run them before finishing wor
 This project is Acceptance Test Driven. **Write the acceptance test first**, watch it fail for the
 right reason, then make it pass. See `acceptance-tests/AGENTS.md`.
 
+**A passing test proves nothing until you have watched it fail.** Writing it first is one way to see
+that; for a test written after the code, or for cover you inherited, the way is **mutation** — break
+what the test claims to cover, run it, and confirm it fails, and fails for the right reason. Every
+rule in the engine was pinned this way and it has repeatedly caught tests that asserted nothing: a
+capture not clearing the repetition history broke no test at all, and an `isArranged` gutted to a
+constant left its own caller's throw tests green, because the caller was not really asking.
+
+Two things worth knowing about doing it. **`grep` the file after mutating** — a multi-line
+replacement has twice been silently swallowed here by Prettier having reflowed the target, giving a
+green run that looked like proof the test did not bite. And **note which tests fell**: a mutation
+that fells the wrong ones, or too many, is telling you the cover is in the wrong place.
+
 A unit test file is one-to-one with the single export it covers, and the filename already names that
 export — so **do not wrap the file in a top-level `describe`**. Write `it(...)` at the top level and
 let each name read as a sentence about the subject:
@@ -290,6 +302,9 @@ mostly by how much you put in front of yourself and how long you leave it there.
 - **Do not add `baseUrl` to a tsconfig.** TS 6 made it an error. `paths` already resolve relative to
   the tsconfig's own directory — Vite and Playwright both handle this.
 - **`pnpm setup` is a built-in pnpm command**, not ours. The script is `pnpm install-browsers`.
+- **Root-level files are outside every package's Prettier.** `AGENTS.md` and `docs/` resolve no
+  config when Prettier is run on them from a package directory — it falls back to 80 columns and
+  rewraps content you never touched. Edit them by hand and leave the formatter out of it.
 - On Linux/WSL, Chromium needs system libraries once:
   `pnpm --filter @janggi/acceptance-tests exec playwright install-deps chromium` (needs sudo).
   Without them every acceptance test fails on browser launch with `libnspr4.so`.
@@ -305,6 +320,9 @@ but gates nothing, because `deploy` needs only `checks` and `acceptance-tests`. 
 job summary naming what broke, the shrunk moves that broke it, and the seed to replay. **If branch
 protection is ever turned on, leave this workflow out of the required checks**, or it becomes a gate
 by the back door.
+
+`renovate.json` is committed but **inert until the Renovate GitHub App is installed** on the
+repository. Nothing in CI depends on it.
 
 Pages serves under the repository name, so the deploy job rebuilds with
 `BASE_PATH=/<repo>/`. That feeds Vite's `base` **and** the PWA manifest's `start_url`/`scope`. The
