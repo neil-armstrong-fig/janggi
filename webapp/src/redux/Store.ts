@@ -1,6 +1,8 @@
 import {configureStore} from "@reduxjs/toolkit";
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import {gameReducer} from "@src/redux/game/GameSlice";
+import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
+import {preferencesReducer} from "@src/redux/preferences/PreferencesSlice";
 
 export const store = createStore();
 
@@ -13,6 +15,7 @@ export const store = createStore();
  */
 export interface RootState {
   readonly game: GameSliceState;
+  readonly preferences: PreferencesSliceState;
 }
 
 export type AppStore = ReturnType<typeof configureStore<RootState>>;
@@ -22,6 +25,7 @@ export function createStore(): AppStore {
   return configureStore({
     reducer: {
       game: gameReducer,
+      preferences: preferencesReducer,
     },
   });
 }

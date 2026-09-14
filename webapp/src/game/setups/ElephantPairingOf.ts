@@ -1,4 +1,4 @@
-import {FILES} from "@src/game/board/utils/BoardDimensions";
+import {FILES} from "@src/game/board/BoardDimensions";
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 import type {File} from "@src/game/board/types/Position";
 import type {Setup} from "@src/game/setups/types/Setup";

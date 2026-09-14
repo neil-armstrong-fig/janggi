@@ -3,7 +3,7 @@ import type {PieceLookup} from "@src/game/board/types/PieceLookup";
 import type {Position} from "@src/game/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {linesFrom} from "@src/game/moves/utils/LinesFrom";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
 
 /**
  * Where a chariot (차) may go: as far as it likes along a line, in one direction, until something

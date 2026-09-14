@@ -113,6 +113,105 @@ export class BoardDsl {
     }
   }
 
+  /** Whether the intersection is marked as the point the last move left. */
+  async isMarkedAsMovedFrom(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isMarkedAsMovedFrom(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is marked as moved from`, error);
+    }
+  }
+
+  /** Whether the intersection is marked as the point the last move arrived on. */
+  async isMarkedAsMovedTo(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isMarkedAsMovedTo(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is marked as moved to`, error);
+    }
+  }
+
+  /** Whether the intersection is marked as a general under attack. */
+  async isMarkedAsUnderAttack(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isMarkedAsUnderAttack(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is marked as under attack`, error);
+    }
+  }
+
+  /** Whether the intersection is marked as holding a piece that is giving check. */
+  async isMarkedAsAttacking(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isMarkedAsAttacking(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is marked as attacking`, error);
+    }
+  }
+
+  /** Whether the piece on an intersection is drawn raised off the board, as a piece in hand is. */
+  async isPieceRaisedAt(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isPieceRaisedAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the piece at file ${file}, rank ${rank} is raised`, error);
+    }
+  }
+
+  /** Whether a piece is shown travelling over the board. Only ever yes with motion left on. */
+  async isShowingAPieceInFlight(): Promise<boolean> {
+    try {
+      return await this.board.isShowingAPieceInFlight();
+    } catch (error) {
+      throw new DslError("Failed to check whether a piece is shown in flight", error);
+    }
+  }
+
+  /** Whether a capture is shown landing. Only ever yes with motion left on. */
+  async isShowingAnImpact(): Promise<boolean> {
+    try {
+      return await this.board.isShowingAnImpact();
+    } catch (error) {
+      throw new DslError("Failed to check whether a capture is shown landing", error);
+    }
+  }
+
+  /** Whether the piece on an intersection is fully shown once any motion over it has settled. */
+  async isPieceFullyShownAt(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isPieceFullyShownAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the piece at file ${file}, rank ${rank} is fully shown`, error);
+    }
+  }
+
+  /** Whether nothing is left drawn over the board once motion has settled. */
+  async isClearOfMotion(): Promise<boolean> {
+    try {
+      return await this.board.isClearOfMotion();
+    } catch (error) {
+      throw new DslError("Failed to check whether the board is clear of motion", error);
+    }
+  }
+
+  /** Whether the board is being shaken. */
+  async isBeingShaken(): Promise<boolean> {
+    try {
+      return await this.board.isBeingShaken();
+    } catch (error) {
+      throw new DslError("Failed to check whether the board is being shaken", error);
+    }
+  }
+
+  /** Whether the board has come back to rest exactly where it belongs. */
+  async isAtRest(): Promise<boolean> {
+    try {
+      return await this.board.isAtRest();
+    } catch (error) {
+      throw new DslError("Failed to check whether the board is at rest", error);
+    }
+  }
+
   /** The character painted on a piece, or undefined where the set in use draws pictures instead. */
   async getCharacterAt(file: number, rank: number): Promise<string | undefined> {
     try {

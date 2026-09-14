@@ -1,36 +1,34 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
+import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import type {GameStatus} from "@src/react/pages/game/components/status/components/turn-indicator/utils/GameStatusOf";
-import {gameStatusOf} from "@src/react/pages/game/components/status/components/turn-indicator/utils/GameStatusOf";
-import {sideName} from "@src/react/pages/game/components/utils/SideNames";
+import {clsx} from "clsx";
+import {sideName} from "@src/react/pages/game/utils/SideNames";
 
 /**
- * Whose turn it is, whether their general is under attack, and how the game ended — a checkmate, a
- * win on points once both players have rested a turn, or a draw where a bikjang was called.
+ * The herald: whose turn it is, whether their general is under attack, and how the game ended — a
+ * checkmate, a win on points once both players have rested a turn, or a draw where a bikjang was
+ * called.
  *
  * Without it a board waiting for the other army is indistinguishable from one that has stopped
  * responding: your own pieces simply refuse to be picked up and nothing says why. A mate is the
  * sharper case of the same thing — every piece refuses at once, and only this line says the game is
- * over rather than broken.
+ * over rather than broken. The plaques say the same thing in light; this says it in words.
+ *
+ * Tinted by what it announces: the colour of the army to move, red for a check, gold for a result.
  *
  * The attributes rather than the text are the contract with the acceptance tests, so the wording can
  * change without breaking a spec. `aria-live` is what makes the turn passing an announcement rather
  * than a silent change to a line nobody is looking at.
  */
 interface Props {
-  readonly game: GameState;
-  /**
-   * How far the board has got in being laid out. It is here rather than derived from `game` because
-   * a position cannot say whether anyone chose it — a scored board waiting on Han looks exactly like
-   * one both players arranged that way.
-   */
-  readonly phase: SetupPhase;
+  /** What `gameStatusOf` made of the position and the setup phase, which `Status` has already asked. */
+  readonly status: GameStatus;
+  /** Whether the words give a small bump each time they change, so the turn passing is seen to. */
+  readonly animated: boolean;
 }
 
-export function TurnIndicator({game, phase}: Props): React.JSX.Element {
-  const status = gameStatusOf(game, phase);
+export function TurnIndicator({status, animated}: Props): React.JSX.Element {
   const winner = winnerOf(status);
+  const announcement = announcementOf(status);
 
   return (
     <p
@@ -41,9 +39,19 @@ export function TurnIndicator({game, phase}: Props): React.JSX.Element {
       data-drawn={status.kind === "drawn" ? "" : undefined}
       data-winner={winner}
       aria-live="polite"
-      className={`shrink-0 text-center text-xs tracking-wide uppercase ${status.kind === "toMove" ? "text-white/60" : "text-amber-300"}`}
+      className={clsx(
+        "h-6 shrink-0 self-center rounded-full px-3 text-center text-xs leading-6 font-semibold tracking-wide uppercase transition-colors duration-300 motion-reduce:transition-none",
+        toneOf(status),
+      )}
     >
-      {announcementOf(status)}
+      {/* Keyed by the words, so each new announcement bumps from the start; the live region itself
+          stays put, so a screen reader still hears it. */}
+      <span
+        key={announcement}
+        className={clsx("inline-block", animated && "animate-[herald-bump_320ms_ease-out_both]")}
+      >
+        {announcement}
+      </span>
     </p>
   );
 }
@@ -64,6 +72,24 @@ function announcementOf(status: GameStatus): string {
       return `${sideName(status.side)} to lay out`;
   }
 }
+
+function toneOf(status: GameStatus): string {
+  switch (status.kind) {
+    case "won":
+    case "wonOnPoints":
+      return "bg-gold/15 text-gold";
+    case "drawn":
+      return "bg-white/10 text-white/80";
+    case "inCheck":
+      return "bg-danger/20 text-danger";
+    case "toMove":
+      return SIDE_TONES[status.side];
+    case "layingOut":
+      return "bg-wood/15 text-wood";
+  }
+}
+
+const SIDE_TONES: Record<Side, string> = {cho: "bg-cho/15 text-cho", han: "bg-han/15 text-han"};
 
 /** The army that has won, however it won, or undefined while there is still a game to play. */
 function winnerOf(status: GameStatus): Side | undefined {

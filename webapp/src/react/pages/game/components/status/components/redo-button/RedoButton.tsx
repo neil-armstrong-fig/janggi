@@ -1,3 +1,5 @@
+import {ControlButton} from "@src/react/pages/game/components/status/components/control-button/ControlButton";
+
 /**
  * Plays again the turn most recently taken back.
  *
@@ -13,15 +15,13 @@ interface Props {
 }
 
 export function RedoButton({enabled, onRedo}: Props): React.JSX.Element {
-  return (
-    <button
-      type="button"
-      data-testid="redo"
-      disabled={!enabled}
-      onClick={onRedo}
-      className="shrink-0 rounded-full border border-white/20 px-3 py-1 text-[11px] tracking-wide text-white/70 uppercase enabled:cursor-pointer disabled:opacity-30"
-    >
-      Redo
-    </button>
-  );
+  return <ControlButton testId="redo" label="Redo" icon={FORWARD} enabled={enabled} onPress={onRedo} />;
 }
+
+const FORWARD = (
+  <>
+    <path d="m15 14 5-5-5-5" />
+
+    <path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
+  </>
+);

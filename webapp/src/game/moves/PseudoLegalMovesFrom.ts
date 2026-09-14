@@ -9,7 +9,7 @@ import type {PieceLookup} from "@src/game/board/types/PieceLookup";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Position} from "@src/game/board/types/Position";
 import {getLegalSoldierMoves} from "@src/game/moves/GetLegalSoldierMoves";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
 
 /**
  * Where the piece on one point may go **by its own movement rules alone**, ignoring what that would

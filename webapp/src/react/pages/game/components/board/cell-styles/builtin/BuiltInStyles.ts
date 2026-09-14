@@ -11,5 +11,3 @@ import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cel
  * special case.
  */
 export const BUILT_IN_STYLES: readonly BuiltInBoardStyle[] = [classicStyle, neonStyle];
-
-export const DEFAULT_STYLE: BuiltInBoardStyle = classicStyle;

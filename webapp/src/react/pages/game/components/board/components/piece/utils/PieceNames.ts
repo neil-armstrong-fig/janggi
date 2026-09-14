@@ -1,5 +1,5 @@
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
-import {sideName} from "@src/react/pages/game/components/utils/SideNames";
+import {sideName} from "@src/react/pages/game/utils/SideNames";
 
 /**
  * What a piece is called out loud — the label a screen reader reads, and the only text on the board

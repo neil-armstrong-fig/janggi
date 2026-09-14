@@ -10,11 +10,14 @@ src/react/            components, nested by who uses them
 src/redux/            Store.ts, typed Hooks.ts, one folder per slice
 src/game/             the janggi engine — rules, move generation, game state, and the record a
                       game is taken back through. No React, no Redux
-src/index.css         Tailwind import + the base layer
+src/audio/            the sound — synthesised effects and adaptive music. Plays what it is handed;
+                      imports nothing of the game, the store or the page
+src/index.css         Tailwind import, the colour tokens, the base layer and the motion keyframes
 ```
 
 `src/game/` is the bottom of this package's dependency graph and has its own `AGENTS.md` — read it
-before touching a rule.
+before touching a rule. `src/audio/` sits beside it knowing nothing of it — the page decides what is
+heard — and has its own `AGENTS.md` too.
 
 `src/react/` follows the locality rule from the root `AGENTS.md`. The same folder set recurses at
 every level, and a folder only appears once something needs it:
@@ -29,14 +32,21 @@ src/react/
         <thing>/
           <Thing>.tsx
           components/        components only <Thing> renders, each in its own folder
-          hooks/
-            <UseThing>.ts    hooks only <Thing> calls, with its .test.ts beside it
-            utils/           helpers only <UseThing> calls
+          hooks/             hooks only <Thing> calls
+            <use-thing>/
+              <UseThing>.ts  with its .test.ts beside it
+              types/         types only <UseThing> uses
+              utils/         helpers only <UseThing> calls
+          <subject>/         plain functions on one subject, each with its .test.ts beside it —
+                             intersections/ has movable-pieces/, last-move/ and motion/
           types/
-          utils/             plain functions, each with its .test.ts beside it
+          utils/             the last resort: a plain function no subject claims
 ```
 
-Anything shared by two siblings moves up to the folder that contains them both, and no higher.
+**A hook gets its own folder exactly as a component does**, and what only it calls goes beneath it —
+`hooks/use-haptics/utils/VibrationFor.ts`. Anything shared by two siblings moves up to the folder
+that contains them both, and no higher: `cuesFor`, called by `useGameAudio` and `useHaptics`, sits
+in `pages/game/hooks/utils/`.
 
 **A page is divided into sections before it is divided into components.** `pages/game/` is
 `Status`, `Board` and `Settings`, and every control lives under whichever of the three draws it —
@@ -45,6 +55,12 @@ rule one level up, and it is what keeps a page's `components/` from becoming a f
 everything on screen; it also matches how `acceptance-tests/` already names the page, whose DSL is
 `components/{board,settings,status}`. Reach for a new section when a page grows a region that is
 genuinely its own, not to file loose components.
+
+`Status` **frames** the board rather than sitting above it. It is handed the board as `children` and
+puts Han's plaque above it and Cho's below, so each army's score and losses sit on its own side, with
+the herald under Han's plaque, the controls under Cho's, and a result announced over the board
+itself. `Settings` is a sheet that slides up over the page; whether it is open is `GamePage`'s state,
+because the button that opens it is drawn by `Status`.
 
 Naming a folder for its subject rather than its shape (root `AGENTS.md`) bites here in one
 particular way: Tailwind means presentation lives in the JSX, so a folder called `styles/` reads as
@@ -68,14 +84,16 @@ describing how cells and pieces are painted, and say so.
 - **Every element an acceptance test needs gets a `data-testid`.** That attribute is the contract
   with `acceptance-tests/` — renaming one breaks specs.
 - Redux: use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped
-  `react-redux` hooks. Add state as a slice via `createSlice`.
+  `react-redux` hooks. Add state as a slice via `createSlice`. **State more than one section reads
+  belongs in a slice, not in `useState` on the page** — `useState` is for what one component owns,
+  like the piece in hand or whether the settings sheet is open.
 - **A fact the engine can work out is derived where it is shown, never stored.** Check, the winner
   and each army's score are not fields on `GameState` and not slices — `GameStatusOf.ts` asks the
-  engine on every render and returns one discriminated union, `Scoreboard` asks `scoreFor` the same
-  way, and both are rendered straight out. Storing any of them would mean a second copy of the
-  position's truth to keep in step with the position. `GameStatusOf` goes one further and relays the
-  engine's own `outcomeOf` rather than deciding a result here, adding only the one state the engine
-  has no opinion about — a general under attack while the game goes on.
+  engine on every render and returns one discriminated union, `Status` asks `scoreFor` and
+  `takenFrom` the same way, and all of it is rendered straight out. Storing any of them would mean a
+  second copy of the position's truth to keep in step with the position. `GameStatusOf` goes one
+  further and relays the engine's own `outcomeOf` rather than deciding a result here, adding only the
+  one state the engine has no opinion about — a general under attack while the game goes on.
 
   `playHasBegun` in `components/settings/utils/` is the same rule applied late: the store used to
   carry a `turnsTaken` counter to lock the setup pickers, and a counter that only ever climbs went
@@ -90,7 +108,7 @@ describing how cells and pieces are painted, and say so.
   what locks each picker. A casual game is dealt already arranged and never sits there, because the
   order is a regulation of official play — `docs/rules.md` §6.6.
 
-  `redux/game/utils/BoardShownFor.ts` is the one seam worth knowing. A half-laid-out board still has
+  `redux/game/dealing/board-shown-for/BoardShownFor.ts` is the one seam worth knowing. A half-laid-out board still has
   to be drawn, so it stands `DEFAULT_SETUP` in for the army that has not chosen. That is a display
   decision and stays on this side of the line — the engine refuses to know about a default, because
   a phase handed one could never be waiting on anybody.
@@ -102,33 +120,69 @@ describing how cells and pieces are painted, and say so.
   `src/game/AGENTS.md` says why the engine keeps it that way.
 - **The board closes when the game does.** A mate needs no help, having no legal move in it; a game
   stopped by two rested turns or by a called bikjang is full of moves the rules will not accept, so
-  `gameIsOver` in `board/utils/` is asked before a piece is marked, picked up or offered anywhere.
+  `gameIsOver` in `board/components/intersections/movable-pieces/game-is-over/` is asked before a piece is marked, picked up
+  or offered anywhere.
   Without it the board lights a piece up and `applyMove` throws when it is put down.
 - **A setting that is part of the game is dealt, not applied.** The two setups and the match format
   all go through `dealtGame`, which starts a fresh game rather than changing the one under way, and
   all three pickers lock on `playHasBegun` for the same reason: a back rank is arranged before play,
   and which of janggi's two games is being played is settled before it too. Contrast the board
-  style, the piece set and the movable-piece mark, which are preferences about how a game is drawn
-  and live in `GamePage`'s own state.
-- **A page section reads the store; a component below it takes props.** `Status` and `Settings`
-  call `useAppSelector`/`useAppDispatch` themselves, so `GamePage` hands them nothing that is part
-  of the game and the dozen props that would otherwise be drilled through it do not exist. Below
-  that line every component stays pure and knows nothing about Redux — which is what lets `Piece`,
-  `Scoreboard` and the rest be reasoned about from their props alone. `GamePage` keeps only the
-  board style, the piece set and the movable-piece mark, because those are not in the store at all
-  and both `Board` and `Settings` need them.
+  style, the piece set, the movable-piece mark, the effects, the sound effects and the music, which
+  are preferences about how a game is drawn or heard: the `preferences` slice, applied the moment
+  they are chosen.
+- **Preferences are stored by name.** `state.preferences` holds `BoardStyleName`, `PieceSetName` and
+  the rest from `@janggi/shared`, never the style objects — `src/redux/` may not import `src/react/`,
+  and a name is also what a picker shows, a spec asks for and storage keeps. `usePreferences`
+  (`pages/game/hooks/use-preferences/`) is the one place a name becomes what it names; read them
+  through it rather than selecting `state.preferences` directly.
+- **A page section reads the store; a component below it takes props.** `Status`, `Board` and
+  `Settings` call `useAppSelector`/`useAppDispatch` and `usePreferences` themselves, so `GamePage`
+  hands them only what it works out — the moment, the sound callbacks, and whether the settings
+  sheet is open, the one `useState` it keeps. Below that line every component stays pure and knows
+  nothing about Redux — which is what lets `Piece`, `Cell`, `PlayerPlaque` and the rest be reasoned
+  about from their props alone.
 - **Something a player does that touches no intersection is a control, not a gesture.** Resting a
-  turn and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in `Status`, the
-  row above the board — each enabled off a pure question the engine answers (`canPass`,
+  turn and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in `Status`, in the
+  row under the board — each enabled off a pure question the engine answers (`canPass`,
   `canCallBikjang`), and disabled rather than hidden so the row does not reflow under a thumb.
+- **Marks are information; motion is an effect.** A mark says something a player needs to see — the
+  last move's two points, a general under attack and each piece attacking it, a called bikjang's
+  file — and is drawn however much the board may move. Motion shows a change happening — a piece flying, a
+  capture landing, a shake, a deal, a lift, a rolling score, a haptic buzz — and is drawn only while
+  `effects.full`. The Effects setting starts in full on every device and is the only thing that
+  decides; the chrome's own small transitions still follow `motion-reduce:`. Keep the split when
+  adding either: the default acceptance projects run with effects reduced and assert on marks, and
+  the specs under
+  `acceptance-tests/src/tests/effects/` assert on motion.
+- **Motion and sound key off one moment.** `useGameMoment` compares the record the page last drew with
+  the one it holds now, through the engine's `changeBetween`, and hands out a `GameMoment` whose `id`
+  changes once per change. The board's flights and flourishes, the ending shake, the sound and the
+  haptics all read that one moment and remember the last id they answered, so none of them runs twice
+  for a change and none can disagree about what the change was. Nothing dispatches an event.
+
+  **What that moment sounds like is decided here, not in `src/audio/`.** `cuesFor` turns it into
+  cues, in `pages/game/hooks/utils/` because `useHaptics` buzzes off the same cues, and `moodOf`
+  turns the position into a mood, beneath `use-game-audio/` — and the director only plays what it is
+  handed. A new sound for a new rule is a change to `cuesFor`; the playback hears of it only as
+  a cue name.
+
+- **Motion is drawn over the cells, never by moving them.** A flight, a capture landing and the lines
+  of a check are overlays inside the board's grid; a lift and a flourish happen inside a piece's own
+  wrappers. Every cell stays exactly where the game says it is, a tap mid-flight lands on the point
+  under it, and nothing an ordinary spec reads ever waits on an animation.
 - `BASE_PATH` sets where the app is served from (`/` locally, `/<repo>/` on GitHub Pages) and drives
   the PWA manifest's `start_url`/`scope`. Do not hardcode absolute asset paths.
-- Tailwind v4 has no config file — use utilities in JSX, and put genuinely global rules in the
-  `@layer base` block in `index.css`.
+- Tailwind v4 has no config file — use utilities in JSX. The colours around the board are tokens in
+  the `@theme` block in `index.css` (`bg-ground`, `text-cho`, `border-danger` and the rest), never hex
+  in JSX; the motion keyframes live in that file too, and genuinely global rules go in its
+  `@layer base` block. A class list that changes with state is built with `clsx` — the fixed classes
+  as one string, then each conditional one as `flag && "class"` — never a template string.
 - Import with the `@src/*` alias. This package may import `@janggi/shared` and nothing else from
   the workspace; **`src/redux/` may not import from `src/react/`** — components depend on state,
-  never the reverse — and **`src/game/` may import neither**, nor React or Redux themselves. All
-  three are lint errors.
+  never the reverse — **`src/game/` may import neither**, nor React or Redux themselves, and
+  **`src/audio/` may import nothing else of this package's** — `src/game/` included — nor React,
+  Redux or `@janggi/shared`.
+  All four are lint errors.
 - Lint rules come from `@eslint-react/eslint-plugin` (React 19 aware, TypeScript-first) plus
   `eslint-plugin-react-hooks`. The legacy `eslint-plugin-react` is deliberately not used — do not
   reintroduce it.
@@ -157,6 +211,7 @@ leans on it instead of on the app.
 | Components and pages (`src/react/`)  | acceptance tests, not unit tests         |
 | Custom hooks                         | Vitest + `renderHook`                    |
 | Reducers, selectors, plain functions | Vitest, called directly — no RTL, no DOM |
+| Playback's decisions (`src/audio/`)  | Vitest; its node graph is checked by ear |
 
 **Tests run on `node`, not `jsdom`.** Building a DOM was 75% of the time a run took, and nothing
 here needed one — components are not unit tested at all, and everything that is tested is a pure
@@ -188,12 +243,18 @@ piece-styles/    how a piece is painted — PieceSetStyle over PieceStyle
 Both are **plain data**: a default plus a map of per-position or per-piece overrides, with one
 component that turns that data into pixels.
 
-A cell can carry **three marks**, and none of them is a `CellStyle` field — a board style is plain
+A cell can carry **several marks**, and none of them is a `CellStyle` field — a board style is plain
 data a user may author, and whose turn it is has no business written into one. They are overlay
 elements in `Cell`: `MovableMark` rings a piece its owner may move this turn, the selected wash
-fills the cell of the piece in hand, and `MoveHint` puts a dot or a ring where that piece may go.
-Only the first is switchable — the "Moves" picker — because in the opening it marks most of an army,
-and earns itself in check and against a pin.
+fills the cell of the piece in hand, `MoveHint` puts a dot or a ring where that piece may go,
+`LastMoveMark` brackets the corners of the last move's two points over a wash, and `ThreatMark` rings a
+general in check and each piece attacking it. Only the first is switchable — the "Movable pieces"
+picker — because in the opening it marks most of an army, and earns itself in check and against a pin.
+
+A mark's _colours_ may still belong to the board — whether it is drawn never does. The last move is the
+case: a `BoardStyle` carries `lastMove` (`LastMoveStyle` has why), because one warm wash vanished into
+Classic's pale wood, and a wash alone is hidden under the piece that arrived — the brackets sit in the
+corners, the one part of a cell no piece set reaches.
 
 **The cell `<svg>` is `preserveAspectRatio="none"`,** so it stretches with the cell and a `<circle>`
 drawn inside it comes out an ellipse. That is why both `Piece` and `MoveHint` use a square overlay
@@ -233,12 +294,8 @@ on the board and the diagonals a chariot may run down are one list, not two.
 
 ## Current placeholders
 
-- Nothing is persisted: a reload deals a new game.
-- `settings/components/option-picker/` is prototype scaffolding for choosing a style, set, setup or
-  format. `Settings` is the panel it fills, not yet a real settings _screen_, and that screen is now
-  overdue: six rows of pills are taller than a short window has to spare, so the block is capped at
-  45% of the height and scrolls. `FitsTheWindow` is what catches a seventh row pushing the board off
-  the top of the screen — it did exactly that when the format picker was added.
+- Nothing is persisted: a reload deals a new game, and every preference — the sound and the music
+  included — goes back to its default.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
   maskable variant are still to do.
 - No Korean font is bundled, so the character sets fall back to whatever the device has, and the

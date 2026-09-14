@@ -8,4 +8,9 @@ export const classicStyle: BuiltInBoardStyle = {
     stroke: "#4a3116",
     strokeWidth: 1.25,
   },
+  // Ink rather than light: a pale or warm mark vanishes into pale wood, and a darker one reads against it.
+  lastMove: {
+    wash: "rgba(74, 49, 22, 0.2)",
+    brackets: "#2b1a0b",
+  },
 };

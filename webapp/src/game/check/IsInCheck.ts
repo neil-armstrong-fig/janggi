@@ -1,10 +1,7 @@
 import type {GameState} from "@src/game/types/GameState";
-import type {PieceLookup} from "@src/game/board/types/PieceLookup";
-import type {Position} from "@src/game/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
-import {pseudoLegalMovesFrom} from "@src/game/moves/PseudoLegalMovesFrom";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
+import {reaches} from "@src/game/check/utils/Reaches";
 
 /**
  * Whether that army's general stands on a point the enemy attacks.
@@ -26,10 +23,4 @@ export function isInCheck(state: GameState, side: Side): boolean {
   return state.pieces
     .filter(({piece}) => piece.side !== side)
     .some(({position}) => reaches(pieces, position, general.position));
-}
-
-function reaches(pieces: PieceLookup, from: Position, target: Position): boolean {
-  const wanted = toPositionKey(target);
-
-  return pseudoLegalMovesFrom(pieces, from).some(to => toPositionKey(to) === wanted);
 }

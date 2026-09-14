@@ -2,10 +2,10 @@ import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import {opponentOf} from "@src/game/utils/OpponentOf";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 import {standingOf} from "@src/game/utils/StandingOf";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 /**
  * The board after a move, with **nothing checked** — the piece stands somewhere new, anything of

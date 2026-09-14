@@ -1,8 +1,8 @@
 import type {GameState} from "@src/game/types/GameState";
 import {applyMove} from "@src/game/ApplyMove";
 import {expect, it} from "vitest";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 import {standingOf} from "@src/game/utils/StandingOf";
 
 const chariotFacingASoldier: GameState = {

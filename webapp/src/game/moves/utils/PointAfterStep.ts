@@ -1,4 +1,4 @@
-import {FILES, RANKS} from "@src/game/board/utils/BoardDimensions";
+import {FILES, RANKS} from "@src/game/board/BoardDimensions";
 import type {Position} from "@src/game/board/types/Position";
 import type {Step} from "@src/game/board/types/Step";
 

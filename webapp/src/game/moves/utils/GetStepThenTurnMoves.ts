@@ -5,7 +5,7 @@ import type {Step} from "@src/game/board/types/Step";
 import {ORTHOGONAL_STEPS} from "@src/game/moves/utils/OrthogonalSteps";
 import {canLandOn} from "@src/game/moves/utils/CanLandOn";
 import {pointAfterStep} from "@src/game/moves/utils/PointAfterStep";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
 
 /**
  * The horse's move and the elephant's, which are the same move with a different number: one step

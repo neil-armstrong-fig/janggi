@@ -3,9 +3,9 @@ import type {Position} from "@src/game/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {ORTHOGONAL_STEPS} from "@src/game/moves/utils/OrthogonalSteps";
 import {canLandOn} from "@src/game/moves/utils/CanLandOn";
-import {isInPalace} from "@src/game/board/utils/Palaces";
+import {isInPalace} from "@src/game/board/palaces/Palaces";
 import {pointAfterStep} from "@src/game/moves/utils/PointAfterStep";
-import {palaceDiagonalStepsAt} from "@src/game/board/utils/PalaceDiagonals";
+import {palaceDiagonalStepsAt} from "@src/game/board/palaces/PalaceDiagonals";
 
 /**
  * One step along a drawn line, and never outside the army's own palace. The whole of how both the

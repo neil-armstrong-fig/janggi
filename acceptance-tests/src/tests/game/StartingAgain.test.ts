@@ -17,7 +17,7 @@ given("a game is under way", () => {
 
   when("a new game is started", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.startNewGame();
+      await janggi.settings.startNewGame();
     });
 
     then("the pieces are back where they began", async ({janggi}) => {

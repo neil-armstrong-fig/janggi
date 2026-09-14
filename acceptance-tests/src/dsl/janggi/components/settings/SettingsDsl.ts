@@ -1,9 +1,12 @@
 import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
 import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/ChoSetupSettingDsl";
 import {DslError} from "@src/dsl/errors/DslError";
+import {EffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/effects-setting/EffectsSettingDsl";
 import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/han-setup-setting/HanSetupSettingDsl";
 import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
+import {MusicSettingDsl} from "@src/dsl/janggi/components/settings/components/music-setting/MusicSettingDsl";
+import {SoundEffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/sound-effects-setting/SoundEffectsSettingDsl";
 import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
 import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
 import type {Page} from "@playwright/test";
@@ -11,7 +14,7 @@ import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairi
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 
 /**
- * The controls under the board, reached as `janggi.settings`.
+ * The settings sheet, reached as `janggi.settings`.
  *
  * One member per setting, so a spec says which control it means before it says what to do with it —
  * `janggi.settings.board.setTo("Neon")`. Each member is its own DSL beside its own `*Playwright`,
@@ -22,8 +25,11 @@ import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
  * `@janggi/shared` — so a spec says what a user would say, and asking for a style the app does not
  * ship is a compile error rather than a click that silently times out.
  *
- * What is left here is only what belongs to no single picker: the two methods below each reach
- * across both armies' setups.
+ * What is left here is only what belongs to no single picker: two methods that reach across both
+ * armies' setups, the pairing line those two choices produce, and New game, which deals from them.
+ *
+ * None of it asks a spec to open the sheet first. Every action opens it and shuts it again itself —
+ * see `SettingsSheetComponent` — so choosing a setting reads the same as it did before there was one.
  */
 export class SettingsDsl {
   private readonly settings: SettingsPlaywright;
@@ -34,6 +40,9 @@ export class SettingsDsl {
   readonly choSetup: ChoSetupSettingDsl;
   readonly movableHighlight: MovableHighlightSettingDsl;
   readonly matchFormat: MatchFormatSettingDsl;
+  readonly effects: EffectsSettingDsl;
+  readonly soundEffects: SoundEffectsSettingDsl;
+  readonly music: MusicSettingDsl;
 
   constructor(page: Page) {
     this.settings = new SettingsPlaywright(page);
@@ -44,6 +53,9 @@ export class SettingsDsl {
     this.choSetup = new ChoSetupSettingDsl(page);
     this.movableHighlight = new MovableHighlightSettingDsl(page);
     this.matchFormat = new MatchFormatSettingDsl(page);
+    this.effects = new EffectsSettingDsl(page);
+    this.soundEffects = new SoundEffectsSettingDsl(page);
+    this.music = new MusicSettingDsl(page);
   }
 
   /** Both armies at once, for a spec that only cares that they match. */
@@ -84,6 +96,15 @@ export class SettingsDsl {
       return await this.settings.getElephantPairing();
     } catch (error) {
       throw new DslError("Failed to read how the two arrangements pair up", error);
+    }
+  }
+
+  /** Deals a fresh game from the format and setups chosen, abandoning whatever was being played. */
+  async startNewGame(): Promise<void> {
+    try {
+      await this.settings.startNewGame();
+    } catch (error) {
+      throw new DslError("Failed to start a new game", error);
     }
   }
 }

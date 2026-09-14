@@ -2,10 +2,10 @@ import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
 import {movesFrom} from "@src/game/MovesFrom";
 import {outcomeOf} from "@src/game/OutcomeOf";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 import {positionAfter} from "@src/game/utils/PositionAfter";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 /**
  * The game after a move: the piece stands somewhere new, anything of the enemy's it landed on is

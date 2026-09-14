@@ -190,7 +190,7 @@ given("a game is being played", () => {
       await janggi.board.tap(1, 6);
 
       await janggi.status.undo();
-      await janggi.status.startNewGame();
+      await janggi.settings.startNewGame();
     });
 
     then("there is nothing to take back or play again on the new game", async ({janggi}) => {

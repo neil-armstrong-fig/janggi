@@ -1,7 +1,7 @@
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import type {BoardStyleName} from "@janggi/shared/janggi/settings/BoardStyleName";
 import type {Locator, Page} from "@playwright/test";
-import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
+import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
 /**
  * The board picker: one locator per option, written out.
@@ -13,7 +13,7 @@ import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
  * Typing the map as `Record<BoardStyleName, Locator>` means a style added to `@janggi/shared` and
  * not given a locator here is a compile error rather than a spec nobody wrote.
  */
-export class BoardSettingPlaywright extends BaseComponent {
+export class BoardSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<BoardStyleName, Locator>;
 
@@ -28,7 +28,7 @@ export class BoardSettingPlaywright extends BaseComponent {
   }
 
   async choose(name: BoardStyleName): Promise<void> {
-    await this.options[name].click();
+    await this.inSheet(() => this.options[name].click());
   }
 
   /** The name on whichever button is pressed, or undefined before anything has rendered. */

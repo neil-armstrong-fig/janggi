@@ -1,8 +1,8 @@
 import type {Position} from "@src/game/board/types/Position";
 import {getLegalChariotMoves} from "@src/game/moves/GetLegalChariotMoves";
 import {expect, it} from "vitest";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 const emptyBoard = piecesByPosition([]);
 

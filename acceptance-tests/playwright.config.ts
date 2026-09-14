@@ -1,3 +1,4 @@
+import type {AcceptanceTestOptions} from "./src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 import {defineConfig, devices} from "@playwright/test";
 
 /**
@@ -8,7 +9,15 @@ const webappUrl = process.env["WEBAPP_URL"] ?? "http://localhost:3000";
 
 const isCi = !!process.env["CI"];
 
-export default defineConfig({
+/**
+ * The specs about the motion itself. Everything else runs with the game's effects turned down before
+ * it starts, and with the device asking for reduced motion so the settings sheet and the plaques do
+ * not slide or fade either — so an ordinary spec never waits on, or races, a piece still in flight. The
+ * handful that are about the motion run on projects of their own, with it all left on.
+ */
+const EFFECTS_SPECS = "**/effects/**";
+
+export default defineConfig<AcceptanceTestOptions>({
   testDir: "./src/tests",
   outputDir: "./test-results",
   fullyParallel: true,
@@ -27,8 +36,27 @@ export default defineConfig({
     video: "retain-on-failure",
   },
   projects: [
-    {name: "desktop", use: {...devices["Desktop Chrome"]}},
+    {
+      name: "desktop",
+      testIgnore: EFFECTS_SPECS,
+      use: {...devices["Desktop Chrome"], reducedMotion: "reduce", effects: "Reduced"},
+    },
     // A real touch viewport, so tap targets and layout are covered on every run.
-    {name: "mobile", use: {...devices["Pixel 5"]}},
+    {
+      name: "mobile",
+      testIgnore: EFFECTS_SPECS,
+      use: {...devices["Pixel 5"], reducedMotion: "reduce", effects: "Reduced"},
+    },
+
+    {
+      name: "desktop-effects",
+      testMatch: EFFECTS_SPECS,
+      use: {...devices["Desktop Chrome"], reducedMotion: "no-preference", effects: "Full"},
+    },
+    {
+      name: "mobile-effects",
+      testMatch: EFFECTS_SPECS,
+      use: {...devices["Pixel 5"], reducedMotion: "no-preference", effects: "Full"},
+    },
   ],
 });
