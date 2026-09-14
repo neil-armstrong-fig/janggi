@@ -1,4 +1,4 @@
-import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
+import type {DealtBoard} from "@src/redux/game/dealing/types/DealtBoard";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
@@ -75,7 +75,7 @@ function laidOut(hanSetup: Setup, choSetup: Setup, format: SetupPhase["format"] 
   return place(place(setupPhaseFor(format), "han", hanSetup), "cho", choSetup);
 }
 
-function typeAt(state: GameSliceState, file: number, rank: number): PieceType | undefined {
+function typeAt(state: DealtBoard, file: number, rank: number): PieceType | undefined {
   return state.played.present.pieces.find(({position}) => position.file === file && position.rank === rank)?.piece.type;
 }
 

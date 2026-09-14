@@ -1,3 +1,4 @@
+import type {Opponent} from "@src/redux/game/types/Opponent";
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
 
@@ -22,6 +23,9 @@ import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
  * finished being arranged — see `BoardShownFor.ts`, which is the one place that stands in a default
  * for an army that has not chosen.
  *
+ * `opponent` is who plays the other army — dealt like the format, for the same reason: a game against
+ * the bot and a game between two people at one device are different games from the first move.
+ *
  * What is *not* here is which point a player has tapped. That is UI state, it belongs to the
  * component that draws the board, and putting it in the store would make every highlight a
  * dispatch.
@@ -29,4 +33,5 @@ import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
 export interface GameSliceState {
   readonly played: PlayedGame;
   readonly phase: SetupPhase;
+  readonly opponent: Opponent;
 }

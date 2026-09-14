@@ -17,6 +17,13 @@ const isCi = !!process.env["CI"];
  */
 const EFFECTS_SPECS = "**/effects/**";
 
+/**
+ * The whole games against the bot, which this config leaves out. A game is minutes of bots thinking,
+ * and the engine is not deterministic, so they run apart from the gate a deploy waits on — through
+ * `playwright.bot-games.config.ts`, in `.github/workflows/bot-games.yml`.
+ */
+export const BOT_GAME_SPECS = "**/bot/PlayingTheBotToTheEnd.test.ts";
+
 export default defineConfig<AcceptanceTestOptions>({
   testDir: "./src/tests",
   outputDir: "./test-results",
@@ -38,13 +45,13 @@ export default defineConfig<AcceptanceTestOptions>({
   projects: [
     {
       name: "desktop",
-      testIgnore: EFFECTS_SPECS,
+      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS],
       use: {...devices["Desktop Chrome"], reducedMotion: "reduce", effects: "Reduced"},
     },
     // A real touch viewport, so tap targets and layout are covered on every run.
     {
       name: "mobile",
-      testIgnore: EFFECTS_SPECS,
+      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS],
       use: {...devices["Pixel 5"], reducedMotion: "reduce", effects: "Reduced"},
     },
 

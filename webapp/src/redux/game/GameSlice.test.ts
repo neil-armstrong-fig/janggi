@@ -5,14 +5,17 @@ import type {Setup} from "@src/game/setups/types/Setup";
 import {expect, it} from "vitest";
 import {
   bikjangCalled,
+  botStrengthChosen,
   choSetupChosen,
   formatChosen,
   gameReducer,
   hanSetupChosen,
   moved,
+  opponentChosen,
   passed,
   playedAgain,
   restarted,
+  sideChosen,
   takenBack,
 } from "@src/redux/game/GameSlice";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
@@ -25,6 +28,77 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
  */
 
 const CHO_OPENING: Move = {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}};
+
+it("deals a game against someone at the same device, with the bot's settings at their defaults", () => {
+  expect(opening().opponent).toEqual({name: "Human", botElo: 1200, sideChoice: "Cho", playerSide: "cho"});
+});
+
+it("deals a fresh game when the bot is chosen as the opponent", () => {
+  const played = gameReducer(opening(), moved(CHO_OPENING));
+
+  const after = gameReducer(played, opponentChosen("Bot"));
+
+  expect(after.opponent.name).toBe("Bot");
+  expect(after.played.past).toEqual([]);
+});
+
+it("deals a fresh game at the bot strength chosen", () => {
+  const played = gameReducer(gameReducer(opening(), opponentChosen("Bot")), moved(CHO_OPENING));
+
+  const after = gameReducer(played, botStrengthChosen(1600));
+
+  expect(after.opponent.botElo).toBe(1600);
+  expect(after.played.past).toEqual([]);
+});
+
+it("puts the player on the army they choose", () => {
+  const after = gameReducer(opening(), sideChosen("Han"));
+
+  expect(after.opponent).toMatchObject({sideChoice: "Han", playerSide: "han"});
+});
+
+it("settles a random side into one of the two armies", () => {
+  const after = gameReducer(opening(), sideChosen("Random"));
+
+  expect(after.opponent.sideChoice).toBe("Random");
+  expect(["cho", "han"]).toContain(after.opponent.playerSide);
+});
+
+it("settles a random side as it was rolled when the choice was made", () => {
+  const after = gameReducer(opening(), {type: sideChosen.type, payload: {choice: "Random", side: "han"}});
+
+  expect(after.opponent.playerSide).toBe("han");
+});
+
+it("rolls a random side again when the game is restarted", () => {
+  const random = gameReducer(opening(), {type: sideChosen.type, payload: {choice: "Random", side: "han"}});
+
+  expect(gameReducer(random, {type: restarted.type, payload: "cho"}).opponent.playerSide).toBe("cho");
+});
+
+it("keeps a chosen side when the game is restarted, whatever the roll", () => {
+  const han = gameReducer(opening(), sideChosen("Han"));
+
+  expect(gameReducer(han, {type: restarted.type, payload: "cho"}).opponent.playerSide).toBe("han");
+});
+
+it("keeps the opponent when the format or a setup is chosen, or the game restarted", () => {
+  const bot = gameReducer(gameReducer(opening(), opponentChosen("Bot")), botStrengthChosen(800));
+
+  expect(gameReducer(bot, formatChosen("Scored")).opponent).toEqual(bot.opponent);
+  expect(gameReducer(bot, choSetupChosen(setup("Outer Elephant"))).opponent).toEqual(bot.opponent);
+  expect(gameReducer(bot, restarted()).opponent).toEqual(bot.opponent);
+});
+
+it("deals a scored game against the bot with nobody laid out, whichever side the player takes", () => {
+  const scored = gameReducer(gameReducer(opening(), formatChosen("Scored")), opponentChosen("Bot"));
+  const hanHasLaidOut = gameReducer(scored, hanSetupChosen(setup("Left Elephant")));
+
+  const after = gameReducer(hanHasLaidOut, sideChosen("Han"));
+
+  expect(after.phase.hanSetup).toBeUndefined();
+  expect(after.phase.choSetup).toBeUndefined();
+});
 
 it("plays the move onto the game", () => {
   const after = gameReducer(opening(), moved(CHO_OPENING));

@@ -58,6 +58,24 @@ const engineIsPure = [
 ];
 
 /**
+ * The bot in `src/bot/` is the opponent's decision and nothing else: a position in, what to play out,
+ * with Fairy-Stockfish asked through the one interface in `engine/`. No React and no store, so every
+ * choice it makes is a plain function a test can call, and the engine can be swapped for a fake.
+ */
+const botIsHeadless = [
+  {name: "react", message: "The bot must not import React. It decides a turn; it does not draw one."},
+  {name: "react-dom", message: "The bot must not import React. It decides a turn; it does not draw one."},
+  {
+    name: "react-redux",
+    message: "The bot must not import Redux. It is handed a position; it does not go looking in the store.",
+  },
+  {
+    name: "@reduxjs/toolkit",
+    message: "The bot must not import Redux. It is handed a position; it does not go looking in the store.",
+  },
+];
+
+/**
  * The sound in `src/audio/` is playback and nothing else. It is handed cues and a mood and plays them;
  * it draws nothing, and holds nothing the page could come to lean on. It knows nothing of janggi —
  * not the engine and not the shared vocabulary — because what a change sounds like is the page's
@@ -174,6 +192,25 @@ export default [
             group: ["@src/react", "@src/react/**", "@src/redux", "@src/redux/**"],
             message:
               "The engine must not import from react/ or redux/. It takes a game state and returns one; everything else is somebody else's job.",
+          },
+        ],
+      }),
+    },
+  },
+  {
+    // The bot asks the engine for a move and hands it back. It reads the rules to know what it may
+    // play, and never reaches into the page or the store — the page decides when it is asked.
+    files: ["src/bot/**"],
+    rules: {
+      // As above: flat config replaces this rule rather than merging it.
+      "no-restricted-imports": restrictedImports({
+        allowedPackages: ["@janggi/shared"],
+        paths: botIsHeadless,
+        patterns: [
+          {
+            group: ["@src/react", "@src/react/**", "@src/redux", "@src/redux/**", "@src/audio", "@src/audio/**"],
+            message:
+              "The bot must not import from react/, redux/ or audio/. It is handed a position and returns what to play; the page decides when to ask and what to do with the answer.",
           },
         ],
       }),

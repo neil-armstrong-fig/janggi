@@ -2,6 +2,7 @@ import {BoardDsl} from "@src/dsl/janggi/components/board/BoardDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import type {Page} from "@playwright/test";
+import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
 import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
 import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
 
@@ -33,6 +34,7 @@ export class JanggiDsl {
   readonly board: BoardDsl;
   readonly settings: SettingsDsl;
   readonly status: StatusDsl;
+  readonly recordSheet: RecordSheetDsl;
 
   constructor(page: Page) {
     this.janggi = new JanggiPlaywright(page);
@@ -40,6 +42,7 @@ export class JanggiDsl {
     this.board = new BoardDsl(page);
     this.settings = new SettingsDsl(page);
     this.status = new StatusDsl(page);
+    this.recordSheet = new RecordSheetDsl(page);
   }
 
   async navigateToPage(): Promise<void> {
@@ -47,6 +50,15 @@ export class JanggiDsl {
       await this.janggi.open();
     } catch (error) {
       throw new DslError("Failed to navigate to the game", error);
+    }
+  }
+
+  /** Loads the page again, the way a player closing the app and coming back to it would. */
+  async reload(): Promise<void> {
+    try {
+      await this.janggi.reload();
+    } catch (error) {
+      throw new DslError("Failed to load the game again", error);
     }
   }
 

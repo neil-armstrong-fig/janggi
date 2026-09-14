@@ -8,6 +8,7 @@ import {SettingsButton} from "@src/react/pages/game/components/status/components
 import {TurnIndicator} from "@src/react/pages/game/components/status/components/turn-indicator/TurnIndicator";
 import {UndoButton} from "@src/react/pages/game/components/status/components/undo-button/UndoButton";
 import {bikjangCalled, passed, playedAgain, restarted, takenBack} from "@src/redux/game/GameSlice";
+import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {canCallBikjang} from "@src/game/bikjang/CanCallBikjang";
 import {canPass} from "@src/game/passing/CanPass";
 import {canRedo} from "@src/game/record/CanRedo";
@@ -36,7 +37,11 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * position with nothing to play, janggi having no stalemate.
  *
  * Undo and Redo are the only two controls in here **not** gated on the game still being undecided —
- * taking back the turn that ended a game is the ordinary reason to reach for one.
+ * taking back the turn that ended a game is the ordinary reason to reach for one. Against the bot they
+ * are off altogether, because that game is rated and a rating that can be taken back is not one.
+ *
+ * While the game waits on the bot, Pass and Bikjang are off too: the turn is not the player's to rest,
+ * nor the call theirs to make.
  *
  * Starting a new game is not in the row. It lives in the settings sheet, beside the format and the
  * setups it deals from, where a stray thumb cannot abandon a game half played — and on the announcement
@@ -58,7 +63,7 @@ interface Props {
 }
 
 export function Status({onOpenSettings, onControlPressed, children}: Props): React.JSX.Element {
-  const {played, phase} = useAppSelector(state => state.game);
+  const {played, phase, opponent} = useAppSelector(state => state.game);
   const {pieceStyle, effects} = usePreferences();
   const game = played.present;
   const dispatch = useAppDispatch();
@@ -66,6 +71,8 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
   // A scored board is still being laid out until both armies have chosen, and until then there is
   // no game here to play — the pieces on screen are only what `boardShownFor` is painting.
   const laidOut = isArranged(phase);
+  const botToMove = botDutyFor(played, phase, opponent) !== undefined;
+  const againstBot = opponent.name === "Bot";
   const status = gameStatusOf(game, phase);
   const scores: ArmyScores = {cho: scoreFor(game, "cho"), han: scoreFor(game, "han")};
   const animated = effects.full;
@@ -81,7 +88,7 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
         animated={animated}
       />
 
-      <TurnIndicator status={status} animated={animated} />
+      <TurnIndicator status={status} botToMove={botToMove} animated={animated} />
 
       <div className="relative min-h-0 flex-1">
         {children}
@@ -108,7 +115,7 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
 
       <div className="flex shrink-0 gap-1.5">
         <UndoButton
-          enabled={canUndo(played)}
+          enabled={!againstBot && canUndo(played)}
           onUndo={() => {
             onControlPressed();
             dispatch(takenBack());
@@ -116,7 +123,7 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
         />
 
         <RedoButton
-          enabled={canRedo(played)}
+          enabled={!againstBot && canRedo(played)}
           onRedo={() => {
             onControlPressed();
             dispatch(playedAgain());
@@ -124,7 +131,7 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
         />
 
         <PassButton
-          enabled={laidOut && canPass(game)}
+          enabled={laidOut && !botToMove && canPass(game)}
           onPass={() => {
             onControlPressed();
             dispatch(passed());
@@ -132,7 +139,7 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
         />
 
         <BikjangButton
-          enabled={laidOut && canCallBikjang(game)}
+          enabled={laidOut && !botToMove && canCallBikjang(game)}
           onCall={() => {
             onControlPressed();
             dispatch(bikjangCalled());

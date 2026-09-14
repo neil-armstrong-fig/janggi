@@ -187,6 +187,9 @@ importers:
       clsx:
         specifier: 2.1.1
         version: 2.1.1
+      fairy-stockfish-nnue.wasm:
+        specifier: 1.1.12
+        version: 1.1.12
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -264,6 +267,12 @@ importers:
         specifier: 5.0.0
         version: 5.0.0(@types/node@24.13.3)(jsdom@30.0.1)(vite@8.2.2(@types/node@24.13.3)(jiti@2.7.0)(terser@5.51.2))
       workbox-build:
+        specifier: 7.4.1
+        version: 7.4.1
+      workbox-precaching:
+        specifier: 7.4.1
+        version: 7.4.1
+      workbox-routing:
         specifier: 7.4.1
         version: 7.4.1
       workbox-window:
@@ -1949,6 +1958,9 @@ packages:
   expect-type@1.4.0:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
+
+  fairy-stockfish-nnue.wasm@1.1.12:
+    resolution: {integrity: sha512-E0z5fvgZgIK0NoLmI6krWt5g362G4mZguANy8obTXL7EFPzyOyQn9A8OmBcjRe/s4see2s9okfULTGVnCu+1XQ==}
 
   fast-check@4.9.0:
     resolution: {integrity: sha512-7ms6T7SybUev/PQITciI0yLM2pOSFy5zpG8Ty7tQofcVaQUvrMXp6CBwqF6fThLCLOrfBtuHAtwq6Yu4XPCllg==}
@@ -5191,6 +5203,8 @@ snapshots:
   eta@4.6.0: {}
 
   expect-type@1.4.0: {}
+
+  fairy-stockfish-nnue.wasm@1.1.12: {}
 
   fast-check@4.9.0:
     dependencies:

@@ -1,4 +1,7 @@
-import type {AcceptanceTestFixtures} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
+import type {
+  AcceptanceTestFixtures,
+  AnotherDeviceFixtures,
+} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 import {test} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 
 type DefineSuite = () => void;
@@ -10,7 +13,12 @@ type DefineSuite = () => void;
  */
 type RunCriterion = (dsl: AcceptanceTestFixtures) => void | Promise<void>;
 
+/** An arrangement handed a second device as well as the app, and still nothing but the DSL for each. */
+type ArrangeOnTwoDevices = (dsl: AcceptanceTestFixtures & AnotherDeviceFixtures) => void | Promise<void>;
+
 type PlaywrightTestBody = (fixtures: AcceptanceTestFixtures) => Promise<void>;
+
+type PlaywrightTwoDeviceBody = (fixtures: AcceptanceTestFixtures & AnotherDeviceFixtures) => Promise<void>;
 
 interface Suite {
   (criteria: string, define: DefineSuite): void;
@@ -40,6 +48,22 @@ interface Criterion {
   skip(criteria: string, run: RunCriterion): void;
 }
 
+interface Arrangement {
+  (arrange: RunCriterion): void;
+  /**
+   * The same, handed the app open on a second device as well as `janggi`. Only an arrangement that
+   * asks for one opens one: Playwright builds a fixture for a test only where something names it, and
+   * this is the one place `anotherDevice` is named. The criterion beneath it runs against the same two.
+   */
+  withAnotherDevice(arrange: ArrangeOnTwoDevices): void;
+}
+
+/**
+ * The DSL as a type, for a spec's own helper that is handed a device — `PlayingTheBotToTheEnd.test.ts`
+ * relays turns between two. A spec may import nothing but this module, so the name is exported here.
+ */
+export type Janggi = AcceptanceTestFixtures["janggi"];
+
 /**
  * `given` / `when` / `then` are thin wrappers over Playwright's `test.describe` / `test` that
  * prefix the block name, so a test run reads back as the acceptance criteria it was written from:
@@ -65,9 +89,7 @@ export const then = criterion("then");
  * fresh for each test, so this runs against the same `janggi` the criterion gets, on a page that is
  * genuinely back at the start.
  */
-export function beforeEach(arrange: RunCriterion): void {
-  test.beforeEach(withDslOnly(arrange));
-}
+export const beforeEach = arrangement();
 
 export {expect} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 
@@ -106,16 +128,34 @@ function criterion(prefix: string): Criterion {
   return wrapped;
 }
 
+function arrangement(): Arrangement {
+  const wrapped = (arrange: RunCriterion): void => {
+    test.beforeEach(withDslOnly(arrange));
+  };
+  wrapped.withAnotherDevice = (arrange: ArrangeOnTwoDevices): void => {
+    test.beforeEach(withBothDevices(arrange));
+  };
+
+  return wrapped;
+}
+
 /**
  * Rebuilds the argument object so a criterion receives only the DSL, whatever else Playwright
  * passed in. Types alone would stop at a cast; this stops at runtime too.
  *
  * The destructuring here is also how Playwright decides which fixtures to build — it reads the
  * parameter names off this function — so a fixture added to `AcceptanceTestFixtures` must be
- * named here as well.
+ * named here as well. `anotherDevice` deliberately is not: named here, every spec would open one.
  */
 function withDslOnly(run: RunCriterion): PlaywrightTestBody {
   return async ({janggi}: AcceptanceTestFixtures): Promise<void> => {
     await run({janggi});
+  };
+}
+
+/** `withDslOnly` for an arrangement on two devices. Its destructuring is what has Playwright open the second. */
+function withBothDevices(arrange: ArrangeOnTwoDevices): PlaywrightTwoDeviceBody {
+  return async ({janggi, anotherDevice}: AcceptanceTestFixtures & AnotherDeviceFixtures): Promise<void> => {
+    await arrange({janggi, anotherDevice});
   };
 }

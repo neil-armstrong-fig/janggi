@@ -12,6 +12,9 @@ src/game/             the janggi engine — rules, move generation, game state, 
                       game is taken back through. No React, no Redux
 src/audio/            the sound — synthesised effects and adaptive music. Plays what it is handed;
                       imports nothing of the game, the store or the page
+src/bot/              the opponent — Fairy-Stockfish, asked only for moves the engine allows. Reads
+                      the engine; never the store or the page
+src/sw/               the service worker — the offline cache, and the headers the bot's engine needs
 src/index.css         Tailwind import, the colour tokens, the base layer and the motion keyframes
 ```
 
@@ -49,7 +52,7 @@ that contains them both, and no higher: `cuesFor`, called by `useGameAudio` and 
 in `pages/game/hooks/utils/`.
 
 **A page is divided into sections before it is divided into components.** `pages/game/` is
-`Status`, `Board` and `Settings`, and every control lives under whichever of the three draws it —
+`Status`, `Board`, `Settings` and `RecordSheet`, and every control lives under whichever draws it —
 `status/components/pass-button/`, `settings/components/option-picker/`. That is the same locality
 rule one level up, and it is what keeps a page's `components/` from becoming a flat list of
 everything on screen; it also matches how `acceptance-tests/` already names the page, whose DSL is
@@ -135,6 +138,13 @@ describing how cells and pieces are painted, and say so.
   and a name is also what a picker shows, a spec asks for and storage keeps. `usePreferences`
   (`pages/game/hooks/use-preferences/`) is the one place a name becomes what it names; read them
   through it rather than selecting `state.preferences` directly.
+- **The whole store is kept on the device.** `Store.ts` loads every slice from `localStorage` and
+  writes each back when it changes, so a closed page reopens on the same game, preferences and record.
+  **What is read back is untrusted**: each slice has a loader under its own `storage/` that checks every
+  field against the vocabulary it claims — `redux/untrusted/` — and falls back to a fresh start. The
+  game is refused whole if any position fails (a crash in `applyMove` is what a half-trusted board
+  buys); the ratings keep what they can. A new field on a slice needs its loader taught about it, and a
+  change to a slice's shape needs its storage key's version raised.
 - **A page section reads the store; a component below it takes props.** `Status`, `Board` and
   `Settings` call `useAppSelector`/`useAppDispatch` and `usePreferences` themselves, so `GamePage`
   hands them only what it works out — the moment, the sound callbacks, and whether the settings
@@ -181,8 +191,9 @@ describing how cells and pieces are painted, and say so.
   the workspace; **`src/redux/` may not import from `src/react/`** — components depend on state,
   never the reverse — **`src/game/` may import neither**, nor React or Redux themselves, and
   **`src/audio/` may import nothing else of this package's** — `src/game/` included — nor React,
-  Redux or `@janggi/shared`.
-  All four are lint errors.
+  Redux or `@janggi/shared`. **`src/bot/` may import `src/game/` and `@janggi/shared` only** — never
+  the store, the page or the sound, nor React or Redux; it has its own `AGENTS.md`.
+  All five are lint errors.
 - Lint rules come from `@eslint-react/eslint-plugin` (React 19 aware, TypeScript-first) plus
   `eslint-plugin-react-hooks`. The legacy `eslint-plugin-react` is deliberately not used — do not
   reintroduce it.
@@ -228,6 +239,14 @@ The docblock gives that one file a DOM; the import brings the jest-dom matchers 
 that unmounts between tests. Both are needed — forget the import and the matchers are simply
 missing, which is what the first failure will say. `@testing-library` stays installed and
 `renderHook` works exactly as before.
+
+**One test plays the real engine.** `pages/game/PlayingTheBotToTheEnd.test.ts` starts Fairy-Stockfish
+under Node (`src/testing/CreateNodeFairyStockfish.ts`) and plays whole games between the weakest and
+the strongest bot, through `botDutyFor`, `botReplyFor` and the game reducer. Its searches are capped
+at 100ms, so both games take seconds. It asserts that each game ends and never who wins, because the
+engine is not deterministic. `pnpm test` leaves it out, as it does the property tests:
+`vitest.bot-games.config.ts` runs it (`pnpm test:bot-games`), in `.github/workflows/bot-games.yml`,
+which gates no deploy.
 
 ## The board
 
@@ -294,8 +313,6 @@ on the board and the diagonals a chariot may run down are one list, not two.
 
 ## Current placeholders
 
-- Nothing is persisted: a reload deals a new game, and every preference — the sound and the music
-  included — goes back to its default.
 - The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
   maskable variant are still to do.
 - No Korean font is bundled, so the character sets fall back to whatever the device has, and the
@@ -332,5 +349,6 @@ pnpm --filter @janggi/webapp generate-icon
 ```bash
 pnpm --filter @janggi/webapp start      # or `pnpm start` from the root
 pnpm --filter @janggi/webapp test       # Vitest — hook and plain-logic tests
+pnpm --filter @janggi/webapp test:bot-games   # whole games on the real engine, left out of `test`
 pnpm --filter @janggi/webapp compile    # tsc --noEmit && vite build, output in build/
 ```

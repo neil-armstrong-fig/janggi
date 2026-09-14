@@ -3,6 +3,18 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
 
+/** An intersection, as a spec taps it. */
+export interface Point {
+  readonly file: number;
+  readonly rank: number;
+}
+
+/** The two intersections the board marks a move on. */
+export interface MarkedMove {
+  readonly from: Point;
+  readonly to: Point;
+}
+
 /** The board's locators, and the only place that knows how a piece is found in the DOM. */
 export class BoardPlaywright extends BaseComponent {
   readonly container: Locator;
@@ -127,6 +139,20 @@ export class BoardPlaywright extends BaseComponent {
   /** Whether the intersection is marked as the point the last move arrived on. */
   async isMarkedAsMovedTo(file: number, rank: number): Promise<boolean> {
     return (await this.cellLocator(file, rank).getAttribute("data-last-move")) === "to";
+  }
+
+  /**
+   * The move the board marks as the last one, read off the two marked cells' test ids — or undefined
+   * where nothing is marked, because the game has just been dealt or its last turn was not a move.
+   */
+  async getLastMove(): Promise<MarkedMove | undefined> {
+    await this.container.waitFor({state: "visible"});
+
+    const from = this.container.locator("[data-last-move='from']");
+    const to = this.container.locator("[data-last-move='to']");
+    if ((await from.count()) === 0 || (await to.count()) === 0) return undefined;
+
+    return {from: pointOf(await from.getAttribute("data-testid")), to: pointOf(await to.getAttribute("data-testid"))};
   }
 
   /** Whether the intersection is marked as a general under attack. */
@@ -275,6 +301,14 @@ export class BoardPlaywright extends BaseComponent {
   private cellLocator(file: number, rank: number): Locator {
     return this.container.getByTestId(`cell-f${file}r${rank}`);
   }
+}
+
+/** Reads a cell's `cell-f<file>r<rank>` test id back into the intersection it names. */
+function pointOf(testId: string | null): Point {
+  const [, file, rank] = /^cell-f(\d+)r(\d+)$/.exec(testId ?? "") ?? [];
+  if (file === undefined || rank === undefined) throw new Error(`Expected a cell's test id, got ${testId}`);
+
+  return {file: Number(file), rank: Number(rank)};
 }
 
 /** Longer than any flight or landing lasts, so a piece shown moving at all is caught in the act. */

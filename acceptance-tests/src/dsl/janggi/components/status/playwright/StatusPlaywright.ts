@@ -31,6 +31,20 @@ export class StatusPlaywright extends BaseComponent {
     this.newGame = page.getByTestId("result-new-game");
   }
 
+  /**
+   * The turn line carries `data-bot-to-move` for exactly as long as the bot is the one being waited on,
+   * so this waits for it to go. It is derived from the position on every render, never set by a timer,
+   * so it is already there by the time the tap that handed the bot its turn returns.
+   *
+   * A generous timeout of its own, because the first reply includes loading the engine.
+   */
+  async waitForTheBot(): Promise<void> {
+    await this.container.waitFor({state: "visible"});
+    await this.page
+      .locator("[data-testid='turn'][data-bot-to-move]")
+      .waitFor({state: "detached", timeout: BOT_REPLIES_WITHIN_MS});
+  }
+
   /** Presses New game on the announcement of a result. */
   async startNewGame(): Promise<void> {
     await this.newGame.click();
@@ -206,6 +220,8 @@ export class StatusPlaywright extends BaseComponent {
 
 /** Longer than any score takes to roll to its new value. */
 const SETTLES_WITHIN_MS = 3_000;
+
+const BOT_REPLIES_WITHIN_MS = 20_000;
 
 /** Longer than a score's whole roll, so words unchanged for this long have truly come to rest. */
 const AT_REST_FOR_MS = 700;

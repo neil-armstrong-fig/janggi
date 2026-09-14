@@ -6,6 +6,7 @@ import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import {Impact} from "@src/react/pages/game/components/board/components/impact/Impact";
 import {Intersections} from "@src/react/pages/game/components/board/components/intersections/Intersections";
 import {MoveFlight} from "@src/react/pages/game/components/board/components/move-flight/MoveFlight";
+import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {isArranged} from "@src/game/setups/IsArranged";
 import {moved} from "@src/redux/game/GameSlice";
 import {threatIn} from "@src/react/pages/game/components/board/utils/ThreatIn";
@@ -50,17 +51,19 @@ interface Props {
 }
 
 export function Board({moment, onPickUp}: Props): React.JSX.Element {
-  const {played, phase} = useAppSelector(state => state.game);
+  const {played, phase, opponent} = useAppSelector(state => state.game);
   const dispatch = useAppDispatch();
   const {boardStyle: style, pieceStyle, movableHighlight, effects} = usePreferences();
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
   // be touched until both armies have chosen.
-  const playable = isArranged(phase);
+  const arranged = isArranged(phase);
+  // Closed while the bot is thinking too, though what the position says — a check — is still marked.
+  const playable = arranged && botDutyFor(played, phase, opponent) === undefined;
   const animated = effects.full;
   const momentId = moment?.id ?? 0;
 
-  const threat = useMemo(() => (playable ? threatIn(game) : undefined), [game, playable]);
+  const threat = useMemo(() => (arranged ? threatIn(game) : undefined), [game, arranged]);
   const {flight, flying, landing, concealed, land, settle} = useMoveFlight(moment, animated);
   const {ref: shaken, shake} = useBoardShake();
   useEndingShake(moment, game, animated, shake);

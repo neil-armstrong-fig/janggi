@@ -83,7 +83,7 @@ inside that thing goes in its `components/` folder. So a piece of the board woul
 how deep, a folder tells you what it is by the same two names.
 
 **This tree and the app's are deliberately the same shape.** `janggi/components/` is `board/`,
-`settings/` and `status/`, and those are the three sections
+`record-sheet/`, `settings/` and `status/`, and those are the four sections
 `webapp/src/react/pages/game/components/` is divided into. The app was brought into line with the
 DSL rather than the other way round — the specs had the better vocabulary first, having always
 described the page the way a player sees it. Split or rename a section on one side and do the same
@@ -267,8 +267,19 @@ past it.
 
 **A new fixture must also be named in `withDslOnly`'s destructuring**
 (`AcceptanceCriteriaMapping.ts`). Playwright reads that destructuring to decide which fixtures to
-build, so one missing from it is silently never constructed. There is one fixture — `janggi` — and
-new areas belong on it as members rather than as fixtures of their own.
+build, so one missing from it is silently never constructed. There is one fixture for the app —
+`janggi` — and new areas belong on it as members rather than as fixtures of their own.
+
+**A second device is the one other fixture.** `anotherDevice` is the app open in a second browser
+context, for a spec that plays a game between two copies of it: `PlayingTheBotToTheEnd.test.ts` has
+the strongest bot choose the player's moves on one, and relays every turn to the other by hand. Only
+`beforeEach.withAnotherDevice` names it — named in `withDslOnly`, it would open a second context for
+every spec in the suite. A test that opens one is given ten minutes, since a game played out is minutes
+of bots thinking, and a spec's own helper is handed a device typed as `Janggi`, from the mapping.
+
+That spec is left out of `pnpm acceptance-tests`: the default projects ignore `BOT_GAME_SPECS`, and
+`playwright.bot-games.config.ts` (`pnpm acceptance-tests:bot-games`) runs it alone, in
+`.github/workflows/bot-games.yml`, which gates no deploy.
 
 ## Say it in the game's own words
 
@@ -302,16 +313,19 @@ await this.container.waitFor({state: "visible"}); // not locator.isVisible()
 Rename any of these in the webapp and specs break. Listed rather than counted, because a count of
 them went stale twice while it was being kept.
 
-- **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`, and
-  the controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
-  `settings-close`. On
+- **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`,
+  `record` (the record sheet, `inert` while closed) with `record-elo` carrying `data-elo`, and the
+  controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
+  `settings-close`, `record-open`, `record-close`, `record-reset`, and the question it opens,
+  `record-reset-confirm` and `record-reset-cancel`. On
   `pass`, `bikjang`, `undo` and `redo` the `disabled` attribute is part of the contract: they are
   disabled rather than hidden. `move-flight` and `impact` are drawn over the board only while motion
   is shown, and only the effects specs look for them.
 - **`data-testid`, composed** — `cell-f<file>r<rank>`; `score-<side>`, `taken-<side>` and
-  `plaque-<side>`; and `<id>-picker` with an `<id>-option-<slug>` for each option. The seven picker
-  ids are `board-style`, `piece-style`, `movable-highlight`, `match-format`, `han-setup`, `cho-setup`
-  and `effects`. A picker of two options is a row of buttons, the chosen one carrying
+  `plaque-<side>`; `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
+  `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
+  option. The ten picker ids are `board-style`, `piece-style`, `movable-highlight`, `match-format`,
+  `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A picker of two options is a row of buttons, the chosen one carrying
   `aria-pressed`; one of more is a native `<id>-select`, whose `<option>`s carry the option ids and
   are chosen by their `value`. Grow a picker past two options and its `*Playwright` must switch
   shape. The two volumes, `sound-effects` and `music`, are an `<id>-volume` range input and an
@@ -320,10 +334,11 @@ them went stale twice while it was being kept.
   `@janggi/shared`. The pieces in a `taken-<side>` tray carry it too.
 - **On a cell** — `aria-pressed` (the piece in hand), `data-can-move-to` (a legal destination),
   `data-can-be-moved` (a piece its owner may move now; the value is the emphasis, `full` or `faint`,
-  and no spec asserts on which), `data-last-move` (`from` or `to`), and `data-under-attack` and
+  and no spec asserts on which), `data-last-move` (`from` or `to`; `getLastMove` reads the two cells' ids back into a move), and `data-under-attack` and
   `data-attacking` (the general in check, and each piece giving it).
-- **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn` and
-  `data-laying-out`, each present only while it applies.
+- **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn`,
+  `data-laying-out` and `data-bot-to-move`, each present only while it applies. `waitForTheBot` waits
+  on the last.
 - **On a score** — `data-score`, that army's score with the 덤 folded in. The words beside it roll to
   a new value with motion on; the attribute never does.
 - **On the pairing line** — `data-pairing`.
@@ -383,6 +398,7 @@ pnpm acceptance-tests --project=desktop-effects --project=mobile-effects
 pnpm start                          # terminal 1 — the app under test
 pnpm acceptance-tests               # terminal 2 — desktop + mobile projects
 pnpm acceptance-tests --project=mobile
+pnpm acceptance-tests:bot-games     # the whole game against the bot, which the line above leaves out
 pnpm acceptance-tests:headed        # watch it drive
 pnpm acceptance-tests:ui            # time-travel debugging
 ```
