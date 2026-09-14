@@ -25,6 +25,10 @@ export class JanggiPlaywright extends BasePage {
     await this.page.goto("./");
   }
 
+  async reload(): Promise<void> {
+    await this.page.reload();
+  }
+
   async resizeWindowTo(width: number, height: number): Promise<void> {
     await this.page.setViewportSize({width, height});
   }

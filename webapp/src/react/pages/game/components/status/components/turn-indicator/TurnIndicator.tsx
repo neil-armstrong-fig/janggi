@@ -22,18 +22,24 @@ import {sideName} from "@src/react/pages/game/utils/SideNames";
 interface Props {
   /** What `gameStatusOf` made of the position and the setup phase, which `Status` has already asked. */
   readonly status: GameStatus;
+  /**
+   * Whether the game is waiting on the bot, which the line says in words and in `data-bot-to-move` —
+   * the attribute a spec waits on to know the bot has played.
+   */
+  readonly botToMove: boolean;
   /** Whether the words give a small bump each time they change, so the turn passing is seen to. */
   readonly animated: boolean;
 }
 
-export function TurnIndicator({status, animated}: Props): React.JSX.Element {
+export function TurnIndicator({status, botToMove, animated}: Props): React.JSX.Element {
   const winner = winnerOf(status);
-  const announcement = announcementOf(status);
+  const announcement = botToMove ? botAnnouncementOf(status) : announcementOf(status);
 
   return (
     <p
       data-testid="turn"
       data-side={winner ?? sideOf(status)}
+      data-bot-to-move={botToMove ? "" : undefined}
       data-laying-out={status.kind === "layingOut" ? "" : undefined}
       data-in-check={status.kind === "inCheck" ? "" : undefined}
       data-drawn={status.kind === "drawn" ? "" : undefined}
@@ -54,6 +60,10 @@ export function TurnIndicator({status, animated}: Props): React.JSX.Element {
       </span>
     </p>
   );
+}
+
+function botAnnouncementOf(status: GameStatus): string {
+  return status.kind === "layingOut" ? "Bot is laying out" : "Bot is thinking";
 }
 
 function announcementOf(status: GameStatus): string {

@@ -1,11 +1,17 @@
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
+import {
+  BOT_STRENGTH_OPTIONS,
+  OPPONENT_OPTIONS,
+  SIDE_CHOICE_OPTIONS,
+} from "@src/react/pages/game/components/settings/utils/OpponentOptions";
 import {EFFECTS} from "@src/react/pages/game/utils/EffectsOptions";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/components/elephant-pairing-line/ElephantPairingLine";
 import {MATCH_FORMAT_OPTIONS} from "@src/react/pages/game/components/settings/utils/MatchFormats";
 import {MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights";
 import {NewGameButton} from "@src/react/pages/game/components/settings/components/new-game-button/NewGameButton";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
+import {RecordButton} from "@src/react/pages/game/components/settings/components/record-button/RecordButton";
 import {SETUPS} from "@src/game/setups/Setups";
 import {SettingsGroup} from "@src/react/pages/game/components/settings/components/settings-group/SettingsGroup";
 import {
@@ -17,9 +23,19 @@ import {
   soundEffectsVolumeChanged,
 } from "@src/redux/preferences/PreferencesSlice";
 import {VolumeSlider} from "@src/react/pages/game/components/settings/components/volume-slider/VolumeSlider";
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {canPlace} from "@src/game/setups/CanPlace";
 import {clsx} from "clsx";
-import {choSetupChosen, formatChosen, hanSetupChosen, restarted} from "@src/redux/game/GameSlice";
+import {
+  botStrengthChosen,
+  choSetupChosen,
+  formatChosen,
+  hanSetupChosen,
+  opponentChosen,
+  restarted,
+  sideChosen,
+} from "@src/redux/game/GameSlice";
+import {opponentOf} from "@src/game/utils/OpponentOf";
 import {playHasBegun} from "@src/react/pages/game/components/settings/utils/PlayHasBegun";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
@@ -58,16 +74,28 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * board style, because it is not a preference about how the game is drawn: it decides whether a
  * bikjang may be called at all and whether one draws. Like a back rank it is settled before play,
  * so it locks on the same question the setups do.
+ *
+ * **Who the opponent is** sits with them for the same reason — against the bot, how strongly it plays
+ * and which army is the player's. All three are dealt and lock with the rest. Against the bot, the
+ * bot's own army lays itself out, so its setup picker is closed to the player. The bot needs the page
+ * cross-origin isolated (`docs/bot.md`); where the browser will not isolate it, the opponent picker is
+ * closed and a line says why.
  */
 interface Props {
   readonly open: boolean;
   readonly onClose: () => void;
+  readonly onOpenRecord: () => void;
 }
 
-export function Settings({open, onClose}: Props): React.JSX.Element {
-  const {played, phase} = useAppSelector(state => state.game);
+export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Element {
+  const {played, phase, opponent} = useAppSelector(state => state.game);
   const {boardStyle, pieceStyle, movableHighlight, effects, soundEffectsVolume, musicVolume} = usePreferences();
   const dispatch = useAppDispatch();
+
+  const settled = playHasBegun(played);
+  const againstBot = opponent.name === "Bot";
+  const botAvailable = globalThis.crossOriginIsolated;
+  const isBotsArmy = (side: Side): boolean => againstBot && opponentOf(opponent.playerSide) === side;
 
   return (
     <>
@@ -111,7 +139,7 @@ export function Settings({open, onClose}: Props): React.JSX.Element {
           <SettingsGroup title="This game">
             <OptionPicker
               id="match-format"
-              disabled={playHasBegun(played)}
+              disabled={settled}
               label="Format"
               ariaLabel="Which of janggi's two games is being played"
               options={MATCH_FORMAT_OPTIONS}
@@ -120,8 +148,44 @@ export function Settings({open, onClose}: Props): React.JSX.Element {
             />
 
             <OptionPicker
+              id="opponent"
+              disabled={settled || (!botAvailable && !againstBot)}
+              label="Opponent"
+              ariaLabel="Who plays the other army"
+              options={OPPONENT_OPTIONS}
+              selected={{name: opponent.name}}
+              onSelect={option => dispatch(opponentChosen(option.name))}
+            />
+
+            {!botAvailable && (
+              <p className="-mt-1 text-xs text-white/50">
+                This browser cannot run the bot: it needs a cross-origin isolated page.
+              </p>
+            )}
+
+            <OptionPicker
+              id="bot-strength"
+              disabled={settled || !againstBot}
+              label="Bot strength"
+              ariaLabel="How strongly the bot plays, as an Elo rating"
+              options={BOT_STRENGTH_OPTIONS}
+              selected={BOT_STRENGTH_OPTIONS.find(option => option.elo === opponent.botElo)}
+              onSelect={option => dispatch(botStrengthChosen(option.elo))}
+            />
+
+            <OptionPicker
+              id="your-side"
+              disabled={settled || !againstBot}
+              label="Your side"
+              ariaLabel="Which army you play against the bot"
+              options={SIDE_CHOICE_OPTIONS}
+              selected={{name: opponent.sideChoice}}
+              onSelect={option => dispatch(sideChosen(option.name))}
+            />
+
+            <OptionPicker
               id="han-setup"
-              disabled={playHasBegun(played) || !canPlace(phase, "han")}
+              disabled={settled || isBotsArmy("han") || !canPlace(phase, "han")}
               label="Han's setup"
               ariaLabel="Han's opening setup"
               options={SETUPS}
@@ -131,7 +195,7 @@ export function Settings({open, onClose}: Props): React.JSX.Element {
 
             <OptionPicker
               id="cho-setup"
-              disabled={playHasBegun(played) || !canPlace(phase, "cho")}
+              disabled={settled || isBotsArmy("cho") || !canPlace(phase, "cho")}
               label="Cho's setup"
               ariaLabel="Cho's opening setup"
               options={SETUPS}
@@ -147,6 +211,12 @@ export function Settings({open, onClose}: Props): React.JSX.Element {
                 onClose();
               }}
             />
+
+            {againstBot && settled && (
+              <p className="-mt-1 text-xs text-white/50">Starting a new game now counts as a loss.</p>
+            )}
+
+            <RecordButton onOpen={onOpenRecord} />
           </SettingsGroup>
 
           <SettingsGroup title="Appearance">

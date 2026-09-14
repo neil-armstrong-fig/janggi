@@ -1,4 +1,5 @@
 import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
+import {BotStrengthSettingDsl} from "@src/dsl/janggi/components/settings/components/bot-strength-setting/BotStrengthSettingDsl";
 import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/ChoSetupSettingDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {EffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/effects-setting/EffectsSettingDsl";
@@ -6,12 +7,14 @@ import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components
 import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
 import {MusicSettingDsl} from "@src/dsl/janggi/components/settings/components/music-setting/MusicSettingDsl";
+import {OpponentSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-setting/OpponentSettingDsl";
 import {SoundEffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/sound-effects-setting/SoundEffectsSettingDsl";
 import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
 import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
 import type {Page} from "@playwright/test";
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
+import {YourSideSettingDsl} from "@src/dsl/janggi/components/settings/components/your-side-setting/YourSideSettingDsl";
 
 /**
  * The settings sheet, reached as `janggi.settings`.
@@ -40,6 +43,9 @@ export class SettingsDsl {
   readonly choSetup: ChoSetupSettingDsl;
   readonly movableHighlight: MovableHighlightSettingDsl;
   readonly matchFormat: MatchFormatSettingDsl;
+  readonly opponent: OpponentSettingDsl;
+  readonly botStrength: BotStrengthSettingDsl;
+  readonly yourSide: YourSideSettingDsl;
   readonly effects: EffectsSettingDsl;
   readonly soundEffects: SoundEffectsSettingDsl;
   readonly music: MusicSettingDsl;
@@ -53,6 +59,9 @@ export class SettingsDsl {
     this.choSetup = new ChoSetupSettingDsl(page);
     this.movableHighlight = new MovableHighlightSettingDsl(page);
     this.matchFormat = new MatchFormatSettingDsl(page);
+    this.opponent = new OpponentSettingDsl(page);
+    this.botStrength = new BotStrengthSettingDsl(page);
+    this.yourSide = new YourSideSettingDsl(page);
     this.effects = new EffectsSettingDsl(page);
     this.soundEffects = new SoundEffectsSettingDsl(page);
     this.music = new MusicSettingDsl(page);

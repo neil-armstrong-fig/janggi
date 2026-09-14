@@ -30,6 +30,18 @@ export class StatusDsl {
     }
   }
 
+  /**
+   * Waits while it is the bot's turn — to lay out or to move — and returns once it has played. Returns
+   * at once when the bot is not the one being waited on.
+   */
+  async waitForTheBot(): Promise<void> {
+    try {
+      await this.status.waitForTheBot();
+    } catch (error) {
+      throw new DslError("Failed to wait for the bot to play", error);
+    }
+  }
+
   /** Whether the army to move is in check. */
   async isInCheck(): Promise<boolean> {
     try {

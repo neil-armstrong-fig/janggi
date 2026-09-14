@@ -9,7 +9,7 @@ Janggi (Korean Chess) as an installable PWA. pnpm workspace, three packages:
 | `shared/`           | The janggi vocabulary, code shared by both, and base tool config.  |
 
 `docs/` holds research that a decision in the code rests on — not API docs, and not anything the
-code already says. Two so far:
+code already says. Three so far:
 
 - **`docs/opening-setups.md`** — the rules of janggi are not uniform on how a player's opening
   arrangement is named, and `setups/Setups.ts` had to pick a reading.
@@ -18,6 +18,9 @@ code already says. Two so far:
   real and is the reason the file exists: bikjang, the pass move and repetition are described one
   way by both Wikipedias and another by the KJA's regulations. §6.2 settles it — the two readings
   belong to two match formats, casual and scored, and the engine builds both.
+- **`docs/bot.md`** — the bot is Fairy-Stockfish, whose janggi differs from ours on bikjang,
+  repetition and the 30-point threshold. Why our engine referees every move it plays, why its Elo is
+  nominal, and why the service worker adds headers.
 
 Add a document here only when the reasoning is too long to sit in a comment and losing it would mean
 someone re-deriving it; link it from the code it justifies.
@@ -44,6 +47,8 @@ pnpm start               # dev server on http://localhost:3000
 pnpm acceptance-tests    # needs `pnpm start` running in another terminal
 pnpm install-browsers    # one-time Playwright chromium download
 pnpm test:properties     # the property tests, which `pnpm checks` leaves out
+pnpm test:bot-games      # whole games on the real engine under Node, also left out
+pnpm acceptance-tests:bot-games  # a whole game in the browser, left out of `pnpm acceptance-tests`
 ```
 
 `pnpm checks` is the gate. It is `--max-warnings=0`, so a warning fails the build.
@@ -51,9 +56,14 @@ pnpm test:properties     # the property tests, which `pnpm checks` leaves out
 **`pnpm checks` deliberately leaves out the property tests.** A fresh seed every run means a
 failure is not reproducible from the same commit, so it must not gate a deploy — it means "these
 random games found something", which is worth investigating rather than blocking on.
-`webapp/vitest.config.ts` excludes them and `webapp/vitest.properties.config.ts` runs only them, so
-between the two every test file runs exactly once. Run them before finishing work in
-`webapp/src/game/`.
+`webapp/vitest.config.ts` excludes them and `webapp/vitest.properties.config.ts` runs only them.
+Run them before finishing work in `webapp/src/game/`.
+
+**The bot games are left out of both gates too** — `pnpm checks` and `pnpm acceptance-tests`. They
+play whole games against the real Fairy-Stockfish, which is slow and not deterministic.
+`webapp/vitest.bot-games.config.ts` and `acceptance-tests/playwright.bot-games.config.ts` run only
+them, so between the configs every test file still runs exactly once. Run them before finishing work
+in `webapp/src/bot/` or on the bot's side of the page.
 
 ## How work is done here
 
@@ -352,6 +362,12 @@ but gates nothing, because `deploy` needs only `checks` and `acceptance-tests`. 
 job summary naming what broke, the shrunk moves that broke it, and the seed to replay. **If branch
 protection is ever turned on, leave this workflow out of the required checks**, or it becomes a gate
 by the back door.
+
+`.github/workflows/bot-games.yml` plays whole games against the real engine on every push and pull
+request, and on demand: `test:bot-games` under Node, and `acceptance-tests:bot-games` against a
+production build served by `vite preview`. It is kept out of `ci.yml` for the same reason as the
+property tests — slow, and the engine is not deterministic — so it goes red without gating anything.
+The same caution applies to branch protection.
 
 `renovate.json` is committed but **inert until the Renovate GitHub App is installed** on the
 repository. Nothing in CI depends on it.

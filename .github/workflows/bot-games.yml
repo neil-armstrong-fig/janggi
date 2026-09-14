@@ -1,0 +1,81 @@
+name: Bot games
+
+# Deliberately a workflow of its own rather than a job in ci.yml.
+#
+# These play whole games against the real Fairy-Stockfish: under Node in the webapp's Vitest, and in
+# the browser between two copies of the app in the acceptance tests. A game in the browser is minutes
+# of bots thinking, and the engine is not deterministic, so neither belongs in the gate a deploy waits
+# on. Nothing in ci.yml depends on this workflow, and the deploy job needs only `checks` and
+# `acceptance-tests`, so a red run here blocks nothing.
+#
+# It still goes red, because a warning nobody sees is not worth running.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: bot-games-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node:
+    name: Play whole games (Node)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm test:bot-games
+
+  browser:
+    name: Play whole games (browser)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # --with-deps installs the system libraries Chromium needs on a bare runner.
+      - run: pnpm --filter @janggi/acceptance-tests exec playwright install --with-deps chromium
+
+      # The production build, as the acceptance tests in ci.yml drive.
+      - run: pnpm --filter @janggi/webapp compile
+
+      - name: Serve the build
+        run: pnpm --filter @janggi/webapp preview &
+
+      - name: Wait for the server
+        run: |
+          for _ in $(seq 1 60); do
+            curl -sf http://localhost:3000 >/dev/null && exit 0
+            sleep 1
+          done
+          echo "The preview server never came up" >&2
+          exit 1
+
+      - run: pnpm acceptance-tests:bot-games
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-bot-games
+          path: acceptance-tests/playwright-report/
+          retention-days: 7

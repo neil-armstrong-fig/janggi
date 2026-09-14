@@ -1,3 +1,4 @@
+import type {MarkedMove} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
 import type {Page} from "@playwright/test";
 import {BoardPlaywright} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
 import {DslError} from "@src/dsl/errors/DslError";
@@ -128,6 +129,15 @@ export class BoardDsl {
       return await this.board.isMarkedAsMovedTo(file, rank);
     } catch (error) {
       throw new DslError(`Failed to check whether file ${file}, rank ${rank} is marked as moved to`, error);
+    }
+  }
+
+  /** The move the board marks as the last one, or undefined where the last turn was not a move. */
+  async getLastMove(): Promise<MarkedMove | undefined> {
+    try {
+      return await this.board.getLastMove();
+    } catch (error) {
+      throw new DslError("Failed to read the last move off the board", error);
     }
   }
 

@@ -16,6 +16,16 @@ import {configDefaults, defineConfig} from "vitest/config";
 export const PROPERTY_TESTS = ["src/game/PlayingRandomGames.test.ts"];
 
 /**
+ * The whole games against the bot, which `pnpm test` leaves out as well.
+ *
+ * They play the real Fairy-Stockfish rather than a fake, so each takes seconds where a unit test takes
+ * milliseconds, and the engine is not deterministic. That is worth a signal on every push but not a
+ * place in the gate a deploy waits on, so they run in their own workflow, `bot-games.yml`, through
+ * `vitest.bot-games.config.ts`.
+ */
+export const BOT_GAME_TESTS = ["src/react/pages/game/PlayingTheBotToTheEnd.test.ts"];
+
+/**
  * **node, not jsdom.** Building a DOM is by far the most expensive thing a run does — 27 files spent
  * 75% of their time on it — and almost nothing here needs one: reducers, selectors, the engine and
  * every plain function are pure. Components are not unit tested at all, by the rule in `AGENTS.md`.
@@ -33,6 +43,6 @@ export default defineConfig({
   test: {
     ...vitestBaseConfig.test,
     environment: "node",
-    exclude: [...configDefaults.exclude, ...PROPERTY_TESTS],
+    exclude: [...configDefaults.exclude, ...PROPERTY_TESTS, ...BOT_GAME_TESTS],
   },
 });
