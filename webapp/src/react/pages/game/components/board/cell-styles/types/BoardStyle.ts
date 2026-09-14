@@ -1,4 +1,5 @@
 import type {CellStyle} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
+import type {LastMoveStyle} from "@src/react/pages/game/components/board/cell-styles/types/LastMoveStyle";
 import type {PositionKey} from "@src/game/board/types/Position";
 
 /** Overrides keyed by `toPositionKey`, e.g. `{f5r2: {...}}`. */
@@ -19,4 +20,6 @@ export interface BoardStyle {
    * compile rather than silently never matching.
    */
   readonly cells?: CellOverrides;
+  /** How the last move's two points are marked. Required, because a mark that reads is the board's job. */
+  readonly lastMove: LastMoveStyle;
 }

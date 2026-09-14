@@ -2,7 +2,7 @@ import type {Line} from "@src/game/moves/types/Line";
 import type {Position} from "@src/game/board/types/Position";
 import {expect, it} from "vitest";
 import {linesFrom} from "@src/game/moves/utils/LinesFrom";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 it("runs a line out to the edge of the board in each of the four directions", () => {
   const lines = linesFrom({file: 5, rank: 5});

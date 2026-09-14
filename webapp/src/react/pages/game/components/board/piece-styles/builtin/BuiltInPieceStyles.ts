@@ -19,5 +19,3 @@ export const BUILT_IN_PIECE_STYLES: readonly BuiltInPieceSetStyle[] = [
   hangulPieces,
   modernPieces,
 ];
-
-export const DEFAULT_PIECE_STYLE: BuiltInPieceSetStyle = traditionalPieces;

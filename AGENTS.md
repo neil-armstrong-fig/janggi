@@ -91,7 +91,7 @@ would otherwise each have to say?**
 - **Reach for it when the subject has states.** One `describe` per step, each doing a single thing
   in `beforeEach` to the position its parent left behind, so each `it` asserts only what that step
   changed. `webapp/src/game/PlayingAGame.test.ts` plays a game that way, and
-  `.../board/hooks/UseMoveSelection.test.ts` walks a piece being picked up and put down. Two blocks
+  `.../intersections/hooks/use-move-selection/UseMoveSelection.test.ts` walks a piece being picked up and put down. Two blocks
   at the same level then branch from one arrangement rather than replaying it by hand.
 
 - **Reach for it to split genuinely different setups.** `UseMoveSelection.test.ts` has two blocks at
@@ -139,10 +139,20 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
   takes the name of its subject, so `UseMoveSelection.test.ts` sits beside it.
 
 - **A file lives as close to its caller as it can, in a subdirectory of it.** A helper used by one
-  component goes in a folder beneath that component, never beside it; something several siblings
-  share rises to their nearest common ancestor and no further. Depth is the signal — it tells you a
-  file's blast radius before you open it, and it is what stops a folder becoming a bag of loose
-  parts. See `webapp/AGENTS.md` for the shape this produces.
+  file goes in a folder beneath that file, never beside it; something several callers share rises
+  to their nearest common ancestor and no further. A hook is a caller like any other: `useHaptics`
+  has its own `use-haptics/` folder, and `VibrationFor.ts`, which only it calls, sits in
+  `use-haptics/utils/`. Depth is the signal — it tells you a file's blast radius before you open
+  it, and it is what stops a folder becoming a bag of loose parts. See `webapp/AGENTS.md` for the
+  shape this produces.
+
+  **Where rising would leave a helper beside one of its callers, give that caller a folder of its
+  own and nest the helper inside it.** `gameIsOver` is called by `movablePieces` and by
+  `useMoveSelection`; rather than sit loose next to `MovablePieces.ts`, it is in
+  `intersections/movable-pieces/game-is-over/`, and `useMoveSelection` reaches in for it.
+  `music/bars/steps-per-bar/` is the same shape. So files side by side in a folder do not call each
+  other, unless each is an entry point in its own right — `check/IsCheckmate.ts` asking
+  `check/IsInCheck.ts`, which the page asks too.
 
 - **A folder's root is its table of contents.** What stays at the top is the handful of entry points
   that say what is in there and where to start reading; everything else drops into a subfolder named
@@ -158,6 +168,12 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
   reader no wiser. A group that can only be named for its shape is usually one that should not be a
   folder at all — that is the test that kept the five control buttons in `status/`, beside the turn
   line and the scoreboard they belong with, rather than under a `buttons/` of their own.
+
+  `utils/` is a shape name too, so it is **the last resort, not the default home for a plain
+  function**. Group functions under the subject they answer — `intersections/` holds
+  `movable-pieces/`, `last-move/` and `motion/` rather than ten loose files in `utils/`, and
+  `game/board/` holds `palaces/` and `lookup/` — and keep `utils/` for the odd function no subject
+  claims, like `BoardPositions.ts` there.
 
 - **A union of literals is read off the list, not written twice.** Where a type needs a runtime
   list of its own members — to iterate, or to validate a string against — declare the list `as
@@ -242,7 +258,8 @@ violation fails `pnpm checks`:
 A workspace package added later is **denied by default**; add it to `allowedPackages` in that
 package's `eslint.config.js` to permit it. Packages also enforce their own internal layering — see
 the `AGENTS.md` in each. Inside `webapp/` that layering is `react/` → `redux/` → `game/`, one way
-only.
+only, with `audio/` beside `redux/`: `react/` may reach it, and it reaches nothing — the page decides
+what a game sounds like and hands it cues and a mood to play.
 
 Flat config replaces a rule rather than merging it, so **never write `"no-restricted-imports"`
 directly in an override** — call `restrictedImports({...})` from `shared/config/eslint.base.js`, or

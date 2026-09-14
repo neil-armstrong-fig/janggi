@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+/*
+ * The colours of the frame around the board — the plaques, the controls and the settings sheet. The
+ * board and the pieces bring their own, as plain data in their styles; these are for everything
+ * else, so that no hex value lives in JSX.
+ *
+ * The two side colours are the ink of the Traditional set, lifted to read on the dark ground: the
+ * set's own #0f6b46 and #a3231d are cut into pale boxwood, and would all but vanish on this.
+ */
+@theme {
+  --color-ground: #1c140b;
+  --color-ground-raised: #2b2014;
+  --color-wood: #e7c88f;
+  --color-ink: #1c140b;
+  --color-cho: #4fbf8b;
+  --color-han: #ec6a5f;
+  --color-danger: #f0524a;
+  --color-gold: #f4c95d;
+}
+
 @layer base {
   html,
   body,
@@ -16,5 +35,153 @@
 
     /* Keep content clear of notches and home indicators when installed. */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
+
+/*
+ * The motion the game adds to the board and its frame. Each is put on an element only while effects
+ * are in full, and that setting is the only thing that decides — it starts in full, and a player turns
+ * it down in the settings sheet. Scale and translate are animated as their own properties rather than
+ * as a `transform`, so a piece can be lifted and dropped into place at once without one undoing the
+ * other.
+ */
+@keyframes hint-pop {
+  from {
+    scale: 0;
+    opacity: 0;
+  }
+  70% {
+    scale: 1.15;
+    opacity: 1;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+@keyframes deal-drop {
+  from {
+    translate: 0 -45%;
+    scale: 1.25;
+    opacity: 0;
+  }
+  60% {
+    translate: 0 4%;
+    scale: 0.96;
+    opacity: 1;
+  }
+  to {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+@keyframes piece-rest {
+  0% {
+    translate: 0 0;
+    scale: 1;
+  }
+  35% {
+    translate: 0 -12%;
+    scale: 1.12;
+  }
+  70% {
+    translate: 0 2%;
+    scale: 0.97;
+  }
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes tray-pop {
+  from {
+    scale: 0.2;
+    rotate: -25deg;
+    opacity: 0;
+  }
+  65% {
+    scale: 1.25;
+    rotate: 6deg;
+    opacity: 1;
+  }
+  to {
+    scale: 1;
+    rotate: 0deg;
+    opacity: 1;
+  }
+}
+
+@keyframes herald-bump {
+  from {
+    scale: 0.85;
+    opacity: 0.4;
+  }
+  60% {
+    scale: 1.08;
+    opacity: 1;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+@keyframes line-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes line-fade {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes danger-pulse {
+  0%,
+  100% {
+    scale: 0.96;
+    opacity: 0.6;
+  }
+  50% {
+    scale: 1.04;
+    opacity: 1;
+  }
+}
+
+@keyframes result-slam {
+  from {
+    scale: 1.6;
+    opacity: 0;
+  }
+  55% {
+    scale: 0.94;
+    opacity: 1;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+/* One soft flash and no more — never the three a second that WCAG 2.3.1 draws the line at. */
+@keyframes result-flash {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 0;
   }
 }

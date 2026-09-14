@@ -1,6 +1,6 @@
 import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 import type {CellStyle} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 const NEON_CELL: CellStyle = {
   stroke: "#2f6f8f",
@@ -20,6 +20,10 @@ export const neonStyle: BuiltInBoardStyle = {
   cells: {
     [toPositionKey({file: 5, rank: 2})]: palaceCentreCell(),
     [toPositionKey({file: 5, rank: 9})]: palaceCentreCell(),
+  },
+  lastMove: {
+    wash: "rgba(56, 189, 248, 0.16)",
+    brackets: "#38bdf8",
   },
 };
 

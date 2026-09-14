@@ -3,10 +3,10 @@ import type {Position} from "@src/game/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {Step} from "@src/game/board/types/Step";
 import {canLandOn} from "@src/game/moves/utils/CanLandOn";
-import {isInPalace} from "@src/game/board/utils/Palaces";
+import {isInPalace} from "@src/game/board/palaces/Palaces";
 import {pointAfterStep} from "@src/game/moves/utils/PointAfterStep";
 import {opponentOf} from "@src/game/utils/OpponentOf";
-import {palaceDiagonalStepsAt} from "@src/game/board/utils/PalaceDiagonals";
+import {palaceDiagonalStepsAt} from "@src/game/board/palaces/PalaceDiagonals";
 
 /**
  * Where a soldier (졸 for Cho, 병 for Han) may go: one point forward or one point to either side.

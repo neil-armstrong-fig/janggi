@@ -1,7 +1,7 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Standing} from "@src/game/types/Standing";
 import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 /**
  * What another position would have to match for the game to have come round to this one: every

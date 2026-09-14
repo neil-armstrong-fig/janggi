@@ -1,6 +1,6 @@
 import {expect, it} from "vitest";
 import {canLandOn} from "@src/game/moves/utils/CanLandOn";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 
 const board = piecesByPosition([
   {piece: {side: "cho", type: "soldier"}, position: {file: 4, rank: 6}},

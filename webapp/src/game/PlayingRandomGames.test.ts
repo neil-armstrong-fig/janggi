@@ -3,18 +3,22 @@ import type {Move} from "@src/game/types/Move";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {Position} from "@src/game/board/types/Position";
-import {FILES, RANKS} from "@src/game/board/utils/BoardDimensions";
+import {FILES, RANKS} from "@src/game/board/BoardDimensions";
 import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {applyMove} from "@src/game/ApplyMove";
+import {attackersOf} from "@src/game/check/AttackersOf";
+import {isInCheck} from "@src/game/check/IsInCheck";
+import {takenFrom} from "@src/game/scoring/TakenFrom";
+import {transitionBetween} from "@src/game/record/TransitionBetween";
 import {canPlace} from "@src/game/setups/CanPlace";
 import {canUndo} from "@src/game/record/CanUndo";
 import {describe, expect, it} from "vitest";
 import fc from "fast-check";
-import {isInPalace} from "@src/game/board/utils/Palaces";
+import {isInPalace} from "@src/game/board/palaces/Palaces";
 import {isArranged} from "@src/game/setups/IsArranged";
 import {isRepetition} from "@src/game/repetition/IsRepetition";
 import {legalMovesFor} from "@src/game/LegalMovesFor";
@@ -23,15 +27,15 @@ import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
 import {newGameFrom} from "@src/game/setups/NewGameFrom";
 import {opponentOf} from "@src/game/utils/OpponentOf";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
 import {place} from "@src/game/setups/Place";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 import {playMove} from "@src/game/record/PlayMove";
 import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
 import {redo} from "@src/game/record/Redo";
 import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
 import {standingOf} from "@src/game/utils/StandingOf";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 import {undo} from "@src/game/record/Undo";
 
 /**
@@ -58,6 +62,19 @@ import {undo} from "@src/game/record/Undo";
  * `PlayingAGame.test.ts` does: there each level plays a move onto its parent's position, whereas
  * every property here generates its own games from scratch, so there is no state to build up.
  */
+
+/**
+ * One move of a game and the positions either side of it. Chess would call this a **ply** — a single
+ * move by a single player, as opposed to the everyday sense of "move" that means one from each side.
+ *
+ * Every `before` is kept, so a property may look back at a position several moves old, which is how
+ * mutation is caught.
+ */
+interface PlayedMove {
+  readonly before: GameState;
+  readonly move: Move;
+  readonly after: GameState;
+}
 
 /**
  * How many random games each property is put through. Turned up by the scheduled workflow, whose
@@ -110,6 +127,35 @@ describe("after every move of a random game", () => {
 
       expect(materialFor(after, moving)).toBe(materialFor(before, moving));
       expect(materialFor(after, losing)).toBe(materialFor(before, losing) - (taken ? worthOf(taken) : 0));
+    });
+  });
+
+  /** The same fact as the material, told as pieces: the tray a board draws can only gain what was taken. */
+  it("has added to the other army's losses exactly the piece it took, and nothing to its own", () => {
+    afterEveryMove(({before, move, after}) => {
+      const moving = before.sideToMove;
+      const losing = opponentOf(moving);
+      const taken = pieceOn(before, move.to);
+
+      expect(takenFrom(after, moving)).toEqual(takenFrom(before, moving));
+      expect([...takenFrom(after, losing)].sort()).toEqual(
+        [...takenFrom(before, losing), ...(taken ? [taken.type] : [])].sort(),
+      );
+    });
+  });
+
+  /**
+   * A record keeps positions, and a board animating a turn has only those to go on — so the move
+   * and its capture must be recoverable from the two positions for every move a game can play.
+   */
+  it("can be read back from the positions either side of it", () => {
+    afterEveryMove(({before, move, after}) => {
+      expect(transitionBetween(before, after)).toEqual({
+        kind: "moved",
+        move,
+        mover: pieceOn(before, move.from),
+        taken: pieceOn(before, move.to),
+      });
     });
   });
 
@@ -168,6 +214,15 @@ describe("in every position a random game reaches", () => {
     afterEveryMove(({before, after}) => {
       expect(standingOf(after)).not.toBe(standingOf(before));
       expect(standingOf(after)).toBe(standingOf({...after, seen: [], consecutivePasses: 1}));
+    });
+  });
+
+  /** A check line drawn on screen comes from `attackersOf`, so it must never disagree with the rule. */
+  it("names an attacker of a general exactly when that general is in check", () => {
+    afterEveryMove(({after}) => {
+      for (const side of ["cho", "han"] as const) {
+        expect(attackersOf(after, side).length > 0).toBe(isInCheck(after, side));
+      }
     });
   });
 
@@ -372,19 +427,6 @@ function movesUpTo(game: readonly PlayedMove[], index: number): string {
     .slice(0, index + 1)
     .map(({move}) => nameOf(move))
     .join(", ");
-}
-
-/**
- * One move of a game and the positions either side of it. Chess would call this a **ply** — a single
- * move by a single player, as opposed to the everyday sense of "move" that means one from each side.
- *
- * Every `before` is kept, so a property may look back at a position several moves old, which is how
- * mutation is caught.
- */
-interface PlayedMove {
-  readonly before: GameState;
-  readonly move: Move;
-  readonly after: GameState;
 }
 
 /**

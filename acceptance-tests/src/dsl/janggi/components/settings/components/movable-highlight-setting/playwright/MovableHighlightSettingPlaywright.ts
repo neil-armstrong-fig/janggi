@@ -1,7 +1,7 @@
 import {MOVABLE_HIGHLIGHT_NAMES} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {Locator, Page} from "@playwright/test";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
-import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
+import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
 /**
  * The picker for whether the movable pieces are marked: one locator per option, written out.
@@ -10,7 +10,7 @@ import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
  * contract, so they are stated rather than recomputed from the option's name the way the webapp
  * builds them.
  */
-export class MovableHighlightSettingPlaywright extends BaseComponent {
+export class MovableHighlightSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<MovableHighlightName, Locator>;
 
@@ -25,7 +25,7 @@ export class MovableHighlightSettingPlaywright extends BaseComponent {
   }
 
   async choose(name: MovableHighlightName): Promise<void> {
-    await this.options[name].click();
+    await this.inSheet(() => this.options[name].click());
   }
 
   /** The name on whichever button is pressed, or undefined before anything has rendered. */

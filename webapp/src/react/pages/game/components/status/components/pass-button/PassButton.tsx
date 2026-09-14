@@ -1,3 +1,5 @@
+import {ControlButton} from "@src/react/pages/game/components/status/components/control-button/ControlButton";
+
 /**
  * Rests the turn — 한수쉼, which a player traditionally signals by lifting the general off the board
  * and setting it back down.
@@ -16,15 +18,8 @@ interface Props {
 }
 
 export function PassButton({enabled, onPass}: Props): React.JSX.Element {
-  return (
-    <button
-      type="button"
-      data-testid="pass"
-      disabled={!enabled}
-      onClick={onPass}
-      className="shrink-0 rounded-full border border-white/20 px-3 py-1 text-[11px] tracking-wide text-white/70 uppercase enabled:cursor-pointer disabled:opacity-30"
-    >
-      Pass
-    </button>
-  );
+  return <ControlButton testId="pass" label="Pass" icon={REST} enabled={enabled} onPress={onPass} />;
 }
+
+/** Two bars: the turn held, and nothing played. */
+const REST = <path d="M9 6v12M15 6v12" />;

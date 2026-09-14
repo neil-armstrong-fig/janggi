@@ -1,9 +1,17 @@
 import type {File, Position, Rank} from "@src/game/board/types/Position";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {FILES} from "@src/game/board/utils/BoardDimensions";
+import {FILES} from "@src/game/board/BoardDimensions";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import type {Setup} from "@src/game/setups/types/Setup";
+
+/** Where one army's ranks sit, counted in from its own edge of the board. */
+interface HomeRanks {
+  readonly back: Rank;
+  readonly palace: Rank;
+  readonly cannons: Rank;
+  readonly soldiers: Rank;
+}
 
 /**
  * The 32 pieces a game opens with, given each player's chosen setup.
@@ -66,14 +74,6 @@ function placed(side: Side, type: PieceType, file: File, rank: Rank): PlacedPiec
   const position: Position = {file, rank};
 
   return {piece: {side, type}, position};
-}
-
-/** Where one army's ranks sit, counted in from its own edge of the board. */
-interface HomeRanks {
-  readonly back: Rank;
-  readonly palace: Rank;
-  readonly cannons: Rank;
-  readonly soldiers: Rank;
 }
 
 /**

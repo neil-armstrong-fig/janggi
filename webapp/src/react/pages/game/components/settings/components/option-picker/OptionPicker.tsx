@@ -1,15 +1,20 @@
-import type {WithName} from "@src/react/pages/game/components/settings/components/option-picker/types/WithName";
+import type {WithName} from "@src/react/pages/game/types/WithName";
 import {OptionButton} from "@src/react/pages/game/components/settings/components/option-picker/components/option-button/OptionButton";
+import {OptionSelect} from "@src/react/pages/game/components/settings/components/option-picker/components/option-select/OptionSelect";
 
 /**
- * Scaffolding for the prototype: somewhere to see that a board is nothing but the data its cells
- * and pieces are given. A real settings screen replaces it.
+ * One setting in the sheet: its label over its options, exactly one of them chosen.
  *
- * Generic over anything with a name, because board styles, piece sets and opening setups are all
- * lists of named things and three near-identical pickers would be three places to fix a bug.
+ * Generic over anything with a name, because board styles, piece sets, opening setups and the rest
+ * are all lists of named things, and near-identical pickers would be that many places to fix a bug.
+ *
+ * **Two options are a row of buttons; more are a dropdown.** Two names sit side by side across a
+ * phone and are one tap to switch. Five setups did not fit, and scrolling a row sideways under a thumb
+ * was awkward — a native dropdown opens the phone's own picker instead. The picker decides by the
+ * length of its list, so a setting that grows a third option changes shape without being told to.
  */
 interface Props<Option extends WithName> {
-  /** Prefixes the `data-testid` of the picker and of every button in it. */
+  /** Prefixes the `data-testid` of the picker and of every option in it. */
   readonly id: string;
   readonly label: string;
   /** Read out in place of the label, where the label alone is too terse to stand on its own. */
@@ -34,24 +39,40 @@ export function OptionPicker<Option extends WithName>({
   disabled = false,
   onSelect,
 }: Props<Option>): React.JSX.Element {
-  return (
-    <nav data-testid={`${id}-picker`} aria-label={ariaLabel ?? label} className="flex items-center gap-2">
-      <span className="w-14 shrink-0 text-right text-[11px] tracking-wide text-white/40 uppercase">{label}</span>
+  const asDropdown = options.length > MOST_BUTTONS;
 
-      {/* Five setups will not fit across a phone, so the row scrolls rather than wrapping and
-          pushing the board out of the viewport. */}
-      <div className="flex flex-1 gap-1.5 overflow-x-auto">
-        {options.map(option => (
-          <OptionButton
-            key={option.name}
-            pickerId={id}
-            option={option}
-            selected={option.name === selected?.name}
-            disabled={disabled}
-            onSelect={onSelect}
-          />
-        ))}
-      </div>
+  return (
+    <nav data-testid={`${id}-picker`} aria-label={ariaLabel ?? label} className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-white/60">{label}</span>
+
+      {!asDropdown && (
+        <div className="flex gap-1 rounded-xl bg-black/25 p-1">
+          {options.map(option => (
+            <OptionButton
+              key={option.name}
+              pickerId={id}
+              option={option}
+              selected={option.name === selected?.name}
+              disabled={disabled}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      )}
+
+      {asDropdown && (
+        <OptionSelect
+          pickerId={id}
+          label={ariaLabel ?? label}
+          options={options}
+          selected={selected}
+          disabled={disabled}
+          onSelect={onSelect}
+        />
+      )}
     </nav>
   );
 }
+
+/** The most options a picker shows as buttons before it becomes a dropdown. */
+const MOST_BUTTONS = 2;

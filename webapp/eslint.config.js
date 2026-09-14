@@ -57,6 +57,34 @@ const engineIsPure = [
   },
 ];
 
+/**
+ * The sound in `src/audio/` is playback and nothing else. It is handed cues and a mood and plays them;
+ * it draws nothing, and holds nothing the page could come to lean on. It knows nothing of janggi —
+ * not the engine and not the shared vocabulary — because what a change sounds like is the page's
+ * decision, made from the game state the page already holds. It must stay runnable, and its pure
+ * parts testable, with no React around it.
+ */
+const audioIsIsolated = [
+  {name: "react", message: "The sound must not import React. It hears the game; it does not draw it."},
+  {name: "react-dom", message: "The sound must not import React. It hears the game; it does not draw it."},
+  {
+    name: "react-redux",
+    message: "The sound must not import Redux. It is told what changed; it does not go looking in the store.",
+  },
+  {
+    name: "@reduxjs/toolkit",
+    message: "The sound must not import Redux. It is told what changed; it does not go looking in the store.",
+  },
+  {
+    name: "@testing-library/react",
+    message: "There is nothing to render here — a sound test calls the function and reads what comes back.",
+  },
+  {
+    name: "@testing-library/dom",
+    message: "There is nothing to render here — a sound test calls the function and reads what comes back.",
+  },
+];
+
 export default [
   ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages: ["@janggi/shared"]}),
   globalIgnores(["scripts/*"]),
@@ -101,6 +129,31 @@ export default [
             group: ["@src/react", "@src/react/**"],
             message:
               "The redux layer must not import from react/. Components depend on state, not the other way round.",
+          },
+        ],
+      }),
+    },
+  },
+  {
+    // The sound plays what the page hands it. It reads nothing of the game — not the engine and not
+    // the shared vocabulary — and never reaches back into the page or the store.
+    files: ["src/audio/**"],
+    rules: {
+      // As below: flat config replaces this rule rather than merging it, so everything the blocks
+      // higher up would have contributed has to be listed here too.
+      "no-restricted-imports": restrictedImports({
+        allowedPackages: [],
+        paths: audioIsIsolated,
+        patterns: [
+          {
+            group: ["@src/react", "@src/react/**", "@src/redux", "@src/redux/**"],
+            message:
+              "The sound must not import from react/ or redux/. It is handed cues and a mood and plays them; nothing else is its job.",
+          },
+          {
+            group: ["@src/game", "@src/game/**"],
+            message:
+              "The sound must not import the engine. The page decides what a change sounds like and hands over cues and a mood.",
           },
         ],
       }),

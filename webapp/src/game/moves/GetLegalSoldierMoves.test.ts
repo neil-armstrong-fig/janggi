@@ -1,8 +1,8 @@
 import type {Position} from "@src/game/board/types/Position";
 import {expect, it} from "vitest";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 import {getLegalSoldierMoves} from "@src/game/moves/GetLegalSoldierMoves";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 const emptyBoard = piecesByPosition([]);
 

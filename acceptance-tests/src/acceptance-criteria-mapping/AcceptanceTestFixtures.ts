@@ -1,3 +1,4 @@
+import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import {test as base} from "@playwright/test";
 import {JanggiDsl} from "@src/dsl/janggi/JanggiDsl";
 
@@ -18,10 +19,25 @@ export interface AcceptanceTestFixtures {
   janggi: JanggiDsl;
 }
 
-export const test = base.extend<AcceptanceTestFixtures>({
-  janggi: async ({page}, use) => {
+/**
+ * What a project may say about how every spec in it starts, set in `playwright.config.ts`.
+ *
+ * `effects` is the one. The app starts with its effects in full, and the ordinary projects turn them
+ * down before a spec begins — through the settings sheet, the way a player would — so nothing flies,
+ * shakes or pops and no spec ever waits on it. The effects projects leave them as the app starts.
+ */
+export interface AcceptanceTestOptions {
+  effects: EffectsName;
+}
+
+export const test = base.extend<AcceptanceTestFixtures & AcceptanceTestOptions>({
+  effects: ["Full", {option: true}],
+
+  janggi: async ({page, effects}, use) => {
     const janggi = new JanggiDsl(page);
     await janggi.navigateToPage();
+
+    if (effects !== "Full") await janggi.settings.effects.setTo(effects);
 
     await use(janggi);
   },

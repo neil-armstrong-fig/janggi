@@ -42,14 +42,16 @@ bikjang/CanCallBikjang.ts   canCallBikjang(state): boolean    — where the two 
 bikjang/CallBikjang.ts      callBikjang(state): GameState     — throws when there is no call to make
 check/IsInCheck.ts          isInCheck(state, side): boolean
 check/IsCheckmate.ts        isCheckmate(state, side): boolean — that plus having no legal reply
+check/AttackersOf.ts        attackersOf(state, side): Position[] — where every piece giving that check stands
 passing/CanPass.ts          canPass(state): boolean
 passing/Pass.ts             pass(state): GameState            — throws when the turn may not be rested
 repetition/IsRepetition.ts  isRepetition(state): boolean      — this position standing a third time
 scoring/MaterialFor.ts      materialFor(state, side): number  — the piece score, no 덤 in it
 scoring/ScoreFor.ts         scoreFor(state, side): number     — that plus Han's 덤
+scoring/TakenFrom.ts        takenFrom(state, side): PieceType[] — every piece that army has lost
 ```
 
-Those ten are entry points exactly as the five at the root are; the folder says which rule they
+Those twelve are entry points exactly as the five at the root are; the folder says which rule they
 belong to, not that they are private. `react/` calls into `check/`, `passing/`, `bikjang/` and
 `scoring/` directly.
 
@@ -65,7 +67,14 @@ record/Undo.ts               undo(played): PlayedGame             — throws whe
 record/CanRedo.ts            canRedo(played): boolean
 record/Redo.ts               redo(played): PlayedGame             — throws when there is nothing to redo
 record/CallBikjangIn.ts      callBikjangIn(played): PlayedGame    — throws exactly as callBikjang does
+record/TransitionBetween.ts  transitionBetween(before, after): Transition | undefined — what one turn did
+record/ChangeBetween.ts      changeBetween(before, after): RecordChange — played, taken back, replayed or dealt
 ```
+
+The last two **read** a record rather than write one. A turn leaves no event behind and a record keeps
+positions rather than moves, so what a turn did — which piece went where, and what it took — is derived
+from the positions either side of it, and which way the record moved is read off `past` and `future`
+by identity. Those two answers are what the board's motion and the sound both hear.
 
 `setups/` holds the phase before the game, which **is** a rule of janggi — `docs/rules.md` §6.6:
 
@@ -255,4 +264,4 @@ ends is this package's to say**, and a second copy of it up there is exactly wha
 One thing the engine deliberately does not do for the board: `legalMovesFor` keeps answering after
 two rested turns have stopped the game, because `isCheckmate` asks it whether a check has any reply
 and that question is about the position rather than about whether anyone is still playing. The board
-closes itself over the top, in `react/…/board/utils/GameIsOver.ts`.
+closes itself over the top, in `react/…/board/components/intersections/movable-pieces/game-is-over/GameIsOver.ts`.

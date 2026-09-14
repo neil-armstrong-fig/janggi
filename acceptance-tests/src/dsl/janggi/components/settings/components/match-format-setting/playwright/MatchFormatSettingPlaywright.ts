@@ -1,7 +1,7 @@
 import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Locator, Page} from "@playwright/test";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
-import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
+import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
 /**
  * The picker for which of the two games is being played — casual, or the KJA's scored tournament
@@ -12,7 +12,7 @@ import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
  * contract, so they are stated rather than recomputed from the option's name the way the webapp
  * builds them.
  */
-export class MatchFormatSettingPlaywright extends BaseComponent {
+export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<MatchFormat, Locator>;
 
@@ -27,7 +27,7 @@ export class MatchFormatSettingPlaywright extends BaseComponent {
   }
 
   async choose(name: MatchFormat): Promise<void> {
-    await this.options[name].click();
+    await this.inSheet(() => this.options[name].click());
   }
 
   /** The name on whichever button is pressed, or undefined before anything has rendered. */

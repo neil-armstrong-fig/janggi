@@ -1,17 +1,20 @@
 import type {Locator, Page} from "@playwright/test";
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
 import type {PieceSetName} from "@janggi/shared/janggi/settings/PieceSetName";
-import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
+import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
-/** The piece-set picker. Test ids spelled out — see the note in `BoardSettingPlaywright`. */
-export class PieceSetSettingPlaywright extends BaseComponent {
-  private readonly picker: Locator;
+/**
+ * The piece-set picker. Test ids spelled out — see the note in `BoardSettingPlaywright` — and a
+ * dropdown driven as `HanSetupSettingPlaywright` describes.
+ */
+export class PieceSetSettingPlaywright extends SettingsSheetComponent {
+  private readonly select: Locator;
   private readonly options: Record<PieceSetName, Locator>;
 
   constructor(page: Page) {
     super(page);
 
-    this.picker = page.getByTestId("piece-style-picker");
+    this.select = page.getByTestId("piece-style-select");
     this.options = {
       Traditional: page.getByTestId("piece-style-option-traditional"),
       Hanja: page.getByTestId("piece-style-option-hanja"),
@@ -21,14 +24,16 @@ export class PieceSetSettingPlaywright extends BaseComponent {
   }
 
   async choose(name: PieceSetName): Promise<void> {
-    await this.options[name].click();
+    const value = await this.options[name].getAttribute("value");
+    if (value === null) throw new Error(`The "${name}" option carries no value to select`);
+
+    await this.inSheet(async () => {
+      await this.select.selectOption(value);
+    });
   }
 
   async getSelected(): Promise<PieceSetName | undefined> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    if ((await pressed.count()) === 0) return undefined;
-
-    const name = await pressed.textContent();
+    const name = await this.select.locator("option:checked").textContent();
 
     return PIECE_SET_NAMES.find(candidate => candidate === name);
   }

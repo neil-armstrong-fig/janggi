@@ -3,8 +3,8 @@ import {ORTHOGONAL_STEPS} from "@src/game/moves/utils/OrthogonalSteps";
 import type {Position} from "@src/game/board/types/Position";
 import type {Step} from "@src/game/board/types/Step";
 import {pointAfterStep} from "@src/game/moves/utils/PointAfterStep";
-import {palaceCentreContaining} from "@src/game/board/utils/Palaces";
-import {palaceDiagonalStepsAt} from "@src/game/board/utils/PalaceDiagonals";
+import {palaceCentreContaining} from "@src/game/board/palaces/Palaces";
+import {palaceDiagonalStepsAt} from "@src/game/board/palaces/PalaceDiagonals";
 
 /**
  * Every line the chariot and the cannon travel along from one point: the four orthogonals out to

@@ -2,9 +2,9 @@ import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {Position} from "@src/game/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {RANKS} from "@src/game/board/utils/BoardDimensions";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
-import {piecesByPosition} from "@src/game/board/utils/PiecesByPosition";
+import {RANKS} from "@src/game/board/BoardDimensions";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
+import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 
 /**
  * 빅장 — whether the two generals stand facing each other down a file with nothing in between.

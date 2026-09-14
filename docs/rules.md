@@ -83,8 +83,8 @@ diagonal is actually drawn.** en.wikipedia states it explicitly for the general
 — "the blue general can move diagonally … but the red general cannot, since
 there are no diagonal markings at that point."
 
-`webapp/src/game/board/utils/PalaceDiagonals.ts` is the single place this
-geometry is computed, and `react/…/board/utils/CellShapes.ts` draws the lines
+`webapp/src/game/board/palaces/PalaceDiagonals.ts` is the single place this
+geometry is computed, and `react/…/intersections/components/cell/utils/CellShapes.ts` draws the lines
 from the same source, so what is painted and what is legal cannot drift apart.
 
 **There is no river.** Unlike xiangqi, nothing divides the board, and no piece
@@ -747,10 +747,10 @@ arrangement with both pickers live, exactly as before the rule existed.
 The store holds the engine's `SetupPhase` whole (`redux/game/types/GameSliceState.ts`)
 rather than three loose fields, because the rule reads all three together. One
 seam is worth knowing: a board still being laid out has no game on it, and
-something has still to be drawn, so `redux/game/utils/BoardShownFor.ts` stands
+something has still to be drawn, so `redux/game/dealing/board-shown-for/BoardShownFor.ts` stands
 `DEFAULT_SETUP` in for the army that has not chosen. **That is the only place a
 default touches this**, and it is a display decision — the rule's input is the
-phase, where an unchosen army stays `undefined`. `redux/game/utils/FreshPhaseFor.ts`
+phase, where an unchosen army stays `undefined`. `redux/game/dealing/FreshPhaseFor.ts`
 is the other half: it is what makes a casual game start already arranged and a
 scored one start empty.
 

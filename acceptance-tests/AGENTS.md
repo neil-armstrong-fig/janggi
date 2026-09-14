@@ -64,7 +64,14 @@ says what to do with it, and a picker's methods, its error messages and its test
 folder instead of spread across a parent that grew by two methods per setting.
 
 What stays on the parent is only what belongs to no single child: `setBothSetupsTo` and
-`canChooseSetups` each reach across both armies' pickers.
+`canChooseSetups` each reach across both armies' pickers, and `startNewGame` presses the button under
+them.
+
+**The settings live in a sheet that is closed until it is opened**, and no spec ever opens it. Every
+settings `*Playwright` extends `SettingsSheetComponent`, whose `inSheet` opens the sheet, acts, and
+closes it again — so a spec that chooses a setting reads exactly as it did before there was a sheet,
+and the sheet is out of the way before the next line taps the board it would be covering. Reading a
+picker needs none of that: the sheet is always in the page, only moved out of sight.
 
 A child that is only ever driven through its parent still gets its own `*Dsl`. The exception is a
 component with genuinely nothing to say — none exist here today.
@@ -90,8 +97,8 @@ from all of it, since handing the browser to the DSL has to happen somewhere.
 
 `JanggiPlaywright` and `SettingsPlaywright` are worth looking at together for what a `*Playwright`
 is **not**: neither holds another component. Each owns only its own part of the screen — the browser
-and the window for one, the 맞상/엇상 line for the other — and the areas beneath them are built by
-their own `*Dsl`s.
+and the window for one, the 맞상/엇상 line and New game for the other — and the areas beneath them are
+built by their own `*Dsl`s.
 
 ## How a `*Dsl` is laid out
 
@@ -295,20 +302,30 @@ await this.container.waitFor({state: "visible"}); // not locator.isVisible()
 Rename any of these in the webapp and specs break. Listed rather than counted, because a count of
 them went stale twice while it was being kept.
 
-- **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `scores`, `elephant-pairing`, and
-  the controls `new-game`, `pass`, `bikjang`, `undo`, `redo`. On the last four the `disabled`
-  attribute is part of the contract: they are disabled rather than hidden.
-- **`data-testid`, composed** — `cell-f<file>r<rank>`, and `<id>-picker` with an
-  `<id>-picker-option-<slug>` for each option. The six ids are `board-style`, `piece-style`,
-  `movable-highlight`, `match-format`, `han-setup`, `cho-setup`.
+- **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`, and
+  the controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
+  `settings-close`. On
+  `pass`, `bikjang`, `undo` and `redo` the `disabled` attribute is part of the contract: they are
+  disabled rather than hidden. `move-flight` and `impact` are drawn over the board only while motion
+  is shown, and only the effects specs look for them.
+- **`data-testid`, composed** — `cell-f<file>r<rank>`; `score-<side>`, `taken-<side>` and
+  `plaque-<side>`; and `<id>-picker` with an `<id>-option-<slug>` for each option. The seven picker
+  ids are `board-style`, `piece-style`, `movable-highlight`, `match-format`, `han-setup`, `cho-setup`
+  and `effects`. A picker of two options is a row of buttons, the chosen one carrying
+  `aria-pressed`; one of more is a native `<id>-select`, whose `<option>`s carry the option ids and
+  are chosen by their `value`. Grow a picker past two options and its `*Playwright` must switch
+  shape. The two volumes, `sound-effects` and `music`, are an `<id>-volume` range input and an
+  `<id>-mute` button whose `aria-pressed` is what "muted" means to a spec.
 - **On a piece** — `data-piece`, written `<side>-<type>` and parsed back into a `Piece` by
-  `@janggi/shared`.
-- **On a cell** — `aria-pressed` (the piece in hand), `data-can-move-to` (a legal destination) and
+  `@janggi/shared`. The pieces in a `taken-<side>` tray carry it too.
+- **On a cell** — `aria-pressed` (the piece in hand), `data-can-move-to` (a legal destination),
   `data-can-be-moved` (a piece its owner may move now; the value is the emphasis, `full` or `faint`,
-  and no spec asserts on which).
+  and no spec asserts on which), `data-last-move` (`from` or `to`), and `data-under-attack` and
+  `data-attacking` (the general in check, and each piece giving it).
 - **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn` and
   `data-laying-out`, each present only while it applies.
-- **On the scores** — `data-cho` and `data-han`, each army's score with the 덤 folded in.
+- **On a score** — `data-score`, that army's score with the 덤 folded in. The words beside it roll to
+  a new value with motion on; the attribute never does.
 - **On the pairing line** — `data-pairing`.
 
 The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`; nothing stores
@@ -330,6 +347,35 @@ anything. Where that matters, add an `is…Shown()` question beside the value on
 - **`getCharacterAt` reaches into a piece's `<text>` element.** It is the one DSL method coupled to
   how a piece is rendered rather than to a `data-` attribute, and it is what makes the piece sets
   testable at all — it breaks if a glyph stops being `<text>`.
+- **A piece is wrapped in three layers** — hidden while its flight is shown, playing a flourish, and
+  lifted in hand — and two effects queries lean on that. `isPieceRaisedAt` reads the `scale` of the
+  piece's own parent, the lift layer; `isPieceFullyShownAt` multiplies the opacity of every ancestor,
+  since the hiding happens a layer up from the piece. Reorder the layers and both need changing.
+
+## Motion reduced, and the effects specs
+
+**Every ordinary spec runs with the effects turned down.** The app starts with them in full, so the
+`desktop` and `mobile` projects set the `effects` option to `"Reduced"`, and the `janggi` fixture
+chooses that in the settings sheet before the spec begins. Those projects also run with
+`reducedMotion: "reduce"`, which stills the sheet and the plaques. Nothing flies, shakes, pops or
+slides, and no spec ever waits on, or races, an animation.
+
+**The specs about the motion itself live under `src/tests/effects/`** and are run only by the
+`desktop-effects` and `mobile-effects` projects, which leave motion on. The default projects
+`testIgnore` that folder, so the two sets never mix. Keep an effects spec to what is observable without a race:
+
+- **Where motion leaves the board**, first — a piece fully shown once its flight lands, nothing left
+  drawn over the board, a shaken board back at rest, a rolled score come to rest on the true value.
+  Those are what a broken animation gets wrong, and they are deterministic.
+- **That motion happened at all**, where it must be checked, by waiting for an element that lasts far
+  longer than a tap takes to return — a flight, a capture landing, the board being pushed.
+- **Never by sampling mid-animation.** The motion queries poll (`eventually`), wait for an element
+  (`appears`), or wait for every finite animation on the page to finish (`motionSettled`) before they
+  answer. A query added for motion should do one of the three.
+
+```bash
+pnpm acceptance-tests --project=desktop-effects --project=mobile-effects
+```
 
 ## Running
 

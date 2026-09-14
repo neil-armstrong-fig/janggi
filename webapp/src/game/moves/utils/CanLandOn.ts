@@ -1,7 +1,7 @@
 import type {PieceLookup} from "@src/game/board/types/PieceLookup";
 import type {Position} from "@src/game/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {pieceAt} from "@src/game/board/utils/PieceAt";
+import {pieceAt} from "@src/game/board/lookup/PieceAt";
 
 /**
  * Whether a piece of this army may finish a move on this point: it is either empty, or the enemy is

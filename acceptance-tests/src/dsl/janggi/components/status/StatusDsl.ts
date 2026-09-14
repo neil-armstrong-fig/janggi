@@ -1,5 +1,6 @@
 import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
+import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {StatusPlaywright} from "@src/dsl/janggi/components/status/playwright/StatusPlaywright";
 
@@ -44,15 +45,6 @@ export class StatusDsl {
       return await this.status.getWinner();
     } catch (error) {
       throw new DslError("Failed to read which army has won", error);
-    }
-  }
-
-  /** Deals a fresh game, abandoning whatever was being played. */
-  async startNewGame(): Promise<void> {
-    try {
-      await this.status.startNewGame();
-    } catch (error) {
-      throw new DslError("Failed to start a new game", error);
     }
   }
 
@@ -152,6 +144,42 @@ export class StatusDsl {
       return await this.status.getTurn();
     } catch (error) {
       throw new DslError("Failed to read whose turn it is", error);
+    }
+  }
+
+  /** Every piece one army has lost, by kind, in the order pieces are named — the general first. */
+  async getTakenFrom(side: Side): Promise<PieceType[]> {
+    try {
+      return await this.status.getTakenFrom(side);
+    } catch (error) {
+      throw new DslError(`Failed to read what ${side} has lost`, error);
+    }
+  }
+
+  /** Deals a fresh game from the announcement of the last one's result. */
+  async startNewGame(): Promise<void> {
+    try {
+      await this.status.startNewGame();
+    } catch (error) {
+      throw new DslError("Failed to start a new game from the result", error);
+    }
+  }
+
+  /** Whether the end of the game is announced over the board. */
+  async isResultAnnounced(): Promise<boolean> {
+    try {
+      return await this.status.isResultAnnounced();
+    } catch (error) {
+      throw new DslError("Failed to check whether a result is announced", error);
+    }
+  }
+
+  /** The score an army is shown with once it has finished rolling to its new value. */
+  async getShownScore(side: Side): Promise<number> {
+    try {
+      return await this.status.getShownScore(side);
+    } catch (error) {
+      throw new DslError(`Failed to read the score ${side} is shown with`, error);
     }
   }
 }

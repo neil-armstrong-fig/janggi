@@ -1,3 +1,5 @@
+import {ControlButton} from "@src/react/pages/game/components/status/components/control-button/ControlButton";
+
 /**
  * Calls the bikjang — 빅장, the two generals come to face each other down an open file and either
  * player may stop the game on it. See `docs/rules.md` §6.2.
@@ -17,15 +19,16 @@ interface Props {
 }
 
 export function BikjangButton({enabled, onCall}: Props): React.JSX.Element {
-  return (
-    <button
-      type="button"
-      data-testid="bikjang"
-      disabled={!enabled}
-      onClick={onCall}
-      className="shrink-0 rounded-full border border-white/20 px-3 py-1 text-[11px] tracking-wide text-white/70 uppercase enabled:cursor-pointer disabled:opacity-30"
-    >
-      Bikjang
-    </button>
-  );
+  return <ControlButton testId="bikjang" label="Bikjang" icon={FACING} enabled={enabled} onPress={onCall} />;
 }
+
+/** Two generals at either end of one open file — the position being called. */
+const FACING = (
+  <>
+    <circle cx="12" cy="5" r="2.5" />
+
+    <circle cx="12" cy="19" r="2.5" />
+
+    <path d="M12 8.5v7" />
+  </>
+);

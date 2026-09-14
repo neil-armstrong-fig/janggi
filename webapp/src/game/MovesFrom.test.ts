@@ -8,7 +8,7 @@ import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
-import {toPositionKey} from "@src/game/board/utils/PositionKeys";
+import {toPositionKey} from "@src/game/board/PositionKeys";
 
 const opening = newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 
