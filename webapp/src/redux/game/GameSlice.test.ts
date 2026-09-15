@@ -5,6 +5,7 @@ import type {Setup} from "@src/game/setups/types/Setup";
 import {expect, it} from "vitest";
 import {
   bikjangCalled,
+  botLetOpen,
   botStrengthChosen,
   choSetupChosen,
   formatChosen,
@@ -88,6 +89,18 @@ it("keeps the opponent when the format or a setup is chosen, or the game restart
   expect(gameReducer(bot, formatChosen("Scored")).opponent).toEqual(bot.opponent);
   expect(gameReducer(bot, choSetupChosen(setup("Outer Elephant"))).opponent).toEqual(bot.opponent);
   expect(gameReducer(bot, restarted()).opponent).toEqual(bot.opponent);
+});
+
+it("lets the bot open without touching the game, and takes that back with every deal", () => {
+  const bot = gameReducer(gameReducer(opening(), opponentChosen("Bot")), sideChosen("Han"));
+
+  const letOpen = gameReducer(bot, botLetOpen());
+
+  expect(bot.botMayOpen).toBe(false);
+  expect(letOpen.botMayOpen).toBe(true);
+  expect(letOpen.played).toEqual(bot.played);
+  expect(gameReducer(letOpen, restarted()).botMayOpen).toBe(false);
+  expect(gameReducer(letOpen, botStrengthChosen(1600)).botMayOpen).toBe(false);
 });
 
 it("deals a scored game against the bot with nobody laid out, whichever side the player takes", () => {

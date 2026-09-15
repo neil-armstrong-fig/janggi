@@ -1,4 +1,4 @@
-import {ControlButton} from "@src/react/pages/game/components/status/components/control-button/ControlButton";
+import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
 
 /**
  * Calls the bikjang — 빅장, the two generals come to face each other down an open file and either

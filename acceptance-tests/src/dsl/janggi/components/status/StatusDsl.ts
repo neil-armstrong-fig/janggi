@@ -194,4 +194,76 @@ export class StatusDsl {
       throw new DslError(`Failed to read the score ${side} is shown with`, error);
     }
   }
+
+  /** Lets as long pass as the bot would take to open, for a spec claiming it has not. */
+  async giveTheBotTimeToOpen(): Promise<void> {
+    try {
+      await this.status.giveTheBotTimeToOpen();
+    } catch (error) {
+      throw new DslError("Failed to wait as long as the bot takes to open", error);
+    }
+  }
+
+  /** Lets the bot make the first move of the game, which it holds until the player says so. */
+  async letTheBotStart(): Promise<void> {
+    try {
+      await this.status.letTheBotStart();
+    } catch (error) {
+      throw new DslError("Failed to let the bot start the game", error);
+    }
+  }
+
+  /** Whether the bot is holding the game's first move until the player lets it start. */
+  async isWaitingToLetTheBotStart(): Promise<boolean> {
+    try {
+      return await this.status.isWaitingToLetTheBotStart();
+    } catch (error) {
+      throw new DslError("Failed to read whether the bot is waiting to be let start", error);
+    }
+  }
+
+  /** Whether an army is marked as played by the bot. */
+  async isMarkedAsTheBot(side: Side): Promise<boolean> {
+    try {
+      return await this.status.isMarkedAsTheBot(side);
+    } catch (error) {
+      throw new DslError(`Failed to read whether ${side} is marked as the bot's`, error);
+    }
+  }
+
+  /** Whether an army is marked as the player's own, against the bot. */
+  async isMarkedAsThePlayer(side: Side): Promise<boolean> {
+    try {
+      return await this.status.isMarkedAsThePlayer(side);
+    } catch (error) {
+      throw new DslError(`Failed to read whether ${side} is marked as the player's`, error);
+    }
+  }
+
+  /** The rating shown beside an army — the bot's strength or the player's Elo — or undefined where none is. */
+  async getShownRating(side: Side): Promise<number | undefined> {
+    try {
+      return await this.status.getShownRating(side);
+    } catch (error) {
+      throw new DslError(`Failed to read the rating shown beside ${side}`, error);
+    }
+  }
+
+  /** The army the announced result says called a bikjang, or undefined where no bikjang is explained. */
+  async getBikjangCaller(): Promise<Side | undefined> {
+    try {
+      return await this.status.getBikjangCaller();
+    } catch (error) {
+      throw new DslError("Failed to read who the result says called the bikjang", error);
+    }
+  }
+
+  /** Whether the board explains that a move repeating the position is being held back. */
+  async isRepetitionExplained(): Promise<boolean> {
+    try {
+      return await this.status.isRepetitionExplained();
+    } catch (error) {
+      throw new DslError("Failed to read whether the repetition rule is explained", error);
+    }
+  }
 }

@@ -34,4 +34,11 @@ export interface GameSliceState {
   readonly played: PlayedGame;
   readonly phase: SetupPhase;
   readonly opponent: Opponent;
+  /**
+   * Whether the player has let the bot make the game's first move — asked only where that move is the
+   * bot's, and dealt false with every game. A game against the bot is rated from its first move, so a
+   * bot that opened the moment a player chose Han would lock the settings under them and count their
+   * next change of mind as a loss. `botAwaitsGoAhead` is the question this answers.
+   */
+  readonly botMayOpen: boolean;
 }

@@ -37,6 +37,14 @@ it("comes back to the game exactly as it was left", () => {
   expect(loadGame(storageHolding(underWay))).toEqual(underWay);
 });
 
+it("comes back remembering that the bot was let open", () => {
+  expect(loadGame(storageHolding({...underWay, botMayOpen: true})).botMayOpen).toBe(true);
+});
+
+it("reads a game kept before the bot waited to be let open as one it has not been let open", () => {
+  expect(loadGame(storageHolding({...underWay, botMayOpen: undefined})).botMayOpen).toBe(false);
+});
+
 it("comes back with the app's own setups, found by name, rather than whatever was kept beside the name", () => {
   const tampered = {
     ...underWay,

@@ -53,7 +53,7 @@ in `pages/game/hooks/utils/`.
 
 **A page is divided into sections before it is divided into components.** `pages/game/` is
 `Status`, `Board`, `Settings` and `RecordSheet`, and every control lives under whichever draws it —
-`status/components/pass-button/`, `settings/components/option-picker/`. That is the same locality
+`status/components/controls/components/pass-button/`, `settings/components/option-picker/`. That is the same locality
 rule one level up, and it is what keeps a page's `components/` from becoming a flat list of
 everything on screen; it also matches how `acceptance-tests/` already names the page, whose DSL is
 `components/{board,settings,status}`. Reach for a new section when a page grows a region that is

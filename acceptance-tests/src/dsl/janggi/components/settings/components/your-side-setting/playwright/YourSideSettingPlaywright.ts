@@ -27,7 +27,7 @@ export class YourSideSettingPlaywright extends SettingsSheetComponent {
     const value = await this.options[name].getAttribute("value");
     if (value === null) throw new Error(`The "${name}" option carries no value to select`);
 
-    await this.inSheet(async () => {
+    await this.inSheet(this.select, async () => {
       await this.select.selectOption(value);
     });
   }

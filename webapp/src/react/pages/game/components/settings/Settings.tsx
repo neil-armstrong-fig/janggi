@@ -52,7 +52,8 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * `inert`, so nothing in it can be tapped or focused — but every picker's pressed and disabled state
  * is still there to be read, and nothing is remounted each time it opens.
  *
- * Two groups, split along the line this panel has always had. **This game** holds the three settings
+ * Three groups, each folding away under its heading so the sheet is not one long scroll — only **This
+ * game** starts laid out, being what a player opens the sheet for before a game. **This game** holds the settings
  * that are part of the game — dealt through the store, and locked on `playHasBegun` — together with
  * New game, which deals from them. **Appearance** holds the three that are preferences about how a
  * game is drawn; they are the store's `preferences` slice, read here through `usePreferences` just as
@@ -135,8 +136,8 @@ export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Elemen
           </button>
         </header>
 
-        <div className="flex flex-col gap-6 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <SettingsGroup title="This game">
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <SettingsGroup title="This game" initiallyOpen>
             <OptionPicker
               id="match-format"
               disabled={settled}

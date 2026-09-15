@@ -5,9 +5,11 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  * under thirty points. Two whole armies are seventy-two each, so from the opening the rule bites.
  * See `docs/rules.md` §6.4.
  *
- * There is nothing on screen for this: the move that would repeat is simply not offered, the way a
- * move that would leave a general in check is not. This spec is here to show the rule reaches the
- * board at all, since a barred move looks exactly like a move that was never legal.
+ * Nothing on the board itself shows it: the move that would repeat is simply not offered, the way a
+ * move that would leave a general in check is not. To a player who knows chess, where a third
+ * repetition draws, a barred move looks exactly like a move that was never legal — so while one is
+ * being held back, a note over the board says why. This spec shows the rule reaches the board, and
+ * that the note comes and goes with it.
  *
  * Each general steps off its palace centre and back onto it, which is the shortest circuit that
  * changes nothing — four plies bring the opening position round a second time, and the eighth would
@@ -45,6 +47,10 @@ given("both generals have shuffled off their palace centres and back, twice", ()
       expect(await janggi.board.canMoveTo(4, 1)).toBe(false);
       expect(await janggi.board.canMoveTo(6, 1)).toBe(false);
     });
+
+    then("a note over the board explains that the repeat is held back", async ({janggi}) => {
+      expect(await janggi.status.isRepetitionExplained()).toBe(true);
+    });
   });
 
   when("han plays something else instead", () => {
@@ -57,6 +63,10 @@ given("both generals have shuffled off their palace centres and back, twice", ()
       expect(await janggi.status.getTurn()).toBe("cho");
       expect(await janggi.status.getWinner()).toBeUndefined();
       expect(await janggi.status.isDrawn()).toBe(false);
+    });
+
+    then("the note is gone, nothing being held back any more", async ({janggi}) => {
+      expect(await janggi.status.isRepetitionExplained()).toBe(false);
     });
   });
 });

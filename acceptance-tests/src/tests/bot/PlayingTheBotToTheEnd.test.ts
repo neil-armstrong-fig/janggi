@@ -36,10 +36,11 @@ given("a player takes on the weakest bot, playing the moves the strongest bot ch
 });
 
 /**
- * The other device's bot opens as cho, and from then on each bot's turn is played on the device it is
- * not on, until the player's game has a result or `MOST_TURNS` have gone.
+ * The other device's bot is let open as cho, and from then on each bot's turn is played on the device
+ * it is not on, until the player's game has a result or `MOST_TURNS` have gone.
  */
 async function playOut(janggi: Janggi, anotherDevice: Janggi): Promise<void> {
+  await anotherDevice.status.letTheBotStart();
   await anotherDevice.status.waitForTheBot();
 
   for (let turn = 0; turn < MOST_TURNS; turn += 1) {

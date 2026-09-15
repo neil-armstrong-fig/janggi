@@ -1,20 +1,18 @@
 import type {ArmyScores} from "@src/react/pages/game/components/status/types/ArmyScores";
-import {BikjangButton} from "@src/react/pages/game/components/status/components/bikjang-button/BikjangButton";
-import {PassButton} from "@src/react/pages/game/components/status/components/pass-button/PassButton";
+import {BoardOverlay} from "@src/react/pages/game/components/status/components/board-overlay/BoardOverlay";
+import {Controls} from "@src/react/pages/game/components/status/components/controls/Controls";
+import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {PlaquePlayer} from "@src/react/pages/game/components/status/types/PlaquePlayer";
 import {PlayerPlaque} from "@src/react/pages/game/components/status/components/player-plaque/PlayerPlaque";
-import {RedoButton} from "@src/react/pages/game/components/status/components/redo-button/RedoButton";
-import {ResultBanner} from "@src/react/pages/game/components/status/components/result-banner/ResultBanner";
-import {SettingsButton} from "@src/react/pages/game/components/status/components/settings-button/SettingsButton";
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {TurnIndicator} from "@src/react/pages/game/components/status/components/turn-indicator/TurnIndicator";
-import {UndoButton} from "@src/react/pages/game/components/status/components/undo-button/UndoButton";
-import {bikjangCalled, passed, playedAgain, restarted, takenBack} from "@src/redux/game/GameSlice";
+import type {UnknownAction} from "@reduxjs/toolkit";
+import {bikjangCalled, botLetOpen, passed, playedAgain, restarted, takenBack} from "@src/redux/game/GameSlice";
+import {botAwaitsGoAhead} from "@src/react/pages/game/bot-duty/BotAwaitsGoAhead";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
-import {canCallBikjang} from "@src/game/bikjang/CanCallBikjang";
-import {canPass} from "@src/game/passing/CanPass";
-import {canRedo} from "@src/game/record/CanRedo";
-import {canUndo} from "@src/game/record/CanUndo";
 import {gameStatusOf} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import {isArranged} from "@src/game/setups/IsArranged";
+import {opponentOf} from "@src/game/utils/OpponentOf";
 import {plaqueStateOf} from "@src/react/pages/game/components/status/utils/PlaqueStateOf";
 import {scoreFor} from "@src/game/scoring/ScoreFor";
 import {takenFrom} from "@src/game/scoring/TakenFrom";
@@ -29,27 +27,16 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * **It frames the board.** Han's plaque runs across the top, above the ranks Han's pieces stand on,
  * and Cho's along the bottom, so an army's score and its losses sit on its own side of the board
  * rather than in one line both armies share. The herald — the one line saying what the game is doing
- * — sits under Han's plaque, and the controls sit under Cho's, nearest the thumb. The end of a game is
- * announced over the board itself.
+ * — sits under Han's plaque, and `Controls` sit under Cho's, nearest the thumb. Whatever is said over
+ * the board itself is `BoardOverlay`.
  *
- * Resting a turn and calling a bikjang are controls rather than taps on the board because they are
- * the two things a player does that touch no intersection. Resting is also the one way out of a
- * position with nothing to play, janggi having no stalemate.
- *
- * Undo and Redo are the only two controls in here **not** gated on the game still being undecided —
- * taking back the turn that ended a game is the ordinary reason to reach for one. Against the bot they
- * are off altogether, because that game is rated and a rating that can be taken back is not one.
- *
- * While the game waits on the bot, Pass and Bikjang are off too: the turn is not the player's to rest,
- * nor the call theirs to make.
- *
- * Starting a new game is not in the row. It lives in the settings sheet, beside the format and the
- * setups it deals from, where a stray thumb cannot abandon a game half played — and on the announcement
- * of a result, where there is no game left to abandon.
+ * **Against the bot each plaque says who is playing its army** — the bot at the strength it plays at,
+ * or the player at their own rating in the format being played.
  *
  * With effects in full the frame answers a change the way the board does: a score counts down to its
  * new value, a lost piece pops into its tray, and the herald bumps as its words change. Every control
- * answers a press with a tick through `onControlPressed`, before whatever it does.
+ * — the row's, and the buttons over the board — answers a press with a tick through `onControlPressed`,
+ * before whatever it does.
  *
  * It reads the store itself rather than taking a dozen props — the game, and the piece set the board
  * is wearing, so an army's losses are drawn the way they stood. A page section is the level where that
@@ -63,19 +50,27 @@ interface Props {
 }
 
 export function Status({onOpenSettings, onControlPressed, children}: Props): React.JSX.Element {
-  const {played, phase, opponent} = useAppSelector(state => state.game);
+  const slice = useAppSelector(state => state.game);
+  const playerElo = useAppSelector(state => state.ratings.byFormat[state.game.phase.format].elo);
   const {pieceStyle, effects} = usePreferences();
+  const {played, phase, opponent} = slice;
   const game = played.present;
   const dispatch = useAppDispatch();
 
-  // A scored board is still being laid out until both armies have chosen, and until then there is
-  // no game here to play — the pieces on screen are only what `boardShownFor` is painting.
-  const laidOut = isArranged(phase);
-  const botToMove = botDutyFor(played, phase, opponent) !== undefined;
+  const botsTurn = botDutyFor(played, phase, opponent) !== undefined;
+  const awaitingGoAhead = botAwaitsGoAhead(slice);
   const againstBot = opponent.name === "Bot";
+  const botSide = againstBot ? opponentOf(opponent.playerSide) : undefined;
   const status = gameStatusOf(game, phase);
   const scores: ArmyScores = {cho: scoreFor(game, "cho"), han: scoreFor(game, "han")};
   const animated = effects.full;
+
+  // Every control ticks before it does what it does, and all but Settings do it through the store — so
+  // each handler below is one call here rather than the tick and the dispatch repeated.
+  function pressed(action: UnknownAction): void {
+    onControlPressed();
+    dispatch(action);
+  }
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-1.5">
@@ -86,21 +81,24 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
         taken={takenFrom(game, "han")}
         pieceStyle={pieceStyle}
         animated={animated}
+        player={plaquePlayerFor("han", opponent, playerElo)}
       />
 
-      <TurnIndicator status={status} botToMove={botToMove} animated={animated} />
+      <TurnIndicator status={status} botToMove={botsTurn && !awaitingGoAhead} animated={animated} />
 
       <div className="relative min-h-0 flex-1">
         {children}
 
-        <ResultBanner
+        <BoardOverlay
+          game={game}
           status={status}
           scores={scores}
+          botsTurn={botsTurn}
+          awaitingGoAhead={awaitingGoAhead}
+          botSide={botSide}
           animated={animated}
-          onStartNewGame={() => {
-            onControlPressed();
-            dispatch(restarted());
-          }}
+          onGoAhead={() => pressed(botLetOpen())}
+          onStartNewGame={() => pressed(restarted())}
         />
       </div>
 
@@ -111,48 +109,33 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
         taken={takenFrom(game, "cho")}
         pieceStyle={pieceStyle}
         animated={animated}
+        player={plaquePlayerFor("cho", opponent, playerElo)}
       />
 
-      <div className="flex shrink-0 gap-1.5">
-        <UndoButton
-          enabled={!againstBot && canUndo(played)}
-          onUndo={() => {
-            onControlPressed();
-            dispatch(takenBack());
-          }}
-        />
-
-        <RedoButton
-          enabled={!againstBot && canRedo(played)}
-          onRedo={() => {
-            onControlPressed();
-            dispatch(playedAgain());
-          }}
-        />
-
-        <PassButton
-          enabled={laidOut && !botToMove && canPass(game)}
-          onPass={() => {
-            onControlPressed();
-            dispatch(passed());
-          }}
-        />
-
-        <BikjangButton
-          enabled={laidOut && !botToMove && canCallBikjang(game)}
-          onCall={() => {
-            onControlPressed();
-            dispatch(bikjangCalled());
-          }}
-        />
-
-        <SettingsButton
-          onOpen={() => {
-            onControlPressed();
-            onOpenSettings();
-          }}
-        />
-      </div>
+      <Controls
+        played={played}
+        laidOut={isArranged(phase)}
+        againstBot={againstBot}
+        botsTurn={botsTurn}
+        onUndo={() => pressed(takenBack())}
+        onRedo={() => pressed(playedAgain())}
+        onPass={() => pressed(passed())}
+        onCallBikjang={() => pressed(bikjangCalled())}
+        onOpenSettings={() => {
+          onControlPressed();
+          onOpenSettings();
+        }}
+      />
     </div>
   );
+}
+
+/**
+ * Who a plaque says is playing its army: against the bot, the bot at its strength or the player at their
+ * rating; between two people at one device, nobody.
+ */
+function plaquePlayerFor(side: Side, opponent: Opponent, playerElo: number): PlaquePlayer | undefined {
+  if (opponent.name !== "Bot") return undefined;
+
+  return side === opponent.playerSide ? {kind: "player", elo: playerElo} : {kind: "bot", elo: opponent.botElo};
 }

@@ -1,8 +1,9 @@
 import type {ArmyScores} from "@src/react/pages/game/components/status/types/ArmyScores";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
-import type {Wording} from "@src/react/pages/game/components/status/components/result-banner/types/Wording";
+import type {Wording} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/types/Wording";
 
 /**
  * The end of a game, announced over the board: the result's name in Korean — 외통, 점수승, 빅장 — and
@@ -15,16 +16,31 @@ import type {Wording} from "@src/react/pages/game/components/status/components/r
  * tap, so the board beneath stays as it was left, and Undo is still there to step back out of the
  * ending — which takes the announcement away with it.
  *
+ * **A game ended by a called bikjang says what one is.** Chess has nothing like it, so to a player who
+ * knows chess a game stopping on a call — the bot's, above all, which comes with no warning — looks like
+ * the app giving up. The line names who called it and why the call was theirs to make.
+ *
  * With effects in full it slams in, over a single soft flash of the board. Otherwise it is simply there.
  */
 interface Props {
   readonly status: GameStatus;
   readonly scores: ArmyScores;
+  /** The army that called the bikjang that ended the game, or undefined where no bikjang ended it. */
+  readonly bikjangCalledBy: Side | undefined;
+  /** The army the bot is playing, so a call can be put in its mouth, or undefined between two people. */
+  readonly botSide: Side | undefined;
   readonly animated: boolean;
   readonly onStartNewGame: () => void;
 }
 
-export function ResultBanner({status, scores, animated, onStartNewGame}: Props): React.JSX.Element | null {
+export function ResultBanner({
+  status,
+  scores,
+  bikjangCalledBy,
+  botSide,
+  animated,
+  onStartNewGame,
+}: Props): React.JSX.Element | null {
   const wording = wordingOf(status);
   if (!wording) return null;
 
@@ -54,6 +70,16 @@ export function ResultBanner({status, scores, animated, onStartNewGame}: Props):
           </p>
         )}
 
+        {bikjangCalledBy && (
+          <p
+            data-testid="result-explanation"
+            data-called-by={bikjangCalledBy}
+            className="mx-auto mt-2 max-w-64 text-xs leading-snug text-white/70"
+          >
+            {bikjangExplanationOf(status, bikjangCalledBy, botSide)}
+          </p>
+        )}
+
         <button
           type="button"
           data-testid="result-new-game"
@@ -80,4 +106,20 @@ function wordingOf(status: GameStatus): Wording | undefined {
     case "layingOut":
       return undefined;
   }
+}
+
+/**
+ * A called bikjang, told to someone who has never met one. What it settles is the format's to say —
+ * `docs/rules.md` §6.2 — and the result's kind already carries that: a casual call draws, and a scored
+ * one goes to the points.
+ */
+function bikjangExplanationOf(status: GameStatus, calledBy: Side, botSide: Side | undefined): string {
+  const caller = calledBy === botSide ? `The bot, playing ${sideName(calledBy)},` : sideName(calledBy);
+  const facing = "the two generals stood facing each other down an open file, with nothing between them.";
+
+  if (status.kind === "drawn") {
+    return `${caller} called bikjang: ${facing} Unlike chess, janggi lets the player to move call that a draw — so leaving the generals facing hands the other player the call.`;
+  }
+
+  return `${caller} called bikjang: ${facing} In a scored game that call ends the game, and it is settled on points.`;
 }

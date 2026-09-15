@@ -55,6 +55,9 @@ import {undo} from "@src/game/record/Undo";
  * the game is over the way `moved` and `passed` are: taking back the turn that ended a game is the
  * ordinary reason to reach for one. The controls are disabled off `canUndo`/`canRedo`, which is what
  * keeps a reducer from being dispatched into a record with nothing left to take back.
+ *
+ * `botLetOpen` touches neither the board nor the record. It is the player saying a game against the
+ * bot may start, which a bot holding cho's first move waits for; every deal takes it back.
  */
 export const gameSlice = createSlice({
   name: "game",
@@ -72,6 +75,8 @@ export const gameSlice = createSlice({
     takenBack: (state): GameSliceState => ({...state, played: undo(state.played)}),
 
     playedAgain: (state): GameSliceState => ({...state, played: redo(state.played)}),
+
+    botLetOpen: (state): GameSliceState => ({...state, botMayOpen: true}),
 
     hanSetupChosen: (state, action: PayloadAction<Setup>): GameSliceState => ({
       ...dealtGame(place(state.phase, "han", action.payload)),
@@ -113,6 +118,7 @@ export const {
   bikjangCalled,
   takenBack,
   playedAgain,
+  botLetOpen,
   hanSetupChosen,
   choSetupChosen,
   formatChosen,
