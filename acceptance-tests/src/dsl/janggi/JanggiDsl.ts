@@ -3,6 +3,7 @@ import {DslError} from "@src/dsl/errors/DslError";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
+import {ReferencesDsl} from "@src/dsl/janggi/components/references/ReferencesDsl";
 import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
 import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
 
@@ -35,6 +36,7 @@ export class JanggiDsl {
   readonly settings: SettingsDsl;
   readonly status: StatusDsl;
   readonly recordSheet: RecordSheetDsl;
+  readonly references: ReferencesDsl;
 
   constructor(page: Page) {
     this.janggi = new JanggiPlaywright(page);
@@ -43,6 +45,7 @@ export class JanggiDsl {
     this.settings = new SettingsDsl(page);
     this.status = new StatusDsl(page);
     this.recordSheet = new RecordSheetDsl(page);
+    this.references = new ReferencesDsl(page);
   }
 
   async navigateToPage(): Promise<void> {

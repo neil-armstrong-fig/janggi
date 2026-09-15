@@ -39,6 +39,12 @@ export default defineConfig({
   },
   build: {
     outDir: "build",
+    rolldownOptions: {
+      input: {
+        game: join(import.meta.dirname, "index.html"),
+        references: join(import.meta.dirname, "references.html"),
+      },
+    },
   },
   resolve: {
     tsconfigPaths: true,
@@ -53,7 +59,7 @@ export default defineConfig({
       srcDir: "src/sw",
       filename: "ServiceWorker.ts",
       injectManifest: {
-        globPatterns: ["**/*.{js,css,html,svg,wasm,txt}"],
+        globPatterns: ["**/*.{js,css,html,svg,wasm,txt}", "**/AUTHORS"],
         // The engine's wasm is about 1.6 MB, over Workbox's 2 MB default only with room to spare — raised
         // so a later engine release does not silently drop out of the offline cache.
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
