@@ -3,15 +3,22 @@ import type {Mood} from "@src/audio/types/Mood";
 import {expect, it} from "vitest";
 import {layerGainsFor} from "@src/audio/music/mood/LayerGainsFor";
 
-it("plays the drone and a soft lead at the opening, and nothing else", () => {
-  expect(layerGainsFor(calm(0))).toEqual({
-    drone: 1,
-    lead: 0.5,
-    pulse: 0,
-    echo: 0,
-    percussion: 0,
-    checkTheme: 0,
-  });
+it("plays only the waiting theme, over a softer bass, before a game is under way", () => {
+  const waiting = layerGainsFor({tension: 0, inCheck: false, ending: "none", underWay: false});
+
+  expect(waiting.waiting).toBe(1);
+  expect(waiting.bass).toBeGreaterThan(0);
+  expect(waiting.bass).toBeLessThan(layerGainsFor(calm(0)).bass);
+  expect({...waiting, waiting: 0, bass: 0}).toEqual(SILENT);
+});
+
+it("hands the waiting theme over to the game's own music once a game is under way", () => {
+  expect(layerGainsFor(calm(0)).waiting).toBe(0);
+  expect(layerGainsFor({tension: 0.5, inCheck: true, ending: "none", underWay: true}).waiting).toBe(0);
+});
+
+it("plays the bass, the soloist and a soft drum from the first move, and nothing else", () => {
+  expect(layerGainsFor(calm(0))).toEqual({waiting: 0, bass: 1, solo: 0.7, janggu: 0.4, answer: 0, checkTheme: 0});
 });
 
 it("never lets a layer fall away as tension rises", () => {
@@ -24,16 +31,13 @@ it("never lets a layer fall away as tension rises", () => {
   }
 });
 
-it("brings the layers in one after another, the drums before the echo and the echo before the fuller drumming", () => {
-  const firstHeard = (layer: "pulse" | "echo" | "percussion"): number =>
-    Array.from({length: 101}, (_, step) => step / 100).find(tension => layerGainsFor(calm(tension))[layer] > 0) ?? 2;
-
-  expect(firstHeard("pulse")).toBeLessThan(firstHeard("echo"));
-  expect(firstHeard("echo")).toBeLessThan(firstHeard("percussion"));
+it("brings the flute in only once the fight has opened", () => {
+  expect(layerGainsFor(calm(0.3)).answer).toBe(0);
+  expect(layerGainsFor(calm(0.5)).answer).toBeGreaterThan(0);
 });
 
 it("has every layer of the game's own music playing in full once it is as tense as it gets", () => {
-  expect(layerGainsFor(calm(1))).toEqual({drone: 1, lead: 1, pulse: 1, echo: 1, percussion: 1, checkTheme: 0});
+  expect(layerGainsFor(calm(1))).toEqual({waiting: 0, bass: 1, solo: 1, janggu: 1, answer: 1, checkTheme: 0});
 });
 
 it("swells smoothly, never jumping more than a little for a small rise in tension", () => {
@@ -46,27 +50,25 @@ it("swells smoothly, never jumping more than a little for a small rise in tensio
 });
 
 it("hands the music to the check theme during check", () => {
-  expect(layerGainsFor({tension: 0.5, inCheck: true, ending: "none"}).checkTheme).toBe(1);
+  expect(layerGainsFor({tension: 0.5, inCheck: true, ending: "none", underWay: true}).checkTheme).toBe(1);
 });
 
 /** So the game's own music is still there to come back up once the check is answered. */
 it("keeps the game's own music quietly underneath the check theme rather than stopping it", () => {
-  const underCheck = layerGainsFor({tension: 0.5, inCheck: true, ending: "none"});
+  const underCheck = layerGainsFor({tension: 0.5, inCheck: true, ending: "none", underWay: true});
   const without = layerGainsFor(calm(0.5));
 
-  expect(underCheck.drone).toBeGreaterThan(0);
-  expect(underCheck.drone).toBeLessThan(without.drone);
-  expect(underCheck.pulse).toBeLessThan(without.pulse);
+  expect(underCheck.bass).toBeGreaterThan(0);
+  expect(underCheck.bass).toBeLessThan(without.bass);
+  expect(underCheck.solo).toBeLessThan(without.solo);
 });
 
-it("lets everything go but a quiet drone once the game has ended", () => {
-  const ended = layerGainsFor({tension: 0.9, inCheck: false, ending: "won"});
-
-  expect(ended.drone).toBeGreaterThan(0);
-  expect(ended.drone).toBeLessThan(1);
-  expect({...ended, drone: 0}).toEqual({drone: 0, lead: 0, pulse: 0, echo: 0, percussion: 0, checkTheme: 0});
+it("lets all of the music go once the game has ended", () => {
+  expect(layerGainsFor({tension: 0.9, inCheck: false, ending: "won", underWay: true})).toEqual(SILENT);
 });
 
 function calm(tension: number): Mood {
-  return {tension, inCheck: false, ending: "none"};
+  return {tension, inCheck: false, ending: "none", underWay: true};
 }
+
+const SILENT = {waiting: 0, bass: 0, solo: 0, janggu: 0, answer: 0, checkTheme: 0};

@@ -10,4 +10,6 @@ export interface Mood {
   /** Whether the check theme plays over the rest. */
   readonly inCheck: boolean;
   readonly ending: Ending;
+  /** Whether a game is under way. Until one is, the waiting theme plays in place of the game's own music. */
+  readonly underWay: boolean;
 }

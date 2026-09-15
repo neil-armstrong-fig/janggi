@@ -1,19 +1,23 @@
+import {STEPS_PER_ROUND} from "@src/audio/music/rhythm/rhythms/Rhythms";
 import type {Conductor} from "@src/audio/music/types/Conductor";
 import {LAYER_NAMES} from "@src/audio/music/types/LayerName";
 import type {Layer} from "@src/audio/music/types/Layer";
 import type {LayerGains} from "@src/audio/music/types/LayerGains";
 import type {LayerName} from "@src/audio/music/types/LayerName";
 import type {Mood} from "@src/audio/types/Mood";
-import type {PhraseMemory} from "@src/audio/music/types/PhraseMemory";
+import type {Rhythm} from "@src/audio/music/rhythm/types/Rhythm";
+import {answerLayer} from "@src/audio/music/layers/AnswerLayer";
+import {bassLayer} from "@src/audio/music/layers/BassLayer";
 import {checkThemeLayer} from "@src/audio/music/layers/CheckThemeLayer";
-import {droneLayer} from "@src/audio/music/layers/DroneLayer";
-import {echoLayer} from "@src/audio/music/layers/EchoLayer";
+import {createSpace} from "@src/audio/music/space/CreateSpace";
+import {grooveOffsetAt} from "@src/audio/music/groove/GrooveOffsetAt";
+import {jangguLayer} from "@src/audio/music/layers/JangguLayer";
 import {layerGainsFor} from "@src/audio/music/mood/LayerGainsFor";
-import {leadLayer} from "@src/audio/music/layers/LeadLayer";
-import {percussionLayer} from "@src/audio/music/layers/PercussionLayer";
-import {pulseLayer} from "@src/audio/music/layers/PulseLayer";
+import {rhythmFor} from "@src/audio/music/rhythm/RhythmFor";
 import {secondsPerStep} from "@src/audio/music/mood/SecondsPerStep";
+import {soloLayer} from "@src/audio/music/layers/SoloLayer";
 import {stepInBar} from "@src/audio/music/bars/StepInBar";
+import {waitingLayer} from "@src/audio/music/layers/WaitingLayer";
 
 /**
  * Starts the music, into `destination`, and keeps it following the game.
@@ -21,35 +25,48 @@ import {stepInBar} from "@src/audio/music/bars/StepInBar";
  * **Every layer plays on one clock.** A timer wakes every few milliseconds and schedules, on the audio
  * context's own sample-accurate clock, whatever falls in the next tenth of a second — the lookahead
  * scheduler from Chris Wilson's "A Tale of Two Clocks". The timer can be late; the notes cannot, because
- * each is booked against the audio clock rather than played when the timer fires. All six layers are
- * handed the same steps, so they stay locked together however the tempo moves — and the lead and the
- * echo share a `PhraseMemory`, so the echo takes up the very note the lead was left on.
+ * each is booked against the audio clock rather than played when the timer fires. Every layer is handed
+ * the same steps, so they stay locked together however the tempo moves.
  *
- * **Tempo changes wait for a bar line**, so the music never lurches mid-phrase. **Loudness never jumps.**
- * A new mood sets each layer easing towards its new level along an exponential curve — slowly for the
- * game's own layers, so tension is heard swelling over several seconds, and for the check theme quickly
- * in and slowly out: a check lands at once, and the dread lingers after it has been answered.
+ * **The game's music changes 장단 at the start of a round** (`rhythmFor`), never mid-cycle, and every
+ * layer is told the 장단 it is in and the one the next round will be in, so the drum can fill into a
+ * change. **Tempo changes wait for a bar line** — every round starts on one — so the music never lurches
+ * mid-phrase. **Loudness never jumps.** A new mood sets each layer easing towards its new level along an
+ * exponential curve — slowly for the game's own layers, so tension is heard swelling over several
+ * seconds; for the waiting theme quickly out, so the first move hands the music over to the game; and
+ * for the check theme quickly in and slowly out: a check lands at once, and the dread lingers after it
+ * has been answered.
+ *
+ * **It comes in gradually.** For its first few seconds each layer waits its turn (`ENTERING`) and rises
+ * slowly, so starting the music — or restoring a game already under way — is heard as the music
+ * gathering, never as everything landing at once.
+ *
+ * **The music is played in a room** (`createSpace`) **and in a groove** (`grooveOffsetAt`, one offset
+ * a step for every layer so they swing together, and only where the 장단 swings) — all but the check
+ * theme, which is heard dry, close and on the grid exactly as it was written.
  *
  * A layer that is silent and meant to stay so is not asked to play, so a quiet opening costs no more
- * than the drone.
+ * than what is heard.
  */
 export function createConductor(context: BaseAudioContext, destination: AudioNode): Conductor {
-  const phrase: PhraseMemory = {degree: FIRST_LEAD_DEGREE};
+  const space = createSpace(context, destination);
   const layers: Record<LayerName, Layer> = {
-    drone: droneLayer(context),
-    lead: leadLayer(context, phrase),
-    pulse: pulseLayer(context),
-    echo: echoLayer(context, phrase),
-    percussion: percussionLayer(context),
+    waiting: waitingLayer(context),
+    bass: bassLayer(context),
+    solo: soloLayer(context),
+    janggu: jangguLayer(context),
+    answer: answerLayer(context),
     checkTheme: checkThemeLayer(context),
   };
-  for (const name of LAYER_NAMES) layers[name].output.connect(destination);
+  for (const name of LAYER_NAMES) layers[name].output.connect(IN_THE_ROOM[name] ? space.input : destination);
 
   let mood: Mood = CALM;
   let targets: LayerGains = layerGainsFor(CALM);
   let step = 0;
+  let rhythm: Rhythm = rhythmFor(CALM.tension);
   let stepStartsAt = context.currentTime + FIRST_STEP_DELAY_S;
-  let stepSeconds = secondsPerStep(CALM.tension, CALM.inCheck);
+  let stepSeconds = secondsPerStep(CALM, rhythm);
+  const startedAt = context.currentTime;
 
   const timer = setInterval(schedule, LOOKAHEAD_MS);
   ease(targets);
@@ -63,17 +80,31 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
     stop: () => {
       clearInterval(timer);
       for (const name of LAYER_NAMES) layers[name].stop();
+      space.stop();
     },
   };
 
   function schedule(): void {
     while (stepStartsAt < context.currentTime + HORIZON_S) {
-      if (stepInBar(step) === 0) stepSeconds = secondsPerStep(mood.tension, mood.inCheck);
+      if (step % STEPS_PER_ROUND === 0) rhythm = rhythmFor(mood.tension);
+      if (stepInBar(step) === 0) stepSeconds = secondsPerStep(mood, rhythm);
+
+      const swings = !mood.underWay || rhythm.meter === "duple";
+      const grooved = stepStartsAt + grooveOffsetAt(step, Math.random(), swings) * stepSeconds;
+      const nextRhythm = rhythmFor(mood.tension);
 
       for (const name of LAYER_NAMES) {
         if (isSilent(layers[name], targets[name])) continue;
 
-        layers[name].play({index: step, time: stepStartsAt, seconds: stepSeconds, tension: mood.tension});
+        layers[name].play({
+          index: step,
+          time: IN_THE_GROOVE[name] ? grooved : stepStartsAt,
+          seconds: stepSeconds,
+          tension: mood.tension,
+          underWay: mood.underWay,
+          rhythm,
+          nextRhythm,
+        });
       }
 
       stepStartsAt += stepSeconds;
@@ -87,12 +118,22 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
     for (const name of LAYER_NAMES) {
       const gain = layers[name].output.gain;
       const target = gains[name] * MIX[name];
+      const rising = target > gain.value;
+      const entering = rising && now < startedAt + OPENING_S;
+      const from = entering ? Math.max(now, startedAt + ENTERING[name].after) : now;
 
       gain.cancelScheduledValues(now);
       gain.setValueAtTime(gain.value, now);
-      gain.setTargetAtTime(target, now, target > gain.value ? RISE_S[name] : FALL_S[name]);
+      gain.setTargetAtTime(target, from, curveFor(name, rising, entering));
     }
   }
+}
+
+/** How slowly a layer eases: gently and one after another as the music first starts, and then as mixed. */
+function curveFor(name: LayerName, rising: boolean, entering: boolean): number {
+  if (entering) return ENTERING[name].rise;
+
+  return rising ? RISE_S[name] : FALL_S[name];
 }
 
 /** Whether a layer is silent now and meant to stay that way, so there is no point booking it notes. */
@@ -100,10 +141,7 @@ function isSilent(layer: Layer, target: number): boolean {
   return target === 0 && layer.output.gain.value < AUDIBLE;
 }
 
-const CALM: Mood = {tension: 0, inCheck: false, ending: "none"};
-
-/** The note the lead begins on, in the middle of its range. */
-const FIRST_LEAD_DEGREE = 6;
+const CALM: Mood = {tension: 0, inCheck: false, ending: "none", underWay: false};
 
 /** How often the scheduler wakes, and how far ahead it books notes each time. */
 const LOOKAHEAD_MS = 25;
@@ -112,13 +150,39 @@ const HORIZON_S = 0.12;
 /** A moment's grace before the first note, so the first step is never booked in the past. */
 const FIRST_STEP_DELAY_S = 0.1;
 
+/**
+ * Whether each layer is played into the room or straight out. The check theme is left dry: it was liked
+ * exactly as it sounded before there was a room, and a general under attack should sound close.
+ */
+const IN_THE_ROOM: Record<LayerName, boolean> = {
+  waiting: true,
+  bass: true,
+  solo: true,
+  janggu: true,
+  answer: true,
+  checkTheme: false,
+};
+
+/**
+ * Whether each layer plays in the groove (`grooveOffsetAt`) or dead on the grid. The check theme keeps
+ * to the grid, as it was written — its heartbeat is meant to be relentless, not to swing.
+ */
+const IN_THE_GROOVE: Record<LayerName, boolean> = {
+  waiting: true,
+  bass: true,
+  solo: true,
+  janggu: true,
+  answer: true,
+  checkTheme: false,
+};
+
 /** How loud each layer is at full, against the others. */
 const MIX: Record<LayerName, number> = {
-  drone: 0.5,
-  lead: 0.55,
-  pulse: 0.6,
-  echo: 0.4,
-  percussion: 0.45,
+  waiting: 0.5,
+  bass: 0.3,
+  solo: 0.5,
+  janggu: 0.5,
+  answer: 0.35,
   checkTheme: 0.6,
 };
 
@@ -127,22 +191,38 @@ const MIX: Record<LayerName, number> = {
  * thirds of the way in that many seconds, and is all but there in three times as long.
  */
 const RISE_S: Record<LayerName, number> = {
-  drone: 1.2,
-  lead: 1.5,
-  pulse: 1.5,
-  echo: 1.8,
-  percussion: 1.5,
+  waiting: 1.2,
+  bass: 1.2,
+  solo: 1.5,
+  janggu: 1.5,
+  answer: 1.8,
   checkTheme: 0.5,
 };
 
 const FALL_S: Record<LayerName, number> = {
-  drone: 1.5,
-  lead: 1.5,
-  pulse: 1.5,
-  echo: 1.5,
-  percussion: 1.2,
+  waiting: 0.8,
+  bass: 1.5,
+  solo: 1.5,
+  janggu: 1.2,
+  answer: 1.5,
   checkTheme: 1.3,
 };
+
+/**
+ * How the music first comes in, a layer at a time: how many seconds after it starts each layer may
+ * begin to rise, and how slowly it does. Only the check theme is let straight in — a check lands at once.
+ */
+const ENTERING: Record<LayerName, {readonly after: number; readonly rise: number}> = {
+  waiting: {after: 0, rise: 2.5},
+  solo: {after: 0, rise: 2.5},
+  bass: {after: 4, rise: 3},
+  janggu: {after: 6, rise: 3},
+  answer: {after: 9, rise: 3},
+  checkTheme: {after: 0, rise: 0.5},
+};
+
+/** How long after starting the music is still coming in, by which point every layer has begun to rise. */
+const OPENING_S = 14;
 
 /** Below this a layer is not heard, and not worth booking notes for. */
 const AUDIBLE = 0.001;
