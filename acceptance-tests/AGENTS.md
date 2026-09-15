@@ -319,8 +319,8 @@ them went stale twice while it was being kept.
 - **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`,
   `record` (the record sheet, `inert` while closed) with `record-elo` carrying `data-elo`, and the
   controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
-  `settings-close`, `record-open`, `record-close`, `record-reset`, and the question it opens,
-  `record-reset-confirm` and `record-reset-cancel`. On
+  `settings-close`, `record-open`, `record-close`, `record-reset`, `references-open`, and the
+  question reset opens, `record-reset-confirm` and `record-reset-cancel`. On
   `pass`, `bikjang`, `undo` and `redo` the `disabled` attribute is part of the contract: they are
   disabled rather than hidden. `move-flight` and `impact` are drawn over the board only while motion
   is shown, and only the effects specs look for them.
@@ -347,6 +347,9 @@ them went stale twice while it was being kept.
 - **On a score** — `data-score`, that army's score with the 덤 folded in. The words beside it roll to
   a new value with motion on; the attribute never does.
 - **On the pairing line** — `data-pairing`.
+- **On the references page** — `references`, `references-repository`,
+  `references-<section>-jump`, `references-<section>-heading`, and `reference-<source>`. Its link in
+  Settings is `references-open`.
 
 The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`; nothing stores
 them. `BoardPlaywright` composes the cell id to find a piece.
