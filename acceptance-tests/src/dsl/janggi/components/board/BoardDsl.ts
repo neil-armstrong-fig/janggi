@@ -92,6 +92,18 @@ export class BoardDsl {
   }
 
   /**
+   * Whether the board is showing this intersection as one the piece in question would land on, were a
+   * piece of its own army not already standing there. Never also a move — `canMoveTo` answers no.
+   */
+  async isShownAsCovered(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isShownAsCovered(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is shown as covered`, error);
+    }
+  }
+
+  /**
    * Whether the board is marking the piece on this intersection as one its owner may move now.
    *
    * Not to be confused with `canMoveTo`, which asks about a destination for the piece already in

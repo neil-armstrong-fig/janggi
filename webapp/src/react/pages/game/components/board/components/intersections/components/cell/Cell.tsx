@@ -1,4 +1,5 @@
 import {CellLines} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cell-lines/CellLines";
+import {CoverHint} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cover-hint/CoverHint";
 import {CELL_SVG_PROPS} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellViewBox";
 import type {Flourish} from "@src/react/pages/game/components/board/types/Flourish";
 import {LastMoveMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/last-move-mark/LastMoveMark";
@@ -44,6 +45,8 @@ interface Props {
   readonly piece?: PieceIdentity;
   readonly selected: boolean;
   readonly canMoveTo: boolean;
+  /** Whether the piece in question would land here, but for the piece of its own army standing here. */
+  readonly covered: boolean;
   /** How loudly to mark the piece here as one its owner may move, or undefined not to. */
   readonly movable?: MovableEmphasis;
   readonly hovered: boolean;
@@ -73,6 +76,7 @@ export function Cell({
   piece,
   selected,
   canMoveTo,
+  covered,
   movable,
   hovered,
   lastMove,
@@ -94,6 +98,7 @@ export function Cell({
       data-testid={`cell-${toPositionKey(position)}`}
       aria-pressed={selected}
       data-can-move-to={canMoveTo || undefined}
+      data-covered={covered || undefined}
       data-can-be-moved={movable}
       data-last-move={lastMove}
       data-under-attack={underAttack || undefined}
@@ -138,6 +143,8 @@ export function Cell({
       {selected && <span className="pointer-events-none absolute inset-0 bg-white/20" />}
 
       {canMoveTo && <MoveHint overPiece={piece !== undefined} delay={hintDelay} />}
+
+      {covered && <CoverHint delay={hintDelay} />}
     </button>
   );
 }

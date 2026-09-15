@@ -38,6 +38,10 @@ const FORWARD: Position = {file: 1, rank: 6};
 const SIDEWAYS: Position = {file: 2, rank: 7};
 const EMPTY_POINT: Position = {file: 5, rank: 5};
 
+/** Hemmed in at the start of an inner elephant opening, with its own soldier on its one landing point. */
+const CHO_ELEPHANT: Position = {file: 3, rank: 10};
+const ITS_OWN_SOLDIER: Position = {file: 5, rank: 7};
+
 const MATED_GENERAL: Position = {file: 5, rank: 9};
 const MATED_CHARIOT: Position = {file: 9, rank: 10};
 
@@ -148,6 +152,52 @@ describe("with cho to move", () => {
 
       it("stops showing anything", () => {
         expect(selection.current.destinations).toEqual([]);
+      });
+    });
+  });
+
+  describe("when the pointer rests on a piece hemmed in by its own army", () => {
+    beforeEach(() => {
+      act(() => selection.current.hover(CHO_ELEPHANT));
+    });
+
+    it("offers it nowhere to go", () => {
+      expect(selection.current.destinations).toEqual([]);
+    });
+
+    it("shows the point of its own army it would otherwise land on", () => {
+      expect(points(selection.current.covered)).toEqual(points([ITS_OWN_SOLDIER]));
+    });
+
+    describe("and then leaves", () => {
+      beforeEach(() => {
+        act(() => selection.current.hover(undefined));
+      });
+
+      it("stops showing that too", () => {
+        expect(selection.current.covered).toEqual([]);
+      });
+    });
+  });
+
+  describe("when a piece hemmed in by its own army is picked up", () => {
+    beforeEach(() => {
+      act(() => selection.current.tap(CHO_ELEPHANT));
+    });
+
+    it("shows the point of its own army it would otherwise land on", () => {
+      expect(points(selection.current.covered)).toEqual(points([ITS_OWN_SOLDIER]));
+    });
+
+    describe("and that point is tapped", () => {
+      beforeEach(() => {
+        act(() => selection.current.tap(ITS_OWN_SOLDIER));
+      });
+
+      /** A covered point is shown and never offered, so tapping it is tapping any piece of the army. */
+      it("plays nothing, and picks up the soldier instead", () => {
+        expect(played).toEqual([]);
+        expect(selection.current.selected).toEqual(ITS_OWN_SOLDIER);
       });
     });
   });
@@ -312,6 +362,16 @@ describe("with the board still being laid out", () => {
 
     it("shows nowhere, there being nothing to teach about a game nobody has arranged", () => {
       expect(selection.current.destinations).toEqual([]);
+    });
+  });
+
+  describe("when the pointer rests on a piece hemmed in by its own army", () => {
+    beforeEach(() => {
+      act(() => selection.current.hover(CHO_ELEPHANT));
+    });
+
+    it("shows nothing it covers either", () => {
+      expect(selection.current.covered).toEqual([]);
     });
   });
 });

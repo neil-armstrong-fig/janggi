@@ -23,8 +23,9 @@ import {useMoveSelection} from "@src/react/pages/game/components/board/component
 
 /**
  * Every intersection on the board, one `Cell` each — and where a game is played by touch. It owns which
- * piece is in hand and which is under the pointer, lights the points the piece in question may reach,
- * and hands a completed move up rather than applying it.
+ * piece is in hand and which is under the pointer, lights the points the piece in question may reach —
+ * and, marked differently, those of its own army it would otherwise land on — and hands a completed
+ * move up rather than applying it.
  *
  * Every mark a cell carries is worked out here from the whole board and handed down one point at a
  * time, so a `Cell` knows only its own intersection: whether a piece there may move, whether it is the
@@ -69,9 +70,10 @@ export function Intersections({
   onPickUp,
 }: Props): React.JSX.Element {
   const game = played.present;
-  const {selected, hovered, destinations, tap, hover} = useMoveSelection(game, onMove, playable);
+  const {selected, hovered, destinations, covered, tap, hover} = useMoveSelection(game, onMove, playable);
   const placedPieces = useMemo(() => piecesByPosition(game.pieces), [game.pieces]);
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
+  const coveredKeys = useMemo(() => new Set(covered.map(toPositionKey)), [covered]);
 
   // On [game] rather than on every render: the cells re-render as the pointer crosses them, and
   // asking the engine for every legal move on the board is not something to do per hover.
@@ -99,6 +101,7 @@ export function Intersections({
       {BOARD_POSITIONS.map(position => {
         const key = toPositionKey(position);
         const canMoveTo = reachable.has(key);
+        const isCovered = coveredKeys.has(key);
 
         return (
           <Cell
@@ -109,6 +112,7 @@ export function Intersections({
             piece={pieceAt(placedPieces, position)}
             selected={heldKey === key}
             canMoveTo={canMoveTo}
+            covered={isCovered}
             movable={emphasisFor(movable, position, selected !== undefined)}
             hovered={hoveredKey === key}
             lastMove={lastMoveEndAt(lastMove, position)}
@@ -117,7 +121,7 @@ export function Intersections({
             attacking={attackerKeys.has(key)}
             lift={liftAt(key, heldKey, hoveredKey, animated)}
             flourish={flourishes.get(key)}
-            hintDelay={hintOrigin && canMoveTo ? hintDelay(hintOrigin, position) : undefined}
+            hintDelay={hintOrigin && (canMoveTo || isCovered) ? hintDelay(hintOrigin, position) : undefined}
             pulsing={animated}
             onTap={tap}
             onHover={hover}
