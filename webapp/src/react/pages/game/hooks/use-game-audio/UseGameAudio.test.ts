@@ -54,8 +54,8 @@ describe("a game being listened to", () => {
     expect(director.setChannels).toHaveBeenLastCalledWith({effects: 1, music: 1});
   });
 
-  it("tells the music how the opening feels", () => {
-    expect(director.setMood).toHaveBeenLastCalledWith({tension: 0, inCheck: false, ending: "none"});
+  it("tells the music how the opening feels, with the game not yet under way", () => {
+    expect(director.setMood).toHaveBeenLastCalledWith({tension: 0, inCheck: false, ending: "none", underWay: false});
   });
 
   it("lets sound start on the first tap anywhere on the page", () => {
@@ -94,6 +94,10 @@ describe("a game being listened to", () => {
       hook.rerender({...hook.props});
 
       expect(director.play).toHaveBeenCalledTimes(1);
+    });
+
+    it("tells the music the game is under way", () => {
+      expect(director.setMood).toHaveBeenLastCalledWith(expect.objectContaining({underWay: true}));
     });
   });
 

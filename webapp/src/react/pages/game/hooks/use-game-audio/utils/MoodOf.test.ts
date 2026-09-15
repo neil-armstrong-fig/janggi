@@ -8,12 +8,21 @@ import {expect, it} from "vitest";
 import {moodOf} from "@src/react/pages/game/hooks/use-game-audio/utils/MoodOf";
 import {newGame} from "@src/game/NewGame";
 
-it("is calm at the opening", () => {
-  expect(moodOf(opening())).toEqual({tension: 0, inCheck: false, ending: "none"});
+it("is calm at the opening, and waiting for the game to get under way", () => {
+  expect(moodOf(opening(), false)).toEqual({tension: 0, inCheck: false, ending: "none", underWay: false});
+});
+
+it("is under way once play has begun", () => {
+  expect(moodOf(opening(), true).underWay).toBe(true);
+});
+
+/** An ending always closes a game that was under way, whatever the record says it took to get there. */
+it("is under way once the game has ended, however it got there", () => {
+  expect(moodOf(mate(), false).underWay).toBe(true);
 });
 
 it("grows tenser as material comes off the board, and never eases while it does", () => {
-  const tensions = [0, 2, 4, 6, 8, 10, 12].map(lifted => moodOf(withoutNonGenerals(opening(), lifted)).tension);
+  const tensions = [0, 2, 4, 6, 8, 10, 12].map(lifted => moodOf(withoutNonGenerals(opening(), lifted), true).tension);
 
   tensions.slice(1).forEach((tension, index) => {
     expect(tension).toBeGreaterThanOrEqual(tensions[index] ?? 0);
@@ -25,22 +34,22 @@ it("grows tenser as material comes off the board, and never eases while it does"
 it("is as tense as it gets well before the board is empty", () => {
   const thinned = withoutNonGenerals(opening(), 22);
 
-  expect(moodOf(thinned).tension).toBe(1);
+  expect(moodOf(thinned, true).tension).toBe(1);
   expect(thinned.pieces.length).toBeGreaterThan(2);
 });
 
 it("hears the army to move in check", () => {
-  expect(moodOf(check()).inCheck).toBe(true);
+  expect(moodOf(check(), true).inCheck).toBe(true);
 });
 
 it("hears a checkmate as a game won, and no longer as a check", () => {
-  expect(moodOf(mate())).toMatchObject({inCheck: false, ending: "won"});
+  expect(moodOf(mate(), true)).toMatchObject({inCheck: false, ending: "won"});
 });
 
 it("hears a casual bikjang as a draw", () => {
   const drawn: GameState = {...position(cho("general", 5, 9), han("general", 5, 2)), bikjangCalled: true};
 
-  expect(moodOf(drawn).ending).toBe("drawn");
+  expect(moodOf(drawn, true).ending).toBe("drawn");
 });
 
 function opening(): GameState {

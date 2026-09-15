@@ -24,7 +24,8 @@ interface Graph {
  *
  * **Two channels, faded rather than cut.** Sound effects and music each go through their own level into
  * a gentle limiter, so a capture landing on a loud bar of music does not clip. A change of volume fades
- * to its new level; turning the music all the way down stops the conductor once the fade has finished,
+ * to its new level — slowly when the music first starts, so it fades in rather than arriving, and only
+ * once: a later tap does not hurry it. Turning the music all the way down stops the conductor once the fade has finished,
  * so it is not left scheduling notes nobody can hear.
  *
  * **Each change is heard once.** A change carries the id of the moment it came from, and an id already
@@ -42,10 +43,12 @@ export function createAudioDirector(): AudioDirector {
 
   return {
     unlock: () => {
-      graph ??= buildGraph(new AudioContext());
-      if (graph.context.state === "suspended") void graph.context.resume();
+      if (!graph) {
+        graph = buildGraph(new AudioContext());
+        follow(channels);
+      }
 
-      follow(channels);
+      if (graph.context.state === "suspended") void graph.context.resume();
     },
 
     play: (cues: readonly Cue[], id: number) => {
@@ -93,9 +96,14 @@ export function createAudioDirector(): AudioDirector {
 
     const {context, effects, music} = graph;
     const now = context.currentTime;
+    const starting = wanted.music > 0 && !conductor;
 
     effects.gain.setTargetAtTime(channelGainFor(wanted.effects, EFFECTS_LEVEL), now, CHANNEL_FADE_S);
-    music.gain.setTargetAtTime(channelGainFor(wanted.music, MUSIC_LEVEL), now, CHANNEL_FADE_S);
+    music.gain.setTargetAtTime(
+      channelGainFor(wanted.music, MUSIC_LEVEL),
+      now,
+      starting ? MUSIC_START_FADE_S : CHANNEL_FADE_S,
+    );
 
     clearTimeout(quieting);
 
@@ -132,7 +140,7 @@ function buildGraph(context: AudioContext): Graph {
   return {context, effects, music};
 }
 
-const CALM: Mood = {tension: 0, inCheck: false, ending: "none"};
+const CALM: Mood = {tension: 0, inCheck: false, ending: "none", underWay: false};
 
 /**
  * Each channel at full volume: sound effects at nearly full, and music well underneath them — it is
@@ -143,6 +151,9 @@ const MUSIC_LEVEL = 0.35;
 
 /** How quickly a channel fades to a new volume, as a time constant in seconds. */
 const CHANNEL_FADE_S = 0.4;
+
+/** How slowly the music channel fades up when the music starts, so it gathers rather than arrives. */
+const MUSIC_START_FADE_S = 2;
 
 /** Long enough for the music to have faded to nothing before its conductor is stopped. */
 const STOP_AFTER_FADE_MS = 2_000;

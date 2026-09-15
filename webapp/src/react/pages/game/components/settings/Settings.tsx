@@ -36,7 +36,7 @@ import {
   sideChosen,
 } from "@src/redux/game/GameSlice";
 import {opponentOf} from "@src/game/utils/OpponentOf";
-import {playHasBegun} from "@src/react/pages/game/components/settings/utils/PlayHasBegun";
+import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
