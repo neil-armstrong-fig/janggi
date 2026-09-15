@@ -8,6 +8,7 @@ import {
 import {EFFECTS} from "@src/react/pages/game/utils/EffectsOptions";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/components/elephant-pairing-line/ElephantPairingLine";
 import {MATCH_FORMAT_OPTIONS} from "@src/react/pages/game/components/settings/utils/MatchFormats";
+import {MatchFormatExplanation} from "@src/react/pages/game/components/settings/components/match-format-explanation/MatchFormatExplanation";
 import {MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights";
 import {NewGameButton} from "@src/react/pages/game/components/settings/components/new-game-button/NewGameButton";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
@@ -74,7 +75,9 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * Which of janggi's two games is being played is a picker beside the setups rather than beside the
  * board style, because it is not a preference about how the game is drawn: it decides whether a
  * bikjang may be called at all and whether one draws. Like a back rank it is settled before play,
- * so it locks on the same question the setups do.
+ * so it locks on the same question the setups do. Its two names say nothing to a player who has not
+ * read the rules, so it carries a (?) that unfolds `MatchFormatExplanation`, and that answers even once
+ * the format is locked.
  *
  * **Who the opponent is** sits with them for the same reason — against the bot, how strongly it plays
  * and which army is the player's. All three are dealt and lock with the rest. Against the bot, the
@@ -145,6 +148,7 @@ export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Elemen
               ariaLabel="Which of janggi's two games is being played"
               options={MATCH_FORMAT_OPTIONS}
               selected={{name: phase.format}}
+              explanation={<MatchFormatExplanation />}
               onSelect={option => dispatch(formatChosen(option.name))}
             />
 

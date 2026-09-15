@@ -15,6 +15,8 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<MatchFormat, Locator>;
+  private readonly explain: Locator;
+  private readonly explanation: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -24,6 +26,23 @@ export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
       Casual: page.getByTestId("match-format-option-casual"),
       Scored: page.getByTestId("match-format-option-scored"),
     };
+    this.explain = page.getByTestId("match-format-explain");
+    this.explanation = page.getByTestId("match-format-explanation");
+  }
+
+  /** Presses the (?) beside the picker, which unfolds the explanation or folds it away again. */
+  async toggleExplanation(): Promise<void> {
+    await this.inSheet(this.explain, () => this.explain.click());
+  }
+
+  /**
+   * Whether the explanation is drawn. Read off the panel itself rather than the toggle's `aria-expanded`,
+   * because an attribute and an element that are both absent read the same.
+   */
+  async isExplanationShown(): Promise<boolean> {
+    await this.picker.waitFor({state: "attached"});
+
+    return (await this.explanation.count()) > 0;
   }
 
   async choose(name: MatchFormat): Promise<void> {
