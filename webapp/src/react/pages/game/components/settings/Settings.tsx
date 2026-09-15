@@ -13,6 +13,7 @@ import {MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights"
 import {NewGameButton} from "@src/react/pages/game/components/settings/components/new-game-button/NewGameButton";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import {RecordButton} from "@src/react/pages/game/components/settings/components/record-button/RecordButton";
+import {ReferencesLink} from "@src/react/pages/game/components/settings/components/references-link/ReferencesLink";
 import {SETUPS} from "@src/game/setups/Setups";
 import {SettingsGroup} from "@src/react/pages/game/components/settings/components/settings-group/SettingsGroup";
 import {
@@ -275,6 +276,8 @@ export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Elemen
               onSelect={chosen => dispatch(effectsChosen(chosen.name))}
             />
           </SettingsGroup>
+
+          <ReferencesLink />
         </div>
       </section>
     </>
