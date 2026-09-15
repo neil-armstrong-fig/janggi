@@ -328,7 +328,9 @@ them went stale twice while it was being kept.
   `plaque-<side>`; `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
   `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
   option. The ten picker ids are `board-style`, `piece-style`, `movable-highlight`, `match-format`,
-  `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A picker of two options is a row of buttons, the chosen one carrying
+  `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A picker that
+  explains itself — only `match-format` so far — adds an `<id>-explain` toggle, never disabled, and
+  an `<id>-explanation` panel present only while unfolded. A picker of two options is a row of buttons, the chosen one carrying
   `aria-pressed`; one of more is a native `<id>-select`, whose `<option>`s carry the option ids and
   are chosen by their `value`. Grow a picker past two options and its `*Playwright` must switch
   shape. The two volumes, `sound-effects` and `music`, are an `<id>-volume` range input and an

@@ -27,6 +27,23 @@ export class MatchFormatSettingDsl {
     }
   }
 
+  /** Asks what the two formats are, or folds the answer away again if it is already shown. */
+  async toggleExplanation(): Promise<void> {
+    try {
+      await this.matchFormat.toggleExplanation();
+    } catch (error) {
+      throw new DslError("Failed to toggle the explanation of the match formats", error);
+    }
+  }
+
+  async isExplanationShown(): Promise<boolean> {
+    try {
+      return await this.matchFormat.isExplanationShown();
+    } catch (error) {
+      throw new DslError("Failed to check whether the match formats are explained", error);
+    }
+  }
+
   /** Whether the format may still be chosen. It is a rule of the match, settled before play. */
   async isChoosable(): Promise<boolean> {
     try {
