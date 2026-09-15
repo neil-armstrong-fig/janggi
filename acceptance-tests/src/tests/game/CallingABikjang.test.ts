@@ -36,6 +36,13 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
         expect(await janggi.status.isDrawn()).toBe(true);
       });
 
+      then(
+        "the announcement explains the bikjang, which chess has no such thing as, naming cho as its caller",
+        async ({janggi}) => {
+          expect(await janggi.status.getBikjangCaller()).toBe("cho");
+        },
+      );
+
       then("nobody has won it, a draw having no winner", async ({janggi}) => {
         expect(await janggi.status.getWinner()).toBeUndefined();
       });

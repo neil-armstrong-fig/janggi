@@ -18,8 +18,10 @@ import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
  * Han has laid out and Cho has not — is dealt exactly like a finished one and nothing here has to
  * know the difference. `boardShownFor` is what decides what such a board looks like.
  *
- * Who the opponent is rides beside what is dealt rather than in it — the slice carries it across.
+ * Who the opponent is rides beside what is dealt rather than in it — the slice carries it across. The
+ * player's go-ahead for the bot to open does not: a new game waits for it again, whatever the last one
+ * was given.
  */
 export function dealtGame(phase: SetupPhase): DealtBoard {
-  return {played: playedGameFrom(boardShownFor(phase)), phase};
+  return {played: playedGameFrom(boardShownFor(phase)), phase, botMayOpen: false};
 }

@@ -15,7 +15,11 @@ export class StatusPlaywright extends BaseComponent {
   private readonly scores: Record<Side, Locator>;
   private readonly taken: Record<Side, Locator>;
   private readonly result: Locator;
+  private readonly resultExplanation: Locator;
   private readonly newGame: Locator;
+  private readonly players: Record<Side, Locator>;
+  private readonly botGoAhead: Locator;
+  private readonly repetitionNotice: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -28,7 +32,71 @@ export class StatusPlaywright extends BaseComponent {
     this.scores = {cho: page.getByTestId("score-cho"), han: page.getByTestId("score-han")};
     this.taken = {cho: page.getByTestId("taken-cho"), han: page.getByTestId("taken-han")};
     this.result = page.getByTestId("result");
+    this.resultExplanation = page.getByTestId("result-explanation");
     this.newGame = page.getByTestId("result-new-game");
+    this.players = {cho: page.getByTestId("plaque-player-cho"), han: page.getByTestId("plaque-player-han")};
+    this.botGoAhead = page.getByTestId("bot-go-ahead");
+    this.repetitionNotice = page.getByTestId("repetition-notice");
+  }
+
+  /**
+   * Lets as long pass as a bottom-rung bot takes to open, engine load included. A fixed wait, because
+   * what it serves is a claim that something does **not** happen — the bot playing a move nobody let
+   * it — and there is no attribute to wait on for the absence of a move.
+   */
+  async giveTheBotTimeToOpen(): Promise<void> {
+    await this.page.waitForTimeout(BOT_OPENS_WITHIN_MS);
+  }
+
+  /** Presses the button over the board that lets the bot make the game's first move. */
+  async letTheBotStart(): Promise<void> {
+    await this.botGoAhead.click();
+  }
+
+  /**
+   * Whether the board is holding the bot's first move until the player lets it start. Counted rather
+   * than waited for: the button is drawn in the same render as the change that puts the bot on move.
+   */
+  async isWaitingToLetTheBotStart(): Promise<boolean> {
+    return (await this.botGoAhead.count()) > 0;
+  }
+
+  /** Whether an army's plaque marks it as the bot's, read off `data-player` rather than the emoji. */
+  async isMarkedAsTheBot(side: Side): Promise<boolean> {
+    return (await this.markOn(side)) === "bot";
+  }
+
+  /** Whether an army's plaque marks it as the player's own, against the bot. */
+  async isMarkedAsThePlayer(side: Side): Promise<boolean> {
+    return (await this.markOn(side)) === "player";
+  }
+
+  /**
+   * The rating shown on an army's plaque — the bot's strength, or the player's Elo — or undefined where
+   * none is shown, as in a game between two people at one device.
+   */
+  async getShownRating(side: Side): Promise<number | undefined> {
+    const player = this.players[side];
+    if ((await player.count()) === 0) return undefined;
+
+    return Number(await player.getAttribute("data-elo"));
+  }
+
+  /**
+   * The army an announced result says called the bikjang that ended the game, or undefined where the
+   * announcement explains no bikjang.
+   */
+  async getBikjangCaller(): Promise<Side | undefined> {
+    if ((await this.resultExplanation.count()) === 0) return undefined;
+
+    const caller = await this.resultExplanation.getAttribute("data-called-by");
+
+    return SIDES.find(candidate => candidate === caller);
+  }
+
+  /** Whether a note over the board explains that a move repeating the position is being held back. */
+  async isRepetitionExplained(): Promise<boolean> {
+    return (await this.repetitionNotice.count()) > 0;
   }
 
   /**
@@ -216,12 +284,23 @@ export class StatusPlaywright extends BaseComponent {
 
     return SIDES.find(candidate => candidate === side);
   }
+
+  /** What an army's plaque says is playing it, or undefined where it names nobody. */
+  private async markOn(side: Side): Promise<string | undefined> {
+    const player = this.players[side];
+    if ((await player.count()) === 0) return undefined;
+
+    return (await player.getAttribute("data-player")) ?? undefined;
+  }
 }
 
 /** Longer than any score takes to roll to its new value. */
 const SETTLES_WITHIN_MS = 3_000;
 
 const BOT_REPLIES_WITHIN_MS = 20_000;
+
+/** Well past the bot's least thinking time and the engine's first load, at the bottom rung. */
+const BOT_OPENS_WITHIN_MS = 4_000;
 
 /** Longer than a score's whole roll, so words unchanged for this long have truly come to rest. */
 const AT_REST_FOR_MS = 700;

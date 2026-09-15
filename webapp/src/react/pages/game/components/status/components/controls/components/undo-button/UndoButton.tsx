@@ -1,4 +1,4 @@
-import {ControlButton} from "@src/react/pages/game/components/status/components/control-button/ControlButton";
+import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
 
 /**
  * Takes the last turn back, whether that was a move or a rested one.

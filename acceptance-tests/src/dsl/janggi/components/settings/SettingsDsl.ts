@@ -13,6 +13,7 @@ import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components
 import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
 import type {Page} from "@playwright/test";
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
+import type {SettingsSectionName} from "@janggi/shared/janggi/settings/SettingsSectionName";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 import {YourSideSettingDsl} from "@src/dsl/janggi/components/settings/components/your-side-setting/YourSideSettingDsl";
 
@@ -105,6 +106,33 @@ export class SettingsDsl {
       return await this.settings.getElephantPairing();
     } catch (error) {
       throw new DslError("Failed to read how the two arrangements pair up", error);
+    }
+  }
+
+  /** Whether a section of the sheet has its settings folded away under its heading. */
+  async isSectionFolded(name: SettingsSectionName): Promise<boolean> {
+    try {
+      return await this.settings.isSectionFolded(name);
+    } catch (error) {
+      throw new DslError(`Failed to read whether the "${name}" settings are folded away`, error);
+    }
+  }
+
+  /** Folds a section of the sheet away under its heading. */
+  async foldSection(name: SettingsSectionName): Promise<void> {
+    try {
+      await this.settings.foldSection(name);
+    } catch (error) {
+      throw new DslError(`Failed to fold the "${name}" settings away`, error);
+    }
+  }
+
+  /** Unfolds a section of the sheet, laying its settings out under its heading. */
+  async unfoldSection(name: SettingsSectionName): Promise<void> {
+    try {
+      await this.settings.unfoldSection(name);
+    } catch (error) {
+      throw new DslError(`Failed to unfold the "${name}" settings`, error);
     }
   }
 

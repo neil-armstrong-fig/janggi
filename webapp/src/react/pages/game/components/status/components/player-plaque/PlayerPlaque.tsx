@@ -1,5 +1,6 @@
 import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
+import type {PlaquePlayer} from "@src/react/pages/game/components/status/types/PlaquePlayer";
 import type {PlaqueState} from "@src/react/pages/game/components/status/types/PlaqueState";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
@@ -21,6 +22,10 @@ import {useRolledNumber} from "@src/react/pages/game/components/status/component
  * With `animated`, a score counts down to its new value rather than jumping there, and a piece lost
  * pops into the tray. `data-score` is the true value throughout; only the words roll.
  *
+ * **Against the bot, beside the name, who is playing the army**: a robot and the strength the bot plays
+ * at, or a person and the player's own rating. Without it the bot's army reads as a second person at
+ * the device, and the two ratings the game is being played between are nowhere on the screen.
+ *
  * Everything drawn here is handed in. Whose turn it is, the score and the losses are all derived by
  * `Status` from the position on each render; nothing here is stored.
  */
@@ -31,9 +36,11 @@ interface Props {
   readonly taken: readonly PieceType[];
   readonly pieceStyle: PieceSetStyle;
   readonly animated: boolean;
+  /** Who is playing this army against the bot, or undefined between two people at one device. */
+  readonly player: PlaquePlayer | undefined;
 }
 
-export function PlayerPlaque({side, state, score, taken, pieceStyle, animated}: Props): React.JSX.Element {
+export function PlayerPlaque({side, state, score, taken, pieceStyle, animated, player}: Props): React.JSX.Element {
   const shownScore = useRolledNumber(score, animated);
 
   return (
@@ -53,6 +60,21 @@ export function PlayerPlaque({side, state, score, taken, pieceStyle, animated}: 
 
       <span className={clsx("shrink-0 text-sm font-semibold tracking-wide", NAMES[side])}>{sideName(side)}</span>
 
+      {player && (
+        <span
+          data-testid={`plaque-player-${side}`}
+          data-player={player.kind}
+          data-elo={player.elo}
+          className="flex shrink-0 items-center gap-1 text-xs text-white/60 tabular-nums"
+        >
+          <span role="img" aria-label={PLAYER_LABELS[player.kind]}>
+            {PLAYER_EMOJI[player.kind]}
+          </span>
+
+          {player.elo}
+        </span>
+      )}
+
       <TakenTray side={side} taken={taken} pieceStyle={pieceStyle} popping={animated} />
 
       <span
@@ -65,6 +87,10 @@ export function PlayerPlaque({side, state, score, taken, pieceStyle, animated}: 
     </section>
   );
 }
+
+const PLAYER_EMOJI: Record<PlaquePlayer["kind"], string> = {bot: "🤖", player: "🧑"};
+
+const PLAYER_LABELS: Record<PlaquePlayer["kind"], string> = {bot: "Bot", player: "You"};
 
 const FRAMES: Record<PlaqueState, string> = {
   waiting: "border-white/5 bg-white/[0.03] opacity-70",

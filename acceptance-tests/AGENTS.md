@@ -71,7 +71,10 @@ them.
 settings `*Playwright` extends `SettingsSheetComponent`, whose `inSheet` opens the sheet, acts, and
 closes it again — so a spec that chooses a setting reads exactly as it did before there was a sheet,
 and the sheet is out of the way before the next line taps the board it would be covering. Reading a
-picker needs none of that: the sheet is always in the page, only moved out of sight.
+picker needs none of that: the sheet is always in the page, only moved out of sight. The sheet's
+sections fold too, so `inSheet` is handed the control it is about to press, unfolds the section
+holding it, and folds it away again after — the fixture turns the effects down before every spec, so
+anything it left open would be every spec's starting state.
 
 A child that is only ever driven through its parent still gets its own `*Dsl`. The exception is a
 component with genuinely nothing to say — none exist here today.
@@ -357,6 +360,10 @@ anything. Where that matters, add an `is…Shown()` question beside the value on
   which both projects run.
 - **`playwright test --list | tail -1` gives the spec count with no dev server running** — the
   cheapest way to confirm a slice that should not have changed behaviour did not change it.
+- **On GitHub Pages the app reloads itself once, a second or two after a first visit** — its service
+  worker taking control to make the page cross-origin isolated, which Pages cannot do with headers.
+  Every test's context is a first visit, so `JanggiPlaywright.open()` waits for `crossOriginIsolated`
+  before a spec may touch anything. Only `:production` shows it; locally the server sends the headers.
 - **The dev server dies with the session that started it.** If every spec fails at once, check
   `curl localhost:3000` before debugging anything.
 - **`getCharacterAt` reaches into a piece's `<text>` element.** It is the one DSL method coupled to

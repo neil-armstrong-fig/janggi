@@ -20,9 +20,16 @@ export class JanggiPlaywright extends BasePage {
   /**
    * Relative to the `baseURL` in `playwright.config.ts`, which the package scripts choose. "./"
    * rather than "/" so a deployment served from a subpath — GitHub Pages — is not skipped past.
+   *
+   * Opened means cross-origin isolated. GitHub Pages cannot send the headers for that, so on a first
+   * visit — which every test's fresh context is — the app's service worker takes control a moment
+   * after load and the page reloads under it (`webapp/src/main.tsx`). A spec that started tapping
+   * before then would lose its taps to the reload. Locally the server sends the headers and this
+   * returns at once.
    */
   async open(): Promise<void> {
     await this.page.goto("./");
+    await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
   }
 
   async reload(): Promise<void> {
@@ -33,3 +40,9 @@ export class JanggiPlaywright extends BasePage {
     await this.page.setViewportSize({width, height});
   }
 }
+
+/**
+ * How long a first visit may take to come back isolated. The service worker precaches the engine's
+ * wasm before it takes control, which is seconds on a slow runner — past the config's action timeout.
+ */
+const ISOLATION_TIMEOUT_MS = 15_000;

@@ -55,7 +55,9 @@ function gameFrom(value: unknown): GameSliceState | undefined {
   const positions = [...played.past, played.present, ...played.future];
   if (positions.some(position => position.format !== phase.format)) return undefined;
 
-  return {played, phase, opponent};
+  // A go-ahead missing — a game kept before the bot waited for one — is read as not given. It only ever
+  // holds the bot's first move, and a kept game past its opening has had that already.
+  return {played, phase, opponent, botMayOpen: value["botMayOpen"] === true};
 }
 
 function recordFrom(value: unknown): PlayedGame | undefined {

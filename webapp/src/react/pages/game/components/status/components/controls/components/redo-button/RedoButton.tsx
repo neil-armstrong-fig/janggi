@@ -1,4 +1,4 @@
-import {ControlButton} from "@src/react/pages/game/components/status/components/control-button/ControlButton";
+import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
 
 /**
  * Plays again the turn most recently taken back.

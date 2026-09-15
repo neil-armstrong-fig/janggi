@@ -20,11 +20,11 @@ export class SoundEffectsSettingPlaywright extends SettingsSheetComponent {
   }
 
   async slideTo(volume: Volume): Promise<void> {
-    await this.inSheet(() => this.slider.fill(String(volume)));
+    await this.inSheet(this.slider, () => this.slider.fill(String(volume)));
   }
 
   async pressMute(): Promise<void> {
-    await this.inSheet(() => this.mute.click());
+    await this.inSheet(this.mute, () => this.mute.click());
   }
 
   async getVolume(): Promise<Volume> {

@@ -25,7 +25,7 @@ export class MovableHighlightSettingPlaywright extends SettingsSheetComponent {
   }
 
   async choose(name: MovableHighlightName): Promise<void> {
-    await this.inSheet(() => this.options[name].click());
+    await this.inSheet(this.picker, () => this.options[name].click());
   }
 
   /** The name on whichever button is pressed, or undefined before anything has rendered. */

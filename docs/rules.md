@@ -632,12 +632,14 @@ make not being a legal move, and in a perpetual check it falls on whichever side
 would complete the third standing first — the closest an engine with no referee
 gets to 반복장군. It is not special-cased.
 
-**Not shown, and nothing is planned.** A barred move is simply not offered, the
-way a move that would leave a general in check is not, and no message says why.
-`acceptance-tests/…/game/RepeatingAPosition.test.ts` exists because of that: a
-barred move looks exactly like a move that was never legal, so without a spec
-playing the eight plies out there would be nothing showing the rule reaches the
-board at all.
+**Explained, and still not adjudicated.** A barred move is simply not offered,
+the way a move that would leave a general in check is not — and to a player who
+knows chess, where a third repetition draws, that looks exactly like a move that
+was never legal. So while the army to move has a move held back, the page says so
+in a note over the board. `repetition/RepetitionHoldsBackAMove.ts` is the
+question it asks; like `isRepetition` it reports and refuses nothing.
+`acceptance-tests/…/game/RepeatingAPosition.test.ts` plays the plies out to show
+that the rule and the note both reach the board.
 
 ### 6.5 Scoring, piece values and the 덤
 

@@ -1,4 +1,4 @@
-import {ControlButton} from "@src/react/pages/game/components/status/components/control-button/ControlButton";
+import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
 
 /**
  * Rests the turn — 한수쉼, which a player traditionally signals by lifting the general off the board
