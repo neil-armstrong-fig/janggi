@@ -32,6 +32,54 @@ given("a game has just begun", () => {
     });
   });
 
+  /**
+   * The elephant beside the guards opens with nowhere to go: its own cannon blocks one way out, and its
+   * own soldier stands on the far corner of the other. Showing that soldier's point is what explains why.
+   */
+  when("the pointer rests on a piece hemmed in by its own army", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.board.hover(3, 10);
+    });
+
+    then(
+      "the point it would land on, but for its own soldier standing there, is shown as covered",
+      async ({janggi}) => {
+        expect(await janggi.board.isShownAsCovered(5, 7)).toBe(true);
+      },
+    );
+
+    then("that point is not offered as a move", async ({janggi}) => {
+      expect(await janggi.board.canMoveTo(5, 7)).toBe(false);
+    });
+
+    then("a point it could only reach by passing through a piece is not shown at all", async ({janggi}) => {
+      expect(await janggi.board.isShownAsCovered(1, 7)).toBe(false);
+    });
+  });
+
+  when("a piece hemmed in by its own army is picked up", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.board.tap(3, 10);
+    });
+
+    then(
+      "the point it would land on, but for its own soldier standing there, is shown as covered",
+      async ({janggi}) => {
+        expect(await janggi.board.isShownAsCovered(5, 7)).toBe(true);
+      },
+    );
+  });
+
+  when("the pointer rests on a piece that can move", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.board.hover(1, 7);
+    });
+
+    then("a point it may move to is not shown as covered", async ({janggi}) => {
+      expect(await janggi.board.isShownAsCovered(1, 6)).toBe(false);
+    });
+  });
+
   when("the pointer moves off onto an empty point", () => {
     beforeEach(async ({janggi}) => {
       await janggi.board.hover(1, 7);

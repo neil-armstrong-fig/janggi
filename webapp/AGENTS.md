@@ -266,6 +266,7 @@ A cell can carry **several marks**, and none of them is a `CellStyle` field — 
 data a user may author, and whose turn it is has no business written into one. They are overlay
 elements in `Cell`: `MovableMark` rings a piece its owner may move this turn, the selected wash
 fills the cell of the piece in hand, `MoveHint` puts a dot or a ring where that piece may go,
+`CoverHint` a dashed ring on each piece of its own army it would land on were that point empty,
 `LastMoveMark` brackets the corners of the last move's two points over a wash, and `ThreatMark` rings a
 general in check and each piece attacking it. Only the first is switchable — the "Movable pieces"
 picker — because in the opening it marks most of an army, and earns itself in check and against a pin.

@@ -1,6 +1,7 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Move} from "@src/game/types/Move";
 import type {Position} from "@src/game/board/types/Position";
+import {coveredFrom} from "@src/game/moves/CoveredFrom";
 import {gameIsOver} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/game-is-over/GameIsOver";
 import {movesFrom} from "@src/game/MovesFrom";
 import {pieceAt} from "@src/game/board/lookup/PieceAt";
@@ -13,6 +14,8 @@ export interface MoveSelection {
   readonly selected: Position | undefined;
   readonly hovered: Position | undefined;
   readonly destinations: readonly Position[];
+  /** Everywhere the one in question would go but for a piece of its own army already standing there. */
+  readonly covered: readonly Position[];
   readonly tap: (position: Position) => void;
   readonly hover: (position: Position | undefined) => void;
 }
@@ -27,6 +30,10 @@ export interface MoveSelection {
  * rules to someone who does not know them without committing them to anything. A piece actually in
  * hand outranks that, so the destinations do not change out from under a player mid-move. There is
  * no hover on a touch screen, where tapping does the same job.
+ *
+ * The points of its own army it would land on come with the destinations, from `coveredFrom`, so a
+ * horse or an elephant shows its whole shape even where its own pieces hem it in. They are only ever
+ * shown — tapping one picks up the piece standing there, as tapping any piece of the army to move does.
  *
  * Which point is lit up is **UI state, not game state**, so it lives here rather than in the store.
  * The engine is asked what may happen and told what did; it is never asked to remember a highlight.
@@ -47,11 +54,13 @@ export function useMoveSelection(game: GameState, onMove: (move: Move) => void, 
   const held = closed ? undefined : heldAt(game, selected);
   const asking = closed ? undefined : (held ?? hovered);
   const destinations = useMemo(() => (asking ? movesFrom(game, asking) : NOWHERE), [game, asking]);
+  const covered = useMemo(() => (asking ? coveredFrom(game, asking) : NOWHERE), [game, asking]);
 
   return {
     selected: held,
     hovered,
     destinations,
+    covered,
     hover: setHovered,
 
     tap(position: Position): void {

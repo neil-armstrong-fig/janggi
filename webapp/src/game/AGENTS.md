@@ -90,7 +90,9 @@ setups/ElephantPairingOf.ts       elephantPairingOf(hanSetup, choSetup): Elephan
 ```
 
 Those are the whole public surface; everything under `moves/` is reached through `MovesFrom.ts`'s
-dispatch table, and `moves/types/Mover.ts` is the shape they all match.
+dispatch table, and `moves/types/Mover.ts` is the shape they all match. The one exception is
+`moves/CoveredFrom.ts` — `coveredFrom(state, from)`, the points of its own army a piece would land on
+were they empty — which the board asks directly, to show a piece's whole shape.
 
 `board/` is the one part `react/` imports, and that is deliberate: the diagonals drawn inside a
 palace **are** the lines pieces travel along, so `CellShapes.ts` and `PalaceDiagonals.ts` must not
