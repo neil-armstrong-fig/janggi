@@ -1,0 +1,18 @@
+/* The game fills a fixed screen; the reading page uses ordinary document scrolling. */
+html.references-page,
+.references-page body,
+.references-page #root {
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+}
+
+.references-page body {
+  background: var(--color-ground);
+}
+
+.references-page a:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
