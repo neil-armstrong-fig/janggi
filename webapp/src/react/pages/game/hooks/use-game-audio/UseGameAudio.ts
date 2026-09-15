@@ -18,7 +18,7 @@ import {useCallback, useEffect, useState} from "react";
  * state the page already holds — the director is handed their answers and knows nothing of janggi.
  * The rest is plumbing: one director for as long as the page is up, woken by the first tap anywhere,
  * and told of each change, each mood and each volume as they come — a slider's volume handed on as a
- * share of full.
+ * share of full — and of the page being put away and brought back, so nothing plays off screen.
  *
  * Sound is played from an effect, after the change has been drawn, which is where a side effect
  * belongs. The moment's id is handed along with it, so the sound is heard once however many times the
@@ -45,6 +45,14 @@ export function useGameAudio(
       window.removeEventListener("pointerdown", unlock);
       director.dispose();
     };
+  }, [director]);
+
+  useEffect(() => {
+    const follow = (): void => director.setOnScreen(document.visibilityState === "visible");
+    follow();
+    document.addEventListener("visibilitychange", follow);
+
+    return () => document.removeEventListener("visibilitychange", follow);
   }, [director]);
 
   useEffect(() => {

@@ -124,6 +124,10 @@ and `grooveOffsetAt` take their rolls as arguments, and the layers and the condu
 - **Nothing sounds before a gesture.** The `AudioContext` is created by `unlock`, which the page calls on
   the first `pointerdown`. Browsers refuse audio a player did not ask for; everything before then is
   simply not heard.
+- **Nothing plays off screen.** The page tells the director when it is put away and brought back
+  (`setOnScreen`), and the `AudioContext` is suspended rather than closed — its clock stops, so the
+  music carries on from exactly where it was. A context a phone will not resume by itself is woken by
+  the next tap.
 - **Loudness eases, it never jumps.** A layer moves towards its level with `setTargetAtTime`, a change
   of tempo waits for a bar line, and a change of 장단 for the end of a round. The music comes in a layer
   at a time when it starts (`ENTERING`). The check theme eases in quickly and out slowly — a check lands
@@ -132,7 +136,11 @@ and `grooveOffsetAt` take their rolls as arguments, and the layers and the condu
   it fades.
 - **Every layer is scheduled on the audio clock, from one conductor**, so they cannot drift apart.
   A timer that fires late books its notes on time anyway. Do not start an instrument from a
-  `setTimeout`.
+  `setTimeout`. **Phones are what it is tuned for:** it books a few tenths of a second ahead so a busy
+  main thread does not starve it, a timer held up for longer lets the steps it missed go rather than
+  piling them onto one instant, and the `AudioContext` asks for a `balanced` buffer so the audio thread
+  does not run dry. A layer that is silent is unplugged, not just turned down — the browser works every
+  node still connected, however quiet.
 - **The music keeps no history.** It moves towards whatever mood it was last handed, so a mood that
   falls — a take-back, a new deal — takes the music down with it, back to a calmer 장단 or all the way
   to the waiting theme, and nothing here has to know why.

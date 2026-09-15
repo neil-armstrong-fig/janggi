@@ -23,10 +23,12 @@ import {waitingLayer} from "@src/audio/music/layers/WaitingLayer";
  * Starts the music, into `destination`, and keeps it following the game.
  *
  * **Every layer plays on one clock.** A timer wakes every few milliseconds and schedules, on the audio
- * context's own sample-accurate clock, whatever falls in the next tenth of a second — the lookahead
+ * context's own sample-accurate clock, whatever falls in the next few tenths of a second — the lookahead
  * scheduler from Chris Wilson's "A Tale of Two Clocks". The timer can be late; the notes cannot, because
  * each is booked against the audio clock rather than played when the timer fires. Every layer is handed
- * the same steps, so they stay locked together however the tempo moves.
+ * the same steps, so they stay locked together however the tempo moves. A timer held up for longer than
+ * that — a busy phone, a page put away — lets the steps it missed go and carries on from the next one,
+ * rather than booking them all for a moment already past, where they would pile up and land at once.
  *
  * **The game's music changes 장단 at the start of a round** (`rhythmFor`), never mid-cycle, and every
  * layer is told the 장단 it is in and the one the next round will be in, so the drum can fill into a
@@ -45,8 +47,10 @@ import {waitingLayer} from "@src/audio/music/layers/WaitingLayer";
  * a step for every layer so they swing together, and only where the 장단 swings) — all but the check
  * theme, which is heard dry, close and on the grid exactly as it was written.
  *
- * A layer that is silent and meant to stay so is not asked to play, so a quiet opening costs no more
- * than what is heard.
+ * A layer that is silent and meant to stay so is not asked to play, and is unplugged, so the browser
+ * stops working its nodes — the check theme's string sounds for as long as the music plays — and a
+ * quiet opening costs no more than what is heard. It is plugged back in the moment a mood wants it,
+ * before it starts to rise.
  */
 export function createConductor(context: BaseAudioContext, destination: AudioNode): Conductor {
   const space = createSpace(context, destination);
@@ -58,7 +62,8 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
     answer: answerLayer(context),
     checkTheme: checkThemeLayer(context),
   };
-  for (const name of LAYER_NAMES) layers[name].output.connect(IN_THE_ROOM[name] ? space.input : destination);
+  const plugged = new Set<LayerName>();
+  for (const name of LAYER_NAMES) plug(name);
 
   let mood: Mood = CALM;
   let targets: LayerGains = layerGainsFor(CALM);
@@ -85,6 +90,12 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
   };
 
   function schedule(): void {
+    if (stepStartsAt < context.currentTime) stepStartsAt = context.currentTime + FIRST_STEP_DELAY_S;
+
+    for (const name of LAYER_NAMES) {
+      if (isSilent(layers[name], targets[name])) unplug(name);
+    }
+
     while (stepStartsAt < context.currentTime + HORIZON_S) {
       if (step % STEPS_PER_ROUND === 0) rhythm = rhythmFor(mood.tension);
       if (stepInBar(step) === 0) stepSeconds = secondsPerStep(mood, rhythm);
@@ -94,7 +105,7 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
       const nextRhythm = rhythmFor(mood.tension);
 
       for (const name of LAYER_NAMES) {
-        if (isSilent(layers[name], targets[name])) continue;
+        if (!plugged.has(name)) continue;
 
         layers[name].play({
           index: step,
@@ -122,10 +133,26 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
       const entering = rising && now < startedAt + OPENING_S;
       const from = entering ? Math.max(now, startedAt + ENTERING[name].after) : now;
 
+      if (target > 0) plug(name);
+
       gain.cancelScheduledValues(now);
       gain.setValueAtTime(gain.value, now);
       gain.setTargetAtTime(target, from, curveFor(name, rising, entering));
     }
+  }
+
+  function plug(name: LayerName): void {
+    if (plugged.has(name)) return;
+
+    layers[name].output.connect(IN_THE_ROOM[name] ? space.input : destination);
+    plugged.add(name);
+  }
+
+  function unplug(name: LayerName): void {
+    if (!plugged.has(name)) return;
+
+    layers[name].output.disconnect();
+    plugged.delete(name);
   }
 }
 
@@ -136,16 +163,24 @@ function curveFor(name: LayerName, rising: boolean, entering: boolean): number {
   return rising ? RISE_S[name] : FALL_S[name];
 }
 
-/** Whether a layer is silent now and meant to stay that way, so there is no point booking it notes. */
+/**
+ * Whether a layer is silent now and meant to stay that way, so there is no point booking it notes or
+ * keeping it plugged in.
+ */
 function isSilent(layer: Layer, target: number): boolean {
   return target === 0 && layer.output.gain.value < AUDIBLE;
 }
 
 const CALM: Mood = {tension: 0, inCheck: false, ending: "none", underWay: false};
 
-/** How often the scheduler wakes, and how far ahead it books notes each time. */
-const LOOKAHEAD_MS = 25;
-const HORIZON_S = 0.12;
+/**
+ * How often the scheduler wakes, and how far ahead it books notes each time. Far enough ahead that a
+ * phone busy drawing the board or thinking for the bot does not hold the timer past the notes it has
+ * booked; nothing a player hears changes sooner than that, since loudness eases on its own curve and
+ * tempo and 장단 wait for a bar line.
+ */
+const LOOKAHEAD_MS = 50;
+const HORIZON_S = 0.3;
 
 /** A moment's grace before the first note, so the first step is never booked in the past. */
 const FIRST_STEP_DELAY_S = 0.1;

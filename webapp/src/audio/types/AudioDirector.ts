@@ -20,6 +20,11 @@ export interface AudioDirector {
   readonly setMood: (mood: Mood) => void;
   /** Sets how loud the sound effects and the music are, each fading to its new level. */
   readonly setChannels: (channels: AudioChannels) => void;
+  /**
+   * Holds every sound while the page is off screen — the app put away, the phone locked — and lets it
+   * carry on from where it was when the page is back.
+   */
+  readonly setOnScreen: (onScreen: boolean) => void;
   /** Stops every sound and lets the audio device go. */
   readonly dispose: () => void;
 }
