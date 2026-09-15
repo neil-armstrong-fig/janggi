@@ -31,6 +31,7 @@ const director = vi.hoisted(() => ({
   sound: vi.fn(),
   setMood: vi.fn(),
   setChannels: vi.fn(),
+  setOnScreen: vi.fn(),
   dispose: vi.fn(),
 }));
 
@@ -43,7 +44,12 @@ let hook: Rendered;
 describe("a game being listened to", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setVisibility("visible");
     hook = renderOn(opening());
+  });
+
+  it("tells the sound the page is on screen", () => {
+    expect(director.setOnScreen).toHaveBeenLastCalledWith(true);
   });
 
   it("has nothing to play before the game has changed", () => {
@@ -101,9 +107,36 @@ describe("a game being listened to", () => {
     });
   });
 
+  describe("when the page is put away", () => {
+    beforeEach(() => {
+      turnPage("hidden");
+    });
+
+    it("holds every sound", () => {
+      expect(director.setOnScreen).toHaveBeenLastCalledWith(false);
+    });
+
+    describe("and brought back", () => {
+      beforeEach(() => {
+        turnPage("visible");
+      });
+
+      it("lets the sound carry on", () => {
+        expect(director.setOnScreen).toHaveBeenLastCalledWith(true);
+      });
+    });
+  });
+
   describe("when the page goes", () => {
     beforeEach(() => {
       hook.unmount();
+    });
+
+    it("no longer follows the page being put away", () => {
+      director.setOnScreen.mockClear();
+      turnPage("hidden");
+
+      expect(director.setOnScreen).not.toHaveBeenCalled();
     });
 
     it("lets the audio device go", () => {
@@ -158,6 +191,16 @@ function renderOn(played: PlayedGame): Rendered {
   };
 
   return handle;
+}
+
+/** Puts the page away or brings it back, as a phone does when the app is switched from or to. */
+function turnPage(state: DocumentVisibilityState): void {
+  setVisibility(state);
+  document.dispatchEvent(new Event("visibilitychange"));
+}
+
+function setVisibility(state: DocumentVisibilityState): void {
+  Object.defineProperty(document, "visibilityState", {configurable: true, value: state});
 }
 
 function opening(): PlayedGame {

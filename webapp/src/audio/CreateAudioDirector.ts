@@ -32,23 +32,29 @@ interface Graph {
  * heard is ignored, so React rendering twice or re-running an effect never doubles a sound. When one
  * change makes several sounds — a piece set down, and the check it gave — they follow one another a
  * beat apart rather than landing on top of each other.
+ *
+ * **Nothing plays off screen.** While the page says it is put away the audio device is suspended rather
+ * than let go, which stops its clock: the music, and every note already booked, carries on from exactly
+ * where it was when the page comes back. A phone that will not start it again without a gesture is
+ * woken by the next tap, as it was the first time.
  */
 export function createAudioDirector(): AudioDirector {
   let graph: Graph | undefined;
   let conductor: Conductor | undefined;
   let channels: AudioChannels = {effects: 1, music: 1};
   let mood: Mood = CALM;
+  let onScreen = true;
   let lastHeard = 0;
   let quieting: ReturnType<typeof setTimeout> | undefined;
 
   return {
     unlock: () => {
       if (!graph) {
-        graph = buildGraph(new AudioContext());
+        graph = buildGraph(new AudioContext({latencyHint: LATENCY_HINT}));
         follow(channels);
       }
 
-      if (graph.context.state === "suspended") void graph.context.resume();
+      if (onScreen) wake(graph.context);
     },
 
     play: (cues: readonly Cue[], id: number) => {
@@ -80,6 +86,14 @@ export function createAudioDirector(): AudioDirector {
     setChannels: (next: AudioChannels) => {
       channels = next;
       follow(next);
+    },
+
+    setOnScreen: (next: boolean) => {
+      onScreen = next;
+      if (!graph) return;
+
+      if (next) wake(graph.context);
+      else void graph.context.suspend();
     },
 
     dispose: () => {
@@ -121,6 +135,11 @@ export function createAudioDirector(): AudioDirector {
   }
 }
 
+/** Starts the audio device playing again, whether the page held it or the phone interrupted it. */
+function wake(context: AudioContext): void {
+  if (context.state !== "running" && context.state !== "closed") void context.resume();
+}
+
 function buildGraph(context: AudioContext): Graph {
   const limiter = context.createDynamicsCompressor();
   limiter.threshold.value = -12;
@@ -141,6 +160,13 @@ function buildGraph(context: AudioContext): Graph {
 }
 
 const CALM: Mood = {tension: 0, inCheck: false, ending: "none", underWay: false};
+
+/**
+ * A larger audio buffer than the browser gives by default. With the smallest, a phone's audio thread —
+ * sharing the device with the page and the bot — runs dry, and the music crackles and stutters. A piece
+ * set down is heard a few milliseconds later for it, which nobody can tell.
+ */
+const LATENCY_HINT: AudioContextLatencyCategory = "balanced";
 
 /**
  * Each channel at full volume: sound effects at nearly full, and music well underneath them — it is
