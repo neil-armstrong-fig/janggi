@@ -9,7 +9,7 @@ import {getStepThenTurnMoves} from "@src/game/moves/utils/GetStepThenTurnMoves";
  * point it steps to first bars that whole direction. See `docs/rules.md` §4.3.
  */
 export function getLegalHorseMoves(pieces: PieceLookup, from: Position, side: Side): readonly Position[] {
-  return getStepThenTurnMoves(pieces, from, side, DIAGONAL_STEPS_AFTER_THE_TURN);
+  return getStepThenTurnMoves(pieces, {from, side, turns: DIAGONAL_STEPS_AFTER_THE_TURN});
 }
 
 const DIAGONAL_STEPS_AFTER_THE_TURN = 1;

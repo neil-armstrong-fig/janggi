@@ -81,8 +81,9 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * the format is locked.
  *
  * **Who the opponent is** sits with them for the same reason — against the bot, how strongly it plays
- * and which army is the player's. All three are dealt and lock with the rest. Against the bot, the
- * bot's own army lays itself out, so its setup picker is closed to the player. The bot needs the page
+ * and which army is the player's. All three are dealt and lock with the rest. Against the bot in a
+ * scored game, the bot's own army lays itself out, so its setup picker is closed to the player; a
+ * casual game has no laying out, and the player arranges both armies. The bot needs the page
  * cross-origin isolated (`docs/bot.md`); where the browser will not isolate it, the opponent picker is
  * closed and a line says why.
  */
@@ -100,7 +101,8 @@ export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Elemen
   const settled = playHasBegun(played);
   const againstBot = opponent.name === "Bot";
   const botAvailable = globalThis.crossOriginIsolated;
-  const isBotsArmy = (side: Side): boolean => againstBot && opponentOf(opponent.playerSide) === side;
+  const laysOutItself = (side: Side): boolean =>
+    againstBot && phase.format === "Scored" && opponentOf(opponent.playerSide) === side;
 
   return (
     <>
@@ -191,7 +193,7 @@ export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Elemen
 
             <OptionPicker
               id="han-setup"
-              disabled={settled || isBotsArmy("han") || !canPlace(phase, "han")}
+              disabled={settled || laysOutItself("han") || !canPlace(phase, "han")}
               label="Han's setup"
               ariaLabel="Han's opening setup"
               options={SETUPS}
@@ -201,7 +203,7 @@ export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Elemen
 
             <OptionPicker
               id="cho-setup"
-              disabled={settled || isBotsArmy("cho") || !canPlace(phase, "cho")}
+              disabled={settled || laysOutItself("cho") || !canPlace(phase, "cho")}
               label="Cho's setup"
               ariaLabel="Cho's opening setup"
               options={SETUPS}

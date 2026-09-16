@@ -13,8 +13,9 @@ it("holds each chord for as many steps as it is counted in", () => {
 it("sets out from home, and comes home again by the end of the progression", () => {
   expect(chordAt(0, STEPS_PER_GAME_CHORD).root).toBe(0);
   expect(chordAt(95, STEPS_PER_GAME_CHORD).root).toBe(0);
-  for (const step of ROUND)
+  for (const step of ROUND) {
     expect(chordAt(step + 96, STEPS_PER_GAME_CHORD)).toEqual(chordAt(step, STEPS_PER_GAME_CHORD));
+  }
 });
 
 it("builds every chord from three notes of the mode, its root among them", () => {

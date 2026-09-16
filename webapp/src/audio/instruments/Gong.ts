@@ -1,3 +1,4 @@
+import type {SoundOutput} from "@src/audio/types/SoundOutput";
 import {strike} from "@src/audio/instruments/utils/Strike";
 
 /** One stroke of the gong. */
@@ -24,8 +25,8 @@ interface Overtone {
  * from a handful of partials at inharmonic ratios, the higher ones dying first — which is what gives a
  * gong its bloom and its long, darkening tail. Each partial slips very slightly flat as it rings.
  */
-export function gong(context: BaseAudioContext, destination: AudioNode, when: number, stroke: GongStrike): void {
-  const {frequency, weight, length} = stroke;
+export function gong({context, destination}: SoundOutput, when: number, gongStrike: GongStrike): void {
+  const {frequency, weight, length} = gongStrike;
 
   OVERTONES.forEach(({ratio, loudness}, index) => {
     const tone = context.createOscillator();
@@ -34,7 +35,12 @@ export function gong(context: BaseAudioContext, destination: AudioNode, when: nu
     tone.frequency.exponentialRampToValueAtTime(frequency * ratio * SAG, when + length);
 
     const level = context.createGain();
-    strike(level.gain, when, weight * loudness * 0.35, 0.012 + index * 0.004, length * (1 - index * 0.14));
+    strike(level.gain, {
+      when,
+      peak: weight * loudness * 0.35,
+      attack: 0.012 + index * 0.004,
+      decay: length * (1 - index * 0.14),
+    });
 
     tone.connect(level).connect(destination);
     tone.start(when);

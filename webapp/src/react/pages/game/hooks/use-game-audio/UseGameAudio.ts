@@ -9,6 +9,14 @@ import {moodOf} from "@src/react/pages/game/hooks/use-game-audio/utils/MoodOf";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {useCallback, useEffect, useState} from "react";
 
+/** The game to be heard, the change to sound, and how loud its effects and its music are. */
+export interface GameAudio {
+  readonly played: PlayedGame;
+  readonly moment: GameMoment | undefined;
+  readonly soundEffectsVolume: Volume;
+  readonly musicVolume: Volume;
+}
+
 /**
  * Lets the game be heard: the sound of every change to it, and music that follows how it feels.
  *
@@ -27,12 +35,7 @@ import {useCallback, useEffect, useState} from "react";
  * What comes back plays one sound at once, for what a player's hand does that is not a change to the
  * game at all — picking a piece up, pressing a control — and so has no moment to wait for.
  */
-export function useGameAudio(
-  played: PlayedGame,
-  moment: GameMoment | undefined,
-  soundEffectsVolume: Volume,
-  musicVolume: Volume,
-): (name: CueName) => void {
+export function useGameAudio({played, moment, soundEffectsVolume, musicVolume}: GameAudio): (name: CueName) => void {
   const [director] = useState(createAudioDirector);
   const present = played.present;
   const begun = playHasBegun(played);

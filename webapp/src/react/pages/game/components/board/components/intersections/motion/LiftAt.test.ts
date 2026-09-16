@@ -6,23 +6,25 @@ const HELD = toPositionKey({file: 1, rank: 7});
 const HOVERED = toPositionKey({file: 3, rank: 7});
 const ELSEWHERE = toPositionKey({file: 5, rank: 7});
 
+const inHand = {heldKey: HELD, hoveredKey: HOVERED, animated: true};
+
 it("lifts the piece in hand clean off the board", () => {
-  expect(liftAt(HELD, HELD, HOVERED, true)).toBe("held");
+  expect(liftAt(HELD, inHand)).toBe("held");
 });
 
 it("nudges up the piece under the pointer", () => {
-  expect(liftAt(HOVERED, HELD, HOVERED, true)).toBe("hovered");
+  expect(liftAt(HOVERED, inHand)).toBe("hovered");
 });
 
 it("lifts the piece in hand rather than nudging it when the pointer rests on it too", () => {
-  expect(liftAt(HELD, HELD, HELD, true)).toBe("held");
+  expect(liftAt(HELD, {heldKey: HELD, hoveredKey: HELD, animated: true})).toBe("held");
 });
 
 it("leaves every other piece flat", () => {
-  expect(liftAt(ELSEWHERE, HELD, HOVERED, true)).toBe("resting");
+  expect(liftAt(ELSEWHERE, inHand)).toBe("resting");
 });
 
 it("lifts nothing while effects are reduced", () => {
-  expect(liftAt(HELD, HELD, HOVERED, false)).toBe("resting");
-  expect(liftAt(HOVERED, HELD, HOVERED, false)).toBe("resting");
+  expect(liftAt(HELD, {...inHand, animated: false})).toBe("resting");
+  expect(liftAt(HOVERED, {...inHand, animated: false})).toBe("resting");
 });

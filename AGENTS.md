@@ -210,6 +210,27 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
   they are looking at; `Record<Side, {back: Rank; palace: Rank; ...}>` makes them parse it first.
   The exception is a component's own `Props`, which is already extracted by the rule below it.
 
+- **Three parameters at most; past that, take one object.** A fourth positional argument is a call
+  site nobody can read without the signature open — `botSetupFor(engine, "cho", left, 1200, 0, signal)`
+  does not say which number is the Elo. Gather the arguments into a named interface (the rule above)
+  and destructure it in the signature, the way a component takes `Props`:
+
+  ```ts
+  export async function botSetupFor(engine: Engine, {side, hanSetup, elo, roll, signal}: SetupQuestion): Promise<Setup>
+
+  await botSetupFor(engine, {side: "cho", hanSetup: left, elo: 1200, roll: 0, signal});
+  ```
+
+  What the function acts _through_ — an engine, an audio context — may stay positional ahead of the
+  object, since it is not part of the question being asked. Three is a ceiling, not a target: two
+  arguments whose order is not obvious from the name are already worth an object.
+
+- **Name a variable after the type it holds**, where the type has a name of its own:
+  `woodBlockStrike: WoodBlockStrike`, not `blow`. The name then says what to go and read, and a
+  parameter list stops needing a gloss. It bends where a name would say less than the word in front of
+  you — a loop's `hit`, a chord's `root` — but a lone `out` or `note` in place of `soundOutput` or
+  `daegeumNote` is worth renaming.
+
 - **A blank line between sibling JSX elements.** Two elements pressed together read as one block;
   a line between them makes the structure visible at a glance, and it matters more the longer the
   props get.
@@ -248,6 +269,20 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
 
   A preference, not a rule: it applies when the guard is about that one variable, and stops
   applying as soon as anything sits between them or the guard is about something else.
+
+- **A body on a line of its own is braced.** `if (done) return;` may stay bare on one line, but once
+  the body drops to the next line — whether you put it there or Prettier broke a long line — it goes
+  in braces, and so does a `for` or `while` body. A bare body under a condition reads as though the
+  line after it were inside too.
+
+  ```ts
+  if (!isArranged(phase)) {
+    return canPlace(phase, botSide) ? {kind: "layOut", side: botSide, hanSetup: phase.hanSetup} : undefined;
+  }
+  ```
+
+  ESLint enforces it (`curly: multi-line`, in `shared/config/eslint.base.js`) and `pnpm lint:fix`
+  adds the braces. Prettier cannot: it reprints code, and never adds or removes a brace.
 
 - **No `../` imports.** Use the `@src/*` alias, which each package maps to its own `src/`.
 - **Explicit return types** on function declarations, and `import type` for type-only imports

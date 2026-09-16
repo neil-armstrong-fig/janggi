@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
+import type {EndingShake} from "@src/react/pages/game/components/board/hooks/use-ending-shake/UseEndingShake";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {GameState} from "@src/game/types/GameState";
 import type {Mock} from "vitest";
@@ -16,12 +17,8 @@ import {useEndingShake} from "@src/react/pages/game/components/board/hooks/use-e
  * what the hook does with that answer: shake once per ending change, and not at all with effects reduced.
  */
 
-/** What the hook is re-rendered on, so a test can hand it the next change. */
-interface Shown {
-  readonly moment: GameMoment | undefined;
-  readonly game: GameState;
-  readonly animated: boolean;
-}
+/** What the hook is re-rendered on, so a test can hand it the next change — all of it but the shake itself. */
+type Shown = Omit<EndingShake, "shake">;
 
 interface Rendered {
   readonly shake: Mock<(impulse: Vector) => void>;
@@ -66,9 +63,7 @@ it("does not shake while effects are reduced", () => {
 
 function renderOn(initial: Shown): Rendered {
   const shake = vi.fn<(impulse: Vector) => void>();
-  const {rerender} = renderHook((shown: Shown) => useEndingShake(shown.moment, shown.game, shown.animated, shake), {
-    initialProps: initial,
-  });
+  const {rerender} = renderHook((shown: Shown) => useEndingShake({...shown, shake}), {initialProps: initial});
 
   return {shake, show: next => rerender(next)};
 }

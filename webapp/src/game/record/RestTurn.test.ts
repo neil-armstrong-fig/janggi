@@ -1,3 +1,4 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
@@ -6,6 +7,7 @@ import {expect, it} from "vitest";
 import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
 import {restTurn} from "@src/game/record/RestTurn";
 import {undo} from "@src/game/record/Undo";
+import {placed} from "@src/testing/Placed";
 
 /** 한수쉼 recorded — `pass`'s counterpart to `playMove`. See `docs/rules.md` §6.3. */
 
@@ -71,14 +73,10 @@ function toMove(sideToMove: Side, consecutivePasses: number, ...pieces: readonly
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }

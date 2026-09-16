@@ -1,3 +1,4 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
@@ -5,6 +6,7 @@ import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {canCallBikjang} from "@src/game/bikjang/CanCallBikjang";
 import {expect, it} from "vitest";
+import {placed} from "@src/testing/Placed";
 
 /**
  * Where the two match formats part company. Casually the generals facing each other is the whole of
@@ -75,14 +77,10 @@ function position(format: MatchFormat, sideToMove: Side, ...pieces: readonly Pla
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }

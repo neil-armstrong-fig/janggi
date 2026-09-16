@@ -24,7 +24,7 @@ export function useRatedGame(moment: GameMoment | undefined): void {
     if (!moment || answeredRef.current === moment.id) return;
     answeredRef.current = moment.id;
 
-    const event = ratingEventFor(moment, played, opponent, inProgress);
+    const event = ratingEventFor({change: moment, played, opponent, inProgress});
     if (event) dispatch(actionFor(event, new Date().toISOString()));
   }, [moment, played, opponent, inProgress, dispatch]);
 }

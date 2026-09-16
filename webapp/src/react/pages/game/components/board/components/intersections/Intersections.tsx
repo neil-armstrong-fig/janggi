@@ -119,7 +119,7 @@ export function Intersections({
             concealed={concealed === key}
             underAttack={threatenedKey === key}
             attacking={attackerKeys.has(key)}
-            lift={liftAt(key, heldKey, hoveredKey, animated)}
+            lift={liftAt(key, {heldKey, hoveredKey, animated})}
             flourish={flourishes.get(key)}
             hintDelay={hintOrigin && (canMoveTo || isCovered) ? hintDelay(hintOrigin, position) : undefined}
             pulsing={animated}

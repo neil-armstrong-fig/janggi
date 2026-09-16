@@ -1,3 +1,4 @@
+import type {SoundOutput} from "@src/audio/types/SoundOutput";
 import {noiseBuffer} from "@src/audio/instruments/utils/NoiseBuffer";
 import {strike} from "@src/audio/instruments/utils/Strike";
 
@@ -18,24 +19,14 @@ export interface WoodBlockStrike {
  * taking it. The weight scales all three, so one instrument covers a soldier nudged forward and a
  * chariot slammed onto a general's guard.
  */
-export function woodBlock(
-  context: BaseAudioContext,
-  destination: AudioNode,
-  when: number,
-  blow: WoodBlockStrike,
-): void {
-  crack(context, destination, when, blow);
-  body(context, destination, when, blow);
+export function woodBlock(soundOutput: SoundOutput, when: number, woodBlockStrike: WoodBlockStrike): void {
+  crack(soundOutput, when, woodBlockStrike);
+  body(soundOutput, when, woodBlockStrike);
 
-  if (blow.weight > THUD_FROM) thud(context, destination, when, blow.weight);
+  if (woodBlockStrike.weight > THUD_FROM) thud(soundOutput, when, woodBlockStrike.weight);
 }
 
-function crack(
-  context: BaseAudioContext,
-  destination: AudioNode,
-  when: number,
-  {weight, pitch}: WoodBlockStrike,
-): void {
+function crack({context, destination}: SoundOutput, when: number, {weight, pitch}: WoodBlockStrike): void {
   const noise = context.createBufferSource();
   noise.buffer = noiseBuffer(context);
 
@@ -45,35 +36,35 @@ function crack(
   band.Q.value = 1.5;
 
   const level = context.createGain();
-  strike(level.gain, when, 0.3 + 0.5 * weight, 0.001, 0.025 + 0.04 * weight);
+  strike(level.gain, {when, peak: 0.3 + 0.5 * weight, attack: 0.001, decay: 0.025 + 0.04 * weight});
 
   noise.connect(band).connect(level).connect(destination);
   noise.start(when, Math.random() * 0.5);
   noise.stop(when + 0.15);
 }
 
-function body(context: BaseAudioContext, destination: AudioNode, when: number, {weight, pitch}: WoodBlockStrike): void {
+function body({context, destination}: SoundOutput, when: number, {weight, pitch}: WoodBlockStrike): void {
   const tone = context.createOscillator();
   tone.type = "triangle";
   tone.frequency.setValueAtTime(pitch * 1.5, when);
   tone.frequency.exponentialRampToValueAtTime(pitch, when + 0.015);
 
   const level = context.createGain();
-  strike(level.gain, when, 0.2 + 0.3 * weight, 0.002, 0.07 + 0.09 * weight);
+  strike(level.gain, {when, peak: 0.2 + 0.3 * weight, attack: 0.002, decay: 0.07 + 0.09 * weight});
 
   tone.connect(level).connect(destination);
   tone.start(when);
   tone.stop(when + 0.25);
 }
 
-function thud(context: BaseAudioContext, destination: AudioNode, when: number, weight: number): void {
+function thud({context, destination}: SoundOutput, when: number, weight: number): void {
   const tone = context.createOscillator();
   tone.type = "sine";
   tone.frequency.setValueAtTime(110, when);
   tone.frequency.exponentialRampToValueAtTime(48, when + 0.14);
 
   const level = context.createGain();
-  strike(level.gain, when + 0.008, (weight - THUD_FROM) * 1.6, 0.004, 0.2);
+  strike(level.gain, {when: when + 0.008, peak: (weight - THUD_FROM) * 1.6, attack: 0.004, decay: 0.2});
 
   tone.connect(level).connect(destination);
   tone.start(when);
