@@ -34,7 +34,7 @@ const opening: GameState = newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual");
 it("plays the move the engine chooses", async () => {
   const engine = answering({bestMove: "a4a5", evaluation: 20});
 
-  const decision = await botTurnFor(engine, playedGameFrom(opening), 1200, undefined);
+  const decision = await botTurnFor(engine, {played: playedGameFrom(opening), elo: 1200, evaluation: undefined});
 
   expect(decision).toEqual({
     turn: {kind: "move", move: {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}}},
@@ -45,13 +45,15 @@ it("plays the move the engine chooses", async () => {
 it("rests the turn when the engine chooses to", async () => {
   const engine = answering({bestMove: "e2e2", evaluation: 0});
 
-  expect((await botTurnFor(engine, playedGameFrom(opening), 1200, undefined)).turn).toEqual({kind: "pass"});
+  expect((await botTurnFor(engine, {played: playedGameFrom(opening), elo: 1200, evaluation: undefined})).turn).toEqual({
+    kind: "pass",
+  });
 });
 
 it("restricts the engine to every legal move and the rested turn, and nothing else", async () => {
   const engine = answering({bestMove: "a4a5", evaluation: 0});
 
-  await botTurnFor(engine, playedGameFrom(opening), 1200, undefined);
+  await botTurnFor(engine, {played: playedGameFrom(opening), elo: 1200, evaluation: undefined});
 
   const searchMoves = engine.asked[0]?.searchMoves ?? [];
   expect(searchMoves).toHaveLength(32);
@@ -63,7 +65,7 @@ it("restricts the engine to every legal move and the rested turn, and nothing el
 it("tells the engine how strong to play and how long it may think", async () => {
   const engine = answering({bestMove: "a4a5", evaluation: 0});
 
-  await botTurnFor(engine, playedGameFrom(opening), 800, undefined);
+  await botTurnFor(engine, {played: playedGameFrom(opening), elo: 800, evaluation: undefined});
 
   expect(engine.asked[0]).toMatchObject({elo: 800, moveTimeMs: MOVE_TIMES_MS[800]});
 });
@@ -75,7 +77,7 @@ it("shows the engine how the game got here", async () => {
     to: {file: 1, rank: 5},
   });
 
-  await botTurnFor(engine, played, 1200, undefined);
+  await botTurnFor(engine, {played, elo: 1200, evaluation: undefined});
 
   expect(engine.asked[0]).toMatchObject({fen: fenOf(opening), moves: ["a4a5", "a7a6"]});
 });
@@ -83,7 +85,7 @@ it("shows the engine how the game got here", async () => {
 it("plays something legal when the engine gives no move at all", async () => {
   const engine = answering({bestMove: "(none)", evaluation: undefined});
 
-  const {turn} = await botTurnFor(engine, playedGameFrom(opening), 1200, undefined);
+  const {turn} = await botTurnFor(engine, {played: playedGameFrom(opening), elo: 1200, evaluation: undefined});
 
   expect(turn.kind).toBe("move");
 });
@@ -91,7 +93,7 @@ it("plays something legal when the engine gives no move at all", async () => {
 it("plays something legal when the engine names a move it was not offered", async () => {
   const engine = answering({bestMove: "b3b10", evaluation: undefined});
 
-  const {turn} = await botTurnFor(engine, playedGameFrom(opening), 1200, undefined);
+  const {turn} = await botTurnFor(engine, {played: playedGameFrom(opening), elo: 1200, evaluation: undefined});
 
   expect(turn).not.toEqual({kind: "move", move: {from: {file: 2, rank: 8}, to: {file: 2, rank: 1}}});
 });
@@ -99,7 +101,9 @@ it("plays something legal when the engine names a move it was not offered", asyn
 it("keeps the last evaluation it had when the engine reports none", async () => {
   const engine = answering({bestMove: "a4a5", evaluation: undefined});
 
-  expect((await botTurnFor(engine, playedGameFrom(opening), 1200, -40)).evaluation).toBe(-40);
+  expect((await botTurnFor(engine, {played: playedGameFrom(opening), elo: 1200, evaluation: -40})).evaluation).toBe(
+    -40,
+  );
 });
 
 it("calls a casual bikjang it is losing without asking the engine anything", async () => {
@@ -113,7 +117,7 @@ it("calls a casual bikjang it is losing without asking the engine anything", asy
     ],
   };
 
-  const decision = await botTurnFor(engine, playedGameFrom(bikjang), 1200, -800);
+  const decision = await botTurnFor(engine, {played: playedGameFrom(bikjang), elo: 1200, evaluation: -800});
 
   expect(decision.turn).toEqual({kind: "callBikjang"});
   expect(engine.asked).toHaveLength(0);

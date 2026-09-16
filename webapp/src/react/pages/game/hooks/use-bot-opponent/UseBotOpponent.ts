@@ -13,7 +13,8 @@ import {useEffect, useRef} from "react";
  *
  * **It never answers a position that has gone.** A deal, a new opponent or leaving the page cancels
  * the pending answer and tells the engine to stop, so a reply thought up for one game can never land
- * in the next.
+ * in the next — and a layout part-way through the openings it rates asks for none of the rest, which
+ * would otherwise hold up the next game's searches behind them.
  *
  * **It holds the game's first move** while `botAwaitsGoAhead` says the player has not yet let the bot
  * start, so choosing to play Han is not what starts a rated game.
@@ -33,9 +34,16 @@ export function useBotOpponent(engine: Engine): void {
 
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    const stopping = new AbortController();
     const startedAt = Date.now();
 
-    botReplyFor(duty, engine, played, opponent.botElo, evaluationRef.current)
+    botReplyFor(engine, {
+      duty,
+      played,
+      elo: opponent.botElo,
+      evaluation: evaluationRef.current,
+      signal: stopping.signal,
+    })
       .then(({action, evaluation}) => {
         if (cancelled) return;
 
@@ -46,13 +54,16 @@ export function useBotOpponent(engine: Engine): void {
         }, remaining);
       })
       .catch((error: unknown) => {
+        if (cancelled) return;
+
         console.error("The bot could not choose a move", error);
       });
 
     return () => {
       cancelled = true;
       clearTimeout(timer);
-      if (duty.kind === "play") engine.stop();
+      stopping.abort();
+      engine.stop();
     };
   }, [played, phase, opponent, botMayOpen, engine, dispatch]);
 }

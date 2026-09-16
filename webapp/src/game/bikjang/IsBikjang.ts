@@ -1,4 +1,3 @@
-import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {Position} from "@src/game/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
@@ -22,17 +21,18 @@ export function isBikjang(state: GameState): boolean {
   const han = generalOf(state, "han");
   if (!cho || !han) return false;
 
-  return cho.file === han.file && nothingBetween(state, cho.file, cho.rank, han.rank);
+  return cho.file === han.file && nothingBetween(state, cho, han);
 }
 
 function generalOf(state: GameState, side: Side): Position | undefined {
   return state.pieces.find(({piece}) => piece.side === side && piece.type === "general")?.position;
 }
 
-function nothingBetween(state: GameState, file: File, from: Rank, to: Rank): boolean {
+/** Whether the file the two generals share is clear between them. Both stand on it, so either gives the file. */
+function nothingBetween(state: GameState, from: Position, to: Position): boolean {
   const pieces = piecesByPosition(state.pieces);
-  const lower = Math.min(from, to);
-  const upper = Math.max(from, to);
+  const lower = Math.min(from.rank, to.rank);
+  const upper = Math.max(from.rank, to.rank);
 
-  return RANKS.filter(rank => rank > lower && rank < upper).every(rank => !pieceAt(pieces, {file, rank}));
+  return RANKS.filter(rank => rank > lower && rank < upper).every(rank => !pieceAt(pieces, {file: from.file, rank}));
 }

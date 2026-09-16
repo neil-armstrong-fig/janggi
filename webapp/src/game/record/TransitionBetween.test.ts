@@ -1,9 +1,9 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {applyMove} from "@src/game/ApplyMove";
 import {callBikjang} from "@src/game/bikjang/CallBikjang";
 import {expect, it} from "vitest";
@@ -11,6 +11,7 @@ import {newGame} from "@src/game/NewGame";
 import {pass} from "@src/game/passing/Pass";
 import {positionAfter} from "@src/game/utils/PositionAfter";
 import {transitionBetween} from "@src/game/record/TransitionBetween";
+import {placed} from "@src/testing/Placed";
 
 /**
  * Every transition here is made by the engine rather than written out, so what is being read back
@@ -115,14 +116,10 @@ function position(...pieces: readonly PlacedPiece[]): GameState {
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }

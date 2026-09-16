@@ -7,6 +7,21 @@ import {canLandOn} from "@src/game/moves/utils/CanLandOn";
 import {pointAfterStep} from "@src/game/moves/utils/PointAfterStep";
 import {pieceAt} from "@src/game/board/lookup/PieceAt";
 
+/** One piece's step-then-turn move: where it stands, whose it is, and how far the diagonal runs. */
+export interface StepThenTurn {
+  readonly from: Position;
+  readonly side: Side;
+  /** How many diagonal steps follow the first: one for the horse, two for the elephant. */
+  readonly turns: number;
+}
+
+/** A diagonal run from the elbow: where it starts, which way it goes, and how many steps it takes. */
+interface DiagonalWalk {
+  readonly from: Position;
+  readonly step: Step;
+  readonly turns: number;
+}
+
 /**
  * The horse's move and the elephant's, which are the same move with a different number: one step
  * along a line, then `turns` steps diagonally, carrying on away from where it started.
@@ -20,12 +35,7 @@ import {pieceAt} from "@src/game/board/lookup/PieceAt";
  * Association says so twice, once per piece, in the same parenthesis — 단, 궁성의 대각선 제외.
  * See `docs/rules.md` §4.3 and §4.4.
  */
-export function getStepThenTurnMoves(
-  pieces: PieceLookup,
-  from: Position,
-  side: Side,
-  turns: number,
-): readonly Position[] {
+export function getStepThenTurnMoves(pieces: PieceLookup, {from, side, turns}: StepThenTurn): readonly Position[] {
   const destinations: Position[] = [];
 
   for (const step of ORTHOGONAL_STEPS) {
@@ -33,7 +43,7 @@ export function getStepThenTurnMoves(
     if (!elbow || pieceAt(pieces, elbow)) continue;
 
     for (const diagonal of diagonalsContinuing(step)) {
-      const destination = walkThrough(pieces, elbow, diagonal, turns);
+      const destination = walkThrough(pieces, {from: elbow, step: diagonal, turns});
 
       if (destination && canLandOn(pieces, destination, side)) destinations.push(destination);
     }
@@ -62,7 +72,7 @@ function diagonalsContinuing({fileStep, rankStep}: Step): readonly Step[] {
 }
 
 /** Where `turns` steps lead, or nothing if the board runs out or anything is stood in the way. */
-function walkThrough(pieces: PieceLookup, from: Position, step: Step, turns: number): Position | undefined {
+function walkThrough(pieces: PieceLookup, {from, step, turns}: DiagonalWalk): Position | undefined {
   let point = from;
 
   for (let taken = 0; taken < turns; taken += 1) {

@@ -1,5 +1,13 @@
 import type {GameResult} from "@src/redux/ratings/types/GameResult";
 
+/** One finished game, from the rating's point of view: where it stood, how settled it is, and how it went. */
+export interface EloChange {
+  readonly elo: number;
+  readonly gamesPlayed: number;
+  readonly opponentElo: number;
+  readonly result: GameResult;
+}
+
 /**
  * A rating after one game, by the standard Elo formula against the bot's nominal rating.
  *
@@ -9,7 +17,7 @@ import type {GameResult} from "@src/redux/ratings/types/GameResult";
  * A new rating moves fast and a settled one slowly: K is 40 for the first thirty games and 20 after,
  * the shape FIDE uses. Rounded to a whole point, as ratings are shown.
  */
-export function eloAfter(elo: number, gamesPlayed: number, opponentElo: number, result: GameResult): number {
+export function eloAfter({elo, gamesPlayed, opponentElo, result}: EloChange): number {
   const expected = 1 / (1 + 10 ** ((opponentElo - elo) / 400));
   const k = gamesPlayed < SETTLED_AFTER_GAMES ? NEW_K : SETTLED_K;
 

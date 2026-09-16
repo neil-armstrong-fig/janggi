@@ -8,6 +8,16 @@ interface Figure {
   readonly ghosts: ReadonlyMap<number, readonly DrumHit[]>;
 }
 
+/** One step of the music, as the drum sees it. */
+export interface DrumStep {
+  readonly step: number;
+  readonly rhythm: Rhythm;
+  /** How tense the game is, which is what brings the ghost strokes in. */
+  readonly tension: number;
+  /** Whether the next round is in another 장단, which the last steps of this one climb into. */
+  readonly turning: boolean;
+}
+
 /**
  * What the 장구 strikes on this step of the round, in the 장단 the music is in.
  *
@@ -18,7 +28,7 @@ interface Figure {
  * another 장단 — `turning` — the last steps of the round are a short fill that climbs into it, so a change
  * is announced rather than simply arriving.
  */
-export function jangguHitsAt(step: number, rhythm: Rhythm, tension: number, turning: boolean): readonly DrumHit[] {
+export function jangguHitsAt({step, rhythm, tension, turning}: DrumStep): readonly DrumHit[] {
   const inRound = ((step % STEPS_PER_ROUND) + STEPS_PER_ROUND) % STEPS_PER_ROUND;
   const fill = FILL.get(inRound - (STEPS_PER_ROUND - FILL_STEPS));
   if (turning && fill) return fill;

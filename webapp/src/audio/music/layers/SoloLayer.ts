@@ -23,7 +23,7 @@ export function soloLayer(context: BaseAudioContext): Layer {
       if (step.index % STEPS_PER_PHRASE === 0) plan = phrasePlanFor(Math.random(), Math.random());
 
       for (const note of soloNotesAt(step.index, step.rhythm, plan)) {
-        gayageum(context, output, step.time + note.offset * step.seconds, {
+        gayageum({context, destination: output}, step.time + note.offset * step.seconds, {
           frequency: pitchOf(ROOT, PYEONGJO, note.degree),
           weight: note.weight * WEIGHT,
           length: step.seconds * note.steps * RINGS_ON,

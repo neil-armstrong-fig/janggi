@@ -23,7 +23,9 @@ export function botDutyFor(played: PlayedGame, phase: SetupPhase, opponent: Oppo
 
   const botSide = opponentOf(opponent.playerSide);
 
-  if (!isArranged(phase)) return canPlace(phase, botSide) ? {kind: "layOut", side: botSide} : undefined;
+  if (!isArranged(phase)) {
+    return canPlace(phase, botSide) ? {kind: "layOut", side: botSide, hanSetup: phase.hanSetup} : undefined;
+  }
 
   const game = played.present;
   if (game.sideToMove !== botSide || outcomeOf(game).kind !== "undecided") return undefined;

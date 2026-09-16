@@ -1,13 +1,14 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import type {Setup} from "@src/game/setups/types/Setup";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {SETUPS} from "@src/game/setups/Setups";
 import {expect, it} from "vitest";
 import {materialFor} from "@src/game/scoring/MaterialFor";
 import {newGame} from "@src/game/NewGame";
 import {scoreFor} from "@src/game/scoring/ScoreFor";
+import {placed} from "@src/testing/Placed";
 
 /**
  * The 덤 is 대한장기협회's, quoted in `docs/rules.md` §6.5: "초는 72점, 한은 73.5점으로 대국이
@@ -65,14 +66,10 @@ function choToMove(...pieces: readonly PlacedPiece[]): GameState {
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }

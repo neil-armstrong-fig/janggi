@@ -51,7 +51,12 @@ function rated(state: RatingsSliceState, finish: RatedGameFinish): RatingsSliceS
   if (!game) return state;
 
   const rating = state.byFormat[game.format];
-  const elo = eloAfter(rating.elo, rating.games.length, game.botElo, finish.result);
+  const elo = eloAfter({
+    elo: rating.elo,
+    gamesPlayed: rating.games.length,
+    opponentElo: game.botElo,
+    result: finish.result,
+  });
 
   const record: GameRecord = {
     format: game.format,
