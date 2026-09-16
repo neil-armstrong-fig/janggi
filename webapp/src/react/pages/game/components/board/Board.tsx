@@ -66,7 +66,7 @@ export function Board({moment, onPickUp}: Props): React.JSX.Element {
   const threat = useMemo(() => (arranged ? threatIn(game) : undefined), [game, arranged]);
   const {flight, flying, landing, concealed, land, settle} = useMoveFlight(moment, animated);
   const {ref: shaken, shake} = useBoardShake();
-  useEndingShake(moment, game, animated, shake);
+  useEndingShake({moment, game, animated, shake});
 
   return (
     <div className="flex h-full w-full items-center justify-center" style={{containerType: "size"}}>

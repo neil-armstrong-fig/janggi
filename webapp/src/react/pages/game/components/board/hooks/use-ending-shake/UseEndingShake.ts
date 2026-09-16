@@ -4,16 +4,19 @@ import type {Vector} from "@src/react/pages/game/components/board/types/Vector";
 import {endsTheGame} from "@src/react/pages/game/components/board/hooks/use-ending-shake/utils/EndsTheGame";
 import {useEffect, useEffectEvent, useRef} from "react";
 
+/** The change to answer, the game it left standing, whether motion is shown, and what shakes the board. */
+export interface EndingShake {
+  readonly moment: GameMoment | undefined;
+  readonly game: GameState;
+  readonly animated: boolean;
+  readonly shake: (impulse: Vector) => void;
+}
+
 /**
  * Shakes the board as a game ends, whatever ended it — a game's ending is felt. Only while effects are in
  * full, and once for the change that ended it, however often the effect re-runs.
  */
-export function useEndingShake(
-  moment: GameMoment | undefined,
-  game: GameState,
-  animated: boolean,
-  shake: (impulse: Vector) => void,
-): void {
+export function useEndingShake({moment, game, animated, shake}: EndingShake): void {
   const shookForRef = useRef(0);
 
   const shakeIfEnded = useEffectEvent((changed: GameMoment) => {

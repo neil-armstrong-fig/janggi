@@ -11,14 +11,16 @@ page decides when to ask; nothing in here knows about React or Redux (a lint rul
 
 ```
 BotTurnFor.ts          botTurnFor(engine, played, elo, evaluation): Promise<BotDecision> — the whole turn
+BotSetupFor.ts         botSetupFor(engine, side, hanSetup, elo, roll, signal): Promise<Setup> — a scored layout
 
 choice/                what the bot may play, and when it calls a bikjang — plain functions
+setups/                the four tournament setups, and which of those rated near the best to lay out
 notation/              positions and moves in the engine's spelling: FEN, UCI squares, the history
 engine/                Fairy-Stockfish, behind the `Engine` interface
   FairyStockfishFrom.ts     the UCI conversation, however the engine was started; one search at a time
   CreateFairyStockfish.ts   starts it in the page, on the first search
   uci-lines/                reading its output
-levels/                how long it thinks at each Elo
+levels/                how long it thinks at each Elo, and over each opening it rates for a layout
 ```
 
 ## Conventions particular to here

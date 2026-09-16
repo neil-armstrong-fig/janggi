@@ -35,6 +35,10 @@ given("a player takes on the bot", () => {
       expect(await janggi.status.isMarkedAsThePlayer("cho")).toBe(true);
       expect(await janggi.status.getShownRating("cho")).toBe(await janggi.recordSheet.getElo("Casual"));
     });
+
+    then("the bot's army may be arranged too, a casual game having no laying out", async ({janggi}) => {
+      expect(await janggi.settings.hanSetup.isChoosable()).toBe(true);
+    });
   });
 
   when("they play cho and push a soldier forward", () => {
@@ -137,6 +141,10 @@ given("a player takes on the bot in a scored game", () => {
     then("the bot answers the layout, then holds cho's first move until it is let start", async ({janggi}) => {
       expect(await janggi.status.isLayingOut()).toBe(false);
       expect(await janggi.status.isWaitingToLetTheBotStart()).toBe(true);
+    });
+
+    then("the bot's answer is its own, and cannot be changed for it", async ({janggi}) => {
+      expect(await janggi.settings.choSetup.isChoosable()).toBe(false);
     });
 
     when("they let the bot start", () => {

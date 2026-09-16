@@ -5,6 +5,14 @@ import {FILES} from "@src/game/board/BoardDimensions";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import type {Setup} from "@src/game/setups/types/Setup";
 
+/** One piece and the point it starts on. */
+interface Placement {
+  readonly side: Side;
+  readonly type: PieceType;
+  readonly file: File;
+  readonly rank: Rank;
+}
+
 /** Where one army's ranks sit, counted in from its own edge of the board. */
 interface HomeRanks {
   readonly back: Rank;
@@ -36,16 +44,16 @@ function armyFor(side: Side, setup: Setup): PlacedPiece[] {
   return [
     ...backRankFor(side, setup, home.back),
 
-    placed(side, "general", 5, home.palace),
+    placed({side, type: "general", file: 5, rank: home.palace}),
 
-    placed(side, "cannon", 2, home.cannons),
-    placed(side, "cannon", 8, home.cannons),
+    placed({side, type: "cannon", file: 2, rank: home.cannons}),
+    placed({side, type: "cannon", file: 8, rank: home.cannons}),
 
-    placed(side, "soldier", 1, home.soldiers),
-    placed(side, "soldier", 3, home.soldiers),
-    placed(side, "soldier", 5, home.soldiers),
-    placed(side, "soldier", 7, home.soldiers),
-    placed(side, "soldier", 9, home.soldiers),
+    placed({side, type: "soldier", file: 1, rank: home.soldiers}),
+    placed({side, type: "soldier", file: 3, rank: home.soldiers}),
+    placed({side, type: "soldier", file: 5, rank: home.soldiers}),
+    placed({side, type: "soldier", file: 7, rank: home.soldiers}),
+    placed({side, type: "soldier", file: 9, rank: home.soldiers}),
   ];
 }
 
@@ -64,13 +72,13 @@ function backRankFor(side: Side, setup: Setup, rank: Rank): PlacedPiece[] {
     const file = FILES[index];
     const type = points[index];
 
-    if (file && type) pieces.push(placed(side, type, file, rank));
+    if (file && type) pieces.push(placed({side, type, file, rank}));
   }
 
   return pieces;
 }
 
-function placed(side: Side, type: PieceType, file: File, rank: Rank): PlacedPiece {
+function placed({side, type, file, rank}: Placement): PlacedPiece {
   const position: Position = {file, rank};
 
   return {piece: {side, type}, position};

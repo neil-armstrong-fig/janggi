@@ -29,6 +29,7 @@ it("lays han out first in a scored game when it plays han", () => {
   expect(botDutyFor(dealtGame(scoredNobodyLaidOut).played, scoredNobodyLaidOut, botAsHan)).toEqual({
     kind: "layOut",
     side: "han",
+    hanSetup: undefined,
   });
 });
 
@@ -36,10 +37,11 @@ it("waits for han to lay out before answering as cho", () => {
   expect(botDutyFor(dealtGame(scoredNobodyLaidOut).played, scoredNobodyLaidOut, botAsCho)).toBeUndefined();
 });
 
-it("answers han's layout as cho", () => {
+it("answers han's layout as cho, knowing what han laid out", () => {
   expect(botDutyFor(dealtGame(scoredHanLaidOut).played, scoredHanLaidOut, botAsCho)).toEqual({
     kind: "layOut",
     side: "cho",
+    hanSetup: inner,
   });
 });
 

@@ -13,7 +13,7 @@ import {getStepThenTurnMoves} from "@src/game/moves/utils/GetStepThenTurnMoves";
  * See `docs/rules.md` §4.4.
  */
 export function getLegalElephantMoves(pieces: PieceLookup, from: Position, side: Side): readonly Position[] {
-  return getStepThenTurnMoves(pieces, from, side, DIAGONAL_STEPS_AFTER_THE_TURN);
+  return getStepThenTurnMoves(pieces, {from, side, turns: DIAGONAL_STEPS_AFTER_THE_TURN});
 }
 
 const DIAGONAL_STEPS_AFTER_THE_TURN = 2;

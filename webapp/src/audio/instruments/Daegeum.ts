@@ -1,3 +1,4 @@
+import type {SoundOutput} from "@src/audio/types/SoundOutput";
 import {noiseBuffer} from "@src/audio/instruments/utils/NoiseBuffer";
 
 /** One held note on the flute. */
@@ -17,8 +18,8 @@ export interface DaegeumNote {
  * Swelled into rather than struck, with a thread of air through it, and a vibrato that is not there at
  * the start of the note and grows as it is held — the way a 대금 player leans into a long tone.
  */
-export function daegeum(context: BaseAudioContext, destination: AudioNode, when: number, note: DaegeumNote): void {
-  const {frequency, weight, length} = note;
+export function daegeum({context, destination}: SoundOutput, when: number, daegeumNote: DaegeumNote): void {
+  const {frequency, weight, length} = daegeumNote;
   const end = when + length;
 
   const tone = context.createOscillator();

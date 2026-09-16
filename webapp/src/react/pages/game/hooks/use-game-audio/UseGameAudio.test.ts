@@ -2,12 +2,12 @@
 import "@src/testing/SetupDomTest";
 import type {CueName} from "@src/audio/types/CueName";
 import {FULL_VOLUME} from "@janggi/shared/janggi/settings/Volume";
+import type {GameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAudio";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {Move} from "@src/game/types/Move";
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
-import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {changeBetween} from "@src/game/record/ChangeBetween";
 import {newGame} from "@src/game/NewGame";
@@ -152,12 +152,8 @@ describe("a game being listened to", () => {
   });
 });
 
-interface Props {
-  readonly played: PlayedGame;
-  readonly moment: GameMoment | undefined;
-  readonly soundEffectsVolume: Volume;
-  readonly musicVolume: Volume;
-}
+/** Exactly what the hook takes, so a re-render is the same object the page would hand it. */
+type Props = GameAudio;
 
 interface Rendered {
   props: Props;
@@ -174,11 +170,7 @@ function renderOn(played: PlayedGame): Rendered {
     soundEffectsVolume: FULL_VOLUME,
     musicVolume: FULL_VOLUME,
   };
-  const rendered = renderHook(
-    ({played: game, moment, soundEffectsVolume, musicVolume}: Props) =>
-      useGameAudio(game, moment, soundEffectsVolume, musicVolume),
-    {initialProps},
-  );
+  const rendered = renderHook((props: Props) => useGameAudio(props), {initialProps});
 
   const handle: Rendered = {
     props: initialProps,

@@ -25,7 +25,7 @@ Fairy-Stockfish defines four janggi variants in `src/variant.cpp`: `janggi`
 | Two passes in a row | Settled on points — both formats | Points with counting; a draw without |
 | Pass | Unrestricted, except while in check | Allowed to both sides; in a standing bikjang, even in check |
 | Material, 13/7/5/3/3/2 and Han's 1.5 덤 | Yes | Yes — `JANGGI_MATERIAL`, a `-1` tiebreak for the half point |
-| Setup phase | Enforced in Scored | Not modelled — it is handed an arranged position |
+| Setup phase | Enforced in Scored; the bot's own layout is chosen by asking it to rate the openings (§2) | Not modelled — it is handed an arranged position |
 
 **The 30-point threshold and the general-capture exception cannot be switched on**
 through `variants.ini`. They would need new code upstream, which is an
@@ -51,6 +51,18 @@ The engine is never asked an open question.
   (`choice/ShouldCallBikjang.ts`). And it drops any candidate that hands the
   opponent a bikjang the opponent would want by the same test, unless that leaves
   nothing (`choice/hands-opponent-a-bikjang/`).
+- **A scored layout is rated, not rolled** (`BotSetupFor.ts`). Laying out Cho, the
+  bot searches the opening each of the four tournament setups comes to against the
+  layout Han actually chose, and lays out the best for Cho — the privilege Han's 덤
+  pays for. Laying out Han there is nothing to answer yet, so it searches all
+  sixteen pairings and lays out the setup whose best Cho answer does Han least
+  harm. Each is an ordinary restricted search from the opening, Cho to move, at the
+  bot's Elo — but for a fixed 250ms (`levels/SetupSearchTime.ts`), since sixteen
+  at the top rung's move time would be forty seconds before a first move. Setups
+  rated within 30 centipawns of the best count as equal and one is picked at
+  random (`setups/NearBestSetup.ts`): a quarter-second search does not tell them
+  apart, and the same layout should not always get the same answer. A casual game
+  has no laying out; the player may arrange the bot's army as well as their own.
 
 **Accepted, not fixed:** below the root of its search the engine still judges
 repetition, the threshold and bikjang by its own rules, so a line several plies

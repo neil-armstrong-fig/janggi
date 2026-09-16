@@ -6,6 +6,14 @@ import type {RecordChange} from "@src/game/record/types/RecordChange";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {outcomeOf} from "@src/game/OutcomeOf";
 
+/** One change to the record, the record it left, who was played, and whether a rated game was in progress. */
+export interface RatedChange {
+  readonly change: RecordChange;
+  readonly played: PlayedGame;
+  readonly opponent: Opponent;
+  readonly inProgress: boolean;
+}
+
 /**
  * What one change to the record means for the player's rating, if anything.
  *
@@ -18,12 +26,7 @@ import {outcomeOf} from "@src/game/OutcomeOf";
  * Nothing is read into a turn taken back or played again: against the bot neither control is offered,
  * and between two people at one device nothing is rated at all.
  */
-export function ratingEventFor(
-  change: RecordChange,
-  played: PlayedGame,
-  opponent: Opponent,
-  inProgress: boolean,
-): RatingEvent | undefined {
+export function ratingEventFor({change, played, opponent, inProgress}: RatedChange): RatingEvent | undefined {
   if (change.direction === "dealt") return inProgress ? {kind: "abandoned"} : undefined;
 
   if (change.direction !== "advanced" || opponent.name !== "Bot") return undefined;

@@ -35,7 +35,7 @@ const choMated: GameState = {
 };
 
 it("starts rating a game against the bot on its first turn, whoever took it", () => {
-  expect(ratingEventFor(ADVANCED, firstTurn, bot, false)).toEqual({
+  expect(ratingEventFor({change: ADVANCED, played: firstTurn, opponent: bot, inProgress: false})).toEqual({
     kind: "started",
     format: "Scored",
     botElo: 1400,
@@ -44,31 +44,39 @@ it("starts rating a game against the bot on its first turn, whoever took it", ()
 });
 
 it("says nothing about a turn once the game is already under way", () => {
-  expect(ratingEventFor(ADVANCED, secondTurn, bot, true)).toBeUndefined();
+  expect(ratingEventFor({change: ADVANCED, played: secondTurn, opponent: bot, inProgress: true})).toBeUndefined();
 });
 
 it("rates nothing played between two people at one device", () => {
-  expect(ratingEventFor(ADVANCED, firstTurn, human, false)).toBeUndefined();
+  expect(ratingEventFor({change: ADVANCED, played: firstTurn, opponent: human, inProgress: false})).toBeUndefined();
 });
 
 it("abandons the game in progress when a new one is dealt over it", () => {
-  expect(ratingEventFor(DEALT, playedGameFrom(opening), bot, true)).toEqual({kind: "abandoned"});
+  const played = playedGameFrom(opening);
+
+  expect(ratingEventFor({change: DEALT, played, opponent: bot, inProgress: true})).toEqual({kind: "abandoned"});
 });
 
 it("abandons nothing when a game is dealt with none in progress", () => {
-  expect(ratingEventFor(DEALT, playedGameFrom(opening), bot, false)).toBeUndefined();
+  const played = playedGameFrom(opening);
+
+  expect(ratingEventFor({change: DEALT, played, opponent: bot, inProgress: false})).toBeUndefined();
 });
 
 it("finishes a game the player wins by checkmate", () => {
   const played: PlayedGame = {past: [opening, opening], present: choMated, future: []};
 
-  expect(ratingEventFor(ADVANCED, played, bot, true)).toEqual({kind: "finished", result: "won", ending: "checkmate"});
+  expect(ratingEventFor({change: ADVANCED, played, opponent: bot, inProgress: true})).toEqual({
+    kind: "finished",
+    result: "won",
+    ending: "checkmate",
+  });
 });
 
 it("finishes a game the player loses by checkmate", () => {
   const played: PlayedGame = {past: [opening, opening], present: choMated, future: []};
 
-  expect(ratingEventFor(ADVANCED, played, {...bot, playerSide: "cho"}, true)).toEqual({
+  expect(ratingEventFor({change: ADVANCED, played, opponent: {...bot, playerSide: "cho"}, inProgress: true})).toEqual({
     kind: "finished",
     result: "lost",
     ending: "checkmate",
@@ -78,7 +86,11 @@ it("finishes a game the player loses by checkmate", () => {
 it("finishes a game settled on points by two rested turns", () => {
   const played = restTurn(restTurn(secondTurn));
 
-  expect(ratingEventFor(ADVANCED, played, bot, true)).toEqual({kind: "finished", result: "won", ending: "points"});
+  expect(ratingEventFor({change: ADVANCED, played, opponent: bot, inProgress: true})).toEqual({
+    kind: "finished",
+    result: "won",
+    ending: "points",
+  });
 });
 
 it("finishes a casual game drawn by a called bikjang as a draw", () => {
@@ -92,16 +104,23 @@ it("finishes a casual game drawn by a called bikjang as a draw", () => {
   };
   const played: PlayedGame = {past: [facing, facing], present: facing, future: []};
 
-  expect(ratingEventFor(ADVANCED, played, bot, true)).toEqual({kind: "finished", result: "drawn", ending: "bikjang"});
+  expect(ratingEventFor({change: ADVANCED, played, opponent: bot, inProgress: true})).toEqual({
+    kind: "finished",
+    result: "drawn",
+    ending: "bikjang",
+  });
 });
 
 it("finishes nothing that was never started", () => {
   const played: PlayedGame = {past: [opening, opening], present: choMated, future: []};
 
-  expect(ratingEventFor(ADVANCED, played, bot, false)).toBeUndefined();
+  expect(ratingEventFor({change: ADVANCED, played, opponent: bot, inProgress: false})).toBeUndefined();
 });
 
 it("reads nothing into a turn taken back or played again", () => {
-  expect(ratingEventFor({direction: "takenBack", transition: undefined}, firstTurn, bot, true)).toBeUndefined();
-  expect(ratingEventFor({direction: "replayed", transition: undefined}, firstTurn, bot, true)).toBeUndefined();
+  const takenBack: RecordChange = {direction: "takenBack", transition: undefined};
+  const replayed: RecordChange = {direction: "replayed", transition: undefined};
+
+  expect(ratingEventFor({change: takenBack, played: firstTurn, opponent: bot, inProgress: true})).toBeUndefined();
+  expect(ratingEventFor({change: replayed, played: firstTurn, opponent: bot, inProgress: true})).toBeUndefined();
 });

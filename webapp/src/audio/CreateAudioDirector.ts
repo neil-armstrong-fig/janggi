@@ -65,9 +65,10 @@ export function createAudioDirector(): AudioDirector {
 
       const {context, effects} = graph;
       const when = context.currentTime + LATENCY_S;
+      const soundOutput = {context, destination: effects};
 
       cues.forEach((cue, index) => {
-        CUE_VOICINGS[cue.name](context, effects, when + index * BETWEEN_CUES_S, cue.weight);
+        CUE_VOICINGS[cue.name](soundOutput, when + index * BETWEEN_CUES_S, cue.weight);
       });
     },
 
@@ -75,7 +76,7 @@ export function createAudioDirector(): AudioDirector {
       if (!graph || channels.effects === 0 || graph.context.state !== "running") return;
 
       const {context, effects} = graph;
-      CUE_VOICINGS[cue.name](context, effects, context.currentTime + LATENCY_S, cue.weight);
+      CUE_VOICINGS[cue.name]({context, destination: effects}, context.currentTime + LATENCY_S, cue.weight);
     },
 
     setMood: (next: Mood) => {

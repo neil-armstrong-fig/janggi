@@ -1,11 +1,12 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {callBikjang} from "@src/game/bikjang/CallBikjang";
 import {expect, it} from "vitest";
 import {outcomeOf} from "@src/game/OutcomeOf";
+import {placed} from "@src/testing/Placed";
 
 /**
  * The call itself. What it settles is `outcomeOf`'s to say and differs by format, which is why the
@@ -75,14 +76,10 @@ function position(format: MatchFormat, ...pieces: readonly PlacedPiece[]): GameS
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }
