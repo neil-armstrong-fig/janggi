@@ -24,6 +24,12 @@ const EFFECTS_SPECS = "**/effects/**";
  */
 export const BOT_GAME_SPECS = "**/bot/PlayingTheBotToTheEnd.test.ts";
 
+/**
+ * Service-worker updates, which need a production build: the development server deliberately does
+ * not register the app's production worker. `playwright.pwa.config.ts` runs these against preview.
+ */
+export const PWA_SPECS = "**/pwa/**";
+
 export default defineConfig<AcceptanceTestOptions>({
   testDir: "./src/tests",
   outputDir: "./test-results",
@@ -45,13 +51,13 @@ export default defineConfig<AcceptanceTestOptions>({
   projects: [
     {
       name: "desktop",
-      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS],
+      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS, PWA_SPECS],
       use: {...devices["Desktop Chrome"], reducedMotion: "reduce", effects: "Reduced"},
     },
     // A real touch viewport, so tap targets and layout are covered on every run.
     {
       name: "mobile",
-      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS],
+      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS, PWA_SPECS],
       use: {...devices["Pixel 5"], reducedMotion: "reduce", effects: "Reduced"},
     },
 

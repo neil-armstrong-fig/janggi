@@ -66,6 +66,10 @@ jobs:
 
       - run: pnpm acceptance-tests
 
+      # Release updates need the production service worker, which the ordinary dev-server suite does
+      # not register. This is deterministic and gates the deploy with the rest of the acceptance tests.
+      - run: pnpm acceptance-tests:pwa
+
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
@@ -151,6 +155,10 @@ jobs:
 
       # The deployed URL, rather than the one baked into the :production script.
       - run: pnpm acceptance-tests
+        env:
+          WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
+
+      - run: pnpm acceptance-tests:pwa
         env:
           WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
 

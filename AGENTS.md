@@ -45,6 +45,7 @@ pnpm format              # apply Prettier; fixes most format:check failures
 pnpm lint:fix            # apply the ESLint fixes that are automatic
 pnpm start               # dev server on http://localhost:3000
 pnpm acceptance-tests    # needs `pnpm start` running in another terminal
+pnpm acceptance-tests:pwa # release updates; needs the compiled webapp running under its preview script
 pnpm install-browsers    # one-time Playwright chromium download
 pnpm test:properties     # the property tests, which `pnpm checks` leaves out
 pnpm test:bot-games      # whole games on the real engine under Node, also left out

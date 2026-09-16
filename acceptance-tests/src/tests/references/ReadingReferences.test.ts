@@ -18,34 +18,34 @@ given("a player has moved a soldier", () => {
     });
 
     then("the sources and software have their own readable sections", async ({janggi}) => {
-      expect(await janggi.references.headings()).toEqual([
+      expect(await janggi.references.getHeadings()).toEqual([
         "Rules & match formats",
         "Opening arrangements & variants",
         "The computer opponent",
         "Open source software & tools",
       ]);
-      expect(await janggi.references.fitsWindow()).toBe(true);
+      expect(await janggi.references.isFullyOnScreen()).toBe(true);
     });
 
     then("the app, rule sources and engine link back to their creators", async ({janggi}) => {
-      expect(await janggi.references.destinationOf("references-repository")).toBe(
+      expect(await janggi.references.getDestinationOf("references-repository")).toBe(
         "https://github.com/neil-armstrong-fig/janggi",
       );
-      expect(await janggi.references.destinationOf("reference-kja")).toBe(
+      expect(await janggi.references.getDestinationOf("reference-kja")).toBe(
         "http://www.kja.or.kr/business/business5.php",
       );
-      expect(await janggi.references.destinationOf("reference-openings-research")).toBe(
+      expect(await janggi.references.getDestinationOf("reference-openings-research")).toBe(
         "https://github.com/neil-armstrong-fig/janggi/blob/main/docs/opening-setups.md",
       );
-      expect(await janggi.references.destinationOf("reference-fairy-wasm")).toBe(
+      expect(await janggi.references.getDestinationOf("reference-fairy-wasm")).toBe(
         "https://github.com/fairy-stockfish/fairy-stockfish.wasm",
       );
-      expect(await janggi.references.destinationOf("reference-engine-licence")).toMatch(/\/engine\/Copying\.txt$/);
-      expect(await janggi.references.destinationOf("reference-engine-authors")).toMatch(/\/engine\/AUTHORS$/);
+      expect(await janggi.references.getDestinationOf("reference-engine-licence")).toMatch(/\/engine\/Copying\.txt$/);
+      expect(await janggi.references.getDestinationOf("reference-engine-authors")).toMatch(/\/engine\/AUTHORS$/);
     });
 
     then("the credits explain contributions and identify the software licences", async ({janggi}) => {
-      const content = await janggi.references.content();
+      const content = await janggi.references.getContent();
       expect(content).toContain("Casual");
       expect(content).toContain("Scored");
       expect(content).toContain("장하영");
@@ -79,8 +79,8 @@ given("someone visits the references address directly", () => {
     });
 
     then("the references remain readable", async ({janggi}) => {
-      expect(await janggi.references.content()).toContain("References & credits");
-      expect(await janggi.references.destinationOf("references-repository")).toBe(
+      expect(await janggi.references.getContent()).toContain("References & credits");
+      expect(await janggi.references.getDestinationOf("references-repository")).toBe(
         "https://github.com/neil-armstrong-fig/janggi",
       );
     });
