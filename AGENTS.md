@@ -25,7 +25,15 @@ code already says. Three so far:
 Add a document here only when the reasoning is too long to sit in a comment and losing it would mean
 someone re-deriving it; link it from the code it justifies.
 
-Each package has its own `AGENTS.md` — read the one for the package you are editing.
+## Before changing code
+
+1. Identify every package in scope and read each applicable package `AGENTS.md` in full before
+   planning.
+2. Inspect the nearest existing implementation and test that establish the local structure and
+   naming. If none exists, say so.
+3. Before editing, say which instruction files and reference implementations you used.
+4. Before finishing, re-read the applicable instructions and perform a standards-only review of
+   the diff. Fix deviations that lint and tests cannot detect before reporting completion.
 
 ## Commands
 
