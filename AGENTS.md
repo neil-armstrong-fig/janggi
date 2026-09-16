@@ -338,6 +338,66 @@ pgrep -a claude
 Each session is one line carrying `--permission-prompt-tool`. More than one and you are not alone —
 ask first, naming the command you want to run and why.
 
+## Working on a feature in a worktree
+
+Anything bigger than a small fix is built in its own git worktree, so the main checkout stays free for
+whoever else is working in it. `EnterWorktree` makes one under `.claude/worktrees/<name>` on a branch
+called `worktree-<name>`; `git worktree add` does the same by hand.
+
+**It needs its own dependencies.** A worktree has no `node_modules`:
+
+```bash
+pnpm install --frozen-lockfile --offline
+```
+
+**The files are yours; the repository is not.** Branches, remotes and the stash stack are shared with
+the main checkout and every other worktree, so the rules in the section above still hold — above all,
+never `git stash` / `git stash pop`, because another session's work is in that stack. Set work aside
+with a WIP commit on your own branch instead.
+
+**Run the app on a port of your own.** The main checkout holds 3000, so take another and tell the
+specs where to look, or you will be testing somebody else's code:
+
+```bash
+pnpm --filter @janggi/webapp exec vite --port 3100 --strictPort   # in the background
+WEBAPP_URL=http://localhost:3100 pnpm --filter @janggi/acceptance-tests exec playwright test
+```
+
+**Verify in the worktree before handing anything over**: `pnpm checks`, the acceptance suite against
+your own port, and `pnpm test:bot-games` when the bot is involved.
+
+**Then stop, and leave the work uncommitted.** Say what changed and what you ran. The branch is
+reviewed and committed by hand — that review is the point of the worktree, and committing for
+somebody removes it.
+
+**Once that commit exists, merge and clear up.** Run the merge from the main checkout, never from the
+worktree:
+
+```bash
+git -C /path/to/main-checkout merge worktree-<name>
+```
+
+Main will usually have moved on, so expect a real merge rather than a fast-forward — and **a clean
+text merge proves nothing**. Run `pnpm checks` again on the merged result, and the acceptance suite
+too where both sides touched the same area: two commits that never conflict line-for-line can still
+disagree about a function's signature.
+
+Then take the worktree down and delete the branch:
+
+```bash
+git worktree remove .claude/worktrees/<name>
+git branch -d worktree-<name>
+```
+
+`ExitWorktree` only closes a worktree the *current* session opened with `EnterWorktree` — against one
+from an earlier session it is a no-op and says so, which is what the two commands above are for.
+
+**Kill any dev server you started, by process and not by wrapper.** `pkill -f "vite --port <port of your instance>"`
+matches the shell that launched it and leaves `vite.js` holding the port, so the next `--strictPort`
+start fails with "Port is already in use". `pgrep -a -f vite` shows what is actually running.
+
+Pushing is the human's, always.
+
 ## Keeping the context small
 
 Every tool result stays in the context and is re-read on each API call that follows it, so a large
@@ -368,7 +428,9 @@ mostly by how much you put in front of yourself and how long you leave it there.
 - **Adding or upgrading any dependency.** Versions are exact-pinned, several deliberately (see
   below), and a `minimumReleaseAge` supply-chain policy rejects packages published in the last day.
 - **Deleting or rebuilding `pnpm-lock.yaml`.** It re-resolves every transitive dependency.
-- **Any git commit, branch or push.**
+- **Any git commit, branch or push.** The one standing exception is the end of the worktree flow
+  above — merging a branch the human has just committed, and removing the worktree and branch
+  afterwards, are agreed in advance. Pushing never is.
 - **Any git command that writes to the index, the stash or the working tree.** See above.
 
 ## Gotchas that will waste your time
@@ -379,6 +441,8 @@ mostly by how much you put in front of yourself and how long you leave it there.
 - **Do not add `baseUrl` to a tsconfig.** TS 6 made it an error. `paths` already resolve relative to
   the tsconfig's own directory — Vite and Playwright both handle this.
 - **`pnpm setup` is a built-in pnpm command**, not ours. The script is `pnpm install-browsers`.
+- **The remote is called `github`, not `origin`.** `git log origin/main..HEAD` dies with "unknown
+  revision"; what you want is `github/main`, and `git branch -vv` says how far ahead you are.
 - **Root-level files are outside every package's Prettier.** `AGENTS.md` and `docs/` resolve no
   config when Prettier is run on them from a package directory — it falls back to 80 columns and
   rewraps content you never touched. Edit them by hand and leave the formatter out of it.
