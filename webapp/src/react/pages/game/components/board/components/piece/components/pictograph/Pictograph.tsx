@@ -1,5 +1,5 @@
 import {CENTRE} from "@src/react/pages/game/components/board/components/piece/utils/PieceViewBox";
-import type {PictographGlyphStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {PictographGlyphStyle} from "@src/styles/types/PieceStyle";
 
 /**
  * One drawing, centred on the piece, in place of the character naming it.

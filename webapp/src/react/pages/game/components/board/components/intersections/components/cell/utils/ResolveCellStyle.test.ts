@@ -1,4 +1,4 @@
-import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
+import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {resolveCellStyle} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/ResolveCellStyle";
 import {expect, it} from "vitest";
 

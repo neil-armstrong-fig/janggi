@@ -6,13 +6,12 @@ import {dealtGame} from "@src/redux/game/dealing/DealtGame";
 import {freshPhaseFor} from "@src/redux/game/dealing/FreshPhaseFor";
 
 /**
- * The game a player meets the first time they open the app: casual, against someone at the same
- * device, dealt on the common arrangement. What the slice starts from, and what a game kept on the
- * device falls back to when it cannot be trusted.
+ * The game a player meets the first time they open the app: casual, against the bot, dealt on the
+ * common arrangement. What the slice starts from, and what a game kept on the device falls back to
+ * when it cannot be trusted.
  *
- * The bot's settings are at their defaults even though the bot is not playing, so choosing it finds
- * them there. Its side is Cho, the default choice, and deliberately not Random: the first game is the
- * same every time.
+ * The player opens as Cho against the weakest bot playing Han, and deliberately not on a random army:
+ * the first game is the same every time, and nobody waits for the bot before they have touched anything.
  */
 export function firstGame(): GameSliceState {
   return {

@@ -1,5 +1,15 @@
 import {configureStore} from "@reduxjs/toolkit";
+import {CUSTOM_STYLES_STORAGE_KEY} from "@src/redux/custom-styles/storage/CustomStylesStorageKey";
+import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
 import {GAME_STORAGE_KEY} from "@src/redux/game/storage/GameStorageKey";
+import {PROGRESS_STORAGE_KEY} from "@src/redux/progress/storage/ProgressStorageKey";
+import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceState";
+import {botKeptWithinReach} from "@src/redux/game/GameSlice";
+import {customStylesReducer} from "@src/redux/custom-styles/CustomStylesSlice";
+import {loadCustomStyles} from "@src/redux/custom-styles/storage/LoadCustomStyles";
+import {loadProgress} from "@src/redux/progress/storage/LoadProgress";
+import {progressFromDebug} from "@src/redux/debug/ProgressFromDebug";
+import {progressReducer} from "@src/redux/progress/ProgressSlice";
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import {PREFERENCES_STORAGE_KEY} from "@src/redux/preferences/storage/PreferencesStorageKey";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -27,6 +37,8 @@ export interface RootState {
   readonly game: GameSliceState;
   readonly preferences: PreferencesSliceState;
   readonly ratings: RatingsSliceState;
+  readonly progress: ProgressSliceState;
+  readonly customStyles: CustomStylesSliceState;
 }
 
 export type AppStore = ReturnType<typeof configureStore<RootState>>;
@@ -41,20 +53,36 @@ export type AppDispatch = AppStore["dispatch"];
  * start for whatever does not check out. The ratings are read in the light of the game come back to —
  * a rated game still on the board is still in progress; one that is not has been abandoned
  * (`restoredRatings`).
+ *
+ * The progress is read in the light of the record, which a device that has never kept progress is
+ * credited from (`loadProgress`); and the game in the light of the progress, so a game not yet begun is
+ * never left set against a bot the player has not reached (`botKeptWithinReach`).
+ *
+ * **`VITE_DEBUG_XP` opens the app at whatever progress it names**, over whatever is stored —
+ * `VITE_DEBUG_XP=640 pnpm start`, or a whole progress as JSON for one that has beaten bots as well. It is
+ * for working on what XP unlocks without playing to it; what it sets is then kept on the device like any
+ * other progress, so unset it and reload to go back to what was there. `ListenForDebugMessages` is the
+ * same door at runtime, which is the one the acceptance tests use.
  */
 export function createStore(storage?: Storage): AppStore {
-  const game = loadGame(storage);
+  const ratings = loadRatings(storage);
+  const progress = progressFromDebug(import.meta.env.VITE_DEBUG_XP) ?? loadProgress(storage, ratings);
+  const game = gameReducer(loadGame(storage), botKeptWithinReach(progress.beaten));
 
   const created = configureStore({
     reducer: {
       game: gameReducer,
       preferences: preferencesReducer,
       ratings: ratingsReducer,
+      progress: progressReducer,
+      customStyles: customStylesReducer,
     },
     preloadedState: {
       game,
       preferences: loadPreferences(storage),
-      ratings: restoredRatings(loadRatings(storage), game, new Date().toISOString()),
+      ratings: restoredRatings(ratings, game, new Date().toISOString()),
+      progress,
+      customStyles: loadCustomStyles(storage),
     },
   });
 
@@ -71,11 +99,13 @@ export function createStore(storage?: Storage): AppStore {
 function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   // Local rather than module constants: `store` is made at the top of this module, before anything
   // declared below it with `const` exists.
-  const slices: readonly (keyof RootState)[] = ["game", "preferences", "ratings"];
+  const slices: readonly (keyof RootState)[] = ["game", "preferences", "ratings", "progress", "customStyles"];
   const keys: Record<keyof RootState, string> = {
     game: GAME_STORAGE_KEY,
     preferences: PREFERENCES_STORAGE_KEY,
     ratings: RATINGS_STORAGE_KEY,
+    progress: PROGRESS_STORAGE_KEY,
+    customStyles: CUSTOM_STYLES_STORAGE_KEY,
   };
 
   let saved = kept.getState();

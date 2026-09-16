@@ -1,6 +1,6 @@
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
-import type {Setup} from "@src/game/setups/types/Setup";
 import {elephantPairingOf} from "@src/game/setups/ElephantPairingOf";
+import {useAppSelector} from "@src/redux/Hooks";
 
 /**
  * What the two chosen arrangements have come to, where the game has a name for it — 맞상 or 엇상.
@@ -18,12 +18,8 @@ import {elephantPairingOf} from "@src/game/setups/ElephantPairingOf";
  * pairing §7's table classifies. An absent line rather than a line saying "neither": there is no
  * such thing to tell a player about.
  */
-interface Props {
-  readonly hanSetup: Setup | undefined;
-  readonly choSetup: Setup | undefined;
-}
-
-export function ElephantPairingLine({hanSetup, choSetup}: Props): React.JSX.Element | null {
+export function ElephantPairingLine(): React.JSX.Element | null {
+  const {hanSetup, choSetup} = useAppSelector(state => state.game.phase);
   const pairing = hanSetup && choSetup ? elephantPairingOf(hanSetup, choSetup) : undefined;
 
   if (!pairing) return null;

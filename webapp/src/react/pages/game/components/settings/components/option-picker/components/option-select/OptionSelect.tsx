@@ -12,6 +12,10 @@ import {toSlug} from "@src/react/pages/game/components/settings/components/optio
  * While nothing has been chosen — a scored game's setups — the dropdown shows a placeholder that
  * cannot itself be picked, and it goes away once a real option has been.
  *
+ * **A locked option is listed but cannot be picked**, with a padlock and the reason after its name —
+ * a native option has nowhere else to say it. Its `value` stays the bare name, so a spec still chooses
+ * and reads options by value, and `data-locked` says which are locked.
+ *
  * The text is 16px because iOS zooms the page into any form field smaller than that when it is
  * focused.
  */
@@ -21,6 +25,7 @@ interface Props<Option extends WithName> {
   readonly options: readonly Option[];
   readonly selected: Option | undefined;
   readonly disabled: boolean;
+  readonly lockedReason: ((option: Option) => string | undefined) | undefined;
   readonly onSelect: (option: Option) => void;
 }
 
@@ -30,6 +35,7 @@ export function OptionSelect<Option extends WithName>({
   options,
   selected,
   disabled,
+  lockedReason,
   onSelect,
 }: Props<Option>): React.JSX.Element {
   return (
@@ -51,16 +57,22 @@ export function OptionSelect<Option extends WithName>({
           </option>
         )}
 
-        {options.map(option => (
-          <option
-            key={option.name}
-            data-testid={`${pickerId}-option-${toSlug(option.name)}`}
-            value={option.name}
-            className="bg-ground-raised"
-          >
-            {option.name}
-          </option>
-        ))}
+        {options.map(option => {
+          const reason = lockedReason?.(option);
+
+          return (
+            <option
+              key={option.name}
+              data-testid={`${pickerId}-option-${toSlug(option.name)}`}
+              data-locked={reason !== undefined || undefined}
+              value={option.name}
+              disabled={reason !== undefined}
+              className="bg-ground-raised"
+            >
+              {reason === undefined ? option.name : `${option.name} — 🔒 ${reason}`}
+            </option>
+          );
+        })}
       </select>
 
       <svg

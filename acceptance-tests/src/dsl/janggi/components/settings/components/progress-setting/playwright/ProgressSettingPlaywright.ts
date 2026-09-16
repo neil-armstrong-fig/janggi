@@ -1,0 +1,66 @@
+import type {Locator, Page} from "@playwright/test";
+import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
+
+/**
+ * The Progress section of the settings sheet: the XP, the next unlock, the save key to copy and the box
+ * to load one.
+ *
+ * Reading the XP needs nothing, the sheet always being in the page. Reading the save key does — it is
+ * only shown once Copy has been pressed — so `getSaveKey` presses it in the sheet, the way `RecordSheet`
+ * opens its tab to read a rating.
+ */
+export class ProgressSettingPlaywright extends SettingsSheetComponent {
+  private readonly xp: Locator;
+  private readonly nextUnlock: Locator;
+  private readonly copy: Locator;
+  private readonly key: Locator;
+  private readonly input: Locator;
+  private readonly load: Locator;
+  private readonly message: Locator;
+
+  constructor(page: Page) {
+    super(page);
+
+    this.xp = page.getByTestId("progress-xp");
+    this.nextUnlock = page.getByTestId("progress-next-unlock");
+    this.copy = page.getByTestId("save-copy");
+    this.key = page.getByTestId("save-key");
+    this.input = page.getByTestId("save-load-input");
+    this.load = page.getByTestId("save-load-submit");
+    this.message = page.getByTestId("save-load-message");
+  }
+
+  async loadSave(key: string): Promise<void> {
+    await this.inSheet(this.input, async () => {
+      await this.input.fill(key);
+      await this.load.click();
+      await this.message.waitFor({state: "attached"});
+    });
+  }
+
+  async getXp(): Promise<number> {
+    return Number(await this.xp.getAttribute("data-xp"));
+  }
+
+  /** The XP the next unlock needs, or undefined once everything is unlocked. */
+  async getNextUnlockXp(): Promise<number | undefined> {
+    const xp = await this.nextUnlock.getAttribute("data-xp");
+
+    return xp === null ? undefined : Number(xp);
+  }
+
+  async getSaveKey(): Promise<string> {
+    let key = "";
+
+    await this.inSheet(this.copy, async () => {
+      await this.copy.click();
+      key = await this.key.inputValue();
+    });
+
+    return key;
+  }
+
+  async isSaveRefused(): Promise<boolean> {
+    return (await this.message.getAttribute("data-accepted")) === "false";
+  }
+}

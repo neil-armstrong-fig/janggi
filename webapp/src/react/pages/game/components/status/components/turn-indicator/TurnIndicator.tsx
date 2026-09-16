@@ -2,6 +2,8 @@ import type {GameStatus} from "@src/react/pages/game/components/status/utils/Gam
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
+import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
+import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
 /**
  * The herald: whose turn it is, whether their general is under attack, and how the game ended — a
@@ -13,25 +15,21 @@ import {sideName} from "@src/react/pages/game/utils/SideNames";
  * sharper case of the same thing — every piece refuses at once, and only this line says the game is
  * over rather than broken. The plaques say the same thing in light; this says it in words.
  *
- * Tinted by what it announces: the colour of the army to move, red for a check, gold for a result.
+ * Tinted by what it announces: the colour of the army to move, red for a check, gold for a result. While
+ * the game waits on the bot it says so, in words and in `data-bot-to-move` — the attribute a spec waits on
+ * to know the bot has played. With effects in full the words give a small bump each time they change.
+ *
+ * It reads the game for itself, through `useGameStatus`, and is handed nothing.
  *
  * The attributes rather than the text are the contract with the acceptance tests, so the wording can
  * change without breaking a spec. `aria-live` is what makes the turn passing an announcement rather
  * than a silent change to a line nobody is looking at.
  */
-interface Props {
-  /** What `gameStatusOf` made of the position and the setup phase, which `Status` has already asked. */
-  readonly status: GameStatus;
-  /**
-   * Whether the game is waiting on the bot, which the line says in words and in `data-bot-to-move` —
-   * the attribute a spec waits on to know the bot has played.
-   */
-  readonly botToMove: boolean;
-  /** Whether the words give a small bump each time they change, so the turn passing is seen to. */
-  readonly animated: boolean;
-}
+export function TurnIndicator(): React.JSX.Element {
+  const {status, botsTurn, awaitingGoAhead} = useGameStatus();
+  const {effects} = usePreferences();
 
-export function TurnIndicator({status, botToMove, animated}: Props): React.JSX.Element {
+  const botToMove = botsTurn && !awaitingGoAhead;
   const winner = winnerOf(status);
   const announcement = botToMove ? botAnnouncementOf(status) : announcementOf(status);
 
@@ -54,7 +52,7 @@ export function TurnIndicator({status, botToMove, animated}: Props): React.JSX.E
           stays put, so a screen reader still hears it. */}
       <span
         key={announcement}
-        className={clsx("inline-block", animated && "animate-[herald-bump_320ms_ease-out_both]")}
+        className={clsx("inline-block", effects.full && "animate-[herald-bump_320ms_ease-out_both]")}
       >
         {announcement}
       </span>

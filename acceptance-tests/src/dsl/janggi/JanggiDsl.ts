@@ -1,4 +1,5 @@
 import {BoardDsl} from "@src/dsl/janggi/components/board/BoardDsl";
+import {DebugDsl} from "@src/dsl/janggi/components/debug/DebugDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import type {Page} from "@playwright/test";
@@ -6,6 +7,7 @@ import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordShee
 import {ReferencesDsl} from "@src/dsl/janggi/components/references/ReferencesDsl";
 import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
 import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
+import {StylesSheetDsl} from "@src/dsl/janggi/components/styles-sheet/StylesSheetDsl";
 
 /**
  * The application under test, and the whole of what a spec is handed.
@@ -37,6 +39,8 @@ export class JanggiDsl {
   readonly status: StatusDsl;
   readonly recordSheet: RecordSheetDsl;
   readonly references: ReferencesDsl;
+  readonly stylesSheet: StylesSheetDsl;
+  readonly debug: DebugDsl;
 
   constructor(page: Page) {
     this.janggi = new JanggiPlaywright(page);
@@ -46,6 +50,8 @@ export class JanggiDsl {
     this.status = new StatusDsl(page);
     this.recordSheet = new RecordSheetDsl(page);
     this.references = new ReferencesDsl(page);
+    this.stylesSheet = new StylesSheetDsl(page);
+    this.debug = new DebugDsl(page);
   }
 
   async navigateToPage(): Promise<void> {

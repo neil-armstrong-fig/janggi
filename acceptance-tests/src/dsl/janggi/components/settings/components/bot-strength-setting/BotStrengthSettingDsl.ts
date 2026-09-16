@@ -34,4 +34,13 @@ export class BotStrengthSettingDsl {
       throw new DslError("Failed to check whether the bot's strength can still be chosen", error);
     }
   }
+
+  /** Whether a strength is listed but may not be played yet, the one beneath it not having been beaten. */
+  async isLocked(elo: BotElo): Promise<boolean> {
+    try {
+      return await this.strength.isLocked(elo);
+    } catch (error) {
+      throw new DslError(`Failed to read whether the ${elo} bot is locked`, error);
+    }
+  }
 }

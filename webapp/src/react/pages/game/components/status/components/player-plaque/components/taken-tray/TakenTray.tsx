@@ -1,6 +1,6 @@
 import type {KeyedPiece} from "@src/react/pages/game/components/status/components/player-plaque/components/taken-tray/types/KeyedPiece";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";

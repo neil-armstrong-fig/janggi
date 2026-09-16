@@ -25,10 +25,19 @@ it("reads back every preference that was kept", () => {
   expect(loadPreferences(storageHolding(chosen))).toEqual(chosen);
 });
 
-it("puts back the default for a style the app no longer ships, and keeps the rest", () => {
-  expect(loadPreferences(storageHolding({...chosen, boardStyle: "Marble"}))).toEqual({
+it("keeps a style's name it has no list to check against, for the page to look up", () => {
+  expect(loadPreferences(storageHolding({...chosen, boardStyle: "My own board", pieceSet: "My own pieces"}))).toEqual({
+    ...chosen,
+    boardStyle: "My own board",
+    pieceSet: "My own pieces",
+  });
+});
+
+it("puts back the default for a style that is not named at all, and keeps the rest", () => {
+  expect(loadPreferences(storageHolding({...chosen, boardStyle: 42, pieceSet: ""}))).toEqual({
     ...chosen,
     boardStyle: defaultPreferences().boardStyle,
+    pieceSet: defaultPreferences().pieceSet,
   });
 });
 

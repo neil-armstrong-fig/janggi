@@ -1,5 +1,5 @@
 import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
-import type {CellStyle} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
+import type {CellStyle} from "@src/styles/types/CellStyle";
 import {toPositionKey} from "@src/game/board/PositionKeys";
 
 const NEON_CELL: CellStyle = {
