@@ -1,9 +1,10 @@
 import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
 /**
- * A board style paints the intersections and nothing else. The two that ship look nothing alike —
+ * A board style paints the intersections and nothing else. Classic and Neon look nothing alike —
  * one is wood and ink, the other is deliberately unlike a real board — so this is where it shows
- * whether painting the grid can reach the game standing on it.
+ * whether painting the grid can reach the game standing on it. Every spec starts with every board
+ * unlocked; `progress/UnlockingStyles.test.ts` is where the locks are.
  */
 given("a user is choosing a board", () => {
   when("a different board is chosen", () => {

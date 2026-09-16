@@ -1,4 +1,4 @@
-import type {CharacterSet} from "@src/react/pages/game/components/board/piece-styles/types/CharacterSet";
+import type {CharacterSet} from "@src/styles/types/CharacterSet";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 
 /**

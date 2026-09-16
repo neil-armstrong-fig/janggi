@@ -313,7 +313,9 @@ A workspace package added later is **denied by default**; add it to `allowedPack
 package's `eslint.config.js` to permit it. Packages also enforce their own internal layering — see
 the `AGENTS.md` in each. Inside `webapp/` that layering is `react/` → `redux/` → `game/`, one way
 only, with `audio/` beside `redux/`: `react/` may reach it, and it reaches nothing — the page decides
-what a game sounds like and hands it cues and a mood to play.
+what a game sounds like and hands it cues and a mood to play. `styles/` sits under both `react/` and
+`redux/` — the shape of a board or piece style, which the page draws and the store keeps a player's own
+of — and reaches into neither.
 
 Flat config replaces a rule rather than merging it, so **never write `"no-restricted-imports"`
 directly in an override** — call `restrictedImports({...})` from `shared/config/eslint.base.js`, or

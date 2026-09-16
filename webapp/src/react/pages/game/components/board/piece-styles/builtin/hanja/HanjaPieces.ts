@@ -1,5 +1,5 @@
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
-import type {CharacterGlyphStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {CharacterGlyphStyle} from "@src/styles/types/PieceStyle";
 import {
   GENERAL_SIZE,
   MODERN_SANS,

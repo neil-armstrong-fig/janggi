@@ -34,6 +34,11 @@ interface Props<Option extends WithName> {
   readonly selected: Option | undefined;
   /** A picker whose choice is no longer available — a setup, once play has begun. */
   readonly disabled?: boolean;
+  /**
+   * Why an option may not be chosen yet — the XP it costs, or the bot to beat first — or undefined for an
+   * option that may. A locked option is still listed, so a player can see what there is to work towards.
+   */
+  readonly lockedReason?: (option: Option) => string | undefined;
   /** What the options mean, unfolded from a (?) beside the label. */
   readonly explanation?: React.ReactNode;
   readonly onSelect: (option: Option) => void;
@@ -46,6 +51,7 @@ export function OptionPicker<Option extends WithName>({
   options,
   selected,
   disabled = false,
+  lockedReason,
   explanation,
   onSelect,
 }: Props<Option>): React.JSX.Element {
@@ -78,6 +84,7 @@ export function OptionPicker<Option extends WithName>({
               option={option}
               selected={option.name === selected?.name}
               disabled={disabled}
+              lockedReason={lockedReason?.(option)}
               onSelect={onSelect}
             />
           ))}
@@ -91,6 +98,7 @@ export function OptionPicker<Option extends WithName>({
           options={options}
           selected={selected}
           disabled={disabled}
+          lockedReason={lockedReason}
           onSelect={onSelect}
         />
       )}

@@ -10,6 +10,8 @@ src/References.tsx    references entry — independent of the game and store
 src/react/            components, nested by who uses them
   release-update/     update notice shared by the game shell and references page
 src/redux/            Store.ts, typed Hooks.ts, one folder per slice
+src/styles/           the shape of a board style and a piece set — types only, below both the page
+                      that draws them and the store that keeps a player's own
 src/game/             the janggi engine — rules, move generation, game state, and the record a
                       game is taken back through. No React, no Redux
 src/audio/            the sound — synthesised effects and adaptive music. Plays what it is handed;
@@ -64,8 +66,10 @@ genuinely its own, not to file loose components.
 `Status` **frames** the board rather than sitting above it. It is handed the board as `children` and
 puts Han's plaque above it and Cho's below, so each army's score and losses sit on its own side, with
 the herald under Han's plaque, the controls under Cho's, and a result announced over the board
-itself. `Settings` is a sheet that slides up over the page; whether it is open is `GamePage`'s state,
-because the button that opens it is drawn by `Status`.
+itself. The frame is layout only: each of those parts reads and dispatches for itself, and their shared
+question about what the game is doing goes through `useGameStatus`. `Settings` is the same shape — the
+sheet groups concrete settings that own their values and choices. Whether it is open is `GamePage`'s
+state, because the button that opens it is drawn by `Status`.
 
 Naming a folder for its subject rather than its shape (root `AGENTS.md`) bites here in one
 particular way: Tailwind means presentation lives in the JSX, so a folder called `styles/` reads as
@@ -89,7 +93,13 @@ describing how cells and pieces are painted, and say so.
 - **Every element an acceptance test needs gets a `data-testid`.** That attribute is the contract
   with `acceptance-tests/` — renaming one breaks specs.
 - Redux: use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped
-  `react-redux` hooks. Add state as a slice via `createSlice`. **State more than one section reads
+  `react-redux` hooks. Add state as a slice via `createSlice`.
+- **A slice is wiring; what its actions mean lives beneath it.** A reducer says which rule an action
+  runs and on what, and the rule itself is a plain function in a folder under the slice, with its own
+  test beside it — `game/within-reach/`, `custom-styles/joining/`, `ratings/recording/`. A helper
+  private to a slice file can only be reached by dispatching, which makes the case it covers hard to
+  name and its edges hard to reach; the same function one folder down is testable directly and keeps
+  the slice readable as a list of what happens when. **State more than one section reads
   belongs in a slice, not in `useState` on the page** — `useState` is for what one component owns,
   like the piece in hand or whether the settings sheet is open.
 - **A fact the engine can work out is derived where it is shown, never stored.** Check, the winner
@@ -135,11 +145,28 @@ describing how cells and pieces are painted, and say so.
   style, the piece set, the movable-piece mark, the effects, the sound effects and the music, which
   are preferences about how a game is drawn or heard: the `preferences` slice, applied the moment
   they are chosen.
-- **Preferences are stored by name.** `state.preferences` holds `BoardStyleName`, `PieceSetName` and
-  the rest from `@janggi/shared`, never the style objects — `src/redux/` may not import `src/react/`,
-  and a name is also what a picker shows, a spec asks for and storage keeps. `usePreferences`
-  (`pages/game/hooks/use-preferences/`) is the one place a name becomes what it names; read them
-  through it rather than selecting `state.preferences` directly.
+- **Preferences are stored by name.** `state.preferences` holds names, never the style objects —
+  `src/redux/` may not import `src/react/`, and a name is also what a picker shows, a spec asks for and
+  storage keeps. The board style and piece set are plain strings, since either may name one of the
+  player's own styles. `usePreferences` (`pages/game/hooks/use-preferences/`) is the one place a name
+  becomes what it names — and where a style that is locked, or no longer there, falls back to the
+  default — so read them through it rather than selecting `state.preferences` directly.
+- **Progress is stored, not derived from the record.** `state.progress` is XP and the bot strengths
+  each army has beaten, earned in `useRatedGame` alongside the rating. It is a number of its own because
+  resetting the record must not take unlocks away, and because editing it by hand is a way to the
+  Hacker theme the game means to leave open — `progressFrom` takes any amount. What XP opens is
+  `UNLOCK_PRICES`. A bot rung opens off `openBotElos`, which climbs **four ladders kept apart** — each army
+  in each format — one rung at a time: a strength opens only once the one beneath it has been beaten on
+  that ladder, so a save naming a high rung with the lower ones missing climbs no further than the gap.
+  A game not yet begun is never left set against a bot out of reach (`botKeptWithinReach`, on load and on
+  `saveLoaded`), and choosing another army or format drops the strength the same way.
+- **Saves and styles travel as keys, never through a server.** The codec and the save schema live in
+  `@janggi/shared`, so the acceptance tests build keys with the app's own code. A key is `janggi-<save|board|pieces>:`
+  and base64url JSON — plain and unsigned on purpose, so a player can decode and edit their own save.
+  `state.customStyles` holds a player's imported and made styles. Everything pasted is checked all the
+  way down by `BoardStyleFrom`/`PieceSetStyleFrom`, and `isCssValue` refuses any value that could load
+  from elsewhere (`url(https://…)`, `image-set`) or climb out of its property: nobody moderates shared
+  styles, so a style must not be able to fetch a picture or tell its author who is looking.
 - **The whole store is kept on the device.** `Store.ts` loads every slice from `localStorage` and
   writes each back when it changes, so a closed page reopens on the same game, preferences and record.
   **What is read back is untrusted**: each slice has a loader under its own `storage/` that checks every
@@ -147,12 +174,17 @@ describing how cells and pieces are painted, and say so.
   game is refused whole if any position fails (a crash in `applyMove` is what a half-trusted board
   buys); the ratings keep what they can. A new field on a slice needs its loader taught about it, and a
   change to a slice's shape needs its storage key's version raised.
-- **A page section reads the store; a component below it takes props.** `Status`, `Board` and
-  `Settings` call `useAppSelector`/`useAppDispatch` and `usePreferences` themselves, so `GamePage`
-  hands them only what it works out — the moment, the sound callbacks, and whether the settings
-  sheet is open, the one `useState` it keeps. Below that line every component stays pure and knows
-  nothing about Redux — which is what lets `Piece`, `Cell`, `PlayerPlaque` and the rest be reasoned
-  about from their props alone.
+- **A component reads what it draws from the store and dispatches what it does for itself.** A section
+  such as `Status` or `Settings` is layout, not a place to select a dozen values and thread them down.
+  Where several siblings ask the same derived question, one hook keeps their answer together —
+  `useGameStatus` is the example — rather than restoring the prop tunnel at their parent.
+
+  Props carry only what the store does not hold: page-owned sound and sheet state; a `GameMoment`; a
+  component's coordinated animation state; identity, such as which side a plaque draws; and everything
+  a generic or repeated component needs. `OptionPicker`, `VolumeSlider`, `Cell`, `Piece` and
+  `ResultBanner` stay prop-driven for that reason. Do not make a generic leaf know the application store
+  just to save its concrete caller a prop.
+
 - **Something a player does that touches no intersection is a control, not a gesture.** Resting a
   turn and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in `Status`, in the
   row under the board — each enabled off a pure question the engine answers (`canPass`,
@@ -195,7 +227,7 @@ describing how cells and pieces are painted, and say so.
   **`src/audio/` may import nothing else of this package's** — `src/game/` included — nor React,
   Redux or `@janggi/shared`. **`src/bot/` may import `src/game/` and `@janggi/shared` only** — never
   the store, the page or the sound, nor React or Redux; it has its own `AGENTS.md`.
-  All five are lint errors.
+  **`src/styles/` may import neither the page, the store nor the sound.** All six are lint errors.
 - Lint rules come from `@eslint-react/eslint-plugin` (React 19 aware, TypeScript-first) plus
   `eslint-plugin-react-hooks`. The legacy `eslint-plugin-react` is deliberately not used — do not
   reintroduce it.
@@ -218,6 +250,17 @@ can tap out, so `WinningAGame.test.ts` drives a real check through the UI and st
 `GameStatusOf.test.ts` beside the component covers the win. Do that rather than adding a way to seed
 a position: a test-only door into the app is shipped code no player can reach, and every spec then
 leans on it instead of on the app.
+
+**One door is open, and only because it opens onto nothing new.** `redux/debug/` lets a posted message
+set the player's progress — `{janggi: "debug", progress: {xp: 640}}` — and `VITE_DEBUG_XP` does the same
+at startup. A save key already does all of it, being plain, unsigned and pasteable by design, so this
+hands a player nothing they did not have; what it saves is the sheet and the typing, which is why the
+fixture opens every spec at a million XP through it rather than pasting a key before each one. **It is a
+door onto what a player has _earned_, never onto the game itself** — no spec may use it to stand a
+position up or skip a screen, and the save box it stands in for keeps its own criteria in
+`acceptance-tests/src/tests/progress/MovingYourProgress.test.ts`. It is left in the production build on
+purpose: a spec then behaves the same against the dev server, a preview build and the deployed site, and
+CI runs it against all three.
 
 | Code                                 | Tested by                                |
 | ------------------------------------ | ---------------------------------------- |
@@ -297,12 +340,14 @@ own writing or its own drawings without a line of code changing.
 
 Built-ins are named from the unions in `@janggi/shared/janggi/settings/` — `BuiltInBoardStyle` and
 `BuiltInPieceSetStyle` are the plain style types with the name narrowed. Renaming or dropping one
-then breaks the acceptance tests at compile time. User-authored styles stay the plain type.
+then breaks the acceptance tests at compile time. User-authored styles stay the plain type. Each
+built-in also needs a price in `UNLOCK_PRICES` (a record over the names, so it will not compile
+without one), and `BuiltInStyles.test.ts` holds every built-in to the check an imported style must pass.
 
-A set's marks live in a `marks/` folder beside it — `builtin/hangul/marks/`, `builtin/modern/marks/`
-— except where two sets share one. Traditional and Hanja write the same characters, so those rise to
-`builtin/marks/` and no further, which is the locality rule doing its job: a mark set beside a set
-belongs to it, one a level up is shared.
+A set's marks live in a `marks/` folder beside it — `builtin/hacker/marks/`, `builtin/modern/marks/`
+— except where sets share one. Several sets write the same hanja, and several the same hangul, so both
+rise to `builtin/marks/` and no further, which is the locality rule doing its job: a mark set beside a
+set belongs to it, one a level up is shared.
 
 `builtin/modern/marks/JanggiPictographs.ts` carries a provenance note. Keep it accurate: those
 paths were written by hand here, not traced from anything, and that is the only reason there is no
@@ -351,6 +396,8 @@ pnpm --filter @janggi/webapp generate-icon
 
 ```bash
 pnpm --filter @janggi/webapp start      # or `pnpm start` from the root
+VITE_DEBUG_XP=640 pnpm start            # open at 640 XP, over whatever is stored
+VITE_DEBUG_XP='{"xp":30,"beaten":{"cho":[800]}}' pnpm start   # with bots beaten as well
 pnpm --filter @janggi/webapp test       # Vitest — hook and plain-logic tests
 pnpm --filter @janggi/webapp test:bot-games   # whole games on the real engine, left out of `test`
 pnpm --filter @janggi/webapp compile    # tsc --noEmit && vite build, output in build/

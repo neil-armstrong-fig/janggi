@@ -1,3 +1,7 @@
+import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
+import {restarted} from "@src/redux/game/GameSlice";
+import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+
 /**
  * Deals a fresh game, abandoning whatever was being played.
  *
@@ -11,18 +15,31 @@
  * announcement of its result offers New game as well, there being nothing left to throw away.
  */
 interface Props {
-  readonly onStart: () => void;
+  /** Called once the game has been dealt, so the sheet that held the control can close. */
+  readonly onStarted: () => void;
 }
 
-export function NewGameButton({onStart}: Props): React.JSX.Element {
+export function NewGameButton({onStarted}: Props): React.JSX.Element {
+  const {played, opponent} = useAppSelector(state => state.game);
+  const dispatch = useAppDispatch();
+
   return (
-    <button
-      type="button"
-      data-testid="new-game"
-      onClick={onStart}
-      className="h-11 cursor-pointer rounded-xl border border-wood/40 text-sm font-semibold tracking-wide text-wood uppercase transition-[transform,background-color] duration-150 hover:bg-wood/10 active:scale-[0.98] motion-reduce:transition-none"
-    >
-      New game
-    </button>
+    <>
+      <button
+        type="button"
+        data-testid="new-game"
+        onClick={() => {
+          dispatch(restarted());
+          onStarted();
+        }}
+        className="h-11 cursor-pointer rounded-xl border border-wood/40 text-sm font-semibold tracking-wide text-wood uppercase transition-[transform,background-color] duration-150 hover:bg-wood/10 active:scale-[0.98] motion-reduce:transition-none"
+      >
+        New game
+      </button>
+
+      {opponent.name === "Bot" && playHasBegun(played) && (
+        <p className="-mt-1 text-xs text-white/50">Starting a new game now counts as a loss.</p>
+      )}
+    </>
   );
 }

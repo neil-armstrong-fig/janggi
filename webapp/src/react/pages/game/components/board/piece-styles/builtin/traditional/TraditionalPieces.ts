@@ -1,8 +1,4 @@
-import type {
-  CharacterGlyphStyle,
-  PieceBodyStyle,
-  PieceStyle,
-} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {CharacterGlyphStyle, PieceBodyStyle, PieceStyle} from "@src/styles/types/PieceStyle";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {HANJA_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HanjaCharacters";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";

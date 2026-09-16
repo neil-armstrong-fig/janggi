@@ -1,4 +1,4 @@
-import type {PieceBodyStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {PieceBodyStyle} from "@src/styles/types/PieceStyle";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /**

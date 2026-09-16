@@ -12,32 +12,54 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  *
  * Typing the map as `Record<BoardStyleName, Locator>` means a style added to `@janggi/shared` and
  * not given a locator here is a compile error rather than a spec nobody wrote.
+ *
+ * More than two boards ship, so it is a native select, chosen and read by `value` — which stays the
+ * bare name even where a locked option's text carries a padlock after it. A player's own style has no
+ * locator of its own, being named however they like, so it is chosen by that name directly.
  */
 export class BoardSettingPlaywright extends SettingsSheetComponent {
-  private readonly picker: Locator;
+  private readonly select: Locator;
   private readonly options: Record<BoardStyleName, Locator>;
 
   constructor(page: Page) {
     super(page);
 
-    this.picker = page.getByTestId("board-style-picker");
+    this.select = page.getByTestId("board-style-select");
     this.options = {
       Classic: page.getByTestId("board-style-option-classic"),
       Neon: page.getByTestId("board-style-option-neon"),
+      Diagram: page.getByTestId("board-style-option-diagram"),
+      Tournament: page.getByTestId("board-style-option-tournament"),
+      Celadon: page.getByTestId("board-style-option-celadon"),
+      Dancheong: page.getByTestId("board-style-option-dancheong"),
+      Hacker: page.getByTestId("board-style-option-hacker"),
     };
   }
 
   async choose(name: BoardStyleName): Promise<void> {
-    await this.inSheet(this.picker, () => this.options[name].click());
+    const value = await this.options[name].getAttribute("value");
+    if (value === null) throw new Error(`The "${name}" option carries no value to select`);
+
+    await this.chooseNamed(value);
   }
 
-  /** The name on whichever button is pressed, or undefined before anything has rendered. */
-  async getSelected(): Promise<BoardStyleName | undefined> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    if ((await pressed.count()) === 0) return undefined;
+  async chooseNamed(name: string): Promise<void> {
+    await this.inSheet(this.select, async () => {
+      await this.select.selectOption(name);
+    });
+  }
 
-    const name = await pressed.textContent();
+  async getSelected(): Promise<BoardStyleName | undefined> {
+    const name = await this.select.inputValue();
 
     return BOARD_STYLE_NAMES.find(candidate => candidate === name);
+  }
+
+  async getSelectedName(): Promise<string> {
+    return await this.select.inputValue();
+  }
+
+  async isLocked(name: BoardStyleName): Promise<boolean> {
+    return (await this.options[name].getAttribute("data-locked")) !== null;
   }
 }

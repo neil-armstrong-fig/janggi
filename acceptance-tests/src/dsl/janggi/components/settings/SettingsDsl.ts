@@ -10,6 +10,7 @@ import {MusicSettingDsl} from "@src/dsl/janggi/components/settings/components/mu
 import {OpponentSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-setting/OpponentSettingDsl";
 import {SoundEffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/sound-effects-setting/SoundEffectsSettingDsl";
 import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
+import {ProgressSettingDsl} from "@src/dsl/janggi/components/settings/components/progress-setting/ProgressSettingDsl";
 import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
 import type {Page} from "@playwright/test";
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
@@ -50,6 +51,7 @@ export class SettingsDsl {
   readonly effects: EffectsSettingDsl;
   readonly soundEffects: SoundEffectsSettingDsl;
   readonly music: MusicSettingDsl;
+  readonly progress: ProgressSettingDsl;
 
   constructor(page: Page) {
     this.settings = new SettingsPlaywright(page);
@@ -66,6 +68,7 @@ export class SettingsDsl {
     this.effects = new EffectsSettingDsl(page);
     this.soundEffects = new SoundEffectsSettingDsl(page);
     this.music = new MusicSettingDsl(page);
+    this.progress = new ProgressSettingDsl(page);
   }
 
   /** Both armies at once, for a spec that only cares that they match. */

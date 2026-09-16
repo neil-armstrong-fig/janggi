@@ -1,5 +1,5 @@
 import {CENTRE} from "@src/react/pages/game/components/board/components/piece/utils/PieceViewBox";
-import type {CharacterGlyphStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {CharacterGlyphStyle} from "@src/styles/types/PieceStyle";
 
 /**
  * One character, centred on the piece — what is actually written on a board you can hold.

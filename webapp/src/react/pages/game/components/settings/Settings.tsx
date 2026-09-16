@@ -1,46 +1,22 @@
-import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
-import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
-import {
-  BOT_STRENGTH_OPTIONS,
-  OPPONENT_OPTIONS,
-  SIDE_CHOICE_OPTIONS,
-} from "@src/react/pages/game/components/settings/utils/OpponentOptions";
-import {EFFECTS} from "@src/react/pages/game/utils/EffectsOptions";
+import {BoardSetting} from "@src/react/pages/game/components/settings/components/board-setting/BoardSetting";
+import {BotStrengthSetting} from "@src/react/pages/game/components/settings/components/bot-strength-setting/BotStrengthSetting";
+import {EffectsSetting} from "@src/react/pages/game/components/settings/components/effects-setting/EffectsSetting";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/components/elephant-pairing-line/ElephantPairingLine";
-import {MATCH_FORMAT_OPTIONS} from "@src/react/pages/game/components/settings/utils/MatchFormats";
-import {MatchFormatExplanation} from "@src/react/pages/game/components/settings/components/match-format-explanation/MatchFormatExplanation";
-import {MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights";
+import {MatchFormatSetting} from "@src/react/pages/game/components/settings/components/match-format-setting/MatchFormatSetting";
+import {MovableHighlightSetting} from "@src/react/pages/game/components/settings/components/movable-highlight-setting/MovableHighlightSetting";
+import {MusicSetting} from "@src/react/pages/game/components/settings/components/music-setting/MusicSetting";
 import {NewGameButton} from "@src/react/pages/game/components/settings/components/new-game-button/NewGameButton";
-import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
+import {OpponentSetting} from "@src/react/pages/game/components/settings/components/opponent-setting/OpponentSetting";
+import {PieceSetSetting} from "@src/react/pages/game/components/settings/components/piece-set-setting/PieceSetSetting";
+import {Progress} from "@src/react/pages/game/components/settings/components/progress/Progress";
 import {RecordButton} from "@src/react/pages/game/components/settings/components/record-button/RecordButton";
 import {ReferencesLink} from "@src/react/pages/game/components/settings/components/references-link/ReferencesLink";
-import {SETUPS} from "@src/game/setups/Setups";
 import {SettingsGroup} from "@src/react/pages/game/components/settings/components/settings-group/SettingsGroup";
-import {
-  boardStyleChosen,
-  effectsChosen,
-  movableHighlightChosen,
-  musicVolumeChanged,
-  pieceSetChosen,
-  soundEffectsVolumeChanged,
-} from "@src/redux/preferences/PreferencesSlice";
-import {VolumeSlider} from "@src/react/pages/game/components/settings/components/volume-slider/VolumeSlider";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {canPlace} from "@src/game/setups/CanPlace";
+import {SetupSetting} from "@src/react/pages/game/components/settings/components/setup-setting/SetupSetting";
+import {SoundEffectsSetting} from "@src/react/pages/game/components/settings/components/sound-effects-setting/SoundEffectsSetting";
+import {StylesButton} from "@src/react/pages/game/components/settings/components/styles-button/StylesButton";
+import {YourSideSetting} from "@src/react/pages/game/components/settings/components/your-side-setting/YourSideSetting";
 import {clsx} from "clsx";
-import {
-  botStrengthChosen,
-  choSetupChosen,
-  formatChosen,
-  hanSetupChosen,
-  opponentChosen,
-  restarted,
-  sideChosen,
-} from "@src/redux/game/GameSlice";
-import {opponentOf} from "@src/game/utils/OpponentOf";
-import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
-import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
-import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
 /**
  * Everything a player may choose about the game and about how it is drawn, in a sheet that slides
@@ -54,56 +30,23 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * `inert`, so nothing in it can be tapped or focused — but every picker's pressed and disabled state
  * is still there to be read, and nothing is remounted each time it opens.
  *
- * Three groups, each folding away under its heading so the sheet is not one long scroll — only **This
- * game** starts laid out, being what a player opens the sheet for before a game. **This game** holds the settings
- * that are part of the game — dealt through the store, and locked on `playHasBegun` — together with
- * New game, which deals from them. **Appearance** holds the three that are preferences about how a
- * game is drawn; they are the store's `preferences` slice, read here through `usePreferences` just as
- * the board reads them to wear, and they never restart anything. **Sound & effects** holds three more
- * preferences of the same kind — how loud the game's sounds are, how loud the music under it is, and
- * how much the board moves — in the same slice.
+ * Four groups fold away under their headings so the sheet is not one long scroll. Only **This game**
+ * starts laid out, being what a player opens the sheet for before a game. **Appearance** and **Sound &
+ * effects** hold preferences worn immediately; **Progress** holds the XP, what it opens next, and the
+ * save key that carries it to another device.
  *
- * The two armies get a setup picker each because they genuinely choose separately: Han lays out
- * first, Cho answers, and whether the elephants end up on the same wing or facing each other across
- * the board is the result of those two choices rather than of one setting. See `Setups.ts`, and the
- * line under the two pickers, which names that pairing where the game has a name for it.
- *
- * In a **scored** game that order is a rule — `docs/rules.md` §6.6 — so the two pickers open empty,
- * Cho's waits for Han, and Han's closes the moment it is used. In a **casual** game none of that
- * applies: the pieces are simply dealt on the common arrangement and either army may be re-chosen
- * until the first move. The rule itself is `canPlace`.
- *
- * Which of janggi's two games is being played is a picker beside the setups rather than beside the
- * board style, because it is not a preference about how the game is drawn: it decides whether a
- * bikjang may be called at all and whether one draws. Like a back rank it is settled before play,
- * so it locks on the same question the setups do. Its two names say nothing to a player who has not
- * read the rules, so it carries a (?) that unfolds `MatchFormatExplanation`, and that answers even once
- * the format is locked.
- *
- * **Who the opponent is** sits with them for the same reason — against the bot, how strongly it plays
- * and which army is the player's. All three are dealt and lock with the rest. Against the bot in a
- * scored game, the bot's own army lays itself out, so its setup picker is closed to the player; a
- * casual game has no laying out, and the player arranges both armies. The bot needs the page
- * cross-origin isolated (`docs/bot.md`); where the browser will not isolate it, the opponent picker is
- * closed and a line says why.
+ * **It is layout, and only layout.** Each concrete setting reads the value it draws from the store and
+ * dispatches its own choice. This sheet decides only their grouping and order, and keeps only the state
+ * the store cannot own: whether the sheet is open, and which sibling sheet should replace it.
  */
 interface Props {
   readonly open: boolean;
   readonly onClose: () => void;
   readonly onOpenRecord: () => void;
+  readonly onOpenStyles: () => void;
 }
 
-export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Element {
-  const {played, phase, opponent} = useAppSelector(state => state.game);
-  const {boardStyle, pieceStyle, movableHighlight, effects, soundEffectsVolume, musicVolume} = usePreferences();
-  const dispatch = useAppDispatch();
-
-  const settled = playHasBegun(played);
-  const againstBot = opponent.name === "Bot";
-  const botAvailable = globalThis.crossOriginIsolated;
-  const laysOutItself = (side: Side): boolean =>
-    againstBot && phase.format === "Scored" && opponentOf(opponent.playerSide) === side;
-
+export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): React.JSX.Element {
   return (
     <>
       <div
@@ -144,139 +87,45 @@ export function Settings({open, onClose, onOpenRecord}: Props): React.JSX.Elemen
 
         <div className="flex flex-col gap-4 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <SettingsGroup title="This game" initiallyOpen>
-            <OptionPicker
-              id="match-format"
-              disabled={settled}
-              label="Format"
-              ariaLabel="Which of janggi's two games is being played"
-              options={MATCH_FORMAT_OPTIONS}
-              selected={{name: phase.format}}
-              explanation={<MatchFormatExplanation />}
-              onSelect={option => dispatch(formatChosen(option.name))}
-            />
+            <MatchFormatSetting />
 
-            <OptionPicker
-              id="opponent"
-              disabled={settled || (!botAvailable && !againstBot)}
-              label="Opponent"
-              ariaLabel="Who plays the other army"
-              options={OPPONENT_OPTIONS}
-              selected={{name: opponent.name}}
-              onSelect={option => dispatch(opponentChosen(option.name))}
-            />
+            <OpponentSetting />
 
-            {!botAvailable && (
-              <p className="-mt-1 text-xs text-white/50">
-                This browser cannot run the bot: it needs a cross-origin isolated page.
-              </p>
-            )}
+            <BotStrengthSetting />
 
-            <OptionPicker
-              id="bot-strength"
-              disabled={settled || !againstBot}
-              label="Bot strength"
-              ariaLabel="How strongly the bot plays, as an Elo rating"
-              options={BOT_STRENGTH_OPTIONS}
-              selected={BOT_STRENGTH_OPTIONS.find(option => option.elo === opponent.botElo)}
-              onSelect={option => dispatch(botStrengthChosen(option.elo))}
-            />
+            <YourSideSetting />
 
-            <OptionPicker
-              id="your-side"
-              disabled={settled || !againstBot}
-              label="Your side"
-              ariaLabel="Which army you play against the bot"
-              options={SIDE_CHOICE_OPTIONS}
-              selected={{name: opponent.sideChoice}}
-              onSelect={option => dispatch(sideChosen(option.name))}
-            />
+            <SetupSetting side="han" />
 
-            <OptionPicker
-              id="han-setup"
-              disabled={settled || laysOutItself("han") || !canPlace(phase, "han")}
-              label="Han's setup"
-              ariaLabel="Han's opening setup"
-              options={SETUPS}
-              selected={phase.hanSetup}
-              onSelect={setup => dispatch(hanSetupChosen(setup))}
-            />
+            <SetupSetting side="cho" />
 
-            <OptionPicker
-              id="cho-setup"
-              disabled={settled || laysOutItself("cho") || !canPlace(phase, "cho")}
-              label="Cho's setup"
-              ariaLabel="Cho's opening setup"
-              options={SETUPS}
-              selected={phase.choSetup}
-              onSelect={setup => dispatch(choSetupChosen(setup))}
-            />
+            <ElephantPairingLine />
 
-            <ElephantPairingLine hanSetup={phase.hanSetup} choSetup={phase.choSetup} />
-
-            <NewGameButton
-              onStart={() => {
-                dispatch(restarted());
-                onClose();
-              }}
-            />
-
-            {againstBot && settled && (
-              <p className="-mt-1 text-xs text-white/50">Starting a new game now counts as a loss.</p>
-            )}
+            <NewGameButton onStarted={onClose} />
 
             <RecordButton onOpen={onOpenRecord} />
           </SettingsGroup>
 
           <SettingsGroup title="Appearance">
-            <OptionPicker
-              id="board-style"
-              label="Board"
-              options={BUILT_IN_STYLES}
-              selected={boardStyle}
-              onSelect={style => dispatch(boardStyleChosen(style.name))}
-            />
+            <BoardSetting />
 
-            <OptionPicker
-              id="piece-style"
-              label="Pieces"
-              options={BUILT_IN_PIECE_STYLES}
-              selected={pieceStyle}
-              onSelect={set => dispatch(pieceSetChosen(set.name))}
-            />
+            <PieceSetSetting />
 
-            <OptionPicker
-              id="movable-highlight"
-              label="Movable pieces"
-              ariaLabel="Highlight the pieces that can move"
-              options={MOVABLE_HIGHLIGHTS}
-              selected={movableHighlight}
-              onSelect={highlight => dispatch(movableHighlightChosen(highlight.name))}
-            />
+            <MovableHighlightSetting />
+
+            <StylesButton onOpen={onOpenStyles} />
+          </SettingsGroup>
+
+          <SettingsGroup title="Progress">
+            <Progress />
           </SettingsGroup>
 
           <SettingsGroup title="Sound & effects">
-            <VolumeSlider
-              id="sound-effects"
-              label="Sound effects"
-              volume={soundEffectsVolume}
-              onChange={volume => dispatch(soundEffectsVolumeChanged(volume))}
-            />
+            <SoundEffectsSetting />
 
-            <VolumeSlider
-              id="music"
-              label="Music"
-              volume={musicVolume}
-              onChange={volume => dispatch(musicVolumeChanged(volume))}
-            />
+            <MusicSetting />
 
-            <OptionPicker
-              id="effects"
-              label="Effects"
-              ariaLabel="How much the board moves as the game is played"
-              options={EFFECTS}
-              selected={effects}
-              onSelect={chosen => dispatch(effectsChosen(chosen.name))}
-            />
+            <EffectsSetting />
           </SettingsGroup>
 
           <ReferencesLink />

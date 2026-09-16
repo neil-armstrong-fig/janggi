@@ -24,7 +24,7 @@ export default [
         "error",
         {
           selector:
-            'CallExpression[callee.name="then"] CallExpression[callee.property.name=/^(tap|hover|resizeWindowTo|navigateToPage|setTo|set[A-Z].*To|startNewGame|pass|callBikjang|undo|redo|toggleMute|toggleExplanation|waitForTheBot|reload|resetRecord|openReferences|visitReferences|followToolsWithKeyboard|makeAvailable|refresh|leaveUntilLater)$/]',
+            'CallExpression[callee.name="then"] CallExpression[callee.property.name=/^(tap|hover|resizeWindowTo|navigateToPage|setTo|set[A-Z].*To|startNewGame|pass|callBikjang|undo|redo|toggleMute|toggleExplanation|waitForTheBot|reload|resetRecord|openReferences|visitReferences|followToolsWithKeyboard|loadSave|importStyle|makeStyle|deleteStyle|setProgress|makeAvailable|refresh|leaveUntilLater)$/]',
           message:
             "Arrange in a beforeEach on the given or when, not inside a then. A criterion asserts; it does not set up.",
         },
@@ -134,8 +134,8 @@ export default [
     },
   },
   {
-    // The bottom of the stack: helpers more than one layer needs. Empty for now — the rule is here
-    // ahead of the folder so the boundary exists the moment something is put in it.
+    // The bottom of the stack: helpers more than one layer needs — the fixture and the specs both
+    // build share keys with what is here.
     files: ["src/shared/**"],
     rules: {
       "no-restricted-imports": restrictedImports({

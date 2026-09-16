@@ -6,7 +6,7 @@ Playwright runs the specs. Four layers, and imports only ever point downwards:
 src/tests/                        the mapping, "@src/shared/*" and @janggi/shared, nothing else
 src/acceptance-criteria-mapping/  src/dsl/ and src/shared/; never src/tests/
 src/dsl/                          itself and src/shared/; never upwards
-src/shared/                       helpers more than one layer needs — empty for now
+src/shared/                       helpers more than one layer needs — building share keys
 ```
 
 Every arrow above is a lint rule, so a violation fails `pnpm checks`.
@@ -334,20 +334,31 @@ them went stale twice while it was being kept.
   `record` (the record sheet, `inert` while closed) with `record-elo` carrying `data-elo`, and the
   controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
   `settings-close`, `record-open`, `record-close`, `record-reset`, `references-open`, and the
-  question reset opens, `record-reset-confirm` and `record-reset-cancel`. On
+  question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
+  `progress-xp` and `progress-next-unlock` carrying `data-xp`, `save-copy` and the `save-key` it shows,
+  and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The styles
+  sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
+  `-submit` and `-message` (`data-accepted`), and the editor's `style-editor-kind`, `-from`, `-name`,
+  `-json`, `-save` and `-message` (`data-accepted`), or `style-editor-locked` in their place. On the
+  result, `result-xp` carrying `data-xp`, and `result-unlocked`. On
   `pass`, `bikjang`, `undo` and `redo` the `disabled` attribute is part of the contract: they are
   disabled rather than hidden. `move-flight` and `impact` are drawn over the board only while motion
   is shown, and only the effects specs look for them.
 - **`data-testid`, composed** — `cell-f<file>r<rank>`; `score-<side>`, `taken-<side>` and
-  `plaque-<side>`; `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
+  `plaque-<side>`, whose `plaque-player-<side>` carries `data-player` and `data-elo` and whose
+  `plaque-xp-<side>` carries `data-xp` (the player's own plaque only, and the words are shortened —
+  read the attribute); `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
   `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
   option. The ten picker ids are `board-style`, `piece-style`, `movable-highlight`, `match-format`,
   `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A picker that
   explains itself — only `match-format` so far — adds an `<id>-explain` toggle, never disabled, and
   an `<id>-explanation` panel present only while unfolded. A picker of two options is a row of buttons, the chosen one carrying
   `aria-pressed`; one of more is a native `<id>-select`, whose `<option>`s carry the option ids and
-  are chosen by their `value`. Grow a picker past two options and its `*Playwright` must switch
-  shape. The two volumes, `sound-effects` and `music`, are an `<id>-volume` range input and an
+  are chosen and read by their `value` — a locked option's text carries a padlock and a reason, its
+  `value` never does. A locked option carries `data-locked`. Grow a picker past two options and its
+  `*Playwright` must switch shape. Each of the player's own styles is a `custom-style` row carrying
+  `data-kind` and `data-name`, holding `custom-style-copy`, `custom-style-key` and
+  `custom-style-delete`. The two volumes, `sound-effects` and `music`, are an `<id>-volume` range input and an
   `<id>-mute` button whose `aria-pressed` is what "muted" means to a spec.
 - **On a piece** — `data-piece`, written `<side>-<type>` and parsed back into a `Piece` by
   `@janggi/shared`. The pieces in a `taken-<side>` tray carry it too.
@@ -401,6 +412,25 @@ anything. Where that matters, add an `is…Shown()` question beside the value on
 chooses that in the settings sheet before the spec begins. Those projects also run with
 `reducedMotion: "reduce"`, which stills the sheet and the plaques. Nothing flies, shakes, pops or
 slides, and no spec ever waits on, or races, an animation.
+
+**Every spec also starts with everything unlocked.** A fresh device has only the first few styles and
+the weakest bot, and earning the rest is far deeper than a spec can tap, so the fixture puts the player
+at a million XP with every bot beaten, through the app's debug door — `janggi.debug.setProgress(...)`,
+which posts a message the app answers. A spec about the locks puts them back wherever it is about first;
+those are in `src/tests/progress/`.
+
+**Ordinary specs start against a person at the same device.** The app ships against the bot, which would
+answer moves and owns one army's setup picker; leaving that implicit would make every unrelated board
+criterion race an opponent it never named. The fixture therefore chooses Human through Settings. A spec
+about the shipped opponent calls `useShippedOpponent()` at the top of its file and is then responsible
+for the bot it kept; `DefaultState.test.ts` is the example.
+
+**The door arranges what a player has earned, and nothing else.** Everything a player does is still done
+through the screen they do it on, and the save box that sets progress by hand keeps its own criteria in
+`progress/MovingYourProgress.test.ts` — keys built by `saveKeyWith`, over the app's own codec and save schema
+from `@janggi/shared`. A key format is a wire contract, not a behaviour under test, so the specs share it
+rather than keeping a second copy that could drift from the one the app reads.
+`webapp/AGENTS.md` has why the door is allowed to exist at all.
 
 **The specs about the motion itself live under `src/tests/effects/`** and are run only by the
 `desktop-effects` and `mobile-effects` projects, which leave motion on. The default projects

@@ -1,6 +1,6 @@
 import {CENTRE} from "@src/react/pages/game/components/board/components/piece/utils/PieceViewBox";
 import {octagonPoints} from "@src/react/pages/game/components/board/components/piece/components/piece-body/components/body-shape/utils/OctagonPoints";
-import type {PieceBodyStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {PieceBodyStyle} from "@src/styles/types/PieceStyle";
 
 /**
  * One outline of a piece, at whatever radius it is asked for. The body and its inlay are the same

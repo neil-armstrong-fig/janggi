@@ -1,31 +1,36 @@
 import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/components/intersections/utils/BoardPositions";
-import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
 import {Cell} from "@src/react/pages/game/components/board/components/intersections/components/cell/Cell";
 import type {Flourish} from "@src/react/pages/game/components/board/types/Flourish";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {Move} from "@src/game/types/Move";
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {PositionKey} from "@src/game/board/types/Position";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
+import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {emphasisFor} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/EmphasisFor";
 import {flourishesOf} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/FlourishesOf";
 import {hintDelay} from "@src/react/pages/game/components/board/components/intersections/motion/HintDelay";
+import {isArranged} from "@src/game/setups/IsArranged";
 import {lastMoveEndAt} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveEndAt";
 import {lastMoveOf} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveOf";
 import {liftAt} from "@src/react/pages/game/components/board/components/intersections/motion/LiftAt";
 import {movablePieces} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/MovablePieces";
+import {moved} from "@src/redux/game/GameSlice";
 import {pieceAt} from "@src/game/board/lookup/PieceAt";
 import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 import {toPositionKey} from "@src/game/board/PositionKeys";
+import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useEffectEvent, useMemo} from "react";
 import {useMoveSelection} from "@src/react/pages/game/components/board/components/intersections/hooks/use-move-selection/UseMoveSelection";
+import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
 /**
  * Every intersection on the board, one `Cell` each — and where a game is played by touch. It owns which
  * piece is in hand and which is under the pointer, lights the points the piece in question may reach —
- * and, marked differently, those of its own army it would otherwise land on — and hands a completed
- * move up rather than applying it.
+ * and, marked differently, those of its own army it would otherwise land on — and dispatches a completed
+ * move itself.
+ *
+ * It reads what it draws from the store: the game, whether the player may touch it, both styles, the
+ * movable-piece mark and whether effects are full. Board hands down only the state its several layers
+ * coordinate — the current threat and motion — plus the page-owned sound of picking a piece up.
  *
  * Every mark a cell carries is worked out here from the whole board and handed down one point at a
  * time, so a `Cell` knows only its own intersection: whether a piece there may move, whether it is the
@@ -37,40 +42,30 @@ import {useMoveSelection} from "@src/react/pages/game/components/board/component
  * Rendered straight into the board's grid, one child per point, so the grid lays the cells out itself.
  */
 interface Props {
-  readonly played: PlayedGame;
-  /** False while a scored board is still being laid out — the pieces are drawn, and none may be touched. */
-  readonly playable: boolean;
-  readonly style: BoardStyle;
-  readonly pieceStyle: PieceSetStyle;
-  /** Whether to ring every piece its owner may move this turn. */
-  readonly highlightMovable: boolean;
   /** The check on the board, if there is one. */
   readonly threat: Threat | undefined;
   /** The point whose piece is hidden while a copy of it is shown flying in, if there is one. */
   readonly concealed: PositionKey | undefined;
   /** The most recent change to the game, which pieces show in place when effects are in full. */
   readonly moment: GameMoment | undefined;
-  readonly animated: boolean;
-  readonly onMove: (move: Move) => void;
   /** Called as a piece is picked up — a different piece, or the first. */
   readonly onPickUp: () => void;
 }
 
-export function Intersections({
-  played,
-  playable,
-  style,
-  pieceStyle,
-  highlightMovable,
-  threat,
-  concealed,
-  moment,
-  animated,
-  onMove,
-  onPickUp,
-}: Props): React.JSX.Element {
+export function Intersections({threat, concealed, moment, onPickUp}: Props): React.JSX.Element {
+  const {played, phase, opponent} = useAppSelector(state => state.game);
+  const dispatch = useAppDispatch();
+  const {boardStyle: style, pieceStyle, movableHighlight, effects} = usePreferences();
   const game = played.present;
-  const {selected, hovered, destinations, covered, tap, hover} = useMoveSelection(game, onMove, playable);
+  // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
+  // be touched until both armies have chosen. Closed while the bot is thinking too.
+  const playable = isArranged(phase) && botDutyFor(played, phase, opponent) === undefined;
+  const animated = effects.full;
+  const {selected, hovered, destinations, covered, tap, hover} = useMoveSelection(
+    game,
+    move => dispatch(moved(move)),
+    playable,
+  );
   const placedPieces = useMemo(() => piecesByPosition(game.pieces), [game.pieces]);
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
   const coveredKeys = useMemo(() => new Set(covered.map(toPositionKey)), [covered]);
@@ -78,8 +73,8 @@ export function Intersections({
   // On [game] rather than on every render: the cells re-render as the pointer crosses them, and
   // asking the engine for every legal move on the board is not something to do per hover.
   const movable = useMemo(
-    () => (highlightMovable ? movablePieces(game, playable) : NOTHING),
-    [game, highlightMovable, playable],
+    () => (movableHighlight.shown ? movablePieces(game, playable) : NOTHING),
+    [game, movableHighlight.shown, playable],
   );
   const attackerKeys = useMemo(() => new Set((threat?.attackers ?? []).map(toPositionKey)), [threat]);
   const flourishes = useMemo(() => (animated ? flourishesOf(moment, game) : NO_FLOURISHES), [animated, moment, game]);

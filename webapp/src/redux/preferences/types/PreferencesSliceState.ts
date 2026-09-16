@@ -1,7 +1,5 @@
-import type {BoardStyleName} from "@janggi/shared/janggi/settings/BoardStyleName";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
-import type {PieceSetName} from "@janggi/shared/janggi/settings/PieceSetName";
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 
 /**
@@ -13,12 +11,18 @@ import type {Volume} from "@janggi/shared/janggi/settings/Volume";
  * changes it, and a slice is where that is said once rather than drilled through `GamePage`.
  *
  * Held **by name**, not as the style objects the board draws with. `src/redux/` may not reach into
- * `src/react/`, where those objects live, and a name is also what a picker shows, what an acceptance
- * test asks for, and what survives being written to storage. `usePreferences` looks each one up.
+ * `src/react/`, where the built-in objects live, and a name is also what a picker shows, what an
+ * acceptance test asks for, and what survives being written to storage. `usePreferences` looks each one
+ * up.
+ *
+ * The board style and the piece set are plain strings rather than the built-in unions, because either
+ * may name one of the player's own styles. A name held here is therefore not a promise that anything is
+ * there to wear — the style may since have been deleted, or a save may have locked it again — so the
+ * lookup falls back to the default rather than trusting it.
  */
 export interface PreferencesSliceState {
-  readonly boardStyle: BoardStyleName;
-  readonly pieceSet: PieceSetName;
+  readonly boardStyle: string;
+  readonly pieceSet: string;
   readonly movableHighlight: MovableHighlightName;
   readonly effects: EffectsName;
   readonly soundEffectsVolume: Volume;

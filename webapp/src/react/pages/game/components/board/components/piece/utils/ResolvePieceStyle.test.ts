@@ -1,6 +1,6 @@
 import {JANGGI_PICTOGRAPHS} from "@src/react/pages/game/components/board/piece-styles/builtin/modern/marks/JanggiPictographs";
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
-import type {PieceStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
+import type {PieceStyle} from "@src/styles/types/PieceStyle";
 import {resolvePieceStyle} from "@src/react/pages/game/components/board/components/piece/utils/ResolvePieceStyle";
 import {expect, it} from "vitest";
 
