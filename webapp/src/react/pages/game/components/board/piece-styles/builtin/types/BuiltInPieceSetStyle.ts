@@ -1,5 +1,5 @@
 import type {PieceSetName} from "@janggi/shared/janggi/settings/PieceSetName";
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 
 /**
  * A piece set that ships with the app.

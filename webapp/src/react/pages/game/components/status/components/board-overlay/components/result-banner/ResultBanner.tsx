@@ -1,5 +1,6 @@
-import type {ArmyScores} from "@src/react/pages/game/components/status/types/ArmyScores";
+import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
+import type {Reward} from "@src/react/pages/game/components/status/components/board-overlay/types/Reward";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
@@ -20,6 +21,11 @@ import type {Wording} from "@src/react/pages/game/components/status/components/b
  * knows chess a game stopping on a call — the bot's, above all, which comes with no warning — looks like
  * the app giving up. The line names who called it and why the call was theirs to make.
  *
+ * **A game against the bot says what it earned** — its XP, and anything that XP unlocked — since the end
+ * of a game is when a player wants to know it, and the settings sheet is where they would otherwise
+ * have to go and look. An unlock is a gold badge rather than another grey line, and with effects in full
+ * it lands a beat after the result itself: the game is announced, and then what the game won you.
+ *
  * With effects in full it slams in, over a single soft flash of the board. Otherwise it is simply there.
  */
 interface Props {
@@ -29,6 +35,8 @@ interface Props {
   readonly bikjangCalledBy: Side | undefined;
   /** The army the bot is playing, so a call can be put in its mouth, or undefined between two people. */
   readonly botSide: Side | undefined;
+  /** What the game earned, or undefined where it earned nothing. */
+  readonly reward: Reward | undefined;
   readonly animated: boolean;
   readonly onStartNewGame: () => void;
 }
@@ -38,6 +46,7 @@ export function ResultBanner({
   scores,
   bikjangCalledBy,
   botSide,
+  reward,
   animated,
   onStartNewGame,
 }: Props): React.JSX.Element | null {
@@ -77,6 +86,24 @@ export function ResultBanner({
             className="mx-auto mt-2 max-w-64 text-xs leading-snug text-white/70"
           >
             {bikjangExplanationOf(status, bikjangCalledBy, botSide)}
+          </p>
+        )}
+
+        {reward && (
+          <p data-testid="result-xp" data-xp={reward.xp} className="mt-2 text-sm font-semibold text-gold tabular-nums">
+            +{reward.xp} XP
+          </p>
+        )}
+
+        {reward && reward.unlocked.length > 0 && (
+          <p
+            data-testid="result-unlocked"
+            className={clsx(
+              "mx-auto mt-2 w-fit rounded-full border border-gold/60 bg-gold/15 px-3 py-1 text-xs font-semibold tracking-wide text-gold",
+              animated && "animate-[result-slam_520ms_cubic-bezier(0.2,0.9,0.3,1.2)_both] [animation-delay:340ms]",
+            )}
+          >
+            🔓 Unlocked: {reward.unlocked.join(", ")}
           </p>
         )}
 

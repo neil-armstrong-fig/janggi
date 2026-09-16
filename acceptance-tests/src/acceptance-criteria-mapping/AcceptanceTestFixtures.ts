@@ -1,6 +1,7 @@
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {Page} from "@playwright/test";
 import {test as base} from "@playwright/test";
+import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import {JanggiDsl} from "@src/dsl/janggi/JanggiDsl";
 
 /**
@@ -38,23 +39,40 @@ export interface AnotherDeviceFixtures {
 /**
  * What a project may say about how every spec in it starts, set in `playwright.config.ts`.
  *
- * `effects` is the one. The app starts with its effects in full, and the ordinary projects turn them
- * down before a spec begins — through the settings sheet, the way a player would — so nothing flies,
- * shakes or pops and no spec ever waits on it. The effects projects leave them as the app starts.
+ * The app starts with its effects in full, and the ordinary projects turn them down before a spec
+ * begins — through the settings sheet, the way a player would — so nothing flies, shakes or pops and no
+ * spec ever waits on it. The effects projects leave them as the app starts.
+ *
+ * The shipped opponent is the bot, which would answer moves and owns its own setup picker. Ordinary
+ * specs explicitly start against a person at the same device so unrelated criteria remain in control of
+ * both armies. The one spec about the shipped opponent keeps it through `keepShippedOpponent`.
  */
 export interface AcceptanceTestOptions {
   effects: EffectsName;
+  keepShippedOpponent: boolean;
 }
 
 export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures & AcceptanceTestOptions>({
   effects: ["Full", {option: true}],
+  keepShippedOpponent: [false, {option: true}],
 
-  janggi: async ({page, effects}, use) => {
-    await use(await openedOn(page, effects));
+  janggi: async ({page, effects, keepShippedOpponent}, use) => {
+    await use(await openedOn(page, effects, keepShippedOpponent));
   },
 
   anotherDevice: async (
-    {browser, baseURL, viewport, isMobile, hasTouch, userAgent, deviceScaleFactor, reducedMotion, effects},
+    {
+      browser,
+      baseURL,
+      viewport,
+      isMobile,
+      hasTouch,
+      userAgent,
+      deviceScaleFactor,
+      reducedMotion,
+      effects,
+      keepShippedOpponent,
+    },
     use,
     testInfo,
   ) => {
@@ -72,7 +90,7 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
       reducedMotion,
     });
 
-    await use(await openedOn(await context.newPage(), effects));
+    await use(await openedOn(await context.newPage(), effects, keepShippedOpponent));
 
     await context.close();
   },
@@ -80,15 +98,31 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
 
 export {expect} from "@playwright/test";
 
-/** The app opened on `page`, with its effects turned to what the project asks for. */
-async function openedOn(page: Page, effects: EffectsName): Promise<JanggiDsl> {
+/**
+ * The app opened on `page`, with its effects turned to what the project asks for, and **everything
+ * unlocked**.
+ *
+ * A fresh device has only the first board, the first few piece sets and the weakest bot, and earning the
+ * rest is far deeper than a spec can tap. So every spec starts with a million XP and every bot beaten,
+ * set through the app's debug door (`janggi.debug`) — and a spec about the locks themselves puts the
+ * player back wherever it is about first. `src/tests/progress/` is where those are.
+ */
+async function openedOn(page: Page, effects: EffectsName, keepShippedOpponent: boolean): Promise<JanggiDsl> {
   const janggi = new JanggiDsl(page);
   await janggi.navigateToPage();
 
+  if (!keepShippedOpponent) await janggi.settings.opponent.setTo("Human");
   if (effects !== "Full") await janggi.settings.effects.setTo(effects);
+  await janggi.debug.setProgress(EVERYTHING_UNLOCKED);
 
   return janggi;
 }
+
+/** A million XP, and every bot beaten with both armies in both formats. */
+const EVERYTHING_UNLOCKED = {
+  xp: 1_000_000,
+  beaten: {Casual: {cho: BOT_ELOS, han: BOT_ELOS}, Scored: {cho: BOT_ELOS, han: BOT_ELOS}},
+};
 
 /**
  * How long a test with a second device may run. A game played out is some fifty turns, each waiting on

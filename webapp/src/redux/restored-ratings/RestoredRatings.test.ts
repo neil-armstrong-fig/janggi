@@ -45,7 +45,10 @@ it("rates the game as abandoned when the game come back to is against another st
 });
 
 it("rates the game as abandoned when the game come back to is against a person", () => {
-  const human = gameReducer(firstGame(), moved({from: {file: 1, rank: 7}, to: {file: 1, rank: 6}}));
+  const human = [opponentChosen("Human"), moved({from: {file: 1, rank: 7}, to: {file: 1, rank: 6}})].reduce(
+    gameReducer,
+    firstGame(),
+  );
 
   expect(restoredRatings(inProgress, human, NOW).inProgress).toBeUndefined();
 });

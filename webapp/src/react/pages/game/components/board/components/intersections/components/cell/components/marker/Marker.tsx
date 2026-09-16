@@ -1,5 +1,5 @@
 import {CENTRE} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellViewBox";
-import type {CellMarker} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
+import type {CellMarker} from "@src/styles/types/CellStyle";
 
 /** The shape a style can put on the intersection itself, drawn over the lines. */
 interface Props {

@@ -41,10 +41,10 @@ given("a user is choosing how to arrange the pieces", () => {
   });
 
   when("nothing has been chosen yet", () => {
-    then("both armies open on the common setup, with a traditional set on the board", async ({janggi}) => {
+    then("both armies open on the common setup, with modern pieces on the classic board", async ({janggi}) => {
       expect(await janggi.settings.hanSetup.getSelected()).toBe("Inner Elephant");
       expect(await janggi.settings.choSetup.getSelected()).toBe("Inner Elephant");
-      expect(await janggi.settings.pieceSet.getSelected()).toBe("Traditional");
+      expect(await janggi.settings.pieceSet.getSelected()).toBe("Modern");
       expect(await janggi.settings.board.getSelected()).toBe("Classic");
     });
   });

@@ -1,12 +1,12 @@
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
-import type {CharacterGlyphStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {CharacterGlyphStyle} from "@src/styles/types/PieceStyle";
 import {
   GENERAL_SIZE,
   MODERN_SANS,
   STANDARD_SIZE,
   modernBody,
 } from "@src/react/pages/game/components/board/piece-styles/builtin/utils/ModernSet";
-import {HANGUL_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/hangul/marks/HangulCharacters";
+import {HANGUL_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HangulCharacters";
 import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
 
 /**

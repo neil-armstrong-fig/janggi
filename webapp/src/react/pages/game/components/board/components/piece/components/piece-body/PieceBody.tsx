@@ -1,6 +1,6 @@
 import {BodyShape} from "@src/react/pages/game/components/board/components/piece/components/piece-body/components/body-shape/BodyShape";
 import {RADIUS} from "@src/react/pages/game/components/board/components/piece/utils/PieceViewBox";
-import type {PieceBodyStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {PieceBodyStyle} from "@src/styles/types/PieceStyle";
 
 /**
  * The disc, or octagon, a piece's mark sits on, plus the optional inlay drawn inside it — which is

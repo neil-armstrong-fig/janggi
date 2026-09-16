@@ -37,7 +37,7 @@ it("holds nothing once a move has been played, the game being under way", () => 
 });
 
 it("holds nothing in a game between two people at one device", () => {
-  expect(botAwaitsGoAhead(dealt(sideChosen("Han")))).toBe(false);
+  expect(botAwaitsGoAhead(dealt(opponentChosen("Human"), sideChosen("Han")))).toBe(false);
 });
 
 it("lets the bot lay out a scored game unasked, and holds only the move after it", () => {

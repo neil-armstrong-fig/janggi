@@ -5,6 +5,7 @@ import type {Setup} from "@src/game/setups/types/Setup";
 import {expect, it} from "vitest";
 import {
   bikjangCalled,
+  botKeptWithinReach,
   botLetOpen,
   botStrengthChosen,
   choSetupChosen,
@@ -20,6 +21,9 @@ import {
   takenBack,
 } from "@src/redux/game/GameSlice";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
+import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
+import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
+import {saveLoaded} from "@src/redux/saves/SaveLoaded";
 
 /**
  * The reducers are one line each into the engine, which is where the rules are tested. What is
@@ -30,8 +34,8 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 
 const CHO_OPENING: Move = {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}};
 
-it("deals a game against someone at the same device, with the bot's settings at their defaults", () => {
-  expect(opening().opponent).toEqual({name: "Human", botElo: 1200, sideChoice: "Cho", playerSide: "cho"});
+it("deals a game against the weakest bot, with the player opening as cho", () => {
+  expect(opening().opponent).toEqual({name: "Bot", botElo: 800, sideChoice: "Cho", playerSide: "cho"});
 });
 
 it("deals a fresh game when the bot is chosen as the opponent", () => {
@@ -285,6 +289,22 @@ it("keeps both arrangements when a scored game is restarted", () => {
   expect(after.phase.hanSetup?.name).toBe("Left Elephant");
   expect(after.phase.choSetup?.name).toBe("Inner Elephant");
   expect(after.played.past).toEqual([]);
+});
+
+/** What "within reach" means is `within-reach/WithinReach.test.ts`; these two are the actions reaching it. */
+it("deals a game not yet begun again, against the strongest bot the player has reached", () => {
+  const tooStrong = gameReducer(gameReducer(opening(), opponentChosen("Bot")), botStrengthChosen(1600));
+
+  const beaten = {...freshProgress().beaten, Casual: {cho: [800 as const], han: []}};
+
+  expect(gameReducer(tooStrong, botKeptWithinReach(beaten)).opponent.botElo).toBe(1000);
+});
+
+it("keeps a game not yet begun within reach of a save loaded with less in it", () => {
+  const tooStrong = gameReducer(gameReducer(opening(), opponentChosen("Bot")), botStrengthChosen(1600));
+  const save = {progress: freshProgress(), customStyles: noCustomStyles()};
+
+  expect(gameReducer(tooStrong, saveLoaded(save)).opponent.botElo).toBe(800);
 });
 
 function opening(): GameSliceState {

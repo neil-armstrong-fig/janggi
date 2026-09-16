@@ -1,11 +1,16 @@
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
-import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlaquePlayer} from "@src/react/pages/game/components/status/types/PlaquePlayer";
-import type {PlaqueState} from "@src/react/pages/game/components/status/types/PlaqueState";
+import type {PlaquePlayer} from "@src/react/pages/game/components/status/components/player-plaque/types/PlaquePlayer";
+import type {PlaqueState} from "@src/react/pages/game/components/status/components/player-plaque/types/PlaqueState";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {clsx} from "clsx";
 import {TakenTray} from "@src/react/pages/game/components/status/components/player-plaque/components/taken-tray/TakenTray";
+import {clsx} from "clsx";
+import {plaquePlayerFor} from "@src/react/pages/game/components/status/components/player-plaque/players/PlaquePlayerFor";
+import {plaqueStateOf} from "@src/react/pages/game/components/status/components/player-plaque/plaque-state/PlaqueStateOf";
+import {scoreFor} from "@src/game/scoring/ScoreFor";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
+import {takenFrom} from "@src/game/scoring/TakenFrom";
+import {useAppSelector} from "@src/redux/Hooks";
+import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
+import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useRolledNumber} from "@src/react/pages/game/components/status/components/player-plaque/hooks/use-rolled-number/UseRolledNumber";
 
 /**
@@ -19,29 +24,40 @@ import {useRolledNumber} from "@src/react/pages/game/components/status/component
  * `docs/rules.md` §6.5. Each figure is its own element carrying `data-score`, which is what the
  * acceptance tests read rather than the words.
  *
- * With `animated`, a score counts down to its new value rather than jumping there, and a piece lost
+ * With effects in full, a score counts down to its new value rather than jumping there, and a piece lost
  * pops into the tray. `data-score` is the true value throughout; only the words roll.
  *
  * **Against the bot, beside the name, who is playing the army**: a robot and the strength the bot plays
- * at, or a person and the player's own rating. Without it the bot's army reads as a second person at
- * the device, and the two ratings the game is being played between are nowhere on the screen.
+ * at, or a person, the player's own rating and the XP they have earned. Without it the bot's army reads
+ * as a second person at the device, and the two ratings the game is being played between are nowhere on
+ * the screen. The XP is here because this is the one place a player looks while playing, and it is what
+ * the next board or piece set is waiting on.
  *
- * Everything drawn here is handed in. Whose turn it is, the score and the losses are all derived by
- * `Status` from the position on each render; nothing here is stored.
+ * **What the XP is working towards is named beside it** — "(Next unlock: 1,200 XP, unlock Celadon
+ * theme)" — because a number climbing on its own says nothing about what it is for. It truncates when
+ * the plaque runs short, with the whole of it in the `title`. A million XP will not fit beside a rating
+ * on a phone, so the amount already earned is shortened to `1M`, with `data-xp` carrying the true figure.
+ *
+ * **It is handed only which army it is**, and reads the rest for itself: the game, the rating, the XP, the
+ * piece set the losses are drawn in, and what the game is doing, through `useGameStatus`. Nothing here is
+ * stored — the state, the score and the losses are all derived from the position on each render.
  */
 interface Props {
   readonly side: Side;
-  readonly state: PlaqueState;
-  readonly score: number;
-  readonly taken: readonly PieceType[];
-  readonly pieceStyle: PieceSetStyle;
-  readonly animated: boolean;
-  /** Who is playing this army against the bot, or undefined between two people at one device. */
-  readonly player: PlaquePlayer | undefined;
 }
 
-export function PlayerPlaque({side, state, score, taken, pieceStyle, animated, player}: Props): React.JSX.Element {
-  const shownScore = useRolledNumber(score, animated);
+export function PlayerPlaque({side}: Props): React.JSX.Element {
+  const {played, opponent} = useAppSelector(state => state.game);
+  const playerElo = useAppSelector(state => state.ratings.byFormat[state.game.phase.format].elo);
+  const xp = useAppSelector(state => state.progress.xp);
+  const {pieceStyle, effects} = usePreferences();
+  const {status} = useGameStatus();
+
+  const game = played.present;
+  const state = plaqueStateOf(status, side);
+  const score = scoreFor(game, side);
+  const player = plaquePlayerFor(side, opponent, playerElo, xp);
+  const shownScore = useRolledNumber(score, effects.full);
 
   return (
     <section
@@ -65,17 +81,34 @@ export function PlayerPlaque({side, state, score, taken, pieceStyle, animated, p
           data-testid={`plaque-player-${side}`}
           data-player={player.kind}
           data-elo={player.elo}
-          className="flex shrink-0 items-center gap-1 text-xs text-white/60 tabular-nums"
+          className="flex min-w-0 items-center gap-1 text-xs text-white/60 tabular-nums"
         >
           <span role="img" aria-label={PLAYER_LABELS[player.kind]}>
             {PLAYER_EMOJI[player.kind]}
           </span>
 
           {player.elo}
+
+          {player.kind === "player" && (
+            <span data-testid={`plaque-xp-${side}`} data-xp={player.xp} className="text-gold/80">
+              {shortened(player.xp)} XP
+            </span>
+          )}
+
+          {player.kind === "player" && player.nextUnlock && (
+            <span
+              data-testid={`plaque-next-unlock-${side}`}
+              data-xp={player.nextUnlock.xp}
+              title={`Next unlock: ${player.nextUnlock.xp.toLocaleString("en")} XP, unlock ${player.nextUnlock.labels.join(", ")}`}
+              className="min-w-0 truncate text-white/40"
+            >
+              {`(Next unlock: ${player.nextUnlock.xp.toLocaleString("en")} XP, unlock ${player.nextUnlock.labels.join(", ")})`}
+            </span>
+          )}
         </span>
       )}
 
-      <TakenTray side={side} taken={taken} pieceStyle={pieceStyle} popping={animated} />
+      <TakenTray side={side} taken={takenFrom(game, side)} pieceStyle={pieceStyle} popping={effects.full} />
 
       <span
         data-testid={`score-${side}`}
@@ -86,6 +119,11 @@ export function PlayerPlaque({side, state, score, taken, pieceStyle, animated, p
       </span>
     </section>
   );
+}
+
+/** An amount of XP as it fits on a plaque: 640 stays 640, and 1,000,000 becomes 1M. */
+function shortened(xp: number): string {
+  return new Intl.NumberFormat("en", {notation: "compact", maximumFractionDigits: 1}).format(xp);
 }
 
 const PLAYER_EMOJI: Record<PlaquePlayer["kind"], string> = {bot: "🤖", player: "🧑"};

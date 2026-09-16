@@ -6,7 +6,7 @@ import {PieceBody} from "@src/react/pages/game/components/board/components/piece
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
 import type {PieceLift} from "@src/react/pages/game/components/board/types/PieceLift";
 import {Pictograph} from "@src/react/pages/game/components/board/components/piece/components/pictograph/Pictograph";
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {characterFor} from "@src/react/pages/game/components/board/components/piece/utils/CharacterFor";
 import {pieceName} from "@src/react/pages/game/components/board/components/piece/utils/PieceNames";
 import {resolvePieceStyle} from "@src/react/pages/game/components/board/components/piece/utils/ResolvePieceStyle";

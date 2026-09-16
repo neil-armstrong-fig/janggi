@@ -91,6 +91,11 @@ export const then = criterion("then");
  */
 export const beforeEach = arrangement();
 
+/** Keeps the opponent the app ships with, for a spec that is itself about that default. */
+export function useShippedOpponent(): void {
+  test.use({keepShippedOpponent: true});
+}
+
 export {expect} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 
 function suite(prefix: string): Suite {

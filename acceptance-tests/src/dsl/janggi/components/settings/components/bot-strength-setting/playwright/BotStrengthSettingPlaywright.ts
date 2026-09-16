@@ -6,7 +6,8 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 /**
  * The picker for how strong the bot plays, named by Elo. More than two options, so a native select
  * whose options carry the ids — spelled out here rather than recomputed from the Elo, the same as
- * every other picker.
+ * every other picker. Read by `value`, which stays the bare Elo where a locked option's text says what
+ * it takes to open.
  */
 export class BotStrengthSettingPlaywright extends SettingsSheetComponent {
   private readonly select: Locator;
@@ -42,8 +43,12 @@ export class BotStrengthSettingPlaywright extends SettingsSheetComponent {
   }
 
   async getSelected(): Promise<BotElo | undefined> {
-    const shown = await this.select.locator("option:checked").textContent();
+    const value = await this.select.inputValue();
 
-    return BOT_ELOS.find(candidate => String(candidate) === shown);
+    return BOT_ELOS.find(candidate => String(candidate) === value);
+  }
+
+  async isLocked(elo: BotElo): Promise<boolean> {
+    return (await this.options[elo].getAttribute("data-locked")) !== null;
   }
 }

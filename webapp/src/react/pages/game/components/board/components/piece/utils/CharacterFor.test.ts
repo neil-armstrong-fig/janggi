@@ -1,4 +1,4 @@
-import {HANGUL_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/hangul/marks/HangulCharacters";
+import {HANGUL_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HangulCharacters";
 import {HANJA_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HanjaCharacters";
 import {PIECE_TYPES} from "@janggi/shared/janggi/pieces/PieceType";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
