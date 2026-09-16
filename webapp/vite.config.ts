@@ -54,7 +54,8 @@ export default defineConfig({
     tailwindcss(),
     fairyStockfish(),
     VitePWA({
-      registerType: "autoUpdate",
+      injectRegister: false,
+      registerType: "prompt",
       strategies: "injectManifest",
       srcDir: "src/sw",
       filename: "ServiceWorker.ts",

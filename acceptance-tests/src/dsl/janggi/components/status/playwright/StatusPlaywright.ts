@@ -5,6 +5,19 @@ import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
 
+/** Longer than any score takes to roll to its new value. */
+const SETTLES_WITHIN_MS = 3_000;
+
+const BOT_REPLIES_WITHIN_MS = 20_000;
+
+/** Well past the bot's least thinking time and the engine's first load, at the bottom rung. */
+const BOT_OPENS_WITHIN_MS = 4_000;
+
+/** Longer than a score's whole roll, so words unchanged for this long have truly come to rest. */
+const AT_REST_FOR_MS = 700;
+
+const POLL_MS = 50;
+
 /** Where the game says what it is doing, rather than what is standing on it. */
 export class StatusPlaywright extends BaseComponent {
   readonly container: Locator;
@@ -69,6 +82,14 @@ export class StatusPlaywright extends BaseComponent {
   /** Whether an army's plaque marks it as the player's own, against the bot. */
   async isMarkedAsThePlayer(side: Side): Promise<boolean> {
     return (await this.markOn(side)) === "player";
+  }
+
+  /** What an army's plaque says is playing it, or undefined where it names nobody. */
+  private async markOn(side: Side): Promise<string | undefined> {
+    const player = this.players[side];
+    if ((await player.count()) === 0) return undefined;
+
+    return (await player.getAttribute("data-player")) ?? undefined;
   }
 
   /**
@@ -284,25 +305,4 @@ export class StatusPlaywright extends BaseComponent {
 
     return SIDES.find(candidate => candidate === side);
   }
-
-  /** What an army's plaque says is playing it, or undefined where it names nobody. */
-  private async markOn(side: Side): Promise<string | undefined> {
-    const player = this.players[side];
-    if ((await player.count()) === 0) return undefined;
-
-    return (await player.getAttribute("data-player")) ?? undefined;
-  }
 }
-
-/** Longer than any score takes to roll to its new value. */
-const SETTLES_WITHIN_MS = 3_000;
-
-const BOT_REPLIES_WITHIN_MS = 20_000;
-
-/** Well past the bot's least thinking time and the engine's first load, at the bottom rung. */
-const BOT_OPENS_WITHIN_MS = 4_000;
-
-/** Longer than a score's whole roll, so words unchanged for this long have truly come to rest. */
-const AT_REST_FOR_MS = 700;
-
-const POLL_MS = 50;

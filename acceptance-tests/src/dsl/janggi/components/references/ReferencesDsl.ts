@@ -49,25 +49,25 @@ export class ReferencesDsl {
     }
   }
 
-  async headings(): Promise<string[]> {
+  async getHeadings(): Promise<string[]> {
     try {
-      return await this.references.headings();
+      return await this.references.getHeadings();
     } catch (error) {
       throw new DslError("Failed to read the reference sections", error);
     }
   }
 
-  async content(): Promise<string> {
+  async getContent(): Promise<string> {
     try {
-      return await this.references.content();
+      return await this.references.getContent();
     } catch (error) {
       throw new DslError("Failed to read the acknowledgements", error);
     }
   }
 
-  async destinationOf(id: string): Promise<string> {
+  async getDestinationOf(id: string): Promise<string> {
     try {
-      return await this.references.destinationOf(id);
+      return await this.references.getDestinationOf(id);
     } catch (error) {
       throw new DslError(`Failed to read the destination of ${id}`, error);
     }
@@ -81,9 +81,9 @@ export class ReferencesDsl {
     }
   }
 
-  async fitsWindow(): Promise<boolean> {
+  async isFullyOnScreen(): Promise<boolean> {
     try {
-      return await this.references.fitsWindow();
+      return await this.references.isFullyOnScreen();
     } catch (error) {
       throw new DslError("Failed to check that references fit the window", error);
     }

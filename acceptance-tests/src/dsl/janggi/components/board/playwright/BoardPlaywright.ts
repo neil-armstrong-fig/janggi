@@ -3,6 +3,23 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
 
+/** Longer than any flight or landing lasts, so a piece shown moving at all is caught in the act. */
+const APPEARS_WITHIN_MS = 1_500;
+
+/** Longer than a flight, a capture landing and the shake after it take together. */
+const SETTLES_WITHIN_MS = 4_000;
+
+/** A shake starts as the capturing piece lands, which is within a flight's length of the tap. */
+const SHAKE_STARTS_WITHIN_MS = 1_500;
+
+const POLL_MS = 50;
+
+/**
+ * How long, once every animation has finished, the page is given to catch up with it — long enough for
+ * a flight that has just touched down to unhide its piece, and no longer.
+ */
+const SETTLED_GRACE_MS = 500;
+
 /** An intersection, as a spec taps it. */
 export interface Point {
   readonly file: number;
@@ -157,7 +174,18 @@ export class BoardPlaywright extends BaseComponent {
     const to = this.container.locator("[data-last-move='to']");
     if ((await from.count()) === 0 || (await to.count()) === 0) return undefined;
 
-    return {from: pointOf(await from.getAttribute("data-testid")), to: pointOf(await to.getAttribute("data-testid"))};
+    return {
+      from: this.pointOf(await from.getAttribute("data-testid")),
+      to: this.pointOf(await to.getAttribute("data-testid")),
+    };
+  }
+
+  /** Reads a cell's `cell-f<file>r<rank>` test id back into the intersection it names. */
+  private pointOf(testId: string | null): Point {
+    const [, file, rank] = /^cell-f(\d+)r(\d+)$/.exec(testId ?? "") ?? [];
+    if (file === undefined || rank === undefined) throw new Error(`Expected a cell's test id, got ${testId}`);
+
+    return {file: Number(file), rank: Number(rank)};
   }
 
   /** Whether the intersection is marked as a general under attack. */
@@ -188,19 +216,6 @@ export class BoardPlaywright extends BaseComponent {
   }
 
   /**
-   * Whether a piece is shown travelling over the board. Waits for one to appear rather than sampling,
-   * because a flight is brief — and so a board that never shows one answers only after that wait.
-   */
-  async isShowingAPieceInFlight(): Promise<boolean> {
-    return await this.appears(this.container.getByTestId("move-flight"));
-  }
-
-  /** Whether a capture is shown landing on the board, waiting for it to appear as a flight is waited for. */
-  async isShowingAnImpact(): Promise<boolean> {
-    return await this.appears(this.container.getByTestId("impact"));
-  }
-
-  /**
    * Whether the piece on an intersection ends up drawn fully opaque — every element above it counted,
    * since a piece hidden while its flight is shown is hidden by its wrapper rather than by itself.
    *
@@ -226,6 +241,46 @@ export class BoardPlaywright extends BaseComponent {
 
       return opacity === 1;
     }, SETTLED_GRACE_MS);
+  }
+
+  /**
+   * Waits until every animation and transition on the page that ends has ended. One that repeats
+   * forever — a general under attack pulsing — is left running, since waiting on it would never finish.
+   */
+  private async motionSettled(): Promise<void> {
+    await this.page.waitForFunction(
+      () =>
+        document
+          .getAnimations()
+          .every(
+            animation =>
+              animation.playState !== "running" || animation.effect?.getComputedTiming().iterations === Infinity,
+          ),
+      undefined,
+      {timeout: SETTLES_WITHIN_MS},
+    );
+  }
+
+  /**
+   * Whether a piece is shown travelling over the board. Waits for one to appear rather than sampling,
+   * because a flight is brief — and so a board that never shows one answers only after that wait.
+   */
+  async isShowingAPieceInFlight(): Promise<boolean> {
+    return await this.appears(this.container.getByTestId("move-flight"));
+  }
+
+  /** Whether a capture is shown landing on the board, waiting for it to appear as a flight is waited for. */
+  async isShowingAnImpact(): Promise<boolean> {
+    return await this.appears(this.container.getByTestId("impact"));
+  }
+
+  private async appears(locator: Locator): Promise<boolean> {
+    try {
+      await locator.waitFor({state: "attached", timeout: APPEARS_WITHIN_MS});
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /** Whether nothing is left drawn over the board — no piece in flight, no capture landing — once motion settles. */
@@ -254,39 +309,6 @@ export class BoardPlaywright extends BaseComponent {
     return await this.eventually(async () => await this.isUnmoved());
   }
 
-  /**
-   * Waits until every animation and transition on the page that ends has ended. One that repeats
-   * forever — a general under attack pulsing — is left running, since waiting on it would never finish.
-   */
-  private async motionSettled(): Promise<void> {
-    await this.page.waitForFunction(
-      () =>
-        document
-          .getAnimations()
-          .every(
-            animation =>
-              animation.playState !== "running" || animation.effect?.getComputedTiming().iterations === Infinity,
-          ),
-      undefined,
-      {timeout: SETTLES_WITHIN_MS},
-    );
-  }
-
-  private async isUnmoved(): Promise<boolean> {
-    const translate = await this.container.evaluate(board => getComputedStyle(board).translate);
-
-    return translate === "none" || translate === "0px" || translate === "0px 0px";
-  }
-
-  private async appears(locator: Locator): Promise<boolean> {
-    try {
-      await locator.waitFor({state: "attached", timeout: APPEARS_WITHIN_MS});
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   /** Asks until the answer is yes, or gives the last answer once motion has had long enough to settle. */
   private async eventually(ask: () => Promise<boolean>, within = SETTLES_WITHIN_MS): Promise<boolean> {
     const deadline = Date.now() + within;
@@ -299,6 +321,12 @@ export class BoardPlaywright extends BaseComponent {
     }
   }
 
+  private async isUnmoved(): Promise<boolean> {
+    const translate = await this.container.evaluate(board => getComputedStyle(board).translate);
+
+    return translate === "none" || translate === "0px" || translate === "0px 0px";
+  }
+
   private pieceLocator(file: number, rank: number): Locator {
     return this.cellLocator(file, rank).getByTestId("piece");
   }
@@ -307,28 +335,3 @@ export class BoardPlaywright extends BaseComponent {
     return this.container.getByTestId(`cell-f${file}r${rank}`);
   }
 }
-
-/** Reads a cell's `cell-f<file>r<rank>` test id back into the intersection it names. */
-function pointOf(testId: string | null): Point {
-  const [, file, rank] = /^cell-f(\d+)r(\d+)$/.exec(testId ?? "") ?? [];
-  if (file === undefined || rank === undefined) throw new Error(`Expected a cell's test id, got ${testId}`);
-
-  return {file: Number(file), rank: Number(rank)};
-}
-
-/** Longer than any flight or landing lasts, so a piece shown moving at all is caught in the act. */
-const APPEARS_WITHIN_MS = 1_500;
-
-/** Longer than a flight, a capture landing and the shake after it take together. */
-const SETTLES_WITHIN_MS = 4_000;
-
-/** A shake starts as the capturing piece lands, which is within a flight's length of the tap. */
-const SHAKE_STARTS_WITHIN_MS = 1_500;
-
-const POLL_MS = 50;
-
-/**
- * How long, once every animation has finished, the page is given to catch up with it — long enough for
- * a flight that has just touched down to unhide its piece, and no longer.
- */
-const SETTLED_GRACE_MS = 500;

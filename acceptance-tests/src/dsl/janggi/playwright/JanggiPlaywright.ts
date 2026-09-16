@@ -2,6 +2,12 @@ import type {Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 
 /**
+ * How long a first visit may take to come back isolated. The service worker precaches the engine's
+ * wasm before it takes control, which is seconds on a slow runner — past the config's action timeout.
+ */
+const ISOLATION_TIMEOUT_MS = 15_000;
+
+/**
  * The app, and the only screen it has. The bottom of the stack: this is the layer that actually
  * drives Playwright, and the only one that may.
  *
@@ -40,9 +46,3 @@ export class JanggiPlaywright extends BasePage {
     await this.page.setViewportSize({width, height});
   }
 }
-
-/**
- * How long a first visit may take to come back isolated. The service worker precaches the engine's
- * wasm before it takes control, which is seconds on a slow runner — past the config's action timeout.
- */
-const ISOLATION_TIMEOUT_MS = 15_000;

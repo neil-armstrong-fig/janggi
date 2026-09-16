@@ -137,10 +137,19 @@ locators of its own still has to write `constructor(page) { super(page) }` to be
 all. `JanggiPlaywright` is the one such case today, and it says so in a comment — without it the
 constructor reads as deletable boilerplate, and deleting it stops `JanggiDsl` compiling.
 
+**A `*Playwright` file puts its constants above the class and keeps class-owned detail inside the
+class.** Implementation used only by that adapter is a private method, not a loose function after
+the class. Put that method immediately below its caller; where several callers share it, put it
+below their smallest contiguous group. A chain of helpers follows in call order. This lets the
+class read one behaviour at a time instead of becoming a public-method block followed by a private
+method drawer. If the detail becomes complex enough to obscure the adapter, move it beneath the
+`playwright/` folder in a subject-named subfolder. Use `utils/` only as the last resort when no
+subject can name it, following the same locality rule as the webapp.
+
 ## Where a method goes
 
 `janggi` is the whole application and every area of it hangs off that as a member, so a spec reads
-`janggi.board.pieceAt(5, 2)` or `janggi.settings.setBoardSettingTo("Neon")`.
+`janggi.board.getPieceAt(5, 2)` or `janggi.settings.board.setTo("Neon")`.
 
 **The root owns the browser** — opening the app, and the window it is viewed through. **Each member
 answers for its own part of the screen.** A window belongs to nothing on the board, so
@@ -204,7 +213,7 @@ when.each(
   set => `the set in use is ${set}`,
   set => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setPieceSetTo(set);
+      await janggi.settings.pieceSet.setTo(set);
     });
 
     then("it is the writing that changed and never the game", async ({janggi}) => { ... });
@@ -242,7 +251,7 @@ any other.
 The DSL, and nothing else — no `page`, `context`, `browser` or `testInfo`. **`@janggi/shared` is the
 exception, and is meant to be used**: it holds the janggi vocabulary, so an assertion naming a piece
 type or a setting is checked against the same union the app is. `{side: "cho", type: "bishop"}` and
-`setPieceSetTo("Hanguul")` are both compile errors. Enforced three ways: the
+`janggi.settings.pieceSet.setTo("Hanguul")` are both compile errors. Enforced three ways: the
 argument type, `withDslOnly` rebuilding the argument object at runtime, and a lint rule banning both
 Playwright and `@src/dsl/**` under `src/tests/`.
 
@@ -284,16 +293,21 @@ That spec is left out of `pnpm acceptance-tests`: the default projects ignore `B
 `playwright.bot-games.config.ts` (`pnpm acceptance-tests:bot-games`) runs it alone, in
 `.github/workflows/bot-games.yml`, which gates no deploy.
 
+The release-update specs are separate for the opposite reason: they are deterministic and gate the
+deploy, but need the production service worker that the Vite development server deliberately omits.
+The default projects ignore `PWA_SPECS`; `playwright.pwa.config.ts` (`pnpm acceptance-tests:pwa`)
+runs them against a compiled build in CI and against GitHub Pages after deployment.
+
 ## Say it in the game's own words
 
 Assertions use the shared vocabulary from `@janggi/shared/janggi/`, never strings:
 
 ```ts
-expect(await janggi.board.pieceAt(5, 9)).toEqual({side: "cho", type: "general"});
-await janggi.settings.setPieceSetTo("Hangul");
+expect(await janggi.board.getPieceAt(5, 9)).toEqual({side: "cho", type: "general"});
+await janggi.settings.pieceSet.setTo("Hangul");
 ```
 
-`pieceAt` parses the webapp's `data-piece` attribute back into a `Piece`, and every settings method
+`getPieceAt` parses the webapp's `data-piece` attribute back into a `Piece`, and every settings method
 takes one of the built-in name unions. A misspelled army, piece or style is a compile error instead
 of a spec that runs green while matching nothing.
 
@@ -350,6 +364,7 @@ them went stale twice while it was being kept.
 - **On the references page** — `references`, `references-repository`,
   `references-<section>-jump`, `references-<section>-heading`, and `reference-<source>`. Its link in
   Settings is `references-open`.
+- **On the release notice** — `release-update`, `release-update-refresh` and `release-update-later`.
 
 The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`; nothing stores
 them. `BoardPlaywright` composes the cell id to find a piece.

@@ -8,6 +8,7 @@ Vite + React 19 + Redux Toolkit + Tailwind v4, client-side rendered, installable
 src/main.tsx          game entry — createRoot + <Provider store>
 src/References.tsx    references entry — independent of the game and store
 src/react/            components, nested by who uses them
+  release-update/     update notice shared by the game shell and references page
 src/redux/            Store.ts, typed Hooks.ts, one folder per slice
 src/game/             the janggi engine — rules, move generation, game state, and the record a
                       game is taken back through. No React, no Redux
