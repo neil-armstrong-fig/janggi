@@ -1,4 +1,4 @@
-import type {PictographSet} from "@src/react/pages/game/components/board/piece-styles/types/PictographSet";
+import type {PictographSet} from "@src/styles/types/PictographSet";
 
 /**
  * The drawings that ship with the app, for players who cannot read either script.

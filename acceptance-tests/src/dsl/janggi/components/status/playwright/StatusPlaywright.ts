@@ -83,6 +83,25 @@ export class StatusPlaywright extends BaseComponent {
   }
 
   /**
+   * The XP shown on an army's plaque, or undefined where none is — the bot's own plaque, and both
+   * plaques in a game between two people. Read off `data-xp`, since the words are shortened.
+   */
+  async getShownXp(side: Side): Promise<number | undefined> {
+    const xp = this.page.getByTestId(`plaque-xp-${side}`);
+    if ((await xp.count()) === 0) return undefined;
+
+    return Number(await xp.getAttribute("data-xp"));
+  }
+
+  /** The next unlock shown beside an army's XP, or undefined where there is no next unlock. */
+  async getNextUnlock(side: Side): Promise<string | undefined> {
+    const nextUnlock = this.page.getByTestId(`plaque-next-unlock-${side}`);
+    if ((await nextUnlock.count()) === 0) return undefined;
+
+    return (await nextUnlock.textContent()) ?? undefined;
+  }
+
+  /**
    * The army an announced result says called the bikjang that ended the game, or undefined where the
    * announcement explains no bikjang.
    */

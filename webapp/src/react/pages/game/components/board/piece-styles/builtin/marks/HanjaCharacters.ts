@@ -1,4 +1,4 @@
-import type {CharacterSet} from "@src/react/pages/game/components/board/piece-styles/types/CharacterSet";
+import type {CharacterSet} from "@src/styles/types/CharacterSet";
 
 /**
  * The characters cut into a real set.

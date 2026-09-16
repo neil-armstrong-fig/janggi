@@ -2,13 +2,30 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
 
 /**
- * Four sets ship, and they differ only in what is marked on a piece and how the body is turned.
+ * Several sets ship, and they differ only in what is marked on a piece and how the body is turned.
  * Which piece stands where never changes, which is what these check first: a player who cannot read
- * hanja should be swapping the writing, not the game.
+ * hanja should be swapping the writing, not the game. Most sets are unlocked with XP, and every spec
+ * starts with all of them unlocked; `progress/UnlockingStyles.test.ts` is where the locks are.
  *
  * Cho's general sits on file 5, rank 9 and its soldiers on rank 7; Han's soldiers are on rank 4.
  */
 given("a player is choosing a piece set", () => {
+  when("the built-in sets are offered", () => {
+    then("the Hanja set follows the Hangul and Modern sets", async ({janggi}) => {
+      expect(await janggi.settings.pieceSet.getBuiltInOrder()).toEqual([
+        "Traditional",
+        "Hangul",
+        "Modern",
+        "Hanja",
+        "Diagram",
+        "Tournament",
+        "Celadon",
+        "Dancheong",
+        "Hacker",
+      ]);
+    });
+  });
+
   when("the traditional set is chosen", () => {
     beforeEach(async ({janggi}) => {
       await janggi.settings.pieceSet.setTo("Traditional");

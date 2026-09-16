@@ -1,11 +1,10 @@
-import type {GameRecord} from "@src/redux/ratings/types/GameRecord";
 import type {PayloadAction} from "@reduxjs/toolkit";
 import type {RatedGameFinish} from "@src/redux/ratings/types/RatedGameFinish";
 import type {RatedGameInProgress} from "@src/redux/ratings/types/RatedGameInProgress";
 import type {RatingsSliceState} from "@src/redux/ratings/types/RatingsSliceState";
 import {createSlice} from "@reduxjs/toolkit";
-import {eloAfter} from "@src/redux/ratings/elo/EloAfter";
 import {freshRatings} from "@src/redux/ratings/fresh-ratings/FreshRatings";
+import {rated} from "@src/redux/ratings/recording/Rated";
 
 /**
  * The player's ratings against the bot, and the one game that may be under way.
@@ -44,28 +43,3 @@ export const ratingsSlice = createSlice({
 export const {ratedGameStarted, ratedGameFinished, ratedGameAbandoned, recordReset} = ratingsSlice.actions;
 
 export const ratingsReducer = ratingsSlice.reducer;
-
-/** The game in progress rated and recorded, or the state untouched when there is none. */
-function rated(state: RatingsSliceState, finish: RatedGameFinish): RatingsSliceState {
-  const game = state.inProgress;
-  if (!game) return state;
-
-  const rating = state.byFormat[game.format];
-  const elo = eloAfter(rating.elo, rating.games.length, game.botElo, finish.result);
-
-  const record: GameRecord = {
-    format: game.format,
-    botElo: game.botElo,
-    playerSide: game.playerSide,
-    result: finish.result,
-    ending: finish.ending,
-    eloBefore: rating.elo,
-    eloAfter: elo,
-    finishedAt: finish.finishedAt,
-  };
-
-  return {
-    byFormat: {...state.byFormat, [game.format]: {elo, games: [...rating.games, record]}},
-    inProgress: undefined,
-  };
-}

@@ -13,8 +13,23 @@ compile, run, and quietly never match.
 ```
 src/janggi/pieces/      Side, PieceType, Piece, PieceKey, and the two functions that convert
 src/janggi/settings/    BoardStyleName, PieceSetName, SetupName, MovableHighlightName,
-                        MatchFormat, ElephantPairing — the built-ins, by name
+                        MatchFormat, ElephantPairing, StyleKind — the built-ins, by name
+src/janggi/share-keys/  the share key codec: `janggi-<kind>:` and base64url JSON
+src/janggi/progress/    the four ladders a player climbs, and the JSON a save key carries
 ```
+
+**A wire contract is shared on purpose — a tool, not a rule.** The line below keeps behaviour out of
+here, so a spec cannot agree with the code it tests. A format is different: the share key codec and the
+save schema are what the app and the specs must both speak, and two copies of a format are only two
+chances to drift apart. So the app writes and reads keys with `share-keys/`, and the acceptance tests
+build theirs with the same functions against the same `SaveKeyJson` — a field renamed here fails to
+compile in every package at once. Reach for it where the thing is a contract between packages, not
+wherever code happens to repeat.
+
+**Within `shared`, one folder reaches another by the package's own name** —
+`@janggi/shared/janggi/settings/BotElo` — and a sibling as `./X.js`. `../` is refused everywhere, and an
+`@src` alias cannot work here: this package is compiled as raw source by whichever package imports it,
+so `@src` would resolve into that package's tree.
 
 The settings unions are the **built-ins only**. A `BoardStyle`'s own `name` stays a plain string
 because a user-authored style may be called anything; the union is what a built-in must be called,

@@ -8,10 +8,10 @@ import {MovableMark} from "@src/react/pages/game/components/board/components/int
 import {MoveHint} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/move-hint/MoveHint";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
-import type {BoardStyle} from "@src/react/pages/game/components/board/cell-styles/types/BoardStyle";
+import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {LastMoveEnd} from "@src/react/pages/game/components/board/components/intersections/types/LastMoveEnd";
 import type {PieceLift} from "@src/react/pages/game/components/board/types/PieceLift";
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/intersections/types/MovableEmphasis";
 import type {Position} from "@src/game/board/types/Position";
 import {ThreatMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/threat-mark/ThreatMark";

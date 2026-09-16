@@ -11,4 +11,5 @@ export const BOT_ELOS = [800, 1000, 1200, 1400, 1600, 1900, 2200, 2850] as const
 
 export type BotElo = (typeof BOT_ELOS)[number];
 
-export const DEFAULT_BOT_ELO: BotElo = 1200;
+/** The bottom rung, because it is the only one open before the player has beaten anything. */
+export const DEFAULT_BOT_ELO: BotElo = 800;

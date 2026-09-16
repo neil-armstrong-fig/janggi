@@ -1,7 +1,7 @@
 import type {Move} from "@src/game/types/Move";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
-import type {PieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceSetStyle";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Vector} from "@src/react/pages/game/components/board/types/Vector";
 import {chipPaths} from "@src/react/pages/game/components/board/components/impact/utils/ChipPaths";

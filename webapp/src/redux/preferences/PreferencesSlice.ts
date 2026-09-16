@@ -1,8 +1,6 @@
 import type {PayloadAction} from "@reduxjs/toolkit";
-import type {BoardStyleName} from "@janggi/shared/janggi/settings/BoardStyleName";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
-import type {PieceSetName} from "@janggi/shared/janggi/settings/PieceSetName";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 import {createSlice} from "@reduxjs/toolkit";
@@ -22,12 +20,12 @@ export const preferencesSlice = createSlice({
   name: "preferences",
   initialState: defaultPreferences(),
   reducers: {
-    boardStyleChosen: (state, action: PayloadAction<BoardStyleName>): PreferencesSliceState => ({
+    boardStyleChosen: (state, action: PayloadAction<string>): PreferencesSliceState => ({
       ...state,
       boardStyle: action.payload,
     }),
 
-    pieceSetChosen: (state, action: PayloadAction<PieceSetName>): PreferencesSliceState => ({
+    pieceSetChosen: (state, action: PayloadAction<string>): PreferencesSliceState => ({
       ...state,
       pieceSet: action.payload,
     }),

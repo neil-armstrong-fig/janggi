@@ -6,11 +6,9 @@ import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import {Impact} from "@src/react/pages/game/components/board/components/impact/Impact";
 import {Intersections} from "@src/react/pages/game/components/board/components/intersections/Intersections";
 import {MoveFlight} from "@src/react/pages/game/components/board/components/move-flight/MoveFlight";
-import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {isArranged} from "@src/game/setups/IsArranged";
-import {moved} from "@src/redux/game/GameSlice";
 import {threatIn} from "@src/react/pages/game/components/board/utils/ThreatIn";
-import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {useAppSelector} from "@src/redux/Hooks";
 import {useBoardShake} from "@src/react/pages/game/components/board/hooks/use-board-shake/UseBoardShake";
 import {useEndingShake} from "@src/react/pages/game/components/board/hooks/use-ending-shake/UseEndingShake";
 import {useMemo} from "react";
@@ -21,10 +19,10 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * The 9x10 grid of intersections, and everything drawn over it. Every mark on the board comes from a
  * cell, which is what makes it restyleable one intersection at a time.
  *
- * It reads the whole game from the store rather than being handed a list of pieces, because it is where
- * a game is played — a completed move is dispatched from here rather than applied in place. It reads the
- * board style, the piece set, the movable-piece mark and the effects the same way, so like `Status` and
- * `Settings` it is handed only what the page works out: the moment, and the sound a piece makes lifting.
+ * It reads the game and the styles its several layers coordinate from the store. `Intersections` reads
+ * and dispatches the part it draws for itself, so Board hands it only the shared threat and motion. Like
+ * `Status` and `Settings`, the section itself is handed only what the page works out: the moment, and the
+ * sound a piece makes lifting.
  *
  * Its layers, bottom to top:
  *
@@ -51,15 +49,12 @@ interface Props {
 }
 
 export function Board({moment, onPickUp}: Props): React.JSX.Element {
-  const {played, phase, opponent} = useAppSelector(state => state.game);
-  const dispatch = useAppDispatch();
-  const {boardStyle: style, pieceStyle, movableHighlight, effects} = usePreferences();
+  const {played, phase} = useAppSelector(state => state.game);
+  const {boardStyle: style, pieceStyle, effects} = usePreferences();
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
   // be touched until both armies have chosen.
   const arranged = isArranged(phase);
-  // Closed while the bot is thinking too, though what the position says — a check — is still marked.
-  const playable = arranged && botDutyFor(played, phase, opponent) === undefined;
   const animated = effects.full;
   const momentId = moment?.id ?? 0;
 
@@ -86,19 +81,7 @@ export function Board({moment, onPickUp}: Props): React.JSX.Element {
           background: style.surface,
         }}
       >
-        <Intersections
-          played={played}
-          playable={playable}
-          style={style}
-          pieceStyle={pieceStyle}
-          highlightMovable={movableHighlight.shown}
-          threat={threat}
-          concealed={concealed}
-          moment={moment}
-          animated={animated}
-          onMove={move => dispatch(moved(move))}
-          onPickUp={onPickUp}
-        />
+        <Intersections threat={threat} concealed={concealed} moment={moment} onPickUp={onPickUp} />
 
         <CheckLines threat={threat} momentId={momentId} drawing={animated} />
 

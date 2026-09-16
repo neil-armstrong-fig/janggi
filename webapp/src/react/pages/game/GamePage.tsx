@@ -3,6 +3,7 @@ import {RecordSheet} from "@src/react/pages/game/components/record-sheet/RecordS
 import {Settings} from "@src/react/pages/game/components/settings/Settings";
 import {createFairyStockfish} from "@src/bot/engine/CreateFairyStockfish";
 import {Status} from "@src/react/pages/game/components/status/Status";
+import {StylesSheet} from "@src/react/pages/game/components/styles-sheet/StylesSheet";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useBotOpponent} from "@src/react/pages/game/hooks/use-bot-opponent/UseBotOpponent";
 import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAudio";
@@ -48,6 +49,7 @@ import {useState} from "react";
 export function GamePage(): React.JSX.Element {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
+  const [stylesOpen, setStylesOpen] = useState(false);
   const [engine] = useState(() => createFairyStockfish(`${import.meta.env.BASE_URL}engine/`));
   const played = useAppSelector(state => state.game.played);
   const {effects, soundEffectsVolume, musicVolume} = usePreferences();
@@ -71,9 +73,15 @@ export function GamePage(): React.JSX.Element {
           setSettingsOpen(false);
           setRecordOpen(true);
         }}
+        onOpenStyles={() => {
+          setSettingsOpen(false);
+          setStylesOpen(true);
+        }}
       />
 
       <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} />
+
+      <StylesSheet open={stylesOpen} onClose={() => setStylesOpen(false)} />
     </main>
   );
 }

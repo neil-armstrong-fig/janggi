@@ -8,4 +8,4 @@ export const OPPONENT_NAMES = ["Human", "Bot"] as const;
 
 export type OpponentName = (typeof OPPONENT_NAMES)[number];
 
-export const DEFAULT_OPPONENT: OpponentName = "Human";
+export const DEFAULT_OPPONENT: OpponentName = "Bot";

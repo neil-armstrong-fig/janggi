@@ -5,7 +5,7 @@ import {
   modernBody,
 } from "@src/react/pages/game/components/board/piece-styles/builtin/utils/ModernSet";
 import {JANGGI_PICTOGRAPHS} from "@src/react/pages/game/components/board/piece-styles/builtin/modern/marks/JanggiPictographs";
-import type {PictographGlyphStyle} from "@src/react/pages/game/components/board/piece-styles/types/PieceStyle";
+import type {PictographGlyphStyle} from "@src/styles/types/PieceStyle";
 import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
 
 /** White on a solid disc: the highest contrast available, which is what a small piece needs. */

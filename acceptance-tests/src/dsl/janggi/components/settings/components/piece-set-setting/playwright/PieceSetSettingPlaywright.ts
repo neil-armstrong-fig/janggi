@@ -5,7 +5,8 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 
 /**
  * The piece-set picker. Test ids spelled out — see the note in `BoardSettingPlaywright` — and a
- * dropdown driven as `HanSetupSettingPlaywright` describes.
+ * dropdown driven as `HanSetupSettingPlaywright` describes, read by `value` so a locked option's padlock
+ * never reaches a spec.
  */
 export class PieceSetSettingPlaywright extends SettingsSheetComponent {
   private readonly select: Locator;
@@ -17,9 +18,14 @@ export class PieceSetSettingPlaywright extends SettingsSheetComponent {
     this.select = page.getByTestId("piece-style-select");
     this.options = {
       Traditional: page.getByTestId("piece-style-option-traditional"),
-      Hanja: page.getByTestId("piece-style-option-hanja"),
       Hangul: page.getByTestId("piece-style-option-hangul"),
       Modern: page.getByTestId("piece-style-option-modern"),
+      Hanja: page.getByTestId("piece-style-option-hanja"),
+      Diagram: page.getByTestId("piece-style-option-diagram"),
+      Tournament: page.getByTestId("piece-style-option-tournament"),
+      Celadon: page.getByTestId("piece-style-option-celadon"),
+      Dancheong: page.getByTestId("piece-style-option-dancheong"),
+      Hacker: page.getByTestId("piece-style-option-hacker"),
     };
   }
 
@@ -27,14 +33,38 @@ export class PieceSetSettingPlaywright extends SettingsSheetComponent {
     const value = await this.options[name].getAttribute("value");
     if (value === null) throw new Error(`The "${name}" option carries no value to select`);
 
+    await this.chooseNamed(value);
+  }
+
+  async chooseNamed(name: string): Promise<void> {
     await this.inSheet(this.select, async () => {
-      await this.select.selectOption(value);
+      await this.select.selectOption(name);
     });
   }
 
   async getSelected(): Promise<PieceSetName | undefined> {
-    const name = await this.select.locator("option:checked").textContent();
+    const name = await this.select.inputValue();
 
     return PIECE_SET_NAMES.find(candidate => candidate === name);
+  }
+
+  async getSelectedName(): Promise<string> {
+    return await this.select.inputValue();
+  }
+
+  async getBuiltInOrder(): Promise<PieceSetName[]> {
+    const names = await this.select
+      .locator("option")
+      .evaluateAll(options => options.map(option => option.getAttribute("value")));
+
+    return names.flatMap(name => {
+      const builtIn = PIECE_SET_NAMES.find(candidate => candidate === name);
+
+      return builtIn ? [builtIn] : [];
+    });
+  }
+
+  async isLocked(name: PieceSetName): Promise<boolean> {
+    return (await this.options[name].getAttribute("data-locked")) !== null;
   }
 }

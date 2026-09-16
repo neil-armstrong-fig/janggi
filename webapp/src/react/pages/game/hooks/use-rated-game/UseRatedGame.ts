@@ -5,10 +5,13 @@ import {ratedGameAbandoned, ratedGameFinished, ratedGameStarted} from "@src/redu
 import {ratingEventFor} from "@src/react/pages/game/hooks/use-rated-game/utils/RatingEventFor";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useRef} from "react";
+import {xpEarned} from "@src/redux/progress/ProgressSlice";
 
 /**
  * Keeps the player's rating in step with the game against the bot: starts a rated game on its first
- * turn, rates it when it is decided, and rates one dealt over as abandoned.
+ * turn, rates it when it is decided, and rates one dealt over as abandoned. A decided game earns its XP
+ * at the same moment, so a game that counts for the rating is exactly a game that counts for progress —
+ * and one abandoned counts for neither.
  *
  * It keys off the page's one moment, as the sound and the motion do, and remembers the last id it
  * answered — so a change is rated once however often the page renders, and never twice under React's
@@ -25,7 +28,14 @@ export function useRatedGame(moment: GameMoment | undefined): void {
     answeredRef.current = moment.id;
 
     const event = ratingEventFor(moment, played, opponent, inProgress);
-    if (event) dispatch(actionFor(event, new Date().toISOString()));
+    if (!event) return;
+
+    dispatch(actionFor(event, new Date().toISOString()));
+
+    if (event.kind === "finished") {
+      const {botElo, playerSide} = opponent;
+      dispatch(xpEarned({format: played.present.format, botElo, playerSide, result: event.result}));
+    }
   }, [moment, played, opponent, inProgress, dispatch]);
 }
 

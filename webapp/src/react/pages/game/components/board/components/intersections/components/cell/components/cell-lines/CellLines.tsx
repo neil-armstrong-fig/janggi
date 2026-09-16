@@ -1,5 +1,5 @@
 import {Segment} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cell-lines/components/segment/Segment";
-import type {CellStyle} from "@src/react/pages/game/components/board/cell-styles/types/CellStyle";
+import type {CellStyle} from "@src/styles/types/CellStyle";
 import type {CellShape} from "@src/react/pages/game/components/board/components/intersections/components/cell/types/CellShape";
 
 /**

@@ -249,6 +249,24 @@ export class StatusDsl {
     }
   }
 
+  /** The XP shown beside an army, or undefined where none is — the bot's plaque, or a game between two people. */
+  async getShownXp(side: Side): Promise<number | undefined> {
+    try {
+      return await this.status.getShownXp(side);
+    } catch (error) {
+      throw new DslError(`Failed to read the XP shown beside ${side}`, error);
+    }
+  }
+
+  /** The next unlock shown beside the player's XP, or undefined once everything is open. */
+  async getNextUnlock(side: Side): Promise<string | undefined> {
+    try {
+      return await this.status.getNextUnlock(side);
+    } catch (error) {
+      throw new DslError(`Failed to read the next unlock shown beside ${side}`, error);
+    }
+  }
+
   /** The army the announced result says called a bikjang, or undefined where no bikjang is explained. */
   async getBikjangCaller(): Promise<Side | undefined> {
     try {

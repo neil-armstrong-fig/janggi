@@ -10,10 +10,10 @@ import {
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
 import {expect, it} from "vitest";
 
-it("starts on the classic board and the traditional set, with every mark, motion and sound in full", () => {
+it("starts on the classic board and the modern set, with every mark, motion and sound in full", () => {
   expect(initial()).toEqual({
     boardStyle: "Classic",
-    pieceSet: "Traditional",
+    pieceSet: "Modern",
     movableHighlight: "Shown",
     effects: "Full",
     soundEffectsVolume: 100,

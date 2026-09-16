@@ -8,7 +8,7 @@ import type {PreferencesSliceState} from "@src/redux/preferences/types/Preferenc
 export function defaultPreferences(): PreferencesSliceState {
   return {
     boardStyle: "Classic",
-    pieceSet: "Traditional",
+    pieceSet: "Modern",
     movableHighlight: "Shown",
     effects: "Full",
     soundEffectsVolume: FULL_VOLUME,

@@ -153,6 +153,25 @@ export default [
     },
   },
   {
+    // What a board and its pieces look like, as plain data. The store keeps a player's own styles, so
+    // the shapes sit below both layers that use them, and reach up into neither.
+    files: ["src/styles/**"],
+    rules: {
+      // As above: flat config replaces this rule rather than merging it.
+      "no-restricted-imports": restrictedImports({
+        allowedPackages: ["@janggi/shared"],
+        paths: hookTestingOnly,
+        patterns: [
+          {
+            group: ["@src/react", "@src/react/**", "@src/redux", "@src/redux/**", "@src/audio", "@src/audio/**"],
+            message:
+              "Styles are plain data. They must not import from react/, redux/ or audio/ — both the page and the store read them.",
+          },
+        ],
+      }),
+    },
+  },
+  {
     // The sound plays what the page hands it. It reads nothing of the game — not the engine and not
     // the shared vocabulary — and never reaches back into the page or the store.
     files: ["src/audio/**"],

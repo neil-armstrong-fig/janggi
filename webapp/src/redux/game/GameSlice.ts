@@ -4,7 +4,6 @@ import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Move} from "@src/game/types/Move";
-import type {Opponent} from "@src/redux/game/types/Opponent";
 import type {OpponentName} from "@janggi/shared/janggi/settings/OpponentName";
 import type {SettledSideChoice} from "@src/redux/game/types/SettledSideChoice";
 import type {Setup} from "@src/game/setups/types/Setup";
@@ -19,6 +18,13 @@ import {playMove} from "@src/game/record/PlayMove";
 import {redo} from "@src/game/record/Redo";
 import {restTurn} from "@src/game/record/RestTurn";
 import {undo} from "@src/game/record/Undo";
+import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
+import {dealtAgainst} from "@src/redux/game/dealing/DealtAgainst";
+import {randomSide} from "@src/redux/game/sides/RandomSide";
+import {restartedFrom} from "@src/redux/game/restarting/RestartedFrom";
+import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {settledSide} from "@src/redux/game/sides/SettledSide";
+import {withinReach} from "@src/redux/game/within-reach/WithinReach";
 
 /**
  * Every reducer returns a new state rather than mutating the draft Immer hands it. The engine
@@ -58,6 +64,10 @@ import {undo} from "@src/game/record/Undo";
  *
  * `botLetOpen` touches neither the board nor the record. It is the player saying a game against the
  * bot may start, which a bot holding cho's first move waits for; every deal takes it back.
+ *
+ * **What each of these actually does to a game lives beneath this file** — `dealing/`, `restarting/`,
+ * `sides/` and `within-reach/` — so every rule is reachable, and tested, without going through a
+ * dispatch. What is left here is the wiring: which action does which of them, and to what.
  */
 export const gameSlice = createSlice({
   name: "game",
@@ -109,6 +119,12 @@ export const gameSlice = createSlice({
       reducer: (state, action: PayloadAction<Side>): GameSliceState => restartedFrom(state, action.payload),
       prepare: () => ({payload: randomSide()}),
     },
+
+    botKeptWithinReach: (state, action: PayloadAction<BeatenLadders>): GameSliceState =>
+      withinReach(state, action.payload),
+  },
+  extraReducers: builder => {
+    builder.addCase(saveLoaded, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
   },
 });
 
@@ -126,37 +142,7 @@ export const {
   botStrengthChosen,
   sideChosen,
   restarted,
+  botKeptWithinReach,
 } = gameSlice.actions;
 
 export const gameReducer = gameSlice.reducer;
-
-/** A fresh game in the same format, against the opponent as it now stands. */
-function dealtAgainst(state: GameSliceState, opponent: Opponent): GameSliceState {
-  return {...dealtGame(freshPhaseFor(state.phase.format)), opponent};
-}
-
-/**
- * The same game dealt again. A Random side takes the roll the action carries; a chosen side ignores
- * it. Only a roll that actually moves the player to the other army costs the arrangements.
- */
-function restartedFrom(state: GameSliceState, roll: Side): GameSliceState {
-  const playerSide = state.opponent.sideChoice === "Random" ? roll : state.opponent.playerSide;
-  if (playerSide === state.opponent.playerSide) return {...dealtGame(state.phase), opponent: state.opponent};
-
-  return dealtAgainst(state, {...state.opponent, playerSide});
-}
-
-function settledSide(choice: SideChoiceName): Side {
-  switch (choice) {
-    case "Cho":
-      return "cho";
-    case "Han":
-      return "han";
-    case "Random":
-      return randomSide();
-  }
-}
-
-function randomSide(): Side {
-  return Math.random() < 0.5 ? "cho" : "han";
-}
