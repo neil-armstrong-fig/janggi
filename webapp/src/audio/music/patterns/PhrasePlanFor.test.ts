@@ -5,8 +5,9 @@ import {phrasePlanFor} from "@src/audio/music/patterns/PhrasePlanFor";
 const ROLLS = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1];
 
 it("never answers a call with the same motif", () => {
-  for (const call of ROLLS)
+  for (const call of ROLLS) {
     for (const answer of ROLLS) expect(phrasePlanFor(call, answer).call).not.toBe(phrasePlanFor(call, answer).answer);
+  }
 });
 
 it("picks only motifs there are", () => {

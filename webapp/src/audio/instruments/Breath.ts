@@ -1,3 +1,4 @@
+import type {SoundOutput} from "@src/audio/types/SoundOutput";
 import {noiseBuffer} from "@src/audio/instruments/utils/NoiseBuffer";
 
 /** A breath drawn in. */
@@ -12,8 +13,8 @@ export interface BreathSwell {
  * Soft noise that swells and is cut off short — the shape of a sound played backwards, which is what a
  * turn taken back should sound like: the game drawing in the move it had played.
  */
-export function breath(context: BaseAudioContext, destination: AudioNode, when: number, swell: BreathSwell): void {
-  const {weight, length} = swell;
+export function breath({context, destination}: SoundOutput, when: number, breathSwell: BreathSwell): void {
+  const {weight, length} = breathSwell;
 
   const air = context.createBufferSource();
   air.buffer = noiseBuffer(context);

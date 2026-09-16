@@ -1,3 +1,4 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {Position} from "@src/game/board/types/Position";
 import {SETUPS} from "@src/game/setups/Setups";
@@ -5,10 +6,10 @@ import type {Setup} from "@src/game/setups/types/Setup";
 import {expect, it} from "vitest";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {movesFrom} from "@src/game/MovesFrom";
 import {newGame} from "@src/game/NewGame";
 import {toPositionKey} from "@src/game/board/PositionKeys";
+import {placed} from "@src/testing/Placed";
 
 const opening = newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 
@@ -129,16 +130,12 @@ function position(...pieces: readonly PlacedPiece[]): GameState {
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }
 
 function points(positions: readonly Position[]): string[] {

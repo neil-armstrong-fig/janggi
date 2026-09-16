@@ -58,7 +58,9 @@ export function checkThemeLayer(context: BaseAudioContext): Layer {
         string.frequency.setTargetAtTime(pitchOf(ROOT, GYEMYEONJO, degree), step.time, GLIDE_S);
       }
 
-      for (const hit of heartbeatHitsAt(step.index)) janggu(context, output, step.time, hit);
+      for (const hit of heartbeatHitsAt(step.index)) {
+        janggu({context, destination: output}, step.time, hit);
+      }
     },
     stop: () => {
       sounding.forEach(oscillator => oscillator.stop());

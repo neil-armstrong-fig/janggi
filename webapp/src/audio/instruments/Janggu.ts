@@ -1,4 +1,5 @@
 import type {JangguHead} from "@src/audio/instruments/types/JangguHead";
+import type {SoundOutput} from "@src/audio/types/SoundOutput";
 import {noiseBuffer} from "@src/audio/instruments/utils/NoiseBuffer";
 import {strike} from "@src/audio/instruments/utils/Strike";
 
@@ -16,20 +17,20 @@ export interface JangguStrike {
  * Its two heads are two different sounds and are drawn that way: 궁편 a round low boom that drops in
  * pitch as it rings, and 채편 a dry bright crack from the thin stick.
  */
-export function janggu(context: BaseAudioContext, destination: AudioNode, when: number, stroke: JangguStrike): void {
-  if (stroke.head === "gung") gung(context, destination, when, stroke.weight);
+export function janggu(soundOutput: SoundOutput, when: number, jangguStrike: JangguStrike): void {
+  if (jangguStrike.head === "gung") gung(soundOutput, when, jangguStrike.weight);
 
-  if (stroke.head === "chae") chae(context, destination, when, stroke.weight);
+  if (jangguStrike.head === "chae") chae(soundOutput, when, jangguStrike.weight);
 }
 
-function gung(context: BaseAudioContext, destination: AudioNode, when: number, weight: number): void {
+function gung({context, destination}: SoundOutput, when: number, weight: number): void {
   const skin = context.createOscillator();
   skin.type = "sine";
   skin.frequency.setValueAtTime(150, when);
   skin.frequency.exponentialRampToValueAtTime(62, when + 0.16);
 
   const skinLevel = context.createGain();
-  strike(skinLevel.gain, when, weight * 0.9, 0.003, 0.32);
+  strike(skinLevel.gain, {when, peak: weight * 0.9, attack: 0.003, decay: 0.32});
 
   skin.connect(skinLevel).connect(destination);
   skin.start(when);
@@ -43,14 +44,14 @@ function gung(context: BaseAudioContext, destination: AudioNode, when: number, w
   muffle.frequency.value = 400;
 
   const palmLevel = context.createGain();
-  strike(palmLevel.gain, when, weight * 0.25, 0.002, 0.05);
+  strike(palmLevel.gain, {when, peak: weight * 0.25, attack: 0.002, decay: 0.05});
 
   palm.connect(muffle).connect(palmLevel).connect(destination);
   palm.start(when, Math.random() * 0.5);
   palm.stop(when + 0.1);
 }
 
-function chae(context: BaseAudioContext, destination: AudioNode, when: number, weight: number): void {
+function chae({context, destination}: SoundOutput, when: number, weight: number): void {
   const stick = context.createBufferSource();
   stick.buffer = noiseBuffer(context);
 
@@ -60,7 +61,7 @@ function chae(context: BaseAudioContext, destination: AudioNode, when: number, w
   band.Q.value = 2;
 
   const stickLevel = context.createGain();
-  strike(stickLevel.gain, when, weight * 0.5, 0.001, 0.05);
+  strike(stickLevel.gain, {when, peak: weight * 0.5, attack: 0.001, decay: 0.05});
 
   stick.connect(band).connect(stickLevel).connect(destination);
   stick.start(when, Math.random() * 0.5);
@@ -72,7 +73,7 @@ function chae(context: BaseAudioContext, destination: AudioNode, when: number, w
   ring.frequency.exponentialRampToValueAtTime(640, when + 0.05);
 
   const ringLevel = context.createGain();
-  strike(ringLevel.gain, when, weight * 0.2, 0.001, 0.06);
+  strike(ringLevel.gain, {when, peak: weight * 0.2, attack: 0.001, decay: 0.06});
 
   ring.connect(ringLevel).connect(destination);
   ring.start(when);

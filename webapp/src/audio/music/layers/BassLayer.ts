@@ -19,7 +19,7 @@ export function bassLayer(context: BaseAudioContext): Layer {
       const note = bassNoteAt(step.index, step.underWay, step.rhythm);
       if (!note) return;
 
-      gayageum(context, output, step.time, {
+      gayageum({context, destination: output}, step.time, {
         frequency: pitchOf(ROOT, PYEONGJO, note.degree),
         weight: note.weight * WEIGHT,
         length: step.seconds * note.steps,

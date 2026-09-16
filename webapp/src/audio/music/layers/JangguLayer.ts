@@ -16,8 +16,10 @@ export function jangguLayer(context: BaseAudioContext): Layer {
     play: (step: Step) => {
       const turning = step.nextRhythm.name !== step.rhythm.name;
 
-      for (const hit of jangguHitsAt(step.index, step.rhythm, step.tension, turning)) {
-        janggu(context, output, step.time, hit);
+      const hits = jangguHitsAt({step: step.index, rhythm: step.rhythm, tension: step.tension, turning});
+
+      for (const hit of hits) {
+        janggu({context, destination: output}, step.time, hit);
       }
     },
     stop: () => output.disconnect(),

@@ -19,7 +19,7 @@ export function answerLayer(context: BaseAudioContext): Layer {
       const note = answerNoteAt(step.index);
       if (!note) return;
 
-      daegeum(context, output, step.time, {
+      daegeum({context, destination: output}, step.time, {
         frequency: pitchOf(ROOT, PYEONGJO, note.degree),
         weight: WEIGHT,
         length: step.seconds * note.steps * HELD_FOR,

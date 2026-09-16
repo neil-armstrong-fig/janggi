@@ -53,7 +53,7 @@ export function GamePage(): React.JSX.Element {
   const {effects, soundEffectsVolume, musicVolume} = usePreferences();
   const moment = useGameMoment(played);
 
-  const sound = useGameAudio(played, moment, soundEffectsVolume, musicVolume);
+  const sound = useGameAudio({played, moment, soundEffectsVolume, musicVolume});
   useHaptics(played, moment, effects.full);
   useBotOpponent(engine);
   useRatedGame(moment);

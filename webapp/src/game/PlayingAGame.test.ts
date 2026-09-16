@@ -1,7 +1,7 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Move} from "@src/game/types/Move";
-import type {File, Rank} from "@src/game/board/types/Position";
+import type {File, Position, Rank} from "@src/game/board/types/Position";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
@@ -86,7 +86,7 @@ describe("a new game", () => {
   });
 
   it("refuses to let han open", () => {
-    expect(() => applyMove(game, move(1, 4, 1, 5))).toThrow(/cho to move/);
+    expect(() => applyMove(game, move({file: 1, rank: 4}, {file: 1, rank: 5}))).toThrow(/cho to move/);
   });
 
   describe("when every opening cho has is played", () => {
@@ -123,7 +123,7 @@ describe("a new game", () => {
 
     beforeEach(() => {
       before = game;
-      game = applyMove(game, move(1, 7, 1, 6));
+      game = applyMove(game, move({file: 1, rank: 7}, {file: 1, rank: 6}));
     });
 
     it("stands the soldier a rank further up the board", () => {
@@ -143,7 +143,7 @@ describe("a new game", () => {
     });
 
     it("refuses to let cho move twice running", () => {
-      expect(() => applyMove(game, move(3, 7, 3, 6))).toThrow(/han to move/);
+      expect(() => applyMove(game, move({file: 3, rank: 7}, {file: 3, rank: 6}))).toThrow(/han to move/);
     });
 
     it("leaves the position it was played from untouched, so a game can be replayed", () => {
@@ -154,7 +154,7 @@ describe("a new game", () => {
 
     describe("and han answers on the far wing", () => {
       beforeEach(() => {
-        game = applyMove(game, move(9, 4, 9, 5));
+        game = applyMove(game, move({file: 9, rank: 4}, {file: 9, rank: 5}));
       });
 
       it("hands the turn back to cho", () => {
@@ -163,7 +163,7 @@ describe("a new game", () => {
 
       describe("and cho brings its chariot down the file the soldier opened", () => {
         beforeEach(() => {
-          game = applyMove(game, move(1, 10, 1, 7));
+          game = applyMove(game, move({file: 1, rank: 10}, {file: 1, rank: 7}));
         });
 
         it("stands the chariot where the soldier had been", () => {
@@ -182,7 +182,7 @@ describe("a new game", () => {
 
     describe("and han advances into contact instead", () => {
       beforeEach(() => {
-        game = applyMove(game, move(1, 4, 1, 5));
+        game = applyMove(game, move({file: 1, rank: 4}, {file: 1, rank: 5}));
       });
 
       it("leaves the two soldiers facing each other down the file", () => {
@@ -196,12 +196,12 @@ describe("a new game", () => {
 
       describe("and cho plays elsewhere, leaving the two soldiers touching", () => {
         beforeEach(() => {
-          game = applyMove(game, move(3, 7, 3, 6));
+          game = applyMove(game, move({file: 3, rank: 7}, {file: 3, rank: 6}));
         });
 
         describe("and han takes instead", () => {
           beforeEach(() => {
-            game = applyMove(game, move(1, 5, 1, 6));
+            game = applyMove(game, move({file: 1, rank: 5}, {file: 1, rank: 6}));
           });
 
           it("stands the han soldier on the point it took", () => {
@@ -217,7 +217,7 @@ describe("a new game", () => {
 
       describe("and cho takes it", () => {
         beforeEach(() => {
-          game = applyMove(game, move(1, 6, 1, 5));
+          game = applyMove(game, move({file: 1, rank: 6}, {file: 1, rank: 5}));
         });
 
         it("stands the cho soldier on the point it took", () => {
@@ -266,7 +266,7 @@ describe("an endgame of one chariot against a bare general", () => {
 
   describe("when the chariot swings onto the general's file", () => {
     beforeEach(() => {
-      game = applyMove(game, move(1, 8, 4, 8));
+      game = applyMove(game, move({file: 1, rank: 8}, {file: 4, rank: 8}));
     });
 
     it("gives check down the open file", () => {
@@ -295,7 +295,7 @@ describe("an endgame of one chariot against a bare general", () => {
 
     describe("and the general steps off the file", () => {
       beforeEach(() => {
-        game = applyMove(game, move(4, 2, 5, 2));
+        game = applyMove(game, move({file: 4, rank: 2}, {file: 5, rank: 2}));
       });
 
       it("is out of check", () => {
@@ -330,7 +330,7 @@ describe("an endgame one move from mate", () => {
 
   describe("when the third chariot takes the middle file", () => {
     beforeEach(() => {
-      game = applyMove(game, move(1, 3, 5, 3));
+      game = applyMove(game, move({file: 1, rank: 3}, {file: 5, rank: 3}));
     });
 
     it("is checkmate", () => {
@@ -365,7 +365,7 @@ describe("an endgame where a cannon has nothing to jump", () => {
 
   describe("when a soldier steps across to screen it", () => {
     beforeEach(() => {
-      game = applyMove(game, move(4, 5, 5, 5));
+      game = applyMove(game, move({file: 4, rank: 5}, {file: 5, rank: 5}));
     });
 
     it("opens the cannon's line and gives check", () => {
@@ -493,7 +493,7 @@ describe("an endgame both players agree to stop", () => {
       });
 
       it("refuses a move once it is over", () => {
-        expect(() => applyMove(game, move(1, 3, 1, 8))).toThrow();
+        expect(() => applyMove(game, move({file: 1, rank: 3}, {file: 1, rank: 8}))).toThrow();
       });
 
       it("refuses a third pass once it is over", () => {
@@ -503,7 +503,7 @@ describe("an endgame both players agree to stop", () => {
 
     describe("and han takes the chariot instead", () => {
       beforeEach(() => {
-        game = applyMove(game, move(1, 3, 1, 8));
+        game = applyMove(game, move({file: 1, rank: 3}, {file: 1, rank: 8}));
       });
 
       it("puts han a chariot ahead", () => {
@@ -558,11 +558,11 @@ describe("a game being taken back", () => {
 
   describe("when cho sweeps its edge soldier", () => {
     beforeEach(() => {
-      played = playMove(played, move(1, 7, 1, 6));
+      played = playMove(played, move({file: 1, rank: 7}, {file: 1, rank: 6}));
     });
 
     it("stands on the position the move reached", () => {
-      expect(played.present).toEqual(applyMove(opening, move(1, 7, 1, 6)));
+      expect(played.present).toEqual(applyMove(opening, move({file: 1, rank: 7}, {file: 1, rank: 6})));
     });
 
     it("keeps the position it was played from", () => {
@@ -617,7 +617,7 @@ describe("a game being taken back", () => {
       /** The branch that was taken back is gone, not kept beside the one actually played. */
       describe("and cho sweeps the other edge soldier instead", () => {
         beforeEach(() => {
-          played = playMove(played, move(9, 7, 9, 6));
+          played = playMove(played, move({file: 9, rank: 7}, {file: 9, rank: 6}));
         });
 
         it("forgets the move that was taken back", () => {
@@ -633,8 +633,8 @@ describe("a game being taken back", () => {
 
     describe("and the two soldiers meet and cho takes", () => {
       beforeEach(() => {
-        played = playMove(played, move(1, 4, 1, 5));
-        played = playMove(played, move(1, 6, 1, 5));
+        played = playMove(played, move({file: 1, rank: 4}, {file: 1, rank: 5}));
+        played = playMove(played, move({file: 1, rank: 6}, {file: 1, rank: 5}));
       });
 
       it("has the han soldier off the board", () => {
@@ -738,7 +738,7 @@ describe("a game taken back after it was settled on points", () => {
     });
 
     it("lets han take the chariot instead", () => {
-      expect(() => applyMove(played.present, move(1, 3, 1, 8))).not.toThrow();
+      expect(() => applyMove(played.present, move({file: 1, rank: 3}, {file: 1, rank: 8}))).not.toThrow();
     });
   });
 });
@@ -758,7 +758,7 @@ describe("a game taken back after mate", () => {
         han("chariot", 1, 3),
       ),
     );
-    played = playMove(played, move(1, 3, 5, 3));
+    played = playMove(played, move({file: 1, rank: 3}, {file: 5, rank: 3}));
   });
 
   it("is mate, with nothing at all for cho to play", () => {
@@ -813,10 +813,10 @@ describe("a game shuffling back and forth", () => {
 
   describe("when both generals step off their palace centres and back", () => {
     beforeEach(() => {
-      game = applyMove(game, move(5, 9, 5, 10));
-      game = applyMove(game, move(5, 2, 5, 1));
-      game = applyMove(game, move(5, 10, 5, 9));
-      game = applyMove(game, move(5, 1, 5, 2));
+      game = applyMove(game, move({file: 5, rank: 9}, {file: 5, rank: 10}));
+      game = applyMove(game, move({file: 5, rank: 2}, {file: 5, rank: 1}));
+      game = applyMove(game, move({file: 5, rank: 10}, {file: 5, rank: 9}));
+      game = applyMove(game, move({file: 5, rank: 1}, {file: 5, rank: 2}));
     });
 
     it("stands on the opening position again, with cho to move", () => {
@@ -839,9 +839,9 @@ describe("a game shuffling back and forth", () => {
 
     describe("and the two shuffle round once more", () => {
       beforeEach(() => {
-        game = applyMove(game, move(5, 9, 5, 10));
-        game = applyMove(game, move(5, 2, 5, 1));
-        game = applyMove(game, move(5, 10, 5, 9));
+        game = applyMove(game, move({file: 5, rank: 9}, {file: 5, rank: 10}));
+        game = applyMove(game, move({file: 5, rank: 2}, {file: 5, rank: 1}));
+        game = applyMove(game, move({file: 5, rank: 10}, {file: 5, rank: 9}));
       });
 
       it("stands one ply from the opening position for the third time", () => {
@@ -855,7 +855,7 @@ describe("a game shuffling back and forth", () => {
       });
 
       it("refuses that step when it is played anyway", () => {
-        expect(() => applyMove(game, move(5, 1, 5, 2))).toThrow(/cannot move/);
+        expect(() => applyMove(game, move({file: 5, rank: 1}, {file: 5, rank: 2}))).toThrow(/cannot move/);
       });
 
       it("offers only moves it will then accept", () => {
@@ -869,7 +869,7 @@ describe("a game shuffling back and forth", () => {
 
       describe("and han plays something else", () => {
         beforeEach(() => {
-          game = applyMove(game, move(1, 4, 1, 5));
+          game = applyMove(game, move({file: 1, rank: 4}, {file: 1, rank: 5}));
         });
 
         it("carries the game on with the circuit broken", () => {
@@ -961,7 +961,7 @@ describe("an endgame where the generals face each other", () => {
     });
 
     it("refuses a move once it is over", () => {
-      expect(() => applyMove(game, move(1, 8, 1, 7))).toThrow(/game is over/);
+      expect(() => applyMove(game, move({file: 1, rank: 8}, {file: 1, rank: 7}))).toThrow(/game is over/);
     });
 
     it("refuses a rested turn once it is over", () => {
@@ -972,7 +972,7 @@ describe("an endgame where the generals face each other", () => {
 
   describe("and cho steps its general aside instead", () => {
     beforeEach(() => {
-      game = applyMove(game, move(5, 9, 4, 9));
+      game = applyMove(game, move({file: 5, rank: 9}, {file: 4, rank: 9}));
     });
 
     it("breaks the bikjang", () => {
@@ -1021,7 +1021,7 @@ describe("an endgame where the generals face each other in a scored game", () =>
 
   describe("and han's chariot takes one of cho's", () => {
     beforeEach(() => {
-      game = applyMove(game, move(1, 3, 1, 8));
+      game = applyMove(game, move({file: 1, rank: 3}, {file: 1, rank: 8}));
     });
 
     it("brings cho under thirty", () => {
@@ -1073,7 +1073,7 @@ describe("a scored endgame where a general takes its way into a bikjang", () => 
 
   describe("when han's general takes the soldier", () => {
     beforeEach(() => {
-      game = applyMove(game, move(5, 2, 5, 3));
+      game = applyMove(game, move({file: 5, rank: 2}, {file: 5, rank: 3}));
     });
 
     it("brings the two generals face to face", () => {
@@ -1091,7 +1091,7 @@ describe("a scored endgame where a general takes its way into a bikjang", () => 
 
     describe("and cho plays elsewhere", () => {
       beforeEach(() => {
-        game = applyMove(game, move(1, 8, 1, 7));
+        game = applyMove(game, move({file: 1, rank: 8}, {file: 1, rank: 7}));
       });
 
       it("still stands the generals face to face", () => {
@@ -1193,7 +1193,7 @@ describe("a scored game being laid out", () => {
         });
 
         it("is an ordinary game, and plays on", () => {
-          expect(applyMove(game, move(1, 7, 1, 6)).sideToMove).toBe("han");
+          expect(applyMove(game, move({file: 1, rank: 7}, {file: 1, rank: 6})).sideToMove).toBe("han");
         });
       });
     });
@@ -1291,11 +1291,8 @@ function pieceOn(state: GameState, file: File, rank: Rank): Piece | undefined {
  * is a compile error here exactly as it is everywhere else. A cast would have been shorter and
  * would have thrown that away.
  */
-function move(fromFile: File, fromRank: Rank, toFile: File, toRank: Rank): Move {
-  return {
-    from: {file: fromFile, rank: fromRank},
-    to: {file: toFile, rank: toRank},
-  };
+function move(from: Position, to: Position): Move {
+  return {from, to};
 }
 
 function setup(name: string): Setup {
@@ -1332,7 +1329,12 @@ function constructed(format: MatchFormat, sideToMove: Side, pieces: readonly Pla
  * onto it. Four plies, and the position handed in is the position handed back.
  */
 function shuffled(game: GameState): GameState {
-  return [move(4, 9, 4, 10), move(6, 2, 6, 1), move(4, 10, 4, 9), move(6, 1, 6, 2)].reduce(applyMove, game);
+  return [
+    move({file: 4, rank: 9}, {file: 4, rank: 10}),
+    move({file: 6, rank: 2}, {file: 6, rank: 1}),
+    move({file: 4, rank: 10}, {file: 4, rank: 9}),
+    move({file: 6, rank: 1}, {file: 6, rank: 2}),
+  ].reduce(applyMove, game);
 }
 
 function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {

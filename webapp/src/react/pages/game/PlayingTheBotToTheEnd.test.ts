@@ -86,7 +86,13 @@ async function playedOut(dealtGame: GameSliceState): Promise<GameSliceState> {
 
   for (let turn = 0; turn < MOST_TURNS && outcomeOf(game.played.present).kind === "undecided"; turn += 1) {
     const {side, elo, duty} = waitedOn(game);
-    const reply = await botReplyFor(duty, engine, game.played, elo, evaluations[side]);
+    const reply = await botReplyFor(engine, {
+      duty,
+      played: game.played,
+      elo,
+      evaluation: evaluations[side],
+      signal: new AbortController().signal,
+    });
 
     evaluations[side] = reply.evaluation;
     game = gameReducer(game, reply.action);

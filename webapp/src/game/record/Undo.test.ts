@@ -1,3 +1,4 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
@@ -6,6 +7,7 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {expect, it} from "vitest";
 import {outcomeOf} from "@src/game/OutcomeOf";
 import {undo} from "@src/game/record/Undo";
+import {placed} from "@src/testing/Placed";
 
 it("stands the game back on the position it was last played from", () => {
   const before = board();
@@ -91,14 +93,10 @@ function toMove(sideToMove: Side, consecutivePasses: number, ...pieces: readonly
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }

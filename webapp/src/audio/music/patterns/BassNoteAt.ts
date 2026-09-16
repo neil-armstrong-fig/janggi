@@ -11,6 +11,13 @@ interface Pluck {
   readonly weight: number;
 }
 
+/** A figure the bass walks: its plucks by step, how many steps it cycles over, and the chord it is on. */
+interface Walk {
+  readonly figure: ReadonlyMap<number, Pluck>;
+  readonly length: number;
+  readonly chord: Chord;
+}
+
 /**
  * The low string the bass plucks on this step, or nothing.
  *
@@ -25,14 +32,19 @@ interface Pluck {
  * bass that also landed between the beats doubled the drum's off-beat strokes and made the groove lurch.
  */
 export function bassNoteAt(step: number, underWay: boolean, rhythm: Rhythm): BassNote | undefined {
-  if (!underWay) return pluckOn(step, WAITING, WAITING_STEPS, chordAt(step, STEPS_PER_WAITING_CHORD));
+  if (!underWay) {
+    const chord = chordAt(step, STEPS_PER_WAITING_CHORD);
+
+    return pluckOn(step, {figure: WAITING, length: WAITING_STEPS, chord});
+  }
 
   const figure = rhythm.meter === "duple" ? DUPLE : TRIPLE;
+  const chord = chordAt(step, STEPS_PER_GAME_CHORD);
 
-  return pluckOn(step, figure, STEPS_PER_ROUND, chordAt(step, STEPS_PER_GAME_CHORD));
+  return pluckOn(step, {figure, length: STEPS_PER_ROUND, chord});
 }
 
-function pluckOn(step: number, figure: ReadonlyMap<number, Pluck>, length: number, chord: Chord): BassNote | undefined {
+function pluckOn(step: number, {figure, length, chord}: Walk): BassNote | undefined {
   const pluck = figure.get(((step % length) + length) % length);
   if (!pluck) return undefined;
 

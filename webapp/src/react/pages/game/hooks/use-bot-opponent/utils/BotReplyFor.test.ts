@@ -14,9 +14,23 @@ const opening: PlayedGame = playedGameFrom(newGame(DEFAULT_SETUP, DEFAULT_SETUP,
 
 const soldierForward: Move = {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}};
 
-it("lays out a setup for the army it is asked to, without asking the engine", async () => {
-  const han = await botReplyFor({kind: "layOut", side: "han"}, unasked(), opening, 1200, 35);
-  const cho = await botReplyFor({kind: "layOut", side: "cho"}, unasked(), opening, 1200, 35);
+it("lays out a setup for the army it is asked to, carrying no evaluation into play", async () => {
+  const engine = answering({bestMove: "a4a5", evaluation: 0});
+
+  const han = await botReplyFor(engine, {
+    duty: {kind: "layOut", side: "han", hanSetup: undefined},
+    played: opening,
+    elo: 1200,
+    evaluation: 35,
+    signal: live(),
+  });
+  const cho = await botReplyFor(engine, {
+    duty: {kind: "layOut", side: "cho", hanSetup: DEFAULT_SETUP},
+    played: opening,
+    elo: 1200,
+    evaluation: 35,
+    signal: live(),
+  });
 
   expect(hanSetupChosen.match(han.action)).toBe(true);
   expect(choSetupChosen.match(cho.action)).toBe(true);
@@ -24,39 +38,49 @@ it("lays out a setup for the army it is asked to, without asking the engine", as
 });
 
 it("plays the engine's move as the store's move, carrying its evaluation", async () => {
-  const reply = await botReplyFor(
-    {kind: "play"},
-    answering({bestMove: "a4a5", evaluation: 20}),
-    opening,
-    1200,
-    undefined,
-  );
+  const reply = await botReplyFor(answering({bestMove: "a4a5", evaluation: 20}), {
+    duty: {kind: "play"},
+    played: opening,
+    elo: 1200,
+    evaluation: undefined,
+    signal: live(),
+  });
 
   expect(reply).toEqual({action: moved(soldierForward), evaluation: 20});
 });
 
 it("rests the turn as the store's pass", async () => {
-  const reply = await botReplyFor(
-    {kind: "play"},
-    answering({bestMove: "e2e2", evaluation: 0}),
-    opening,
-    1200,
-    undefined,
-  );
+  const reply = await botReplyFor(answering({bestMove: "e2e2", evaluation: 0}), {
+    duty: {kind: "play"},
+    played: opening,
+    elo: 1200,
+    evaluation: undefined,
+    signal: live(),
+  });
 
   expect(reply.action).toEqual(passed());
 });
 
 it("carries the last evaluation on through a game under way", async () => {
-  const underWay = playMove(opening, soldierForward);
-
-  const reply = await botReplyFor({kind: "play"}, answering({bestMove: "", evaluation: undefined}), underWay, 1200, 35);
+  const reply = await botReplyFor(answering({bestMove: "", evaluation: undefined}), {
+    duty: {kind: "play"},
+    played: playMove(opening, soldierForward),
+    elo: 1200,
+    evaluation: 35,
+    signal: live(),
+  });
 
   expect(reply.evaluation).toBe(35);
 });
 
 it("forgets the last evaluation on a record with no turns in it", async () => {
-  const reply = await botReplyFor({kind: "play"}, answering({bestMove: "", evaluation: undefined}), opening, 1200, 35);
+  const reply = await botReplyFor(answering({bestMove: "", evaluation: undefined}), {
+    duty: {kind: "play"},
+    played: opening,
+    elo: 1200,
+    evaluation: 35,
+    signal: live(),
+  });
 
   expect(reply.evaluation).toBeUndefined();
 });
@@ -65,6 +89,6 @@ function answering(result: SearchResult): Engine {
   return {search: () => Promise.resolve(result), stop: () => undefined};
 }
 
-function unasked(): Engine {
-  return {search: () => Promise.reject(new Error("Laying out asks the engine nothing")), stop: () => undefined};
+function live(): AbortSignal {
+  return new AbortController().signal;
 }

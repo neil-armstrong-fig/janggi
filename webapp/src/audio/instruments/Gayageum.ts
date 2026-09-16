@@ -1,3 +1,4 @@
+import type {SoundOutput} from "@src/audio/types/SoundOutput";
 import {strike} from "@src/audio/instruments/utils/Strike";
 
 /** One plucked note. */
@@ -19,8 +20,8 @@ export interface GayageumPluck {
  * nod to 농현, the player's hand pressing the string behind the bridge, which more than anything is what
  * makes a plucked note sound Korean rather than merely plucked.
  */
-export function gayageum(context: BaseAudioContext, destination: AudioNode, when: number, note: GayageumPluck): void {
-  const {frequency, weight, length} = note;
+export function gayageum({context, destination}: SoundOutput, when: number, gayageumPluck: GayageumPluck): void {
+  const {frequency, weight, length} = gayageumPluck;
   const end = when + length + 0.05;
 
   const string = context.createOscillator();
@@ -44,7 +45,7 @@ export function gayageum(context: BaseAudioContext, destination: AudioNode, when
   mellow.frequency.exponentialRampToValueAtTime(frequency * 1.8, when + length * 0.6);
 
   const level = context.createGain();
-  strike(level.gain, when, 0.12 + 0.18 * weight, 0.004, length);
+  strike(level.gain, {when, peak: 0.12 + 0.18 * weight, attack: 0.004, decay: length});
 
   string.connect(mellow);
   shimmer.connect(shimmerLevel).connect(mellow);

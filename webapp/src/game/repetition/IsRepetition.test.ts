@@ -1,11 +1,13 @@
+import type {File, Rank} from "@src/game/board/types/Position";
 import type {GameState} from "@src/game/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {Standing} from "@src/game/types/Standing";
+import {RANKS} from "@src/game/board/BoardDimensions";
 import {expect, it} from "vitest";
 import {isRepetition} from "@src/game/repetition/IsRepetition";
 import {standingOf} from "@src/game/utils/StandingOf";
+import {placed} from "@src/testing/Placed";
 
 /**
  * "동일한 수를 3회 이상 반복할 수 없다" — a position standing a third time. It **reports**: the
@@ -69,7 +71,7 @@ function having(seen: readonly Standing[]): GameState {
  * and a made-up one would not be the thing the guard is counting.
  */
 function elsewhere(count: number): readonly Standing[] {
-  return Array.from({length: count}, (_, index) => standingOf(position(cho("chariot", 1, index + 1))));
+  return RANKS.slice(0, count).map(rank => standingOf(position(cho("chariot", 1, rank))));
 }
 
 function position(...alsoStanding: readonly PlacedPiece[]): GameState {
@@ -84,14 +86,10 @@ function position(...alsoStanding: readonly PlacedPiece[]): GameState {
   };
 }
 
-function cho(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("cho", type, file, rank);
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
 }
 
-function han(type: PieceType, file: number, rank: number): PlacedPiece {
-  return placed("han", type, file, rank);
-}
-
-function placed(side: Side, type: PieceType, file: number, rank: number): PlacedPiece {
-  return {piece: {side, type}, position: {file, rank} as PlacedPiece["position"]};
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
 }

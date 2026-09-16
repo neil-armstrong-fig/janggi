@@ -87,6 +87,11 @@ export function baseConfig({tsconfigRootDir, allowedPackages = []} = {}) {
       },
     },
     prettierConfig,
+    // After `prettierConfig`, which switches `curly` off. Prettier reprints code and never adds or
+    // removes braces, so only ESLint can require them: "multi-line" leaves `if (done) return;` bare on
+    // one line, and braces any body on a line of its own — including one Prettier broke onto it.
+    // `--fix` puts the braces in.
+    {rules: {curly: ["error", "multi-line"]}},
   );
 }
 
