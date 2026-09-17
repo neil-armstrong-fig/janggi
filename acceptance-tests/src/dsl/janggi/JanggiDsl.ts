@@ -3,6 +3,7 @@ import {DebugDsl} from "@src/dsl/janggi/components/debug/DebugDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {GuideDsl} from "@src/dsl/janggi/components/guide/GuideDsl";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
+import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
 import {ReleaseUpdateDsl} from "@src/dsl/janggi/components/release-update/ReleaseUpdateDsl";
@@ -77,6 +78,14 @@ export class JanggiDsl {
     }
   }
 
+  async reloadOffline(): Promise<void> {
+    try {
+      await this.janggi.reloadOffline();
+    } catch (error) {
+      throw new DslError("Failed to reopen the game without a network connection", error);
+    }
+  }
+
   async offerInstallation(): Promise<void> {
     try {
       await this.janggi.offerInstallation();
@@ -98,6 +107,14 @@ export class JanggiDsl {
       return await this.janggi.getPageTitle();
     } catch (error) {
       throw new DslError("Failed to read the game's page title", error);
+    }
+  }
+
+  async getInstallationAppearance(): Promise<InstallationAppearance> {
+    try {
+      return await this.janggi.getInstallationAppearance();
+    } catch (error) {
+      throw new DslError("Failed to read the app's installation artwork", error);
     }
   }
 

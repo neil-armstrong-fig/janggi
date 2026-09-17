@@ -1,5 +1,5 @@
 /**
- * Draws `public/icon.svg` from scratch — no font, no traced artwork.
+ * Draws the SVG favicon and raster home-screen icons from scratch — no font, no traced artwork.
  *
  * A simplified 태극기: white field, the taegeuk in the middle, the four trigrams around it, and the
  * syllables 장기 lettered across the taegeuk. Every shape is built here from coordinates, so the
@@ -18,8 +18,17 @@
  */
 import {writeFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
+import {deflateSync} from "node:zlib";
 
-const OUTPUT = fileURLToPath(new URL("../public/icon.svg", import.meta.url));
+const PUBLIC_DIRECTORY = new URL("../public/", import.meta.url);
+const SVG_OUTPUT = fileURLToPath(new URL("icon.svg", PUBLIC_DIRECTORY));
+
+const RASTER_OUTPUTS = [
+  {name: "apple-touch-icon.png", size: 180},
+  {name: "icon-192.png", size: 192},
+  {name: "icon-512.png", size: 512},
+  {name: "maskable-icon-512.png", size: 512},
+];
 
 const SIZE = 512;
 const CENTER = SIZE / 2;
@@ -57,20 +66,46 @@ const ADVANCE = 104;
 /** How much of the taegeuk the lettering reaches across, corner to corner. */
 const FILL = 0.94;
 
-writeFileSync(OUTPUT, renderIcon(), "utf8");
+const SOLID = true;
+const BROKEN = false;
+
+const TRIGRAMS = [
+  {name: "건", angle: 135, bars: [SOLID, SOLID, SOLID]},
+  {name: "리", angle: 45, bars: [SOLID, BROKEN, SOLID]},
+  {name: "감", angle: 225, bars: [BROKEN, SOLID, BROKEN]},
+  {name: "곤", angle: -45, bars: [BROKEN, BROKEN, BROKEN]},
+];
+
+const LETTERING_STROKES = [...jang(), ...translate(gi(), ADVANCE, 0)];
+const COLOURS = {
+  field: rgb(FIELD),
+  red: rgb(RED),
+  blue: rgb(BLUE),
+  black: rgb(BLACK),
+  lettering: rgb(LETTERING),
+};
+const RED_TAEGEUK = taegeukRedOutline();
+const LETTERING_TRANSFORM = letteringTransformFor(LETTERING_STROKES);
+
+writeFileSync(SVG_OUTPUT, renderIcon(), "utf8");
+
+const rasterImages = new Map();
+for (const {name, size} of RASTER_OUTPUTS) {
+  const rasterImage = rasterImages.get(size) ?? renderPng(size);
+  rasterImages.set(size, rasterImage);
+  writeFileSync(fileURLToPath(new URL(name, PUBLIC_DIRECTORY)), rasterImage);
+}
 
 /** The finished SVG document: field, taegeuk, trigrams, then the lettering over the top. */
 function renderIcon() {
-  const strokes = [...jang(), ...translate(gi(), ADVANCE, 0)];
-
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE}" role="img" aria-label="장기 (Janggi)">`,
     `  <rect width="${SIZE}" height="${SIZE}" fill="${FIELD}" />`,
     ...taegeuk(),
     ...trigrams(),
-    `  <g transform="${fitToTaegeuk(strokes)}"`,
+    `  <g transform="${fitToTaegeuk(LETTERING_STROKES)}"`,
     `     fill="none" stroke="${LETTERING}" stroke-width="${PEN}" stroke-linecap="round" stroke-linejoin="round">`,
-    ...strokes.map(stroke => `    ${element(stroke)}`),
+    ...LETTERING_STROKES.map(stroke => `    ${element(stroke)}`),
     `  </g>`,
     `</svg>`,
     ``,
@@ -112,15 +147,7 @@ function taegeuk() {
  * wrong — only which bars are whole and which are split.
  */
 function trigrams() {
-  const solid = true;
-  const broken = false;
-
-  return [
-    ["건", 135, [solid, solid, solid]],
-    ["리", 45, [solid, broken, solid]],
-    ["감", 225, [broken, solid, broken]],
-    ["곤", -45, [broken, broken, broken]],
-  ].flatMap(([name, angle, bars]) => [
+  return TRIGRAMS.flatMap(({name, angle, bars}) => [
     `  <g transform="translate(${CENTER} ${CENTER}) rotate(${angle}) translate(0 ${TRIGRAM_DISTANCE})" fill="${BLACK}">`,
     `    <title>${name}</title>`,
     ...bars.flatMap((whole, index) => bar(whole, (index - 1) * BAR_PITCH)),
@@ -192,6 +219,12 @@ function gi() {
  * are what stop short of the taegeuk's rim, which is what the eye actually reads as the margin.
  */
 function fitToTaegeuk(strokes) {
+  const {x, y, scale} = letteringTransformFor(strokes);
+
+  return `translate(${round(x)} ${round(y)}) scale(${round(scale)})`;
+}
+
+function letteringTransformFor(strokes) {
   const {minX, minY, maxX, maxY} = bounds(strokes);
   const [halfWidth, halfHeight] = [(maxX - minX) / 2, (maxY - minY) / 2];
 
@@ -199,7 +232,7 @@ function fitToTaegeuk(strokes) {
 
   const x = CENTER - (minX + halfWidth) * scale;
   const y = CENTER - (minY + halfHeight) * scale;
-  return `translate(${round(x)} ${round(y)}) scale(${round(scale)})`;
+  return {x, y, scale};
 }
 
 /** The extent of the drawn ink, which is the geometry grown by half the pen on every side. */
@@ -251,4 +284,211 @@ function element(stroke) {
 
 function round(value) {
   return Math.round(value * 1000) / 1000;
+}
+
+/**
+ * A dependency-free rasterisation of the same geometry used by the SVG above. Launcher artwork has
+ * to be PNG on platforms that do not use an SVG manifest icon, notably Apple's home screen. Four
+ * samples along each pixel edge keep the curves and rotated bars smooth at every emitted size.
+ */
+function renderPng(size) {
+  const samplesPerEdge = 4;
+  const pixels = Buffer.alloc(size * size * 3);
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const sum = [0, 0, 0];
+
+      for (let sampleY = 0; sampleY < samplesPerEdge; sampleY += 1) {
+        for (let sampleX = 0; sampleX < samplesPerEdge; sampleX += 1) {
+          const iconX = ((x + (sampleX + 0.5) / samplesPerEdge) * SIZE) / size;
+          const iconY = ((y + (sampleY + 0.5) / samplesPerEdge) * SIZE) / size;
+          const colour = colourAt(iconX, iconY);
+
+          sum[0] += colour[0];
+          sum[1] += colour[1];
+          sum[2] += colour[2];
+        }
+      }
+
+      const samples = samplesPerEdge ** 2;
+      const offset = (y * size + x) * 3;
+      pixels[offset] = Math.round(sum[0] / samples);
+      pixels[offset + 1] = Math.round(sum[1] / samples);
+      pixels[offset + 2] = Math.round(sum[2] / samples);
+    }
+  }
+
+  return pngFrom(size, pixels);
+}
+
+function colourAt(x, y) {
+  let colour = COLOURS.field;
+
+  const taegeukPoint = rotateAround(x, y, CENTER, CENTER, -TAEGEUK_TILT);
+  if (distanceBetween(taegeukPoint.x, taegeukPoint.y, CENTER, CENTER) <= TAEGEUK_RADIUS) {
+    colour = COLOURS.blue;
+  }
+  if (insidePolygon(taegeukPoint.x, taegeukPoint.y, RED_TAEGEUK)) colour = COLOURS.red;
+
+  if (insideTrigram(x, y)) colour = COLOURS.black;
+  if (onLettering(x, y)) colour = COLOURS.lettering;
+
+  return colour;
+}
+
+function taegeukRedOutline() {
+  const half = TAEGEUK_RADIUS / 2;
+
+  return [
+    ...arcPoints(CENTER, CENTER, TAEGEUK_RADIUS, Math.PI, Math.PI * 2),
+    ...arcPoints(CENTER + half, CENTER, half, 0, Math.PI),
+    ...arcPoints(CENTER - half, CENTER, half, 0, -Math.PI),
+  ];
+}
+
+function arcPoints(cx, cy, radius, start, end) {
+  const steps = 48;
+
+  return Array.from({length: steps + 1}, (_, index) => {
+    const angle = start + ((end - start) * index) / steps;
+    return {x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle)};
+  });
+}
+
+function insidePolygon(x, y, points) {
+  let inside = false;
+
+  for (let index = 0, previous = points.length - 1; index < points.length; previous = index, index += 1) {
+    const point = points[index];
+    const previousPoint = points[previous];
+    const crosses =
+      point.y > y !== previousPoint.y > y &&
+      x < ((previousPoint.x - point.x) * (y - point.y)) / (previousPoint.y - point.y) + point.x;
+
+    if (crosses) inside = !inside;
+  }
+
+  return inside;
+}
+
+function insideTrigram(x, y) {
+  return TRIGRAMS.some(({angle, bars}) => {
+    const rotated = rotateAround(x, y, CENTER, CENTER, -angle);
+    const localX = rotated.x - CENTER;
+    const localY = rotated.y - CENTER - TRIGRAM_DISTANCE;
+
+    return bars.some((whole, index) => insideBar(localX, localY, whole, (index - 1) * BAR_PITCH));
+  });
+}
+
+function insideBar(x, y, whole, middle) {
+  const top = middle - BAR_THICKNESS / 2;
+  const half = (BAR_LENGTH - BAR_BREAK) / 2;
+
+  if (whole) return insideRoundedRectangle(x, y, -BAR_LENGTH / 2, top, BAR_LENGTH, BAR_THICKNESS, 3);
+
+  return (
+    insideRoundedRectangle(x, y, -BAR_LENGTH / 2, top, half, BAR_THICKNESS, 3) ||
+    insideRoundedRectangle(x, y, BAR_BREAK / 2, top, half, BAR_THICKNESS, 3)
+  );
+}
+
+function insideRoundedRectangle(x, y, left, top, width, height, radius) {
+  const nearestX = Math.max(left + radius, Math.min(x, left + width - radius));
+  const nearestY = Math.max(top + radius, Math.min(y, top + height - radius));
+
+  return distanceBetween(x, y, nearestX, nearestY) <= radius;
+}
+
+function onLettering(x, y) {
+  const localX = (x - LETTERING_TRANSFORM.x) / LETTERING_TRANSFORM.scale;
+  const localY = (y - LETTERING_TRANSFORM.y) / LETTERING_TRANSFORM.scale;
+  const nib = PEN / 2;
+
+  return LETTERING_STROKES.some(stroke => {
+    if (stroke.kind === "circle") {
+      return Math.abs(distanceBetween(localX, localY, stroke.cx, stroke.cy) - stroke.r) <= nib;
+    }
+
+    return stroke.points.slice(1).some((point, index) => {
+      const previous = stroke.points[index];
+      return distanceFromSegment(localX, localY, previous[0], previous[1], point[0], point[1]) <= nib;
+    });
+  });
+}
+
+function distanceFromSegment(x, y, startX, startY, endX, endY) {
+  const dx = endX - startX;
+  const dy = endY - startY;
+  const lengthSquared = dx * dx + dy * dy;
+  const progress = Math.max(0, Math.min(1, ((x - startX) * dx + (y - startY) * dy) / lengthSquared));
+
+  return distanceBetween(x, y, startX + progress * dx, startY + progress * dy);
+}
+
+function rotateAround(x, y, cx, cy, degrees) {
+  const angle = (degrees * Math.PI) / 180;
+  const dx = x - cx;
+  const dy = y - cy;
+
+  return {
+    x: cx + dx * Math.cos(angle) - dy * Math.sin(angle),
+    y: cy + dx * Math.sin(angle) + dy * Math.cos(angle),
+  };
+}
+
+function distanceBetween(x1, y1, x2, y2) {
+  return Math.hypot(x2 - x1, y2 - y1);
+}
+
+function rgb(hex) {
+  return [1, 3, 5].map(offset => Number.parseInt(hex.slice(offset, offset + 2), 16));
+}
+
+function pngFrom(size, pixels) {
+  const scanlines = Buffer.alloc(size * (size * 3 + 1));
+
+  for (let row = 0; row < size; row += 1) {
+    const scanline = row * (size * 3 + 1);
+    pixels.copy(scanlines, scanline + 1, row * size * 3, (row + 1) * size * 3);
+  }
+
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(size, 0);
+  header.writeUInt32BE(size, 4);
+  header[8] = 8;
+  header[9] = 2;
+
+  return Buffer.concat([
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    pngChunk("IHDR", header),
+    pngChunk("IDAT", deflateSync(scanlines, {level: 9})),
+    pngChunk("IEND", Buffer.alloc(0)),
+  ]);
+}
+
+function pngChunk(name, data) {
+  const type = Buffer.from(name, "ascii");
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length);
+
+  const checksum = Buffer.alloc(4);
+  checksum.writeUInt32BE(crc32(Buffer.concat([type, data])));
+
+  return Buffer.concat([length, type, data, checksum]);
+}
+
+function crc32(data) {
+  let checksum = 0xffffffff;
+
+  for (const byte of data) {
+    checksum ^= byte;
+
+    for (let bit = 0; bit < 8; bit += 1) {
+      checksum = (checksum >>> 1) ^ (checksum & 1 ? 0xedb88320 : 0);
+    }
+  }
+
+  return (checksum ^ 0xffffffff) >>> 0;
 }

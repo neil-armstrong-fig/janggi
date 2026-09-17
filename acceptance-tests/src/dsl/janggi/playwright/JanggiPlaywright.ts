@@ -1,5 +1,6 @@
 import type {Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
+import type {InstallationAppearance, InstallationIcon} from "@src/dsl/janggi/types/InstallationAppearance";
 
 /**
  * How long a first visit may take to come back isolated. The service worker precaches the engine's
@@ -42,6 +43,11 @@ export class JanggiPlaywright extends BasePage {
     await this.page.reload();
   }
 
+  async reloadOffline(): Promise<void> {
+    await this.page.context().setOffline(true);
+    await this.page.reload({waitUntil: "domcontentloaded"});
+  }
+
   async offerInstallation(): Promise<void> {
     await this.page.evaluate(() => {
       const event = new Event("beforeinstallprompt", {cancelable: true});
@@ -65,6 +71,52 @@ export class JanggiPlaywright extends BasePage {
 
   async getPageTitle(): Promise<string> {
     return await this.page.title();
+  }
+
+  async getInstallationAppearance(): Promise<InstallationAppearance> {
+    const manifestPath = await this.page.locator("link[rel='manifest']").getAttribute("href");
+    if (!manifestPath) throw new Error("The page has no web app manifest");
+
+    const manifestAddress = new URL(manifestPath, this.page.url()).href;
+    const installationManifest = await this.installationManifestAt(manifestAddress);
+    const installationIcons = await Promise.all(
+      (installationManifest.icons ?? []).map(async icon => ({
+        ...(await this.installationIconAt(new URL(icon.src, manifestAddress).href)),
+        purpose: icon.purpose ?? "any",
+      })),
+    );
+
+    const appleTouchIconPath = await this.page.locator("link[rel='apple-touch-icon']").getAttribute("href");
+    if (!appleTouchIconPath) throw new Error("The page has no Apple touch icon");
+
+    return {
+      name: installationManifest.name ?? "",
+      display: installationManifest.display ?? "",
+      icons: installationIcons,
+      appleTouchIcon: {
+        ...(await this.installationIconAt(new URL(appleTouchIconPath, this.page.url()).href)),
+        purpose: "any",
+      },
+    };
+  }
+
+  private async installationManifestAt(address: string): Promise<InstallationManifest> {
+    return await this.page.evaluate(async address => {
+      const response = await fetch(address);
+      if (!response.ok) throw new Error(`The web app manifest returned ${response.status}`);
+
+      return (await response.json()) as InstallationManifest;
+    }, address);
+  }
+
+  private async installationIconAt(address: string): Promise<Omit<InstallationIcon, "purpose">> {
+    return await this.page.evaluate(async address => {
+      const image = new Image();
+      image.src = address;
+      await image.decode();
+
+      return {width: image.naturalWidth, height: image.naturalHeight};
+    }, address);
   }
 
   async getPageDescription(): Promise<string> {
@@ -126,4 +178,15 @@ interface SearchData {
 interface OfferData {
   readonly price?: unknown;
   readonly priceCurrency?: unknown;
+}
+
+interface InstallationManifest {
+  readonly name?: string;
+  readonly display?: string;
+  readonly icons?: readonly InstallationManifestIcon[];
+}
+
+interface InstallationManifestIcon {
+  readonly src: string;
+  readonly purpose?: string;
 }
