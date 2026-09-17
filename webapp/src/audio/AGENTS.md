@@ -138,7 +138,7 @@ and `grooveOffsetAt` take their rolls as arguments, and the layers and the condu
   A timer that fires late books its notes on time anyway. Do not start an instrument from a
   `setTimeout`. **Phones are what it is tuned for:** it books a few tenths of a second ahead so a busy
   main thread does not starve it, a timer held up for longer lets the steps it missed go rather than
-  piling them onto one instant, and the `AudioContext` asks for a `balanced` buffer so the audio thread
+  piling them onto one instant, and the `AudioContext` asks for a `playback` buffer so the audio thread
   does not run dry. A layer that is silent is unplugged, not just turned down — the browser works every
   node still connected, however quiet.
 - **The music keeps no history.** It moves towards whatever mood it was last handed, so a mood that
