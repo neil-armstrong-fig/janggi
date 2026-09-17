@@ -36,6 +36,13 @@ If you know chess or xiangqi, janggi feels familiar for about three moves. Then 
 
 ## What's in the app
 
+### Learn before you play
+
+The illustrated [guide to playing
+janggi](https://neil-armstrong-fig.github.io/janggi/learn.html) introduces the board, every piece,
+the rules that make the game distinctive and both match formats. The app's sources and credits are
+collected on its [references page](https://neil-armstrong-fig.github.io/janggi/references.html).
+
 ### Two ways to play
 
 - **Casual** — the friendly game every online janggi site plays. Call a bikjang and it's a draw.
@@ -50,16 +57,19 @@ behind every contested one is written up with sources in [`docs/rules.md`](docs/
 
 - **Eight strengths**, from a gentle 800 up to a merciless 2850, powered by
   [Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish) running right in your browser.
-- **Play either army**, or let the app pick at random.
+- **Play either army**, or let the app pick at random. Beat a bot to open the next strength on that
+  army's casual or scored ladder.
 - **Every game against the bot is rated.** Your Elo is tracked separately for casual and scored play,
   with a record against each strength — win rate overall and with each army — and your full game
   history. Take-backs are off and abandoning a game for a new one counts as a loss, so the number means
   something.
+- **Finishing games earns XP** for new boards and piece sets. A copyable save key carries your XP,
+  unlocked bots and custom styles to another device.
 
 ### Made to be looked at and listened to
 
-- **Four piece sets** — Traditional, Hanja, Hangul and Modern pictographs — and two boards, Classic wood
-  and Neon.
+- **Nine built-in piece sets and seven boards**, from traditional characters and classic wood to
+  matched themes. You can also create, import and share your own styles.
 - **A soundtrack played on synthesised Korean instruments** — gayageum, daegeum, piri, janggu and gong —
   in traditional modes and rhythms, and it changes with the game: tension builds as pieces come off the
   board, a theme cuts in when a general is in check, and the ending is marked.
@@ -70,8 +80,8 @@ behind every contested one is written up with sources in [`docs/rules.md`](docs/
 
 - **Install it** from the browser and it opens like an app, full screen.
 - **It works offline**, the bot included.
-- **Close it mid-game and come back later** — the game, your settings and your record are all where you
-  left them.
+- **Close it mid-game and come back later** — the game, your settings, progress and record are all where
+  you left them.
 
 ## The pieces at a glance
 
@@ -103,12 +113,11 @@ repository, enforced by tooling rather than left to good intentions.
   `janggi.settings`, `janggi.status`; only the DSL's Playwright layer touches locators. Lint rules keep
   it that way: a spec cannot import Playwright, and a `then` cannot perform an action.
 - **The same suite runs on desktop and on a phone viewport**, with motion both reduced and in full —
-  hundreds of runs across 32 spec files, against the dev server locally and against the deployed site
-  in CI.
+  hundreds of checks against the dev server locally and against the deployed site in CI.
 
 ### Tests that are proven to bite
 
-- **Over 900 unit tests** with Vitest, covering the rules engine, the store, hooks and every plain
+- **Over 1,200 unit tests** with Vitest, covering the rules engine, the store, hooks and every plain
   function — named as sentences, one file per export.
 - **Property-based tests** play thousands of random legal games with fast-check and assert what must
   hold after every move.
@@ -158,13 +167,14 @@ repository, enforced by tooling rather than left to good intentions.
 
 ## For developers
 
-Client-side React, installable as a PWA, built with Acceptance Test Driven Development.
+React, installable as a PWA, built with Acceptance Test Driven Development.
 
 ### What's here
 
 pnpm workspace with three packages:
 
-- **`webapp/`** — the React app. Vite, React, Redux Toolkit, Tailwind, PWA.
+- **`webapp/`** — the game, learning guide and references pages. Vite, React, Redux Toolkit, Tailwind,
+  PWA.
 - **`acceptance-tests/`** — the acceptance-test DSL and the specs, run by Playwright.
 - **`shared/`** — code shared by both, plus the base tool config in `shared/config/`.
 
