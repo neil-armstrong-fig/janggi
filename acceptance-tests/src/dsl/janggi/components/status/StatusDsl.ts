@@ -258,12 +258,30 @@ export class StatusDsl {
     }
   }
 
+  /** Whether the amount and its XP unit occupy one line on an army's plaque. */
+  async isXpOnOneLine(side: Side): Promise<boolean> {
+    try {
+      return await this.status.isXpOnOneLine(side);
+    } catch (error) {
+      throw new DslError(`Failed to read whether the XP shown beside ${side} is on one line`, error);
+    }
+  }
+
   /** The next unlock shown beside the player's XP, or undefined once everything is open. */
   async getNextUnlock(side: Side): Promise<string | undefined> {
     try {
       return await this.status.getNextUnlock(side);
     } catch (error) {
       throw new DslError(`Failed to read the next unlock shown beside ${side}`, error);
+    }
+  }
+
+  /** Whether an army's losses tray can show every capturable piece without squeezing them. */
+  async canShowAllTakenPieces(side: Side): Promise<boolean> {
+    try {
+      return await this.status.canShowAllTakenPieces(side);
+    } catch (error) {
+      throw new DslError(`Failed to read whether every piece taken from ${side} would fit`, error);
     }
   }
 

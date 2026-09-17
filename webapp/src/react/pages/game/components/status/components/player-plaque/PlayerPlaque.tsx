@@ -33,10 +33,11 @@ import {useRolledNumber} from "@src/react/pages/game/components/status/component
  * the screen. The XP is here because this is the one place a player looks while playing, and it is what
  * the next board or piece set is waiting on.
  *
- * **What the XP is working towards is named beside it** — "(Next unlock: 1,200 XP, unlock Celadon
- * theme)" — because a number climbing on its own says nothing about what it is for. It truncates when
- * the plaque runs short, with the whole of it in the `title`. A million XP will not fit beside a rating
- * on a phone, so the amount already earned is shortened to `1M`, with `data-xp` carrying the true figure.
+ * **What the XP is working towards is named in Progress, and repeated here only on a wide screen** —
+ * "(Next unlock: 1,200 XP, unlock Celadon theme)". At `lg` there is still enough room beside it for all
+ * fifteen capturable pieces at their full tray size; below that, the losses and XP take the space. The
+ * sentence truncates if the plaque runs short, with the whole of it in the `title`. A million XP is
+ * shortened to `1M`, with `data-xp` carrying the true figure, and the amount and unit never split.
  *
  * **It is handed only which army it is**, and reads the rest for itself: the game, the rating, the XP, the
  * piece set the losses are drawn in, and what the game is doing, through `useGameStatus`. Nothing here is
@@ -90,7 +91,11 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
           {player.elo}
 
           {player.kind === "player" && (
-            <span data-testid={`plaque-xp-${side}`} data-xp={player.xp} className="text-gold/80">
+            <span
+              data-testid={`plaque-xp-${side}`}
+              data-xp={player.xp}
+              className="shrink-0 whitespace-nowrap text-gold/80"
+            >
               {shortened(player.xp)} XP
             </span>
           )}
@@ -100,7 +105,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
               data-testid={`plaque-next-unlock-${side}`}
               data-xp={player.nextUnlock.xp}
               title={`Next unlock: ${player.nextUnlock.xp.toLocaleString("en")} XP, unlock ${player.nextUnlock.labels.join(", ")}`}
-              className="min-w-0 truncate text-white/40"
+              className="hidden min-w-0 truncate text-white/40 lg:inline"
             >
               {`(Next unlock: ${player.nextUnlock.xp.toLocaleString("en")} XP, unlock ${player.nextUnlock.labels.join(", ")})`}
             </span>
