@@ -57,7 +57,7 @@ export function ResultBanner({
     <div
       data-testid="result"
       data-result={status.kind}
-      className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center opacity-95"
+      className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center opacity-95 md:opacity-95"
     >
       {animated && <span className="absolute inset-0 bg-white opacity-0 animate-[result-flash_600ms_ease-out_both]" />}
 
