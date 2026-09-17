@@ -42,6 +42,27 @@ export class JanggiPlaywright extends BasePage {
     await this.page.reload();
   }
 
+  async offerInstallation(): Promise<void> {
+    await this.page.evaluate(() => {
+      const event = new Event("beforeinstallprompt", {cancelable: true});
+      Object.defineProperties(event, {
+        prompt: {
+          value: () => {
+            document.documentElement.dataset["installPrompted"] = "true";
+
+            return Promise.resolve();
+          },
+        },
+        userChoice: {value: Promise.resolve({outcome: "accepted", platform: "web"})},
+      });
+      globalThis.dispatchEvent(event);
+    });
+  }
+
+  async wasInstallationPrompted(): Promise<boolean> {
+    return (await this.page.locator("html").getAttribute("data-install-prompted")) === "true";
+  }
+
   async getPageTitle(): Promise<string> {
     return await this.page.title();
   }

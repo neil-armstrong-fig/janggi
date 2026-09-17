@@ -77,6 +77,22 @@ export class JanggiDsl {
     }
   }
 
+  async offerInstallation(): Promise<void> {
+    try {
+      await this.janggi.offerInstallation();
+    } catch (error) {
+      throw new DslError("Failed to make installation available from the browser", error);
+    }
+  }
+
+  async wasInstallationPrompted(): Promise<boolean> {
+    try {
+      return await this.janggi.wasInstallationPrompted();
+    } catch (error) {
+      throw new DslError("Failed to check whether the browser offered to save Janggi", error);
+    }
+  }
+
   async getPageTitle(): Promise<string> {
     try {
       return await this.janggi.getPageTitle();

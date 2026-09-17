@@ -4,6 +4,7 @@ import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components
 import {DslError} from "@src/dsl/errors/DslError";
 import {EffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/effects-setting/EffectsSettingDsl";
 import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/han-setup-setting/HanSetupSettingDsl";
+import {InstallButtonDsl} from "@src/dsl/janggi/components/settings/components/install-button/InstallButtonDsl";
 import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
 import {MusicSettingDsl} from "@src/dsl/janggi/components/settings/components/music-setting/MusicSettingDsl";
@@ -52,6 +53,7 @@ export class SettingsDsl {
   readonly soundEffects: SoundEffectsSettingDsl;
   readonly music: MusicSettingDsl;
   readonly progress: ProgressSettingDsl;
+  readonly install: InstallButtonDsl;
 
   constructor(page: Page) {
     this.settings = new SettingsPlaywright(page);
@@ -69,6 +71,7 @@ export class SettingsDsl {
     this.soundEffects = new SoundEffectsSettingDsl(page);
     this.music = new MusicSettingDsl(page);
     this.progress = new ProgressSettingDsl(page);
+    this.install = new InstallButtonDsl(page);
   }
 
   /** Both armies at once, for a spec that only cares that they match. */

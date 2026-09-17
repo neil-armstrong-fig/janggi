@@ -336,7 +336,8 @@ them went stale twice while it was being kept.
   `guide-movement-destination`; `record` (the record sheet, `inert` while closed) with `record-elo`
   carrying `data-elo`; and the
   controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
-  `settings-close`, `record-open`, `record-close`, `record-reset`, `guide-open`, `references-open`,
+  `settings-close`, `settings-install`, `record-open`, `record-close`, `record-reset`, `guide-open`,
+  `references-open`,
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
   `progress-xp` and `progress-next-unlock` carrying `data-xp`, `save-copy` and the `save-key` it shows,
   and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The styles
