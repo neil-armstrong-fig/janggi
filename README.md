@@ -11,6 +11,8 @@
 
 <p align="center">
   <a href="https://neil-armstrong-fig.github.io/janggi/"><strong>▶ Play now</strong></a>
+  ·
+  <a href="https://neil-armstrong-fig.github.io/janggi/learn.html"><strong>Learn how to play</strong></a>
 </p>
 
 ---

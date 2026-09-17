@@ -7,7 +7,11 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta name="theme-color" content="#8b5a2b" />
-    <meta name="description" content="Janggi — Korean Chess" />
+    <meta
+      name="description"
+      content="Play Janggi (Korean chess) for free against a friend or eight AI levels. No account needed; save it to your device and play offline."
+    />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -15,12 +19,73 @@
 
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="canonical" href="https://neil-armstrong-fig.github.io/janggi/" />
+    <link rel="sitemap" type="application/xml" href="https://neil-armstrong-fig.github.io/janggi/sitemap.xml" />
 
-    <title>Janggi</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Janggi (Korean chess)" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:title" content="Play Janggi (Korean Chess) Online — Free vs AI" />
+    <meta
+      property="og:description"
+      content="Play Janggi (Korean chess) for free against a friend or eight AI levels. Save it to your device and play offline."
+    />
+    <meta property="og:url" content="https://neil-armstrong-fig.github.io/janggi/" />
+    <meta property="og:image" content="https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A Janggi (Korean chess) game with Cho and Han pieces on the board" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Play Janggi (Korean Chess) Online — Free vs AI" />
+    <meta
+      name="twitter:description"
+      content="Play Janggi (Korean chess) for free against a friend or eight AI levels, online or offline."
+    />
+    <meta name="twitter:image" content="https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["VideoGame", "WebApplication"],
+        "name": "Janggi",
+        "alternateName": ["Korean Chess", "장기"],
+        "url": "https://neil-armstrong-fig.github.io/janggi/",
+        "image": "https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png",
+        "description": "A free Janggi (Korean chess) web game for playing a local friend or a Fairy-Stockfish AI, online or offline.",
+        "applicationCategory": "GameApplication",
+        "genre": ["Board game", "Strategy game", "Korean chess"],
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires a modern web browser with JavaScript",
+        "playMode": ["SinglePlayer", "MultiPlayer"],
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Neil Armstrong",
+          "url": "https://github.com/neil-armstrong-fig"
+        }
+      }
+    </script>
+
+    <title>Play Janggi (Korean Chess) Online — Free vs AI</title>
   </head>
 
   <body>
     <div id="root"></div>
+
+    <noscript>
+      <main>
+        <h1>Janggi — Korean Chess</h1>
+        <p>This game needs JavaScript to play.</p>
+        <p><a href="learn.html">Learn how to play Janggi</a> while you enable it.</p>
+      </main>
+    </noscript>
 
     <script type="module" src="/src/main.tsx"></script>
   </body>

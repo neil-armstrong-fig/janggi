@@ -42,7 +42,67 @@ export class JanggiPlaywright extends BasePage {
     await this.page.reload();
   }
 
+  async getPageTitle(): Promise<string> {
+    return await this.page.title();
+  }
+
+  async getPageDescription(): Promise<string> {
+    return (await this.page.locator("meta[name='description']").getAttribute("content")) ?? "";
+  }
+
+  async getCanonicalAddress(): Promise<string> {
+    return (await this.page.locator("link[rel='canonical']").getAttribute("href")) ?? "";
+  }
+
+  async getMainHeading(): Promise<string> {
+    return await this.page.locator("h1").innerText();
+  }
+
+  async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
+    const content = await this.page.locator("script[type='application/ld+json']").textContent();
+    if (content === null) return false;
+
+    const searchData = JSON.parse(content) as SearchData;
+
+    return (
+      searchData.name === "Janggi" &&
+      Array.isArray(searchData["@type"]) &&
+      searchData["@type"].includes("VideoGame") &&
+      searchData["@type"].includes("WebApplication") &&
+      searchData.applicationCategory === "GameApplication" &&
+      searchData.offers?.price === "0" &&
+      searchData.offers.priceCurrency === "USD"
+    );
+  }
+
+  async isListedInSitemap(): Promise<boolean> {
+    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
+    const sitemap = await this.page.evaluate(async address => {
+      const response = await fetch(address);
+      if (!response.ok) return "";
+
+      return await response.text();
+    }, sitemapAddress);
+
+    return (
+      sitemap.includes("https://neil-armstrong-fig.github.io/janggi/") &&
+      sitemap.includes("https://neil-armstrong-fig.github.io/janggi/learn.html")
+    );
+  }
+
   async resizeWindowTo(width: number, height: number): Promise<void> {
     await this.page.setViewportSize({width, height});
   }
+}
+
+interface SearchData {
+  readonly "@type"?: unknown;
+  readonly name?: unknown;
+  readonly applicationCategory?: unknown;
+  readonly offers?: OfferData;
+}
+
+interface OfferData {
+  readonly price?: unknown;
+  readonly priceCurrency?: unknown;
 }

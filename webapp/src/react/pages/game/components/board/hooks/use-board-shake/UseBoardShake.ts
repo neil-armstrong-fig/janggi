@@ -10,6 +10,13 @@ export interface BoardShake {
   readonly shake: (impulse: Vector) => void;
 }
 
+interface ShakeLoop {
+  readonly ref: RefObject<HTMLDivElement | null>;
+  readonly springRef: RefObject<Spring>;
+  readonly frameRef: RefObject<number | undefined>;
+  readonly lastFrameAtRef: RefObject<number>;
+}
+
 /**
  * Shakes the board when it is shoved, and lets it spring back.
  *
@@ -42,30 +49,31 @@ export function useBoardShake(): BoardShake {
     if (frameRef.current !== undefined) return;
 
     lastFrameAtRef.current = performance.now();
-    frameRef.current = requestAnimationFrame(tick);
-
-    function tick(now: number): void {
-      const frames = Math.min(LONGEST_STEP_FRAMES, (now - lastFrameAtRef.current) / FRAME_MS);
-      lastFrameAtRef.current = now;
-      springRef.current = springStep(springRef.current, frames);
-
-      const element = ref.current;
-
-      if (isAtRest(springRef.current)) {
-        springRef.current = AT_REST;
-        frameRef.current = undefined;
-        if (element) element.style.translate = "";
-
-        return;
-      }
-
-      const {x, y} = springRef.current.position;
-      if (element) element.style.translate = `${x}px ${y}px`;
-      frameRef.current = requestAnimationFrame(tick);
-    }
+    const shakeLoop: ShakeLoop = {ref, springRef, frameRef, lastFrameAtRef};
+    frameRef.current = requestAnimationFrame(tick.bind(undefined, shakeLoop));
   }, []);
 
   return {ref, shake};
+}
+
+function tick(shakeLoop: ShakeLoop, now: number): void {
+  const frames = Math.min(LONGEST_STEP_FRAMES, (now - shakeLoop.lastFrameAtRef.current) / FRAME_MS);
+  shakeLoop.lastFrameAtRef.current = now;
+  shakeLoop.springRef.current = springStep(shakeLoop.springRef.current, frames);
+
+  const element = shakeLoop.ref.current;
+
+  if (isAtRest(shakeLoop.springRef.current)) {
+    shakeLoop.springRef.current = AT_REST;
+    shakeLoop.frameRef.current = undefined;
+    if (element) element.style.translate = "";
+
+    return;
+  }
+
+  const {x, y} = shakeLoop.springRef.current.position;
+  if (element) element.style.translate = `${x}px ${y}px`;
+  shakeLoop.frameRef.current = requestAnimationFrame(tick.bind(undefined, shakeLoop));
 }
 
 /** Close enough to still that the last fraction of a pixel is not worth another frame. */

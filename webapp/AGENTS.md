@@ -6,6 +6,7 @@ Vite + React 19 + Redux Toolkit + Tailwind v4, client-side rendered, installable
 
 ```
 src/main.tsx          game entry — createRoot + <Provider store>
+src/Learn.tsx         guide entry — hydrates the build-time rendered <LearnPage>
 src/References.tsx    references entry — independent of the game and store
 src/react/            components, nested by who uses them
   release-update/     update notice shared by the game shell and references page
@@ -80,6 +81,15 @@ describing how cells and pieces are painted, and say so.
 
 - **Mobile first.** This is played on phones; touch is the primary input. Assume a small viewport
   and check any layout work against the `mobile` acceptance-test project.
+- **React owns the whole interactive page.** An HTML entry contains metadata and one root; render one
+  component tree into it. Do not progressively enhance hand-written page markup with
+  `querySelector`, `querySelectorAll`, `addEventListener` or several React roots. State, events and
+  conditional visibility belong in components and hooks. If search engines need the initial HTML,
+  render and hydrate that same component tree rather than keeping a second copy of its markup.
+- **Use Tailwind in components for page and component presentation.** Add CSS only for genuinely
+  global rules, shared theme tokens or behaviour Tailwind cannot express cleanly. Do not create a
+  page-sized stylesheet alongside JSX; repeated ordinary layout and colour rules are Tailwind
+  utilities, not a reason for bespoke CSS.
 - **Every component gets its own file, in its own folder** — `components/<thing>/<Thing>.tsx` — no
   matter how small it is or how few callers it has. A one-caller button is still its own folder.
   This is the one place the root `AGENTS.md` rule about declaring functions below their callers does

@@ -1,6 +1,7 @@
 import {BoardDsl} from "@src/dsl/janggi/components/board/BoardDsl";
 import {DebugDsl} from "@src/dsl/janggi/components/debug/DebugDsl";
 import {DslError} from "@src/dsl/errors/DslError";
+import {GuideDsl} from "@src/dsl/janggi/components/guide/GuideDsl";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
@@ -36,6 +37,7 @@ export class JanggiDsl {
   private readonly janggi: JanggiPlaywright;
 
   readonly board: BoardDsl;
+  readonly guide: GuideDsl;
   readonly settings: SettingsDsl;
   readonly status: StatusDsl;
   readonly recordSheet: RecordSheetDsl;
@@ -48,6 +50,7 @@ export class JanggiDsl {
     this.janggi = new JanggiPlaywright(page);
 
     this.board = new BoardDsl(page);
+    this.guide = new GuideDsl(page);
     this.settings = new SettingsDsl(page);
     this.status = new StatusDsl(page);
     this.recordSheet = new RecordSheetDsl(page);
@@ -71,6 +74,54 @@ export class JanggiDsl {
       await this.janggi.reload();
     } catch (error) {
       throw new DslError("Failed to load the game again", error);
+    }
+  }
+
+  async getPageTitle(): Promise<string> {
+    try {
+      return await this.janggi.getPageTitle();
+    } catch (error) {
+      throw new DslError("Failed to read the game's page title", error);
+    }
+  }
+
+  async getPageDescription(): Promise<string> {
+    try {
+      return await this.janggi.getPageDescription();
+    } catch (error) {
+      throw new DslError("Failed to read the game's search description", error);
+    }
+  }
+
+  async getCanonicalAddress(): Promise<string> {
+    try {
+      return await this.janggi.getCanonicalAddress();
+    } catch (error) {
+      throw new DslError("Failed to read the game's canonical address", error);
+    }
+  }
+
+  async getMainHeading(): Promise<string> {
+    try {
+      return await this.janggi.getMainHeading();
+    } catch (error) {
+      throw new DslError("Failed to read the game's main heading", error);
+    }
+  }
+
+  async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
+    try {
+      return await this.janggi.isIdentifiedAsAFreeWebGame();
+    } catch (error) {
+      throw new DslError("Failed to read the game's structured search data", error);
+    }
+  }
+
+  async isListedInSitemap(): Promise<boolean> {
+    try {
+      return await this.janggi.isListedInSitemap();
+    } catch (error) {
+      throw new DslError("Failed to check whether the game and guide are listed in the sitemap", error);
     }
   }
 

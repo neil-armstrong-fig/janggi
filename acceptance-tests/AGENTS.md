@@ -331,10 +331,13 @@ Rename any of these in the webapp and specs break. Listed rather than counted, b
 them went stale twice while it was being kept.
 
 - **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`,
-  `record` (the record sheet, `inert` while closed) with `record-elo` carrying `data-elo`, and the
+  `guide`, `guide-play`, `guide-install`, `guide-rules-source`, `guide-fairy-stockfish-source`,
+  `guide-piece-style-traditional`, `guide-piece-style-hangul`, `guide-piece-style-modern` and
+  `guide-movement-destination`; `record` (the record sheet, `inert` while closed) with `record-elo`
+  carrying `data-elo`; and the
   controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
-  `settings-close`, `record-open`, `record-close`, `record-reset`, `references-open`, and the
-  question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
+  `settings-close`, `record-open`, `record-close`, `record-reset`, `guide-open`, `references-open`,
+  and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
   `progress-xp` and `progress-next-unlock` carrying `data-xp`, `save-copy` and the `save-key` it shows,
   and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The styles
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
@@ -376,6 +379,9 @@ them went stale twice while it was being kept.
   `references-<section>-jump`, `references-<section>-heading`, and `reference-<source>`. Its link in
   Settings is `references-open`.
 - **On the release notice** — `release-update`, `release-update-refresh` and `release-update-later`.
+- **On the Janggi guide** — `guide-piece-<type>` is an expandable movement card. `guide` wraps the
+  reading page, `guide-play` is its primary route into the game, and `guide-install` is shown only
+  when a phone browser offers to save it. Its link in Settings is `guide-open`.
 
 The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`; nothing stores
 them. `BoardPlaywright` composes the cell id to find a piece.

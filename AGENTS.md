@@ -151,6 +151,11 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
   }
   ```
 
+- **Extract pure logic and hooks when they are easy to test on their own.** Put an extracted helper
+  below its caller, or in the closest appropriate file when it is reused or substantial. Small
+  functions local to a TSX component — especially event handlers that naturally close over its
+  props, hooks or dispatch — may stay inside the component when that keeps the JSX readable.
+
 - **A filename is PascalCase and names its single export.** `StartingPieces.ts` exports
   `startingPieces`, `PieceAt.ts` exports `pieceAt`, `Board.tsx` exports `Board`. A React hook is no
   exception: `UseMoveSelection.ts` exports `useMoveSelection` — the file is named for what it
