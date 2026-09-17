@@ -112,6 +112,14 @@ export class SettingsDsl {
     }
   }
 
+  async isGuideLinkedFromGame(): Promise<boolean> {
+    try {
+      return await this.settings.isGuideLinkedFromGame();
+    } catch (error) {
+      throw new DslError("Failed to check whether the Janggi guide is linked from the game", error);
+    }
+  }
+
   /** Whether a section of the sheet has its settings folded away under its heading. */
   async isSectionFolded(name: SettingsSectionName): Promise<boolean> {
     try {

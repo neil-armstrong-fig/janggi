@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://neil-armstrong-fig.github.io/janggi/</loc>
+    <image:image>
+      <image:loc>https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png</image:loc>
+      <image:title>Janggi (Korean chess) game</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://neil-armstrong-fig.github.io/janggi/learn.html</loc>
+  </url>
+  <url>
+    <loc>https://neil-armstrong-fig.github.io/janggi/references.html</loc>
+  </url>
+</urlset>

@@ -43,6 +43,12 @@ export class SettingsPlaywright extends SettingsSheetComponent {
     return ELEPHANT_PAIRINGS.find(candidate => candidate === pairing);
   }
 
+  async isGuideLinkedFromGame(): Promise<boolean> {
+    const href = await this.page.getByTestId("guide-open").getAttribute("href");
+
+    return href !== null && new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href;
+  }
+
   /** Only opens the sheet: dealing a new game closes it, so the player is looking at the new board. */
   async startNewGame(): Promise<void> {
     await this.openSheet(this.newGame);

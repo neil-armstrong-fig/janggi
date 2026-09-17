@@ -1,10 +1,13 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import {createRequire} from "node:module";
-import {defineConfig} from "vite";
+import {createElement, StrictMode} from "react";
+import type {ComponentType} from "react";
+import {createServer, defineConfig} from "vite";
 import type {Plugin} from "vite";
 import {dirname, join} from "node:path";
 import {readFileSync} from "node:fs";
+import {renderToString} from "react-dom/server";
 import {VitePWA} from "vite-plugin-pwa";
 
 /**
@@ -42,6 +45,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         game: join(import.meta.dirname, "index.html"),
+        guide: join(import.meta.dirname, "learn.html"),
         references: join(import.meta.dirname, "references.html"),
       },
     },
@@ -52,6 +56,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    learnGuide(),
     fairyStockfish(),
     VitePWA({
       injectRegister: false,
@@ -69,7 +74,7 @@ export default defineConfig({
       manifest: {
         name: "Janggi",
         short_name: "Janggi",
-        description: "Korean Chess",
+        description: "Play Janggi (Korean chess) free against a friend or AI, online or offline.",
         lang: "en",
         start_url: base,
         scope: base,
@@ -89,6 +94,55 @@ export default defineConfig({
     }),
   ],
 });
+
+/** The guide stays crawlable without maintaining a second, non-React copy of its content. */
+function learnGuide(): Plugin {
+  return {
+    name: "learn-guide",
+    transformIndexHtml: {
+      order: "pre",
+      async handler(html, context) {
+        if (!context.filename.endsWith("learn.html")) return;
+
+        const markup = context.server
+          ? markupFor((await context.server.ssrLoadModule(LEARN_PAGE_MODULE)) as LearnPageModule)
+          : await renderLearnGuide();
+
+        return html.replace(GUIDE_MARKER, markup);
+      },
+    },
+  };
+}
+
+const GUIDE_MARKER = "<!--guide-content-->";
+const LEARN_PAGE_MODULE = "/src/react/pages/learn/LearnPage.tsx";
+
+interface LearnPageModule {
+  readonly LearnPage: ComponentType;
+}
+
+async function renderLearnGuide(): Promise<string> {
+  const renderingServer = await createServer({
+    appType: "custom",
+    configFile: false,
+    root: import.meta.dirname,
+    server: {hmr: false, middlewareMode: true, ws: false},
+    resolve: {tsconfigPaths: true},
+    plugins: [react()],
+  });
+
+  try {
+    const learnPageModule = (await renderingServer.ssrLoadModule(LEARN_PAGE_MODULE)) as LearnPageModule;
+
+    return markupFor(learnPageModule);
+  } finally {
+    await renderingServer.close();
+  }
+}
+
+function markupFor(learnPageModule: LearnPageModule): string {
+  return renderToString(createElement(StrictMode, undefined, createElement(learnPageModule.LearnPage)));
+}
 
 /**
  * Serves Fairy-Stockfish's files at `engine/` beside the app — straight out of `node_modules` in

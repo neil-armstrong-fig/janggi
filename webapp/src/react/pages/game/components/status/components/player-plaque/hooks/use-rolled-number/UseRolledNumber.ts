@@ -1,4 +1,14 @@
 import {useEffect, useRef, useState} from "react";
+import type {Dispatch, RefObject, SetStateAction} from "react";
+
+interface Roll {
+  readonly from: number;
+  readonly to: number;
+  readonly startedAt: number;
+  readonly shownRef: RefObject<number>;
+  readonly setShown: Dispatch<SetStateAction<number>>;
+  frame: number;
+}
 
 /**
  * A number shown rolling from what it was to what it is now, rather than jumping — so a score going
@@ -20,25 +30,28 @@ export function useRolledNumber(value: number, rolling: boolean): number {
       return undefined;
     }
 
-    const from = shownRef.current;
-    const startedAt = performance.now();
-    let frame = requestAnimationFrame(tick);
+    const roll: Roll = {from: shownRef.current, to: value, startedAt: performance.now(), shownRef, setShown, frame: 0};
+    roll.frame = requestAnimationFrame(tick.bind(undefined, roll));
 
-    function tick(now: number): void {
-      const progress = Math.min(1, (now - startedAt) / ROLL_MS);
-      const eased = 1 - (1 - progress) ** 3;
-      const next = progress >= 1 ? value : Math.round((from + (value - from) * eased) * 2) / 2;
-
-      shownRef.current = next;
-      setShown(next);
-
-      if (progress < 1) frame = requestAnimationFrame(tick);
-    }
-
-    return () => cancelAnimationFrame(frame);
+    return cancelRoll.bind(undefined, roll);
   }, [value, rolling]);
 
   return rolling ? shown : value;
+}
+
+function tick(roll: Roll, now: number): void {
+  const progress = Math.min(1, (now - roll.startedAt) / ROLL_MS);
+  const eased = 1 - (1 - progress) ** 3;
+  const next = progress >= 1 ? roll.to : Math.round((roll.from + (roll.to - roll.from) * eased) * 2) / 2;
+
+  roll.shownRef.current = next;
+  roll.setShown(next);
+
+  if (progress < 1) roll.frame = requestAnimationFrame(tick.bind(undefined, roll));
+}
+
+function cancelRoll(roll: Roll): void {
+  cancelAnimationFrame(roll.frame);
 }
 
 /** Long enough to be seen counting, short enough to be done before the next move is thought about. */
