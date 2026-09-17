@@ -47,10 +47,10 @@ import {waitingLayer} from "@src/audio/music/layers/WaitingLayer";
  * a step for every layer so they swing together, and only where the 장단 swings) — all but the check
  * theme, which is heard dry, close and on the grid exactly as it was written.
  *
- * A layer that is silent and meant to stay so is not asked to play, and is unplugged, so the browser
+ * A layer that is silent and meant to stay so starts unplugged and is not asked to play, so the browser
  * stops working its nodes — the check theme's string sounds for as long as the music plays — and a
- * quiet opening costs no more than what is heard. It is plugged back in the moment a mood wants it,
- * before it starts to rise.
+ * quiet opening costs no more than what is heard. It is plugged in the moment a mood wants it, before
+ * it starts to rise.
  */
 export function createConductor(context: BaseAudioContext, destination: AudioNode): Conductor {
   const space = createSpace(context, destination);
@@ -63,7 +63,6 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
     checkTheme: checkThemeLayer(context),
   };
   const plugged = new Set<LayerName>();
-  for (const name of LAYER_NAMES) plug(name);
 
   let mood: Mood = CALM;
   let targets: LayerGains = layerGainsFor(CALM);

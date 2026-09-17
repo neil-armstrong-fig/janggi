@@ -6,7 +6,8 @@ import {layerGainsFor} from "@src/audio/music/mood/LayerGainsFor";
 it("plays only the waiting theme, over a softer bass, before a game is under way", () => {
   const waiting = layerGainsFor({tension: 0, inCheck: false, ending: "none", underWay: false});
 
-  expect(waiting.waiting).toBe(1);
+  expect(waiting.waiting).toBeGreaterThan(waiting.bass);
+  expect(waiting.waiting).toBeLessThan(1);
   expect(waiting.bass).toBeGreaterThan(0);
   expect(waiting.bass).toBeLessThan(layerGainsFor(calm(0)).bass);
   expect({...waiting, waiting: 0, bass: 0}).toEqual(SILENT);

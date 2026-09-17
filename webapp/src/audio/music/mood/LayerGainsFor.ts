@@ -26,7 +26,7 @@ import type {Mood} from "@src/audio/types/Mood";
 export function layerGainsFor({tension, inCheck, ending, underWay}: Mood): LayerGains {
   if (ending !== "none") return SILENT;
 
-  if (!underWay) return {...SILENT, waiting: 1, bass: WAITING_BASS};
+  if (!underWay) return {...SILENT, waiting: WAITING_THEME, bass: WAITING_BASS};
 
   const calm: LayerGains = {
     waiting: 0,
@@ -58,6 +58,9 @@ const SILENT: LayerGains = {waiting: 0, bass: 0, solo: 0, janggu: 0, answer: 0, 
 
 /** How much of the game's own music stays underneath the check theme. */
 const UNDER_CHECK = 0.25;
+
+/** The waiting theme stays back from the game proper, leaving room while a player reads the settings. */
+const WAITING_THEME = 0.8;
 
 /** The bass under the waiting theme: there, so the key is heard, but kept back behind the theme. */
 const WAITING_BASS = 0.6;

@@ -20,7 +20,9 @@ interface Graph {
  *
  * **Nothing is made until the first gesture.** Browsers refuse to start audio a player has not asked
  * for, so the audio device is opened by `unlock`, which the page calls on the first tap. Before that
- * every sound asked for is simply not heard — which is right: the game has not been touched yet.
+ * every sound asked for is simply not heard — which is right: the game has not been touched yet. Its
+ * fades and conductor start only once the browser confirms that the device is running, so the first
+ * note cannot arrive ahead of the automation meant to bring it in.
  *
  * **Two channels, faded rather than cut.** Sound effects and music each go through their own level into
  * a gentle limiter, so a capture landing on a loud bar of music does not clip. A change of volume fades
@@ -45,16 +47,14 @@ export function createAudioDirector(): AudioDirector {
   let mood: Mood = CALM;
   let onScreen = true;
   let lastHeard = 0;
+  let ready = false;
   let quieting: ReturnType<typeof setTimeout> | undefined;
 
   return {
     unlock: () => {
-      if (!graph) {
-        graph = buildGraph(new AudioContext({latencyHint: LATENCY_HINT}));
-        follow(channels);
-      }
+      if (!graph) graph = buildGraph(new AudioContext({latencyHint: LATENCY_HINT}));
 
-      if (onScreen) wake(graph.context);
+      start();
     },
 
     play: (cues: readonly Cue[], id: number) => {
@@ -86,14 +86,14 @@ export function createAudioDirector(): AudioDirector {
 
     setChannels: (next: AudioChannels) => {
       channels = next;
-      follow(next);
+      if (ready) follow(next);
     },
 
     setOnScreen: (next: boolean) => {
       onScreen = next;
       if (!graph) return;
 
-      if (next) wake(graph.context);
+      if (next) start();
       else void graph.context.suspend();
     },
 
@@ -103,8 +103,27 @@ export function createAudioDirector(): AudioDirector {
       conductor = undefined;
       void graph?.context.close();
       graph = undefined;
+      ready = false;
     },
   };
+
+  /** Opens the device before any fades or notes are scheduled against its clock. */
+  function start(): void {
+    if (!graph || !onScreen) return;
+
+    const context = graph.context;
+    if (ready) {
+      void wake(context);
+      return;
+    }
+
+    void wake(context).then(running => {
+      if (!running || graph?.context !== context || ready) return;
+
+      ready = true;
+      follow(channels);
+    });
+  }
 
   function follow(wanted: AudioChannels): void {
     if (!graph) return;
@@ -137,8 +156,18 @@ export function createAudioDirector(): AudioDirector {
 }
 
 /** Starts the audio device playing again, whether the page held it or the phone interrupted it. */
-function wake(context: AudioContext): void {
-  if (context.state !== "running" && context.state !== "closed") void context.resume();
+async function wake(context: AudioContext): Promise<boolean> {
+  if (context.state === "closed") return false;
+
+  if (context.state !== "running") {
+    try {
+      await context.resume();
+    } catch {
+      return false;
+    }
+  }
+
+  return context.state === "running";
 }
 
 function buildGraph(context: AudioContext): Graph {
@@ -163,11 +192,11 @@ function buildGraph(context: AudioContext): Graph {
 const CALM: Mood = {tension: 0, inCheck: false, ending: "none", underWay: false};
 
 /**
- * A larger audio buffer than the browser gives by default. With the smallest, a phone's audio thread —
- * sharing the device with the page and the bot — runs dry, and the music crackles and stutters. A piece
- * set down is heard a few milliseconds later for it, which nobody can tell.
+ * Prefer sustained playback over output latency. A phone's audio thread shares the device with the
+ * page and the bot; a larger buffer keeps it from running dry and making the music crackle or stutter.
+ * Sound effects use this context too, so they may arrive a little later in exchange.
  */
-const LATENCY_HINT: AudioContextLatencyCategory = "balanced";
+const LATENCY_HINT: AudioContextLatencyCategory = "playback";
 
 /**
  * Each channel at full volume: sound effects at nearly full, and music well underneath them — it is
