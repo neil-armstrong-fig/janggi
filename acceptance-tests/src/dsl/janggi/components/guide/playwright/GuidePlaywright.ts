@@ -36,23 +36,6 @@ export class GuidePlaywright extends BasePage {
       .waitFor({state: "visible"});
   }
 
-  async offerInstallation(): Promise<void> {
-    await this.page.evaluate(() => {
-      const event = new Event("beforeinstallprompt", {cancelable: true});
-      Object.defineProperties(event, {
-        prompt: {
-          value: () => {
-            document.documentElement.dataset["installPrompted"] = "true";
-
-            return Promise.resolve();
-          },
-        },
-        userChoice: {value: Promise.resolve({outcome: "accepted", platform: "web"})},
-      });
-      globalThis.dispatchEvent(event);
-    });
-  }
-
   async chooseInstall(): Promise<void> {
     await this.install.click();
   }
@@ -93,10 +76,6 @@ export class GuidePlaywright extends BasePage {
 
   async isInstallButtonShown(): Promise<boolean> {
     return await this.install.isVisible();
-  }
-
-  async wasInstallationPrompted(): Promise<boolean> {
-    return (await this.page.locator("html").getAttribute("data-install-prompted")) === "true";
   }
 
   async isPieceOpen(type: PieceType): Promise<boolean> {

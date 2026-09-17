@@ -100,7 +100,7 @@ given("someone searches for a way to play janggi", () => {
     beforeEach(async ({janggi}) => {
       await janggi.resizeWindowTo(390, 844);
       await janggi.guide.visitGuide();
-      await janggi.guide.offerInstallation();
+      await janggi.offerInstallation();
     });
 
     then("the guide offers to save Janggi to the device", async ({janggi}) => {
@@ -113,7 +113,7 @@ given("someone searches for a way to play janggi", () => {
       });
 
       then("the browser's save process starts", async ({janggi}) => {
-        expect(await janggi.guide.wasInstallationPrompted()).toBe(true);
+        expect(await janggi.wasInstallationPrompted()).toBe(true);
       });
     });
   });
@@ -122,7 +122,7 @@ given("someone searches for a way to play janggi", () => {
     beforeEach(async ({janggi}) => {
       await janggi.resizeWindowTo(1024, 900);
       await janggi.guide.visitGuide();
-      await janggi.guide.offerInstallation();
+      await janggi.offerInstallation();
     });
 
     then("the phone save action stays out of the way", async ({janggi}) => {

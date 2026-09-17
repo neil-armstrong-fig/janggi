@@ -1,7 +1,7 @@
-import {useInstallGuide} from "@src/react/pages/learn/components/hero/hooks/use-install-guide/UseInstallGuide";
+import {useInstallation} from "@src/react/pages/hooks/use-installation/UseInstallation";
 
 export function Hero(): React.JSX.Element {
-  const installGuide = useInstallGuide();
+  const installation = useInstallation();
 
   return (
     <section
@@ -32,12 +32,12 @@ export function Hero(): React.JSX.Element {
             Play Janggi for free
           </a>
 
-          {installGuide.canInstall && (
+          {installation.canInstall && (
             <button
               className="inline-flex min-h-12 cursor-pointer items-center justify-center rounded-lg border border-wood/30 bg-transparent px-5 py-3 font-bold text-wood hover:bg-wood/10 focus:outline-2 focus:outline-offset-4 focus:outline-gold min-[38.0625rem]:hidden"
               data-testid="guide-install"
               type="button"
-              onClick={installGuide.offerInstallation}
+              onClick={installation.offerInstallation}
             >
               Save to this device
             </button>

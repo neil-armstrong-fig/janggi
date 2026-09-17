@@ -10,7 +10,7 @@ interface InstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-interface InstallGuide {
+interface Installation {
   readonly canInstall: boolean;
   readonly offerInstallation: () => Promise<void>;
 }
@@ -20,7 +20,7 @@ type PromptListener = () => void;
 let installPrompt: InstallPromptEvent | undefined;
 const promptListeners = new Set<PromptListener>();
 
-export function useInstallGuide(): InstallGuide {
+export function useInstallation(): Installation {
   const prompt = useSyncExternalStore(subscribe, currentPrompt, noPrompt);
 
   return {canInstall: prompt !== undefined, offerInstallation};

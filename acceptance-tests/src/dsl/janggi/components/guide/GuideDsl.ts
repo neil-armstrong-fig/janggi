@@ -19,14 +19,6 @@ export class GuideDsl {
     }
   }
 
-  async offerInstallation(): Promise<void> {
-    try {
-      await this.guide.offerInstallation();
-    } catch (error) {
-      throw new DslError("Failed to make installation available from the browser", error);
-    }
-  }
-
   async chooseInstall(): Promise<void> {
     try {
       await this.guide.chooseInstall();
@@ -104,14 +96,6 @@ export class GuideDsl {
       return await this.guide.isInstallButtonShown();
     } catch (error) {
       throw new DslError("Failed to check whether saving Janggi is offered", error);
-    }
-  }
-
-  async wasInstallationPrompted(): Promise<boolean> {
-    try {
-      return await this.guide.wasInstallationPrompted();
-    } catch (error) {
-      throw new DslError("Failed to check whether the browser offered to save Janggi", error);
     }
   }
 

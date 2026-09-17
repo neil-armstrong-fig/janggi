@@ -3,6 +3,7 @@ import {BotStrengthSetting} from "@src/react/pages/game/components/settings/comp
 import {EffectsSetting} from "@src/react/pages/game/components/settings/components/effects-setting/EffectsSetting";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/components/elephant-pairing-line/ElephantPairingLine";
 import {GuideLink} from "@src/react/pages/game/components/settings/components/guide-link/GuideLink";
+import {InstallButton} from "@src/react/pages/game/components/settings/components/install-button/InstallButton";
 import {MatchFormatSetting} from "@src/react/pages/game/components/settings/components/match-format-setting/MatchFormatSetting";
 import {MovableHighlightSetting} from "@src/react/pages/game/components/settings/components/movable-highlight-setting/MovableHighlightSetting";
 import {MusicSetting} from "@src/react/pages/game/components/settings/components/music-setting/MusicSetting";
@@ -130,6 +131,8 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
           </SettingsGroup>
 
           <div className="flex flex-col gap-2">
+            <InstallButton />
+
             <GuideLink />
 
             <ReferencesLink />
