@@ -18,6 +18,9 @@ const AT_REST_FOR_MS = 700;
 
 const POLL_MS = 50;
 
+/** Every piece except its general, which is checkmated rather than taken. */
+const MOST_PIECES_AN_ARMY_CAN_LOSE = 15;
+
 /** Where the game says what it is doing, rather than what is standing on it. */
 export class StatusPlaywright extends BaseComponent {
   readonly container: Locator;
@@ -114,12 +117,33 @@ export class StatusPlaywright extends BaseComponent {
     return Number(await xp.getAttribute("data-xp"));
   }
 
+  /** Whether the amount and its XP unit occupy one line rather than breaking apart. */
+  async isXpOnOneLine(side: Side): Promise<boolean> {
+    const xp = this.page.getByTestId(`plaque-xp-${side}`);
+    if ((await xp.count()) === 0) return false;
+
+    return await xp.evaluate(element => {
+      const text = document.createRange();
+      text.selectNodeContents(element);
+
+      return new Set([...text.getClientRects()].map(rect => rect.top)).size === 1;
+    });
+  }
+
   /** The next unlock shown beside an army's XP, or undefined where there is no next unlock. */
   async getNextUnlock(side: Side): Promise<string | undefined> {
     const nextUnlock = this.page.getByTestId(`plaque-next-unlock-${side}`);
-    if ((await nextUnlock.count()) === 0) return undefined;
+    if (!(await nextUnlock.isVisible())) return undefined;
 
     return (await nextUnlock.textContent()) ?? undefined;
+  }
+
+  /** Whether the losses tray has room for all fifteen capturable pieces at its full height. */
+  async canShowAllTakenPieces(side: Side): Promise<boolean> {
+    const tray = await this.taken[side].boundingBox();
+    if (!tray) return false;
+
+    return tray.width >= tray.height * MOST_PIECES_AN_ARMY_CAN_LOSE;
   }
 
   /**
