@@ -371,8 +371,6 @@ on the board and the diagonals a chariot may run down are one list, not two.
 
 ## Current placeholders
 
-- The PWA manifest points at a single `public/icon.svg`. Proper 192px/512px PNGs including a
-  maskable variant are still to do.
 - No Korean font is bundled, so the character sets fall back to whatever the device has, and the
   traditional set approximates Cho's cursive script by leaning it. A self-hosted subset face would
   fix both.
@@ -394,9 +392,10 @@ Written down so they are not re-opened as though they were oversights.
 
 ## The icon
 
-`public/icon.svg` is **generated** — do not hand-edit it. `scripts/generate-icon.mjs` draws 장기 out
-of line segments and one circle, so the icon carries no font and no traced artwork, and renders the
-same everywhere regardless of what Hangul fonts a device has. Change the strokes there and re-run:
+The SVG favicon and all PNG home-screen icons in `public/` are **generated** — do not hand-edit
+them. `scripts/generate-icon.mjs` draws 장기 out of line segments and one circle, so the icon carries
+no font and no traced artwork, and renders the same everywhere regardless of what Hangul fonts a
+device has. Change the strokes there and re-run:
 
 ```bash
 pnpm --filter @janggi/webapp generate-icon
