@@ -67,7 +67,7 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
         aria-modal={open}
         inert={!open}
         className={clsx(
-          "fixed inset-x-0 bottom-0 z-20 mx-auto flex max-h-[80dvh] w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
+          "opacity-96 fixed inset-x-0 bottom-0 z-20 mx-auto flex max-h-[80dvh] w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
           open ? "translate-y-0 shadow-2xl shadow-black" : "translate-y-full",
         )}
       >
