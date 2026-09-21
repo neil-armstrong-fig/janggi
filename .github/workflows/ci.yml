@@ -34,6 +34,13 @@ jobs:
   acceptance-tests:
     name: Acceptance tests (local)
     runs-on: ubuntu-latest
+    # The suite is split across runners rather than run with more workers on one: each shard keeps
+    # Playwright's two workers on its own four vCPUs, so the 5s action and expect timeouts see no
+    # extra contention. The shard count is the length of this list.
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v7
 
@@ -64,16 +71,18 @@ jobs:
           echo "The preview server never came up" >&2
           exit 1
 
-      - run: pnpm acceptance-tests
+      - run: pnpm acceptance-tests --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
       # Release updates need the production service worker, which the ordinary dev-server suite does
       # not register. This is deterministic and gates the deploy with the rest of the acceptance tests.
-      - run: pnpm acceptance-tests:pwa
+      # A dozen specs, so it runs on the first shard only rather than on every one.
+      - if: matrix.shard == 1
+        run: pnpm acceptance-tests:pwa
 
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report-local
+          name: playwright-report-local-${{ matrix.shard }}
           path: acceptance-tests/playwright-report/
           retention-days: 7
 
@@ -127,6 +136,13 @@ jobs:
     name: Acceptance tests (production)
     needs: deploy
     runs-on: ubuntu-latest
+    # Sharded like the local job, and this is the one that gains most: every spec's fresh browser
+    # context downloads the site and waits for its service worker to isolate the page (`docs/bot.md`),
+    # so the run is bound by latency, not CPU.
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v7
 
@@ -154,17 +170,18 @@ jobs:
           WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
 
       # The deployed URL, rather than the one baked into the :production script.
-      - run: pnpm acceptance-tests
+      - run: pnpm acceptance-tests --shard=${{ matrix.shard }}/${{ strategy.job-total }}
         env:
           WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
 
-      - run: pnpm acceptance-tests:pwa
+      - if: matrix.shard == 1
+        run: pnpm acceptance-tests:pwa
         env:
           WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
 
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report-production
+          name: playwright-report-production-${{ matrix.shard }}
           path: acceptance-tests/playwright-report/
           retention-days: 7

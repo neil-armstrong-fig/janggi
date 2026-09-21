@@ -471,6 +471,14 @@ mostly by how much you put in front of yourself and how long you leave it there.
 `.github/workflows/ci.yml` runs `checks`, then `acceptance-tests` against a production build served
 by `vite preview`, then deploys `main` to GitHub Pages. Deployment is gated on both.
 
+The acceptance jobs — local, and again against the deployed site — are **sharded four ways**
+(`--shard=n/4` over a matrix), not run with more workers. A runner has four vCPUs and Playwright's two
+workers is as many as the 5s action and expect timeouts stay steady under, so the suite scales by adding
+runners; `workers` is pinned to 2 on CI in `playwright.config.ts`. The service-worker specs run on shard 1
+only. The production run is the slower of the two: on Pages every spec's fresh context downloads the
+site and waits for the service worker to isolate the page (`docs/bot.md` §4), about 1.5s a spec against
+0.1s locally. Runner speed swings a run by more than that, so a single pair of runs proves little.
+
 `.github/workflows/property-tests.yml` runs the property tests on every push and pull request,
 nightly, and on demand. It goes **red** on failure — a warning nobody sees is not worth running —
 but gates nothing, because `deploy` needs only `checks` and `acceptance-tests`. A failure writes a

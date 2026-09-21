@@ -36,6 +36,9 @@ export default defineConfig<AcceptanceTestOptions>({
   fullyParallel: true,
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
+  // Two per four-vCPU runner is as far as the 5s action and expect timeouts stay steady; the CI
+  // workflow gets its speed by sharding the suite across runners instead.
+  workers: isCi ? 2 : undefined,
   reporter: isCi ? [["github"], ["html", {open: "never"}]] : [["list"]],
   timeout: 30_000,
   expect: {
