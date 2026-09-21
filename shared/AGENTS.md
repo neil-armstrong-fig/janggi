@@ -11,7 +11,7 @@ acceptance tests need the same words** — a spec that asserted `"cho-elphant"` 
 
 ```
 src/janggi/pieces/      Side, PieceType, Piece, PieceKey, and the two functions that convert
-src/janggi/settings/    BoardStyleName, PieceSetName, SetupName, MovableHighlightName,
+src/janggi/settings/    BoardStyleName, PieceSetName, SetupName, MovableHighlightName, BikjangHintName,
                         MatchFormat, ElephantPairing, StyleKind — the built-ins, by name
 src/janggi/share-keys/  the share key codec: `janggi-<kind>:` and base64url JSON
 src/janggi/progress/    the four ladders a player climbs, and the JSON a save key carries

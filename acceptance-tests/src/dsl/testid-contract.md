@@ -31,9 +31,9 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   unlock (the player's own plaque only, and the words are shortened — read the attribute);
   `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
   `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
-  option. The ten picker ids are `board-style`, `piece-style`, `movable-highlight`, `match-format`,
-  `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A picker that
-  explains itself — only `match-format` so far — adds an `<id>-explain` toggle, never disabled, and
+  option. The eleven picker ids are `board-style`, `piece-style`, `movable-highlight`, `bikjang-hint`,
+  `match-format`, `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A
+  picker that explains itself — `match-format` and `bikjang-hint` — adds an `<id>-explain` toggle, never disabled, and
   an `<id>-explanation` panel present only while unfolded. A picker of two options is a row of buttons, the chosen one carrying
   `aria-pressed`; one of more is a native `<id>-select`, whose `<option>`s carry the option ids and
   are chosen and read by their `value` — a locked option's text carries a padlock and a reason, its
@@ -48,7 +48,9 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `data-can-be-moved` (a piece its owner may move now; the value is the emphasis, `full` or `faint`,
   and no spec asserts on which), `data-covered` (a point the piece in hand would land on a piece of
   its own army), `data-last-move` (`from` or `to`; `getLastMove` reads the two cells' ids back into a move), and `data-under-attack` and
-  `data-attacking` (the general in check, and each piece giving it).
+  `data-attacking` (the general in check, and each piece giving it). A destination where the move would
+  leave the opponent a bikjang to call holds a `bikjang-risk` label reading 빅장 — text, so the question
+  reads the word a player sees and not a flag beside it.
 - **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn`,
   `data-laying-out`, `data-bot-loading` and `data-bot-unavailable` (the bot's engine is still being
   started, or could not be — both **beside** `data-bot-to-move`, never in place of it, so a wait for the

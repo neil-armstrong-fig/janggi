@@ -198,6 +198,14 @@ export class BoardPlaywright extends BaseComponent {
     return (await this.cellLocator(file, rank).getAttribute("data-attacking")) !== null;
   }
 
+  /** Whether the intersection carries the 빅장 label of a move that would let a bikjang be called. */
+  async isMarkedAsBikjangRisk(file: number, rank: number): Promise<boolean> {
+    const label = this.cellLocator(file, rank).getByTestId("bikjang-risk");
+    if ((await label.count()) === 0) return false;
+
+    return (await label.textContent()) === "빅장";
+  }
+
   /**
    * Whether the piece on an intersection is drawn raised off the board, the way a piece in hand is.
    * Asked once every animation on the page has run its course, so a lift still rising or settling is

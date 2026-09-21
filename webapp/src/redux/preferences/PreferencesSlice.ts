@@ -1,4 +1,5 @@
 import type {PayloadAction} from "@reduxjs/toolkit";
+import type {BikjangHintName} from "@janggi/shared/janggi/settings/BikjangHintName";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -35,6 +36,11 @@ export const preferencesSlice = createSlice({
       movableHighlight: action.payload,
     }),
 
+    bikjangHintChosen: (state, action: PayloadAction<BikjangHintName>): PreferencesSliceState => ({
+      ...state,
+      bikjangHint: action.payload,
+    }),
+
     effectsChosen: (state, action: PayloadAction<EffectsName>): PreferencesSliceState => ({
       ...state,
       effects: action.payload,
@@ -56,6 +62,7 @@ export const {
   boardStyleChosen,
   pieceSetChosen,
   movableHighlightChosen,
+  bikjangHintChosen,
   effectsChosen,
   soundEffectsVolumeChanged,
   musicVolumeChanged,

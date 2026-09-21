@@ -1,3 +1,4 @@
+import {BikjangHintSettingDsl} from "@src/dsl/janggi/components/settings/components/bikjang-hint-setting/BikjangHintSettingDsl";
 import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
 import {BotStrengthSettingDsl} from "@src/dsl/janggi/components/settings/components/bot-strength-setting/BotStrengthSettingDsl";
 import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/ChoSetupSettingDsl";
@@ -45,6 +46,7 @@ export class SettingsDsl {
   readonly hanSetup: HanSetupSettingDsl;
   readonly choSetup: ChoSetupSettingDsl;
   readonly movableHighlight: MovableHighlightSettingDsl;
+  readonly bikjangHint: BikjangHintSettingDsl;
   readonly matchFormat: MatchFormatSettingDsl;
   readonly opponent: OpponentSettingDsl;
   readonly botStrength: BotStrengthSettingDsl;
@@ -63,6 +65,7 @@ export class SettingsDsl {
     this.hanSetup = new HanSetupSettingDsl(page);
     this.choSetup = new ChoSetupSettingDsl(page);
     this.movableHighlight = new MovableHighlightSettingDsl(page);
+    this.bikjangHint = new BikjangHintSettingDsl(page);
     this.matchFormat = new MatchFormatSettingDsl(page);
     this.opponent = new OpponentSettingDsl(page);
     this.botStrength = new BotStrengthSettingDsl(page);

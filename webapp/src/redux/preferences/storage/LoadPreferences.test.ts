@@ -12,6 +12,7 @@ const chosen: PreferencesSliceState = {
   boardStyle: "Neon",
   pieceSet: "Hangul",
   movableHighlight: "Hidden",
+  bikjangHint: "Hidden",
   effects: "Reduced",
   soundEffectsVolume: 40,
   musicVolume: 0,
@@ -39,6 +40,22 @@ it("puts back the default for a style that is not named at all, and keeps the re
     boardStyle: defaultPreferences().boardStyle,
     pieceSet: defaultPreferences().pieceSet,
   });
+});
+
+/** A player who last saved before the hint existed has no such field, and loses nothing else for it. */
+it("puts back the default for a bikjang hint that was never kept, and keeps the rest", () => {
+  const {bikjangHint: _never, ...savedBeforeTheHint} = chosen;
+
+  expect(loadPreferences(storageHolding(savedBeforeTheHint))).toEqual({
+    ...chosen,
+    bikjangHint: defaultPreferences().bikjangHint,
+  });
+});
+
+it("puts back the default for a bikjang hint the app does not offer", () => {
+  expect(loadPreferences(storageHolding({...chosen, bikjangHint: "Loud"})).bikjangHint).toBe(
+    defaultPreferences().bikjangHint,
+  );
 });
 
 it("puts back the default for a volume outside the slider's range", () => {

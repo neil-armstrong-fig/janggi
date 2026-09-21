@@ -1,3 +1,4 @@
+import {BIKJANG_HINTS} from "@src/react/pages/game/utils/BikjangHints";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
@@ -37,6 +38,7 @@ export function preferencesFrom(
       name => xp >= pieceSetPrice(name),
     ),
     movableHighlight: namedIn(MOVABLE_HIGHLIGHTS, names.movableHighlight),
+    bikjangHint: namedIn(BIKJANG_HINTS, names.bikjangHint),
     effects: namedIn(EFFECTS, names.effects),
     soundEffectsVolume: names.soundEffectsVolume,
     musicVolume: names.musicVolume,

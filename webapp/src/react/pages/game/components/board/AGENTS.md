@@ -16,11 +16,15 @@ component that turns that data into pixels.
 A cell can carry **several marks**, and none of them is a `CellStyle` field — a board style is plain
 data a user may author, and whose turn it is has no business written into one. They are overlay
 elements in `Cell`: `MovableMark` rings a piece its owner may move this turn, the selected wash fills
-the cell of the piece in hand, `MoveHint` puts a dot or a ring where that piece may go, `CoverHint` a
-dashed ring on each own-army piece the piece in hand would land on, `LastMoveMark` brackets the last
-move's two points, and `ThreatMark` rings a general in check and each attacker. Only `MovableMark` is
-switchable — the "Movable pieces" picker — since in the opening it marks most of an army, and earns
-itself in check and against a pin.
+the cell of the piece in hand, `MoveHint` puts a dot or a ring where that piece may go — and writes a
+small 빅장 on it where the move would leave the opponent a bikjang to call (`canCallBikjangAfter`, so
+the format's own answer) — `CoverHint` a dashed ring on each own-army piece the piece in hand would
+land on, `LastMoveMark` brackets the last move's two points, and `ThreatMark` rings a general in check
+and each attacker. Two are switchable. `MovableMark` has the "Movable pieces" picker, since in the
+opening it marks most of an army, and earns itself in check and against a pin. The 빅장 label has
+"Bikjang hint", and is offered only against a person at the same device or the 800 and 1000 bots — a
+teaching aid, so `bikjangHintShown` decides it from the preference _and_ the opponent, and the
+stronger bots never get it whatever the picker says.
 
 **Marks are information; motion is an effect.** A mark is drawn regardless of motion state; motion
 (a flight, a capture landing, a shake, a deal, a lift, a rolling score, a haptic buzz) is drawn only

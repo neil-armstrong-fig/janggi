@@ -40,8 +40,8 @@ hooks. Add state as a slice via `createSlice`.
   engine keeps it that way.
 - **A setting that is part of the game is dealt, not applied.** The two setups and the match format go
   through `dealtGame`, which starts a fresh game rather than changing the one under way, and all three
-  pickers lock on `playHasBegun`. Contrast the board style, piece set, movable-piece mark, effects,
-  sound effects and music — preferences about how a game is drawn or heard, applied the moment they
+  pickers lock on `playHasBegun`. Contrast the board style, piece set, movable-piece mark, bikjang hint,
+  effects, sound effects and music — preferences about how a game is drawn or heard, applied the moment they
   are chosen.
 - **Preferences are stored by name.** `state.preferences` holds names, never style objects —
   `src/redux/` may not import `src/react/`, and a name is also what a picker shows, a spec asks for

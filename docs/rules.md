@@ -491,7 +491,14 @@ locks with them once play has begun, because a format is settled before a game
 the way a back rank is; changing it deals a fresh game. A **Bikjang** control
 sits beside Pass and is enabled exactly when `canCallBikjang` says so, and the
 turn line reads "Drawn by bikjang" when a casual call lands — the one draw the
-app can show.
+app can show. A piece in hand also writes a small 빅장 on each destination where
+the move would leave the opponent a bikjang to call (`bikjang/CanCallBikjangAfter.ts`) —
+the same question in the same format, so a scored game says nothing while either
+army is over thirty. It is a warning and never a bar: the move stays offered.
+It is a teaching aid, so it is offered only where a player is still learning — a
+game against a person at the same device, and against the 800 and 1000 bots — and
+a player may switch it off in Appearance ("Bikjang hint"). Against the stronger
+bots it is never drawn, whatever the preference says (`bikjangHintShown`).
 
 `acceptance-tests/…/game/CallingABikjang.test.ts` plays the whole of it by
 tapping, both formats included. That is possible because **a bikjang is two moves
