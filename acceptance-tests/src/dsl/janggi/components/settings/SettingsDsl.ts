@@ -16,7 +16,7 @@ import {ProgressSettingDsl} from "@src/dsl/janggi/components/settings/components
 import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
 import type {Page} from "@playwright/test";
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
-import type {SettingsSectionName} from "@janggi/shared/janggi/settings/SettingsSectionName";
+import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 import {YourSideSettingDsl} from "@src/dsl/janggi/components/settings/components/your-side-setting/YourSideSettingDsl";
 
@@ -126,30 +126,56 @@ export class SettingsDsl {
     }
   }
 
-  /** Whether a section of the sheet has its settings folded away under its heading. */
-  async isSectionFolded(name: SettingsSectionName): Promise<boolean> {
+  /** Opens the sheet and leaves it open, so a spec can watch the board behind it while it chooses. */
+  async openTheSettings(): Promise<void> {
     try {
-      return await this.settings.isSectionFolded(name);
+      await this.settings.openTheSettings();
     } catch (error) {
-      throw new DslError(`Failed to read whether the "${name}" settings are folded away`, error);
+      throw new DslError("Failed to open the settings", error);
     }
   }
 
-  /** Folds a section of the sheet away under its heading. */
-  async foldSection(name: SettingsSectionName): Promise<void> {
+  async isOpen(): Promise<boolean> {
     try {
-      await this.settings.foldSection(name);
+      return await this.settings.isOpen();
     } catch (error) {
-      throw new DslError(`Failed to fold the "${name}" settings away`, error);
+      throw new DslError("Failed to read whether the settings are open", error);
     }
   }
 
-  /** Unfolds a section of the sheet, laying its settings out under its heading. */
-  async unfoldSection(name: SettingsSectionName): Promise<void> {
+  /** Whether a tab's settings are on screen. */
+  async isTabShowing(name: SettingsTabName): Promise<boolean> {
     try {
-      await this.settings.unfoldSection(name);
+      return await this.settings.isTabShowing(name);
     } catch (error) {
-      throw new DslError(`Failed to unfold the "${name}" settings`, error);
+      throw new DslError(`Failed to read whether the "${name}" settings are showing`, error);
+    }
+  }
+
+  /** Whether a tab is marked as the one chosen. */
+  async isTabSelected(name: SettingsTabName): Promise<boolean> {
+    try {
+      return await this.settings.isTabSelected(name);
+    } catch (error) {
+      throw new DslError(`Failed to read whether the "${name}" tab is chosen`, error);
+    }
+  }
+
+  /** Shows a tab's pane, putting the others away. */
+  async selectTab(name: SettingsTabName): Promise<void> {
+    try {
+      await this.settings.selectTab(name);
+    } catch (error) {
+      throw new DslError(`Failed to choose the "${name}" tab`, error);
+    }
+  }
+
+  /** Whether the open sheet reaches over an intersection of the board, so hiding part of it. */
+  async isCoveringTheBoardAt(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.settings.isCoveringTheBoardAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the settings cover file ${file}, rank ${rank}`, error);
     }
   }
 

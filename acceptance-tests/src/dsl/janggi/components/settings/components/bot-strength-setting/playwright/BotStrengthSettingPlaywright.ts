@@ -29,6 +29,11 @@ export class BotStrengthSettingPlaywright extends SettingsSheetComponent {
     };
   }
 
+  /** Whether the picker is laid out at all, which it is only against the bot. */
+  async isShown(): Promise<boolean> {
+    return await this.select.isVisible();
+  }
+
   async isChoosable(): Promise<boolean> {
     return await this.select.isEnabled();
   }

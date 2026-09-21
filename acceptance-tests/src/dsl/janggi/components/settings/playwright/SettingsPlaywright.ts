@@ -2,11 +2,11 @@ import type {Locator, Page} from "@playwright/test";
 import {ELEPHANT_PAIRINGS} from "@janggi/shared/janggi/settings/ElephantPairing";
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
-import type {SettingsSectionName} from "@janggi/shared/janggi/settings/SettingsSectionName";
+import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
 
 /**
  * The settings sheet — the part of it that belongs to no single picker: the 맞상/엇상 line beneath
- * the two setup pickers, New game beneath that, and the sections the whole sheet folds into.
+ * the two setup pickers, New game beneath that, and the tabs the whole sheet is divided into.
  *
  * It holds no other component. Each picker is built by its own `*Dsl` from the page, so this is the
  * counterpart of `SettingsDsl` and nothing else's parent.
@@ -55,32 +55,51 @@ export class SettingsPlaywright extends SettingsSheetComponent {
     await this.newGame.click();
   }
 
-  /** Whether a section's settings are folded away under its heading, read off the heading's `aria-expanded`. */
-  async isSectionFolded(name: SettingsSectionName): Promise<boolean> {
-    return (await this.sectionToggle(name).getAttribute("aria-expanded")) === "false";
+  /** Opens the sheet and leaves it open, so the board can be watched behind it. */
+  async openTheSettings(): Promise<void> {
+    await this.openIfClosed();
   }
 
-  /** Presses the heading if its section is laid out, so a section already folded is left as it is. */
-  async foldSection(name: SettingsSectionName): Promise<void> {
-    await this.pressSectionToggleWhen(name, "true");
+  async isOpen(): Promise<boolean> {
+    return await this.isSheetOpen();
   }
 
-  /** Presses the heading if its section is folded, so a section already laid out is left as it is. */
-  async unfoldSection(name: SettingsSectionName): Promise<void> {
-    await this.pressSectionToggleWhen(name, "false");
+  /**
+   * Whether a tab's pane is on screen. Read off the pane alone, and deliberately not combined with
+   * `isTabSelected`: a pane that failed to put itself away under an unselected tab would then still
+   * answer no, the tab's mark hiding the fault.
+   */
+  async isTabShowing(name: SettingsTabName): Promise<boolean> {
+    return await this.page.locator(`[data-testid='settings-pane'][data-pane='${name}']`).isVisible();
   }
 
-  private async pressSectionToggleWhen(name: SettingsSectionName, expanded: string): Promise<void> {
-    const toggle = this.sectionToggle(name);
+  /** Whether a tab is marked as the one chosen, read off its `aria-selected`. */
+  async isTabSelected(name: SettingsTabName): Promise<boolean> {
+    return (await this.tabNamed(name).getAttribute("aria-selected")) === "true";
+  }
+
+  /** Presses the tab, so a tab already showing is left as it is. It stays chosen when the sheet closes. */
+  async selectTab(name: SettingsTabName): Promise<void> {
+    const tab = this.tabNamed(name);
 
     await this.withSheetOpen(async () => {
-      if ((await toggle.getAttribute("aria-expanded")) === expanded) await toggle.click();
+      if ((await tab.getAttribute("aria-selected")) !== "true") await tab.click();
     });
   }
 
-  private sectionToggle(name: SettingsSectionName): Locator {
-    return this.page
-      .locator(`[data-testid='settings-section'][data-section='${name}']`)
-      .getByTestId("settings-section-toggle");
+  /**
+   * Whether the sheet has any of an intersection under it, judged by where each is drawn — so the
+   * answer does not change with how see-through the sheet is, only with how much of the board it
+   * reaches up over. A closed sheet is below the screen and covers nothing.
+   */
+  async isCoveringTheBoardAt(file: number, rank: number): Promise<boolean> {
+    const cell = await this.page.getByTestId("board").getByTestId(`cell-f${file}r${rank}`).boundingBox();
+    const sheet = await this.sheet.boundingBox();
+    if (cell === null || sheet === null) throw new Error("Expected both the intersection and the sheet to be drawn");
+
+    const overlapsAcross = sheet.x < cell.x + cell.width && cell.x < sheet.x + sheet.width;
+    const overlapsDown = sheet.y < cell.y + cell.height && cell.y < sheet.y + sheet.height;
+
+    return overlapsAcross && overlapsDown;
   }
 }

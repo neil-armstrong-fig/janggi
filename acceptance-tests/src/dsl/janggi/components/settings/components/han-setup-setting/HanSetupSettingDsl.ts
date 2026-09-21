@@ -32,6 +32,24 @@ export class HanSetupSettingDsl {
     }
   }
 
+  /** Turns the switch to Han's army, so its setups are the ones showing. It chooses nothing. */
+  async show(): Promise<void> {
+    try {
+      await this.setup.show();
+    } catch (error) {
+      throw new DslError("Failed to show Han's setups", error);
+    }
+  }
+
+  /** Whether Han's setups are the ones showing, the two armies sharing one place in the sheet. */
+  async isShown(): Promise<boolean> {
+    try {
+      return await this.setup.isShown();
+    } catch (error) {
+      throw new DslError("Failed to check whether Han's setups are showing", error);
+    }
+  }
+
   /** Whether the picker is still live — a back rank is arranged strictly before play. */
   async isChoosable(): Promise<boolean> {
     try {

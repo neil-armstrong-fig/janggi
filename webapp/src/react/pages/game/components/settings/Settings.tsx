@@ -1,46 +1,39 @@
-import {BikjangHintSetting} from "@src/react/pages/game/components/settings/components/bikjang-hint-setting/BikjangHintSetting";
-import {BoardSetting} from "@src/react/pages/game/components/settings/components/board-setting/BoardSetting";
-import {BotStrengthSetting} from "@src/react/pages/game/components/settings/components/bot-strength-setting/BotStrengthSetting";
-import {EffectsSetting} from "@src/react/pages/game/components/settings/components/effects-setting/EffectsSetting";
-import {ElephantPairingLine} from "@src/react/pages/game/components/settings/components/elephant-pairing-line/ElephantPairingLine";
-import {GuideLink} from "@src/react/pages/game/components/settings/components/guide-link/GuideLink";
-import {InstallButton} from "@src/react/pages/game/components/settings/components/install-button/InstallButton";
-import {MatchFormatSetting} from "@src/react/pages/game/components/settings/components/match-format-setting/MatchFormatSetting";
-import {MovableHighlightSetting} from "@src/react/pages/game/components/settings/components/movable-highlight-setting/MovableHighlightSetting";
-import {MusicSetting} from "@src/react/pages/game/components/settings/components/music-setting/MusicSetting";
-import {NewGameButton} from "@src/react/pages/game/components/settings/components/new-game-button/NewGameButton";
-import {OpponentSetting} from "@src/react/pages/game/components/settings/components/opponent-setting/OpponentSetting";
-import {PieceSetSetting} from "@src/react/pages/game/components/settings/components/piece-set-setting/PieceSetSetting";
-import {Progress} from "@src/react/pages/game/components/settings/components/progress/Progress";
-import {RecordButton} from "@src/react/pages/game/components/settings/components/record-button/RecordButton";
-import {ReferencesLink} from "@src/react/pages/game/components/settings/components/references-link/ReferencesLink";
-import {SettingsGroup} from "@src/react/pages/game/components/settings/components/settings-group/SettingsGroup";
-import {SetupSetting} from "@src/react/pages/game/components/settings/components/setup-setting/SetupSetting";
-import {SoundEffectsSetting} from "@src/react/pages/game/components/settings/components/sound-effects-setting/SoundEffectsSetting";
-import {StylesButton} from "@src/react/pages/game/components/settings/components/styles-button/StylesButton";
-import {YourSideSetting} from "@src/react/pages/game/components/settings/components/your-side-setting/YourSideSetting";
+import {GamePane} from "@src/react/pages/game/components/settings/tabs/game-pane/GamePane";
+import {LookPane} from "@src/react/pages/game/components/settings/tabs/look-pane/LookPane";
+import {ProgressPane} from "@src/react/pages/game/components/settings/tabs/progress-pane/ProgressPane";
+import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
+import {SettingsTabs} from "@src/react/pages/game/components/settings/components/settings-tabs/SettingsTabs";
+import {SoundPane} from "@src/react/pages/game/components/settings/tabs/sound-pane/SoundPane";
 import {clsx} from "clsx";
+import {useState} from "react";
 
 /**
  * Everything a player may choose about the game and about how it is drawn, in a sheet that slides
  * up over the lower part of the screen when it is asked for.
  *
- * A sheet rather than a panel under the board, because six rows of options were taller than a short
- * window had to spare and the board is what the screen is for. The board stays visible above it, so
- * a new board style or piece set is seen being worn the moment it is picked.
+ * A sheet rather than a panel under the board, because the board is what the screen is for and it
+ * stays visible above — and, through the sheet, behind it. The sheet is short and its panel is a
+ * little see-through, so choosing a setup shows the pieces being laid out again where the thumb is
+ * pressing, and a new board style or piece set is seen being worn the moment it is picked. Only the
+ * panel's **background** is see-through: the text and the controls are drawn at full strength, so what
+ * is behind is a suggestion and never something to read past.
+ *
+ * **Four tabs, one pane at a time**, so the sheet is never one long scroll — `GamePane`, `LookPane`,
+ * `SoundPane` and `ProgressPane`, each of which lays out its own settings. **Game** is what a player
+ * opens the sheet for before a game; **Look** and **Sound** hold preferences worn immediately;
+ * **Progress** holds the XP, the save key that carries it to another device, and the links out of the
+ * game. The tabs that choose among them are the sheet's head, beside Close, and take the place of a
+ * heading.
  *
  * **It is always in the page, only moved out of sight.** Closed, it sits below the bottom edge and is
  * `inert`, so nothing in it can be tapped or focused — but every picker's pressed and disabled state
- * is still there to be read, and nothing is remounted each time it opens.
+ * is still there to be read, and nothing is remounted each time it opens. The same goes for a pane
+ * whose tab is not showing.
  *
- * Four groups fold away under their headings so the sheet is not one long scroll. Only **This game**
- * starts laid out, being what a player opens the sheet for before a game. **Appearance** and **Sound &
- * effects** hold preferences worn immediately; **Progress** holds the XP, what it opens next, and the
- * save key that carries it to another device.
- *
- * **It is layout, and only layout.** Each concrete setting reads the value it draws from the store and
- * dispatches its own choice. This sheet decides only their grouping and order, and keeps only the state
- * the store cannot own: whether the sheet is open, and which sibling sheet should replace it.
+ * **It is layout, and only layout.** Each pane decides the grouping and order of its settings, and each
+ * concrete setting reads the value it draws from the store and dispatches its own choice. This sheet
+ * keeps only the state the store cannot own: whether the sheet is open, which tab is showing, and which
+ * sibling sheet should replace it.
  */
 interface Props {
   readonly open: boolean;
@@ -50,13 +43,15 @@ interface Props {
 }
 
 export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): React.JSX.Element {
+  const [tab, setTab] = useState<SettingsTabName>("Game");
+
   return (
     <>
       <div
         aria-hidden
         onClick={onClose}
         className={clsx(
-          "fixed inset-0 z-10 bg-black/50 transition-opacity duration-300 motion-reduce:transition-none",
+          "fixed inset-0 z-10 bg-black/10 transition-opacity duration-300 motion-reduce:transition-none",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
@@ -68,19 +63,19 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
         aria-modal={open}
         inert={!open}
         className={clsx(
-          "md:opacity-96 opacity-93 fixed inset-x-0 bottom-0 z-20 mx-auto flex max-h-[80dvh] w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
+          "fixed inset-x-0 bottom-0 z-20 mx-auto flex h-[60dvh] w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised/80 backdrop-blur-[1px] transition-transform duration-300 ease-out select-none not-supports-[backdrop-filter:blur(1px)]:bg-ground-raised motion-reduce:transition-none md:bg-ground-raised/95",
           open ? "translate-y-0 shadow-2xl shadow-black" : "translate-y-full",
         )}
       >
-        <header className="flex shrink-0 items-center justify-between px-4 pt-3 pb-1">
-          <h2 className="text-sm font-semibold tracking-wide text-wood uppercase">Settings</h2>
+        <header className="flex shrink-0 items-center gap-1 border-b border-white/10 px-2 pt-3 pb-1">
+          <SettingsTabs selected={tab} onSelect={setTab} />
 
           <button
             type="button"
             data-testid="settings-close"
             aria-label="Close settings"
             onClick={onClose}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
+            className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
           >
             <svg viewBox="0 0 24 24" aria-hidden className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
               <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
@@ -88,59 +83,13 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
           </button>
         </header>
 
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <SettingsGroup title="This game" initiallyOpen>
-            <MatchFormatSetting />
+        <GamePane selected={tab === "Game"} onStarted={onClose} onOpenRecord={onOpenRecord} />
 
-            <OpponentSetting />
+        <LookPane selected={tab === "Look"} onOpenStyles={onOpenStyles} />
 
-            <BotStrengthSetting />
+        <SoundPane selected={tab === "Sound"} />
 
-            <YourSideSetting />
-
-            <SetupSetting side="han" />
-
-            <SetupSetting side="cho" />
-
-            <ElephantPairingLine />
-
-            <NewGameButton onStarted={onClose} />
-
-            <RecordButton onOpen={onOpenRecord} />
-          </SettingsGroup>
-
-          <SettingsGroup title="Appearance">
-            <BoardSetting />
-
-            <PieceSetSetting />
-
-            <MovableHighlightSetting />
-
-            <BikjangHintSetting />
-
-            <StylesButton onOpen={onOpenStyles} />
-          </SettingsGroup>
-
-          <SettingsGroup title="Progress">
-            <Progress />
-          </SettingsGroup>
-
-          <SettingsGroup title="Sound & effects">
-            <SoundEffectsSetting />
-
-            <MusicSetting />
-
-            <EffectsSetting />
-          </SettingsGroup>
-
-          <div className="flex flex-col gap-2">
-            <InstallButton />
-
-            <GuideLink />
-
-            <ReferencesLink />
-          </div>
-        </div>
+        <ProgressPane selected={tab === "Progress"} />
       </section>
     </>
   );

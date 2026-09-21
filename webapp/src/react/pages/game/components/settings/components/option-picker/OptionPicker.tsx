@@ -1,7 +1,8 @@
 import type {WithName} from "@src/react/pages/game/types/WithName";
-import {ExplanationToggle} from "@src/react/pages/game/components/settings/components/option-picker/components/explanation-toggle/ExplanationToggle";
+import {ExplanationToggle} from "@src/react/pages/game/components/settings/components/explanation-toggle/ExplanationToggle";
 import {OptionButton} from "@src/react/pages/game/components/settings/components/option-picker/components/option-button/OptionButton";
 import {OptionSelect} from "@src/react/pages/game/components/settings/components/option-picker/components/option-select/OptionSelect";
+import {clsx} from "clsx";
 import {useId, useState} from "react";
 
 /**
@@ -10,10 +11,17 @@ import {useId, useState} from "react";
  * Generic over anything with a name, because board styles, piece sets, opening setups and the rest
  * are all lists of named things, and near-identical pickers would be that many places to fix a bug.
  *
- * **Two options are a row of buttons; more are a dropdown.** Two names sit side by side across a
- * phone and are one tap to switch. Five setups did not fit, and scrolling a row sideways under a thumb
- * was awkward — a native dropdown opens the phone's own picker instead. The picker decides by the
- * length of its list, so a setting that grows a third option changes shape without being told to.
+ * **A short list is buttons that wrap; a long or lockable one is a dropdown.** Every option of up to
+ * six is on screen at once and one tap away, wrapping onto a second row rather than scrolling
+ * sideways under a thumb — and a native dropdown would cover the board with the phone's own picker,
+ * where the point of the buttons is to watch the board change behind the sheet as one is pressed. A
+ * list where an option can be **locked** stays a dropdown past two, because a native option has room
+ * to say why in its label and a button has none a phone can show (`title` is a hover). The picker
+ * decides by the list, so a setting that grows an option changes shape without being told to.
+ *
+ * **The label sits beside three buttons or fewer, and over more than that.** Format, Opponent and a
+ * side to take are one row each rather than two, which is most of what a phone's sheet is short of; a
+ * grid of setups is wide enough to want the whole line, so its label stays above it.
  *
  * **A setting whose names say too little can explain itself.** Handed an `explanation`, the picker puts a
  * (?) beside its label that unfolds it under the options, in the sheet rather than over it, so nothing
@@ -26,6 +34,8 @@ interface Props<Option extends WithName> {
   readonly label: string;
   /** Read out in place of the label, where the label alone is too terse to stand on its own. */
   readonly ariaLabel?: string;
+  /** Read out but not drawn, where something beside the picker already says what it is for. */
+  readonly hideLabel?: boolean;
   readonly options: readonly Option[];
   /**
    * The option in use, or nothing where no choice has been made yet — a scored game's setup pickers
@@ -48,6 +58,7 @@ export function OptionPicker<Option extends WithName>({
   id,
   label,
   ariaLabel,
+  hideLabel = false,
   options,
   selected,
   disabled = false,
@@ -57,51 +68,56 @@ export function OptionPicker<Option extends WithName>({
 }: Props<Option>): React.JSX.Element {
   const [explained, setExplained] = useState(false);
   const explanationId = useId();
-  const asDropdown = options.length > MOST_BUTTONS;
+  const asDropdown = options.length > (lockedReason === undefined ? MOST_BUTTONS : MOST_LOCKABLE_BUTTONS);
+  const stacked = !asDropdown && options.length > MOST_BESIDE_LABEL;
 
   return (
     <nav data-testid={`${id}-picker`} aria-label={ariaLabel ?? label} className="flex flex-col gap-1.5">
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs font-medium text-white/60">{label}</span>
+      <div className={clsx("flex gap-x-3 gap-y-1.5", stacked ? "flex-col" : "items-center")}>
+        <div className={clsx("flex items-center gap-1.5", !stacked && "w-24 shrink-0", hideLabel && "sr-only")}>
+          <span className="text-xs font-medium text-white/60">{label}</span>
 
-        {explanation !== undefined && (
-          <ExplanationToggle
-            pickerId={id}
-            label={label}
-            expanded={explained}
-            controls={explanationId}
-            onToggle={() => setExplained(shown => !shown)}
-          />
+          {explanation !== undefined && (
+            <ExplanationToggle
+              testId={`${id}-explain`}
+              ariaLabel={`What each ${label.toLowerCase()} means`}
+              expanded={explained}
+              controls={explanationId}
+              onToggle={() => setExplained(shown => !shown)}
+            />
+          )}
+        </div>
+
+        {!asDropdown && (
+          <div className={clsx("flex gap-1 rounded-xl bg-black/25 p-1", stacked ? "flex-wrap" : "min-w-0 flex-1")}>
+            {options.map(option => (
+              <OptionButton
+                key={option.name}
+                pickerId={id}
+                option={option}
+                selected={option.name === selected?.name}
+                disabled={disabled}
+                lockedReason={lockedReason?.(option)}
+                onSelect={onSelect}
+              />
+            ))}
+          </div>
         )}
-      </div>
 
-      {!asDropdown && (
-        <div className="flex gap-1 rounded-xl bg-black/25 p-1">
-          {options.map(option => (
-            <OptionButton
-              key={option.name}
+        {asDropdown && (
+          <div className="min-w-0 flex-1">
+            <OptionSelect
               pickerId={id}
-              option={option}
-              selected={option.name === selected?.name}
+              label={ariaLabel ?? label}
+              options={options}
+              selected={selected}
               disabled={disabled}
-              lockedReason={lockedReason?.(option)}
+              lockedReason={lockedReason}
               onSelect={onSelect}
             />
-          ))}
-        </div>
-      )}
-
-      {asDropdown && (
-        <OptionSelect
-          pickerId={id}
-          label={ariaLabel ?? label}
-          options={options}
-          selected={selected}
-          disabled={disabled}
-          lockedReason={lockedReason}
-          onSelect={onSelect}
-        />
-      )}
+          </div>
+        )}
+      </div>
 
       {explanation !== undefined && explained && (
         <div
@@ -117,4 +133,10 @@ export function OptionPicker<Option extends WithName>({
 }
 
 /** The most options a picker shows as buttons before it becomes a dropdown. */
-const MOST_BUTTONS = 2;
+const MOST_BUTTONS = 6;
+
+/** The same, where an option can be locked and a dropdown is the only place to say why. */
+const MOST_LOCKABLE_BUTTONS = 2;
+
+/** The most buttons that sit on one line with their label, leaving more to wrap under it. */
+const MOST_BESIDE_LABEL = 3;

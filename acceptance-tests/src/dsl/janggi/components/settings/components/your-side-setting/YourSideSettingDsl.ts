@@ -27,6 +27,15 @@ export class YourSideSettingDsl {
     }
   }
 
+  /** Whether the picker is laid out at all, which it is only against the bot. */
+  async isShown(): Promise<boolean> {
+    try {
+      return await this.side.isShown();
+    } catch (error) {
+      throw new DslError("Failed to check whether the choice of side is shown", error);
+    }
+  }
+
   async isChoosable(): Promise<boolean> {
     try {
       return await this.side.isChoosable();

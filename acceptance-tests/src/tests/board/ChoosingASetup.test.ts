@@ -92,3 +92,57 @@ given("the two armies are arranged separately", () => {
     });
   });
 });
+
+/**
+ * The two armies choose separately but share one place in the sheet — two grids of setups would not
+ * fit a phone — so a switch says whose are showing. It starts on the army whose turn it is to lay out.
+ */
+given("the two armies' setups share one place in the sheet", () => {
+  when("nothing has been chosen yet", () => {
+    then("han's setups are showing and cho's are put away", async ({janggi}) => {
+      expect(await janggi.settings.hanSetup.isShown()).toBe(true);
+      expect(await janggi.settings.choSetup.isShown()).toBe(false);
+    });
+  });
+
+  when("they turn to cho's army", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.choSetup.show();
+    });
+
+    then("cho's setups are showing and han's are put away", async ({janggi}) => {
+      expect(await janggi.settings.choSetup.isShown()).toBe(true);
+      expect(await janggi.settings.hanSetup.isShown()).toBe(false);
+    });
+
+    then("nothing about either army's arrangement has changed", async ({janggi}) => {
+      expect(await janggi.settings.hanSetup.getSelected()).toBe("Inner Elephant");
+      expect(await janggi.settings.choSetup.getSelected()).toBe("Inner Elephant");
+    });
+  });
+
+  when("they play a scored game and han has laid out", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.matchFormat.setTo("Scored");
+      await janggi.settings.hanSetup.setTo("Left Elephant");
+    });
+
+    then("cho's setups are showing, it being cho's turn to answer", async ({janggi}) => {
+      expect(await janggi.settings.choSetup.isShown()).toBe(true);
+      expect(await janggi.settings.hanSetup.isShown()).toBe(false);
+    });
+  });
+
+  when("they play a scored game, glance at cho's setups, and then lay han out", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.matchFormat.setTo("Scored");
+      await janggi.settings.choSetup.show();
+      await janggi.settings.hanSetup.show();
+      await janggi.settings.hanSetup.setTo("Left Elephant");
+    });
+
+    then("cho's setups are showing all the same, having pressed the switch does not hold it", async ({janggi}) => {
+      expect(await janggi.settings.choSetup.isShown()).toBe(true);
+    });
+  });
+});

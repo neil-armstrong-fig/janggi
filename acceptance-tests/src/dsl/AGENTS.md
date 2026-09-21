@@ -49,12 +49,14 @@ What stays on the parent is only what belongs to no single child: `setBothSetups
 `canChooseSetups` each reach across both armies' pickers, and `startNewGame` presses the button under
 them.
 
-**The settings live in a sheet that is closed until it is opened**, and no spec ever opens it. Every
+**The settings live in a sheet that is closed until it is opened**, and a spec does not normally open it. Every
 settings `*Playwright` extends `SettingsSheetComponent`, whose `inSheet` opens the sheet, acts, and
 closes it again — so a spec that chooses a setting reads exactly as it did before there was a sheet.
-The sheet's sections fold too, so `inSheet` unfolds the section holding the control it is about to
-press, and folds it away again after — the fixture turns effects down before every spec, so anything
-left open would be every spec's starting state.
+The sheet is divided into tabs showing one pane at a time, so `inSheet` chooses the tab holding the
+control it is about to press, and puts the tab the player was on back after — the fixture turns
+effects down before every spec, so anything left on another tab would be every spec's starting state.
+A spec that wants to watch the board behind the sheet opens it itself (`openTheSettings`), and then
+every action finds it open and leaves it open.
 
 A child that is only ever driven through its parent still gets its own `*Dsl`. The same shape repeats
 at every depth: a thing owns its `playwright/` counterpart, and everything inside that thing goes in
