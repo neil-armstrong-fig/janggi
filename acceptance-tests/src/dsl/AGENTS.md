@@ -128,7 +128,7 @@ A criterion should read as a sentence, so the method name has to carry its own g
 and every method is one of them:
 
 | Shape                                  | Named                                                                | Reads as                                                 |
-| -------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------- |
+| -------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------- |
 | **Action** — does something to the app | a verb: `tap`, `hover`, `setTo`, `resizeWindowTo`                    | `await janggi.board.tap(1, 7)`                           |
 | **Question** — answers yes or no       | `is…` / `can…`: `isSelected`, `canMoveTo`, `isFullyOnScreen`         | `expect(await janggi.board.isSelected(1, 7)).toBe(true)` |
 | **Query** — fetches a value            | `get…`: `getPieceAt`, `getTurn`, `getSelectedBoard`, `getPieceCount` | `expect(await janggi.status.getTurn()).toBe("han")`      |

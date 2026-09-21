@@ -48,6 +48,9 @@ painted, and say so.
 - **Use Tailwind in components for page and component presentation.** Add CSS only for genuinely
   global rules, shared theme tokens or behaviour Tailwind cannot express cleanly — never a page-sized
   stylesheet alongside JSX.
+- **No negative margins.** A note or bar that belongs with its neighbour is grouped with it in its own
+  `flex flex-col` container with the tighter `gap-*`, rather than pulled up with `-mt-*` against the
+  parent's gap. Widen a tap target with an `after:` pseudo-element, not padding taken back by `-m-*`.
 - **Every component gets its own file, in its own folder** — `components/<thing>/<Thing>.tsx` — no
   matter how small it is or how few callers it has. This is the one place the root `AGENTS.md` rule
   about declaring functions below their callers does not apply: that's for plain functions. Inline a
@@ -83,6 +86,7 @@ painted, and say so.
   (`pages/game/hooks/utils/`, also used by `useHaptics`) turns it into cues, and `moodOf`
   (`use-game-audio/`) turns the position into a mood — the director only plays what it is handed. A
   new sound for a new rule is a change to `cuesFor` only.
+
 - **A blank line between sibling JSX elements.** Two elements pressed together read as one block; a
   line between them makes the structure visible at a glance. Prettier **preserves** these but will
   never add one, and nothing in the toolchain can insert them — `@eslint-react` has no stylistic

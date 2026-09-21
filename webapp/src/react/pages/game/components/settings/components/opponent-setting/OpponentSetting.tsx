@@ -20,7 +20,7 @@ export function OpponentSetting(): React.JSX.Element {
   const botAvailable = globalThis.crossOriginIsolated;
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <OptionPicker
         id="opponent"
         disabled={playHasBegun(played) || (!botAvailable && !againstBot)}
@@ -32,10 +32,8 @@ export function OpponentSetting(): React.JSX.Element {
       />
 
       {!botAvailable && (
-        <p className="-mt-1 text-xs text-white/50">
-          This browser cannot run the bot: it needs a cross-origin isolated page.
-        </p>
+        <p className="text-xs text-white/50">This browser cannot run the bot: it needs a cross-origin isolated page.</p>
       )}
-    </>
+    </div>
   );
 }

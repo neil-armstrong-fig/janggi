@@ -13,8 +13,8 @@ interface Props {
 /**
  * The (?) beside a picker's label, which unfolds what its options mean and folds it away again.
  *
- * Drawn small so it sits quietly in the label row, but padded out to a thumb-sized target with a
- * negative margin taking the padding back, so the row is no taller for it. Filled while unfolded, so
+ * Drawn small so it sits quietly in the label row, but reaching a thumb-sized target through an
+ * out-of-flow pseudo-element centred on it, so the row is no taller for it. Filled while unfolded, so
  * the question that opened the explanation reads as the thing that will close it.
  */
 export function ExplanationToggle({pickerId, label, expanded, controls, onToggle}: Props): React.JSX.Element {
@@ -26,7 +26,7 @@ export function ExplanationToggle({pickerId, label, expanded, controls, onToggle
       aria-expanded={expanded}
       aria-controls={controls}
       onClick={onToggle}
-      className="-m-2.5 flex cursor-pointer items-center justify-center p-2.5"
+      className="relative flex cursor-pointer items-center justify-center after:absolute after:size-10"
     >
       <span
         aria-hidden

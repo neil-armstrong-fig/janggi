@@ -23,6 +23,7 @@ hooks. Add state as a slice via `createSlice`.
   `turnsTaken` counter to lock the setup pickers, and a counter that only ever climbs went wrong the
   moment a game could be taken back. It reads `played.past` instead, so it falls again as the game
   does.
+
 - **The store holds the setup phase, not two loose setups.** `state.game.phase` is the engine's
   `SetupPhase` — the format and what each army has chosen, where "has not chosen" is a real state and
   not a default. A scored game sits in it until both have laid out, and while it does there is no game

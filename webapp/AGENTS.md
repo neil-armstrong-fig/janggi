@@ -51,19 +51,19 @@ workflow in the root `AGENTS.md` is for. RTL **is** used for hooks, via `renderH
 inputs, state transitions and a return value that aren't reachable from an acceptance test except
 through a page.
 
-**Where a state can't be *reached* by tapping, unit test the pure function underneath it**, and let
+**Where a state can't be _reached_ by tapping, unit test the pure function underneath it**, and let
 the acceptance spec cover only what a player can actually do — a test-only door into the app is
 shipped code no player can reach, and every spec then leans on it instead of on the app. A checkmate
 is far deeper than anyone can tap out, so `WinningAGame.test.ts` drives a real check through the UI
 and stops there, while `GameStatusOf.test.ts` beside the component covers the win. (The one deliberate
 exception — a door onto progress, never onto the game itself — is in `redux/AGENTS.md`.)
 
-| Code                                  | Tested by                                 |
-| -------------------------------------- | ------------------------------------------ |
-| Components and pages (`src/react/`)    | acceptance tests, not unit tests           |
-| Custom hooks                           | Vitest + `renderHook`                      |
-| Reducers, selectors, plain functions   | Vitest, called directly — no RTL, no DOM   |
-| Playback's decisions (`src/audio/`)    | Vitest; its node graph is checked by ear   |
+| Code                                 | Tested by                                |
+| ------------------------------------ | ---------------------------------------- |
+| Components and pages (`src/react/`)  | acceptance tests, not unit tests         |
+| Custom hooks                         | Vitest + `renderHook`                    |
+| Reducers, selectors, plain functions | Vitest, called directly — no RTL, no DOM |
+| Playback's decisions (`src/audio/`)  | Vitest; its node graph is checked by ear |
 
 **Tests run on `node`, not `jsdom`** — building a DOM was 75% of the suite's runtime, and nothing
 here needed one. A hook test that does need a DOM opts in with two lines of its own:
