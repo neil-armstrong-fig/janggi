@@ -267,6 +267,15 @@ export class StatusDsl {
     }
   }
 
+  /** How full the XP bar on the announced result is, in whole percent, or undefined where none is drawn. */
+  async getResultXpBarPercent(): Promise<number | undefined> {
+    try {
+      return await this.status.getResultXpBarPercent();
+    } catch (error) {
+      throw new DslError("Failed to read how full the XP bar on the result is", error);
+    }
+  }
+
   /** The next unlock shown beside the player's XP, or undefined once everything is open. */
   async getNextUnlock(side: Side): Promise<string | undefined> {
     try {

@@ -339,13 +339,14 @@ them went stale twice while it was being kept.
   `settings-close`, `settings-install`, `record-open`, `record-close`, `record-reset`, `guide-open`,
   `references-open`,
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
-  `progress-xp` and `progress-next-unlock` carrying `data-xp`, `save-copy` and the `save-key` it shows,
+  `progress-xp` and `progress-next-unlock` carrying `data-xp`, `progress-xp-bar` carrying `data-percent`
+  (absent once everything is unlocked), `save-copy` and the `save-key` it shows,
   and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The styles
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
   `-submit` and `-message` (`data-accepted`), and the editor's `style-editor-kind`, `-from`, `-name`,
   `-json`, `-save` and `-message` (`data-accepted`), or `style-editor-locked` in their place. On the
-  result, `result-xp` carrying `data-xp`, `result-unlocked` and, shown only when a bikjang decided the
-  game, `result-explanation` carrying `data-called-by`. On
+  result, `result-xp` carrying `data-xp`, `result-xp-bar` carrying `data-percent`, `result-unlocked` and,
+  shown only when a bikjang decided the game, `result-explanation` carrying `data-called-by`. On
   `pass`, `bikjang`, `undo` and `redo` the `disabled` attribute is part of the contract: they are
   disabled rather than hidden. `move-flight` and `impact` are drawn over the board only while motion
   is shown, and only the effects specs look for them. `bot-go-ahead` and `repetition-notice` are

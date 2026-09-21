@@ -1,5 +1,6 @@
 import type {Janggi} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
+import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
 
 /**
  * A whole game against the bot, played to its end.
@@ -11,11 +12,13 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  * hand — a move tapped out, a turn rested, a bikjang called. The app's own rules referee both boards,
  * so the two stay one game.
  *
- * Only the ending is asserted. Who wins is not: the engine is not deterministic, and its Elo is
- * nominal (`docs/bot.md` §3).
+ * Only the ending is asserted, and what it shows. Who wins is not: the engine is not deterministic, and
+ * its Elo is nominal (`docs/bot.md` §3). **The player starts with no XP**, since the fixture opens every
+ * spec with a million and a player with everything unlocked has no bar to see on the result.
  */
-given("a player takes on the weakest bot, playing the moves the strongest bot chooses on another device", () => {
+given("a player with no XP takes on the weakest bot, playing what the strongest bot chooses on another device", () => {
   beforeEach.withAnotherDevice(async ({janggi, anotherDevice}) => {
+    await janggi.settings.progress.loadSave(saveKeyWith({xp: 0}));
     await janggi.settings.opponent.setTo("Bot");
     await janggi.settings.botStrength.setTo(800);
 
@@ -31,6 +34,13 @@ given("a player takes on the weakest bot, playing the moves the strongest bot ch
 
     then("the result is announced", async ({janggi}) => {
       expect(await janggi.status.isResultAnnounced()).toBe(true);
+    });
+
+    then("it shows the same XP bar the progress settings do", async ({janggi}) => {
+      const shown = await janggi.status.getResultXpBarPercent();
+
+      expect(shown).toBeDefined();
+      expect(shown).toBe(await janggi.settings.progress.getXpBarPercent());
     });
   });
 });

@@ -4,6 +4,7 @@ import type {Reward} from "@src/react/pages/game/components/status/components/bo
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
+import {XpBar} from "@src/react/pages/game/components/xp-bar/XpBar";
 import type {Wording} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/types/Wording";
 
 /**
@@ -21,10 +22,11 @@ import type {Wording} from "@src/react/pages/game/components/status/components/b
  * knows chess a game stopping on a call — the bot's, above all, which comes with no warning — looks like
  * the app giving up. The line names who called it and why the call was theirs to make.
  *
- * **A game against the bot says what it earned** — its XP, and anything that XP unlocked — since the end
- * of a game is when a player wants to know it, and the settings sheet is where they would otherwise
- * have to go and look. An unlock is a gold badge rather than another grey line, and with effects in full
- * it lands a beat after the result itself: the game is announced, and then what the game won you.
+ * **A game against the bot says what it earned** — its XP, how far the XP the player now holds has come
+ * towards the next unlock, and anything that XP unlocked — since the end of a game is when a player wants
+ * to know it, and the settings sheet is where they would otherwise have to go and look. An unlock is a
+ * gold badge rather than another grey line, and with effects in full it lands a beat after the result
+ * itself: the game is announced, and then what the game won you.
  *
  * With effects in full it slams in, over a single soft flash of the board. Otherwise it is simply there.
  */
@@ -37,6 +39,8 @@ interface Props {
   readonly botSide: Side | undefined;
   /** What the game earned, or undefined where it earned nothing. */
   readonly reward: Reward | undefined;
+  /** The XP the player holds now, this game's included — what the bar under the reward is filled to. */
+  readonly xp: number;
   readonly animated: boolean;
   readonly onStartNewGame: () => void;
 }
@@ -47,6 +51,7 @@ export function ResultBanner({
   bikjangCalledBy,
   botSide,
   reward,
+  xp,
   animated,
   onStartNewGame,
 }: Props): React.JSX.Element | null {
@@ -94,6 +99,8 @@ export function ResultBanner({
             +{reward.xp} XP
           </p>
         )}
+
+        {reward && <XpBar testId="result-xp-bar" xp={xp} className="mt-2" />}
 
         {reward && reward.unlocked.length > 0 && (
           <p

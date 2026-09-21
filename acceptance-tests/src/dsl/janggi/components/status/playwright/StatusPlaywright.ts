@@ -32,6 +32,7 @@ export class StatusPlaywright extends BaseComponent {
   private readonly taken: Record<Side, Locator>;
   private readonly result: Locator;
   private readonly resultExplanation: Locator;
+  private readonly resultXpBar: Locator;
   private readonly newGame: Locator;
   private readonly players: Record<Side, Locator>;
   private readonly botGoAhead: Locator;
@@ -49,6 +50,7 @@ export class StatusPlaywright extends BaseComponent {
     this.taken = {cho: page.getByTestId("taken-cho"), han: page.getByTestId("taken-han")};
     this.result = page.getByTestId("result");
     this.resultExplanation = page.getByTestId("result-explanation");
+    this.resultXpBar = page.getByTestId("result-xp-bar");
     this.newGame = page.getByTestId("result-new-game");
     this.players = {cho: page.getByTestId("plaque-player-cho"), han: page.getByTestId("plaque-player-han")};
     this.botGoAhead = page.getByTestId("bot-go-ahead");
@@ -128,6 +130,16 @@ export class StatusPlaywright extends BaseComponent {
 
       return new Set([...text.getClientRects()].map(rect => rect.top)).size === 1;
     });
+  }
+
+  /**
+   * How full the XP bar on the announced result is, in whole percent, or undefined where the result draws
+   * none — no result yet, a game between two people, or everything already unlocked.
+   */
+  async getResultXpBarPercent(): Promise<number | undefined> {
+    if ((await this.resultXpBar.count()) === 0) return undefined;
+
+    return Number(await this.resultXpBar.getAttribute("data-percent"));
   }
 
   /** The next unlock shown beside an army's XP, or undefined where there is no next unlock. */
