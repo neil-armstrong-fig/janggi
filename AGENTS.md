@@ -197,7 +197,7 @@ Prettier owns formatting — run `pnpm format` rather than hand-matching. What i
   function**. Group functions under the subject they answer — `intersections/` holds
   `movable-pieces/`, `last-move/` and `motion/` rather than ten loose files in `utils/`, and
   `game/board/` holds `palaces/` and `lookup/` — and keep `utils/` for the odd function no subject
-  claims, like `BoardPositions.ts` there.
+  claims, like `BoardPositions.ts` in `intersections/utils/`.
 
 - **A union of literals is read off the list, not written twice.** Where a type needs a runtime
   list of its own members — to iterate, or to validate a string against — declare the list `as

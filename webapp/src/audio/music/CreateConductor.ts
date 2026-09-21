@@ -2,6 +2,7 @@ import {STEPS_PER_ROUND} from "@src/audio/music/rhythm/rhythms/Rhythms";
 import type {Conductor} from "@src/audio/music/types/Conductor";
 import {LAYER_NAMES} from "@src/audio/music/types/LayerName";
 import type {Layer} from "@src/audio/music/types/Layer";
+import type {LayerEntry} from "@src/audio/music/types/LayerEntry";
 import type {LayerGains} from "@src/audio/music/types/LayerGains";
 import type {LayerName} from "@src/audio/music/types/LayerName";
 import type {Mood} from "@src/audio/types/Mood";
@@ -246,7 +247,7 @@ const FALL_S: Record<LayerName, number> = {
  * How the music first comes in, a layer at a time: how many seconds after it starts each layer may
  * begin to rise, and how slowly it does. Only the check theme is let straight in — a check lands at once.
  */
-const ENTERING: Record<LayerName, {readonly after: number; readonly rise: number}> = {
+const ENTERING: Record<LayerName, LayerEntry> = {
   waiting: {after: 0, rise: 2.5},
   solo: {after: 0, rise: 2.5},
   bass: {after: 4, rise: 3},

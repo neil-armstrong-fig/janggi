@@ -11,7 +11,7 @@ page decides when to ask; nothing in here knows about React or Redux (a lint rul
 
 ```
 BotTurnFor.ts          botTurnFor(engine, played, elo, evaluation): Promise<BotDecision> — the whole turn
-BotSetupFor.ts         botSetupFor(engine, side, hanSetup, elo, roll, signal): Promise<Setup> — a scored layout
+BotSetupFor.ts         botSetupFor(engine, {side, hanSetup, elo, roll, signal}): Promise<Setup> — a scored layout
 
 choice/                what the bot may play, and when it calls a bikjang — plain functions
 setups/                the four tournament setups, and which of those rated near the best to lay out

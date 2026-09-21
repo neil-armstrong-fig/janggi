@@ -344,14 +344,17 @@ them went stale twice while it was being kept.
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
   `-submit` and `-message` (`data-accepted`), and the editor's `style-editor-kind`, `-from`, `-name`,
   `-json`, `-save` and `-message` (`data-accepted`), or `style-editor-locked` in their place. On the
-  result, `result-xp` carrying `data-xp`, and `result-unlocked`. On
+  result, `result-xp` carrying `data-xp`, `result-unlocked` and, shown only when a bikjang decided the
+  game, `result-explanation` carrying `data-called-by`. On
   `pass`, `bikjang`, `undo` and `redo` the `disabled` attribute is part of the contract: they are
   disabled rather than hidden. `move-flight` and `impact` are drawn over the board only while motion
-  is shown, and only the effects specs look for them.
+  is shown, and only the effects specs look for them. `bot-go-ahead` and `repetition-notice` are
+  drawn over the board too, each shown only while its own condition holds.
 - **`data-testid`, composed** — `cell-f<file>r<rank>`; `score-<side>`, `taken-<side>` and
-  `plaque-<side>`, whose `plaque-player-<side>` carries `data-player` and `data-elo` and whose
-  `plaque-xp-<side>` carries `data-xp` (the player's own plaque only, and the words are shortened —
-  read the attribute); `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
+  `plaque-<side>`, whose `plaque-player-<side>` carries `data-player` and `data-elo`, whose
+  `plaque-xp-<side>` carries `data-xp` and whose `plaque-next-unlock-<side>` shows the army's next
+  unlock (the player's own plaque only, and the words are shortened — read the attribute);
+  `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
   `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
   option. The ten picker ids are `board-style`, `piece-style`, `movable-highlight`, `match-format`,
   `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A picker that
@@ -368,7 +371,8 @@ them went stale twice while it was being kept.
   `@janggi/shared`. The pieces in a `taken-<side>` tray carry it too.
 - **On a cell** — `aria-pressed` (the piece in hand), `data-can-move-to` (a legal destination),
   `data-can-be-moved` (a piece its owner may move now; the value is the emphasis, `full` or `faint`,
-  and no spec asserts on which), `data-last-move` (`from` or `to`; `getLastMove` reads the two cells' ids back into a move), and `data-under-attack` and
+  and no spec asserts on which), `data-covered` (a point the piece in hand would land on a piece of
+  its own army), `data-last-move` (`from` or `to`; `getLastMove` reads the two cells' ids back into a move), and `data-under-attack` and
   `data-attacking` (the general in check, and each piece giving it).
 - **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn`,
   `data-laying-out` and `data-bot-to-move`, each present only while it applies. `waitForTheBot` waits
@@ -380,9 +384,14 @@ them went stale twice while it was being kept.
   `references-<section>-jump`, `references-<section>-heading`, and `reference-<source>`. Its link in
   Settings is `references-open`.
 - **On the release notice** — `release-update`, `release-update-refresh` and `release-update-later`.
-- **On the Janggi guide** — `guide-piece-<type>` is an expandable movement card. `guide` wraps the
-  reading page, `guide-play` is its primary route into the game, and `guide-install` is shown only
-  when a phone browser offers to save it. Its link in Settings is `guide-open`.
+- **On a settings section** — every folding section in the sheet is a `settings-section` carrying
+  `data-section` with its title, and a `settings-section-toggle` folds and unfolds it — the fold
+  behaviour `inSheet` drives (above) is these two.
+- **On the Janggi guide** — `guide-piece-<type>` is an expandable movement card, and `guide-section`
+  is every top-level section of the reading page. `guide` wraps the page and carries
+  `data-guide-ready` once it has finished rendering, `guide-play` is its primary route into the game,
+  and `guide-install` is shown only when a phone browser offers to save it. Its link in Settings is
+  `guide-open`.
 
 The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`; nothing stores
 them. `BoardPlaywright` composes the cell id to find a piece.

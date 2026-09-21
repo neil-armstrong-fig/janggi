@@ -21,7 +21,7 @@ interface Props {
 
 export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.Element {
   const [text, setText] = useState("");
-  const [result, setResult] = useState<PasteResult | undefined>(undefined);
+  const [pasteResult, setPasteResult] = useState<PasteResult | undefined>(undefined);
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -34,7 +34,7 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
         spellCheck={false}
         onChange={event => {
           setText(event.target.value);
-          setResult(undefined);
+          setPasteResult(undefined);
         }}
         className="w-full resize-none rounded-xl bg-black/25 px-3 py-2 font-mono text-base break-all text-white/90 placeholder:text-white/30"
       />
@@ -45,7 +45,7 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
         disabled={text.trim() === ""}
         onClick={() => {
           const submitted = onSubmit(text);
-          setResult(submitted);
+          setPasteResult(submitted);
           if (submitted.accepted) setText("");
         }}
         className="h-11 rounded-xl bg-black/25 text-sm font-semibold tracking-wide text-white/80 uppercase transition-[transform,background-color] duration-150 enabled:cursor-pointer enabled:hover:bg-black/35 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
@@ -53,14 +53,14 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
         {label}
       </button>
 
-      {result && (
+      {pasteResult && (
         <p
           data-testid={`${id}-message`}
-          data-accepted={result.accepted}
+          data-accepted={pasteResult.accepted}
           role="status"
-          className={clsx("text-xs break-words", result.accepted ? "text-cho" : "text-danger")}
+          className={clsx("text-xs break-words", pasteResult.accepted ? "text-cho" : "text-danger")}
         >
-          {result.message}
+          {pasteResult.message}
         </p>
       )}
     </div>
