@@ -2,7 +2,7 @@ import type {Locator, Page} from "@playwright/test";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
 /**
- * The Progress section of the settings sheet: the XP, the next unlock, the save key to copy and the box
+ * The Progress section of the settings sheet: the XP, its bar, the next unlock, the save key to copy and the box
  * to load one.
  *
  * Reading the XP needs nothing, the sheet always being in the page. Reading the save key does — it is
@@ -11,6 +11,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  */
 export class ProgressSettingPlaywright extends SettingsSheetComponent {
   private readonly xp: Locator;
+  private readonly xpBar: Locator;
   private readonly nextUnlock: Locator;
   private readonly copy: Locator;
   private readonly key: Locator;
@@ -22,6 +23,7 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
     super(page);
 
     this.xp = page.getByTestId("progress-xp");
+    this.xpBar = page.getByTestId("progress-xp-bar");
     this.nextUnlock = page.getByTestId("progress-next-unlock");
     this.copy = page.getByTestId("save-copy");
     this.key = page.getByTestId("save-key");
@@ -40,6 +42,17 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
 
   async getXp(): Promise<number> {
     return Number(await this.xp.getAttribute("data-xp"));
+  }
+
+  /**
+   * How full the XP bar is, as a whole percent of the way from the last unlock to the next, or undefined
+   * where no bar is drawn — once everything is unlocked. Counted first, so a bar that is not there never
+   * reads as one that is empty.
+   */
+  async getXpBarPercent(): Promise<number | undefined> {
+    if ((await this.xpBar.count()) === 0) return undefined;
+
+    return Number(await this.xpBar.getAttribute("data-percent"));
   }
 
   /** The XP the next unlock needs, or undefined once everything is unlocked. */

@@ -19,6 +19,10 @@ given("a player who has earned some progress", () => {
     then("the next unlock is the first one past what they hold", async ({janggi}) => {
       expect(await janggi.settings.progress.getNextUnlockXp()).toBe(1200);
     });
+
+    then("their bar shows how far they are from the unlock they last passed to the next", async ({janggi}) => {
+      expect(await janggi.settings.progress.getXpBarPercent()).toBe(7);
+    });
   });
 
   when("they take on the bot", () => {
@@ -99,6 +103,10 @@ given("a player starting from nothing", () => {
     then("the first unlock is 30 XP away", async ({janggi}) => {
       expect(await janggi.settings.progress.getNextUnlockXp()).toBe(30);
     });
+
+    then("their bar is empty", async ({janggi}) => {
+      expect(await janggi.settings.progress.getXpBarPercent()).toBe(0);
+    });
   });
 
   when("they play the bot", () => {
@@ -117,6 +125,30 @@ given("a player starting from nothing", () => {
 
     then("the XP amount and its unit stay on one line", async ({janggi}) => {
       expect(await janggi.status.isXpOnOneLine("cho")).toBe(true);
+    });
+  });
+});
+
+given("a player halfway between two unlocks", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.settings.progress.loadSave(saveKeyWith({xp: 900}));
+  });
+
+  when("they look at their progress", () => {
+    then("their bar is half full", async ({janggi}) => {
+      expect(await janggi.settings.progress.getXpBarPercent()).toBe(50);
+    });
+  });
+});
+
+given("a player with everything unlocked", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.settings.progress.loadSave(saveKeyWith({xp: 1_000_000}));
+  });
+
+  when("they look at their progress", () => {
+    then("there is no bar, having nothing left to fill towards", async ({janggi}) => {
+      expect(await janggi.settings.progress.getXpBarPercent()).toBeUndefined();
     });
   });
 });

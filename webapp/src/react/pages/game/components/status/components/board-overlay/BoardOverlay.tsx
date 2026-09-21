@@ -70,6 +70,7 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
         bikjangCalledBy={game.bikjangCalled ? game.sideToMove : undefined}
         botSide={botSide}
         reward={rewardFor(status, opponent, phase.format, xp)}
+        xp={xp}
         animated={effects.full}
         onStartNewGame={() => pressed(restarted())}
       />

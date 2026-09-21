@@ -7,10 +7,11 @@ import {saveLoaded} from "@src/redux/saves/SaveLoaded";
 import {SaveBuilder} from "@src/redux/saves/SaveBuilder";
 import {saveFrom} from "@src/redux/saves/SaveFrom";
 import {unlockLadder} from "@src/redux/progress/unlocks/UnlockLadder";
+import {XpBar} from "@src/react/pages/game/components/xp-bar/XpBar";
 
 /**
- * How far the player has come, and how to take it with them: their XP and what it opens next, the save
- * key to copy, and a box to load one.
+ * How far the player has come, and how to take it with them: their XP, a bar of how close it is to what
+ * it opens next, the save key to copy, and a box to load one.
  *
  * **Nothing is kept anywhere but this device**, which is what a save key is for — clearing site data, or
  * a new phone, loses everything a copied key does not carry. Loading a save replaces the XP and unlocks,
@@ -27,6 +28,8 @@ export function Progress(): React.JSX.Element {
       <p data-testid="progress-xp" data-xp={progress.xp} className="text-2xl font-bold text-gold tabular-nums">
         {progress.xp.toLocaleString("en")} XP
       </p>
+
+      <XpBar testId="progress-xp-bar" xp={progress.xp} className="-mt-2" />
 
       {nextUnlock && (
         <p data-testid="progress-next-unlock" data-xp={nextUnlock.xp} className="-mt-2 text-sm text-white/70">

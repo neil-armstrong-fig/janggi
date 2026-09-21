@@ -27,6 +27,15 @@ export class ProgressSettingDsl {
     }
   }
 
+  /** How far the XP bar is filled, in whole percent, or undefined where none is drawn. */
+  async getXpBarPercent(): Promise<number | undefined> {
+    try {
+      return await this.progress.getXpBarPercent();
+    } catch (error) {
+      throw new DslError("Failed to read how full the XP bar is", error);
+    }
+  }
+
   async getNextUnlockXp(): Promise<number | undefined> {
     try {
       return await this.progress.getNextUnlockXp();
