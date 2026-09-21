@@ -6,6 +6,12 @@ import {flightDuration} from "@src/react/pages/game/components/board/motion/Flig
 import {pointBox} from "@src/react/pages/game/components/board/motion/PointBox";
 import {useEffect, useEffectEvent, useRef} from "react";
 
+/** A piece's flight start, in percent of its own box, relative to where it lands. */
+interface Offset {
+  readonly x: number;
+  readonly y: number;
+}
+
 /**
  * A piece shown travelling from one point to another, drawn over the board while the point it is
  * going to keeps its own copy hidden.
@@ -78,7 +84,7 @@ export function MoveFlight({piece, move, style, onLanded}: Props): React.JSX.Ele
 }
 
 /** How far back the piece starts from its destination, in percent of its own box — one cell per 100. */
-function startingOffset(move: Move): {x: number; y: number} {
+function startingOffset(move: Move): Offset {
   return {x: (move.from.file - move.to.file) * 100, y: (move.from.rank - move.to.rank) * 100};
 }
 

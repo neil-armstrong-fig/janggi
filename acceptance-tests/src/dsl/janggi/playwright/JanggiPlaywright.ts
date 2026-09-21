@@ -1,6 +1,8 @@
 import type {Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 import type {InstallationAppearance, InstallationIcon} from "@src/dsl/janggi/types/InstallationAppearance";
+import type {InstallationManifest} from "@src/dsl/janggi/types/InstallationManifest";
+import type {SearchData} from "@src/dsl/janggi/types/SearchData";
 
 /**
  * How long a first visit may take to come back isolated. The service worker precaches the engine's
@@ -166,27 +168,4 @@ export class JanggiPlaywright extends BasePage {
   async resizeWindowTo(width: number, height: number): Promise<void> {
     await this.page.setViewportSize({width, height});
   }
-}
-
-interface SearchData {
-  readonly "@type"?: unknown;
-  readonly name?: unknown;
-  readonly applicationCategory?: unknown;
-  readonly offers?: OfferData;
-}
-
-interface OfferData {
-  readonly price?: unknown;
-  readonly priceCurrency?: unknown;
-}
-
-interface InstallationManifest {
-  readonly name?: string;
-  readonly display?: string;
-  readonly icons?: readonly InstallationManifestIcon[];
-}
-
-interface InstallationManifestIcon {
-  readonly src: string;
-  readonly purpose?: string;
 }

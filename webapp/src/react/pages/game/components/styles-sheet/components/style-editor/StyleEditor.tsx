@@ -33,7 +33,7 @@ export function StyleEditor({unlocked, price, boards, pieceSets, onSaveBoard, on
   const [from, setFrom] = useState(boards[0]?.name ?? "");
   const [name, setName] = useState("");
   const [json, setJson] = useState(() => writtenOut(boards[0]));
-  const [result, setResult] = useState<PasteResult | undefined>(undefined);
+  const [pasteResult, setPasteResult] = useState<PasteResult | undefined>(undefined);
 
   const startingPoints: readonly (BoardStyle | PieceSetStyle)[] = kind === "Board" ? boards : pieceSets;
 
@@ -44,7 +44,7 @@ export function StyleEditor({unlocked, price, boards, pieceSets, onSaveBoard, on
     setKind(nextKind);
     setFrom(style?.name ?? "");
     setJson(writtenOut(style));
-    setResult(undefined);
+    setPasteResult(undefined);
   };
 
   const save = (): void => {
@@ -53,14 +53,14 @@ export function StyleEditor({unlocked, price, boards, pieceSets, onSaveBoard, on
     switch (outcome.kind) {
       case "board":
         onSaveBoard(outcome.style);
-        setResult({accepted: true, message: `Saved "${outcome.style.name}", and the board is wearing it.`});
+        setPasteResult({accepted: true, message: `Saved "${outcome.style.name}", and the board is wearing it.`});
         return;
       case "pieces":
         onSavePieces(outcome.style);
-        setResult({accepted: true, message: `Saved "${outcome.style.name}", and the board is wearing it.`});
+        setPasteResult({accepted: true, message: `Saved "${outcome.style.name}", and the board is wearing it.`});
         return;
       case "refused":
-        setResult({accepted: false, message: outcome.reason});
+        setPasteResult({accepted: false, message: outcome.reason});
     }
   };
 
@@ -125,7 +125,7 @@ export function StyleEditor({unlocked, price, boards, pieceSets, onSaveBoard, on
             maxLength={40}
             onChange={event => {
               setName(event.target.value);
-              setResult(undefined);
+              setPasteResult(undefined);
             }}
             className={FIELD}
           />
@@ -138,7 +138,7 @@ export function StyleEditor({unlocked, price, boards, pieceSets, onSaveBoard, on
             spellCheck={false}
             onChange={event => {
               setJson(event.target.value);
-              setResult(undefined);
+              setPasteResult(undefined);
             }}
             className="w-full rounded-xl bg-black/25 px-3 py-2 font-mono text-base leading-snug text-white/90"
           />
@@ -152,14 +152,14 @@ export function StyleEditor({unlocked, price, boards, pieceSets, onSaveBoard, on
             Save style
           </button>
 
-          {result && (
+          {pasteResult && (
             <p
               data-testid="style-editor-message"
-              data-accepted={result.accepted}
+              data-accepted={pasteResult.accepted}
               role="status"
-              className={clsx("text-xs break-words", result.accepted ? "text-cho" : "text-danger")}
+              className={clsx("text-xs break-words", pasteResult.accepted ? "text-cho" : "text-danger")}
             >
-              {result.message}
+              {pasteResult.message}
             </p>
           )}
         </>

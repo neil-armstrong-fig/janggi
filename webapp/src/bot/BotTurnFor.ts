@@ -26,17 +26,17 @@ export async function botTurnFor(engine: Engine, {played, elo, evaluation}: Turn
   const candidates = candidateTurnsFor(state, evaluation);
   const offered = candidates.map(turn => uciOfTurn(state, turn));
 
-  const result = await engine.search({
+  const searchResult = await engine.search({
     ...historyFor(played),
     searchMoves: offered,
     elo,
     moveTimeMs: MOVE_TIMES_MS[elo],
   });
 
-  const turn = candidates[offered.indexOf(result.bestMove)] ?? candidates[0];
+  const turn = candidates[offered.indexOf(searchResult.bestMove)] ?? candidates[0];
   if (!turn) throw new Error("The bot was asked to play in a position with nothing to play");
 
-  return {turn, evaluation: result.evaluation ?? evaluation};
+  return {turn, evaluation: searchResult.evaluation ?? evaluation};
 }
 
 const CALL_BIKJANG: BotTurn = {kind: "callBikjang"};

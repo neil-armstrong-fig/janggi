@@ -120,7 +120,7 @@ describing how cells and pieces are painted, and say so.
   further and relays the engine's own `outcomeOf` rather than deciding a result here, adding only the
   one state the engine has no opinion about — a general under attack while the game goes on.
 
-  `playHasBegun` in `components/settings/utils/` is the same rule applied late: the store used to
+  `playHasBegun` in `pages/game/utils/` is the same rule applied late: the store used to
   carry a `turnsTaken` counter to lock the setup pickers, and a counter that only ever climbs went
   wrong the moment a game could be taken back — a board returned to its starting position would have
   sat there with the arrangement that produced it out of reach. It reads `played.past` instead, so

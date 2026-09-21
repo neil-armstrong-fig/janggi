@@ -78,7 +78,7 @@ async function answersTo(hanSetup: Setup, rater: Rater): Promise<SetupRating[]> 
 async function choEvaluationOf(opening: GameState, {engine, elo, signal}: Rater): Promise<number | undefined> {
   signal.throwIfAborted();
 
-  const result = await engine.search({
+  const searchResult = await engine.search({
     fen: fenOf(opening),
     moves: [],
     searchMoves: candidateTurnsFor(opening, undefined).map(turn => uciOfTurn(opening, turn)),
@@ -86,5 +86,5 @@ async function choEvaluationOf(opening: GameState, {engine, elo, signal}: Rater)
     moveTimeMs: SETUP_SEARCH_MS,
   });
 
-  return result.evaluation;
+  return searchResult.evaluation;
 }

@@ -22,10 +22,10 @@ export function rewardFor(
 ): Reward | undefined {
   if (opponent.name !== "Bot") return undefined;
 
-  const result = resultOf(status, opponent.playerSide);
-  if (!result) return undefined;
+  const gameResult = resultOf(status, opponent.playerSide);
+  if (!gameResult) return undefined;
 
-  const xp = xpFor(format, result);
+  const xp = xpFor(format, gameResult);
   const unlocked = unlockLadder()
     .filter(step => step.xp > xpNow - xp && step.xp <= xpNow)
     .flatMap(step => step.labels);
