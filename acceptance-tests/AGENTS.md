@@ -61,13 +61,22 @@ shared union without a locator here and it will not compile.
 ## Running
 
 ```bash
-pnpm start                          # terminal 1 — the app under test
+pnpm start                          # terminal 1 — the dev server: fine for a few specs, or work in progress
+pnpm start:preview                  # terminal 1, instead — compile, then serve the build, for the whole suite
 pnpm acceptance-tests               # terminal 2 — desktop + mobile projects
 pnpm acceptance-tests --project=mobile
 pnpm acceptance-tests:bot-games     # the whole game against the bot, which the line above leaves out
 pnpm acceptance-tests:headed        # watch it drive
 pnpm acceptance-tests:ui            # time-travel debugging
 ```
+
+Any spec runs against either server. **`pnpm start` is fine while you are testing a few specs or working
+on a feature** — the red-green loop, `:headed`, `:ui` — and hot reload beats a rebuild per edit there.
+**Run the whole suite on `pnpm start:preview`**: the dev server transforms and serves the app module by
+module, and every test opens a fresh context with nothing cached, so a full run spends most of its CPU
+there, while a build is a few bundled files and is what CI tests (`ci.yml`). The build is a snapshot —
+restart it after any change to the app, or you test stale code. Both are strict on port 3000, so run one
+at a time or add `--port <n>`.
 
 `WEBAPP_URL` picks the target and the `:local` / `:production` scripts set it — there is no
 "environment" concept in the tests, only a URL. Failure screenshots and video land in

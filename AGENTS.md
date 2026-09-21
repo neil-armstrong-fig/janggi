@@ -33,9 +33,10 @@ src/redux`). Before finishing:
 pnpm checks              # lint + format check + type check + unit tests, every package
 pnpm format              # apply Prettier; fixes most format:check failures
 pnpm lint:fix            # apply the ESLint fixes that are automatic
-pnpm start               # dev server on http://localhost:3000
-pnpm acceptance-tests    # needs `pnpm start` running in another terminal
-pnpm acceptance-tests:pwa # release updates; needs the compiled webapp running under its preview script
+pnpm start               # dev server on http://localhost:3000 — fine for a few specs, or work in progress
+pnpm start:preview       # compile, then serve the build on http://localhost:3000 — what CI tests
+pnpm acceptance-tests    # needs one of the two running in another terminal; preview for the whole suite
+pnpm acceptance-tests:pwa # release updates; needs `pnpm start:preview` running
 pnpm install-browsers    # one-time Playwright chromium download
 pnpm test:properties     # the property tests, which `pnpm checks` leaves out
 pnpm test:bot-games      # whole games on the real engine under Node, also left out
@@ -155,7 +156,8 @@ others. `EnterWorktree` makes one under `.claude/worktrees/<name>` on branch `wo
 2. **The files are yours; the repository isn't.** Branches, remotes and the stash are shared with
    every other checkout, so the concurrency rules above still hold — above all, never `git stash` in
    a worktree. Set work aside with a WIP commit on your own branch instead.
-3. **Run the app on a port of your own** and point specs at it (`vite --port 3100 --strictPort`, then
+3. **Run the app on a port of your own** and point specs at it (`pnpm start:preview --port 3100`, or
+   `pnpm start --port 3100 --strictPort` while writing a spec, then
    `WEBAPP_URL=http://localhost:3100` for Playwright), or you'll test somebody else's code.
 4. **Verify before handing over**: `pnpm checks`, the acceptance suite against your own port, and
    `pnpm test:bot-games` when the bot is involved.
@@ -167,7 +169,7 @@ others. `EnterWorktree` makes one under `.claude/worktrees/<name>` on branch `wo
    where both sides touched the same area), then tear down: `git worktree remove
    .claude/worktrees/<name>` and `git branch -d worktree-<name>` (`ExitWorktree` is a no-op against a
    worktree from an earlier session).
-7. **Kill any dev server you started by process, not wrapper** — `pkill -f "vite --port <port>"`, or
+7. **Kill any dev server you started by process, not wrapper** — `pkill -f "vite.*--port <port>"`, or
    the next `--strictPort` start fails with "Port is already in use".
 
 Pushing is the human's, always.

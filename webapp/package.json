@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "vite",
+    "start:preview": "pnpm compile && vite preview",
     "build": "pnpm checks && pnpm compile",
     "compile": "tsc --noEmit && vite build",
     "generate-icon": "node scripts/generate-icon.mjs",
