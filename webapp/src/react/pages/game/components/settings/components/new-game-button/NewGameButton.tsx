@@ -24,7 +24,7 @@ export function NewGameButton({onStarted}: Props): React.JSX.Element {
   const dispatch = useAppDispatch();
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <button
         type="button"
         data-testid="new-game"
@@ -38,8 +38,8 @@ export function NewGameButton({onStarted}: Props): React.JSX.Element {
       </button>
 
       {opponent.name === "Bot" && playHasBegun(played) && (
-        <p className="-mt-1 text-xs text-white/50">Starting a new game now counts as a loss.</p>
+        <p className="text-xs text-white/50">Starting a new game now counts as a loss.</p>
       )}
-    </>
+    </div>
   );
 }

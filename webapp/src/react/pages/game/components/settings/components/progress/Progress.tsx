@@ -25,23 +25,25 @@ export function Progress(): React.JSX.Element {
 
   return (
     <>
-      <p data-testid="progress-xp" data-xp={progress.xp} className="text-2xl font-bold text-gold tabular-nums">
-        {progress.xp.toLocaleString("en")} XP
-      </p>
-
-      <XpBar testId="progress-xp-bar" xp={progress.xp} className="-mt-2" />
-
-      {nextUnlock && (
-        <p data-testid="progress-next-unlock" data-xp={nextUnlock.xp} className="-mt-2 text-sm text-white/70">
-          Next, at {nextUnlock.xp.toLocaleString("en")} XP: {nextUnlock.labels.join(", ")}
+      <div className="flex flex-col gap-1">
+        <p data-testid="progress-xp" data-xp={progress.xp} className="text-2xl font-bold text-gold tabular-nums">
+          {progress.xp.toLocaleString("en")} XP
         </p>
-      )}
 
-      {!nextUnlock && (
-        <p data-testid="progress-next-unlock" className="-mt-2 text-sm text-white/70">
-          Everything is unlocked.
-        </p>
-      )}
+        <XpBar testId="progress-xp-bar" xp={progress.xp} />
+
+        {nextUnlock && (
+          <p data-testid="progress-next-unlock" data-xp={nextUnlock.xp} className="text-sm text-white/70">
+            Next, at {nextUnlock.xp.toLocaleString("en")} XP: {nextUnlock.labels.join(", ")}
+          </p>
+        )}
+
+        {!nextUnlock && (
+          <p data-testid="progress-next-unlock" className="text-sm text-white/70">
+            Everything is unlocked.
+          </p>
+        )}
+      </div>
 
       <p className="text-xs text-white/50">
         Finish a game against the bot for XP — more for a win, more for a scored game. Beat a bot to open the one above
