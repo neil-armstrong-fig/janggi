@@ -1,4 +1,5 @@
 import {
+  bikjangHintChosen,
   boardStyleChosen,
   effectsChosen,
   movableHighlightChosen,
@@ -15,6 +16,7 @@ it("starts on the classic board and the modern set, with every mark, motion and 
     boardStyle: "Classic",
     pieceSet: "Modern",
     movableHighlight: "Shown",
+    bikjangHint: "Shown",
     effects: "Full",
     soundEffectsVolume: 100,
     musicVolume: 100,
@@ -33,6 +35,13 @@ it("shows or hides the movable-piece mark as chosen", () => {
   expect(preferencesReducer(initial(), movableHighlightChosen("Hidden"))).toEqual({
     ...initial(),
     movableHighlight: "Hidden",
+  });
+});
+
+it("shows or hides the bikjang hint as chosen", () => {
+  expect(preferencesReducer(initial(), bikjangHintChosen("Hidden"))).toEqual({
+    ...initial(),
+    bikjangHint: "Hidden",
   });
 });
 

@@ -18,9 +18,11 @@ import {underThirtyPointsEach} from "@src/game/utils/UnderThirtyPointsEach";
  * offer the call, where `callBikjang` is the call being made.
  */
 export function canCallBikjang(state: GameState): boolean {
-  if (outcomeOf(state).kind !== "undecided") return false;
-
+  // The position first: it is a scan of one file, where the outcome is a search for a mate — and a
+  // board asks this once for every point a piece in hand may reach.
   if (!isBikjang(state)) return false;
+
+  if (outcomeOf(state).kind !== "undecided") return false;
 
   if (state.format === "Casual") return true;
 

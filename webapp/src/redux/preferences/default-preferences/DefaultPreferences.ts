@@ -10,6 +10,7 @@ export function defaultPreferences(): PreferencesSliceState {
     boardStyle: "Classic",
     pieceSet: "Modern",
     movableHighlight: "Shown",
+    bikjangHint: "Shown",
     effects: "Full",
     soundEffectsVolume: FULL_VOLUME,
     musicVolume: FULL_VOLUME,

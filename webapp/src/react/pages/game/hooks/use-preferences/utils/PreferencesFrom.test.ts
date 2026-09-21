@@ -1,5 +1,6 @@
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import {EFFECTS_NAMES} from "@janggi/shared/janggi/settings/EffectsName";
+import {BIKJANG_HINT_NAMES} from "@janggi/shared/janggi/settings/BikjangHintName";
 import {MOVABLE_HIGHLIGHT_NAMES} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -88,6 +89,17 @@ it("marks the movable pieces only while the mark is shown", () => {
   ).toEqual([
     expect.objectContaining({movableHighlight: {name: "Shown", shown: true}}),
     expect.objectContaining({movableHighlight: {name: "Hidden", shown: false}}),
+  ]);
+});
+
+it("labels the moves that could allow a bikjang only while the hint is shown", () => {
+  expect(
+    BIKJANG_HINT_NAMES.map(name =>
+      preferencesFrom({...initial(), bikjangHint: name}, EVERYTHING_UNLOCKED, noCustomStyles()),
+    ),
+  ).toEqual([
+    expect.objectContaining({bikjangHint: {name: "Shown", shown: true}}),
+    expect.objectContaining({bikjangHint: {name: "Hidden", shown: false}}),
   ]);
 });
 

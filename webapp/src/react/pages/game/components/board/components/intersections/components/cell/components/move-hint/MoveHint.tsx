@@ -1,3 +1,4 @@
+import {BikjangLabel} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/move-hint/components/bikjang-label/BikjangLabel";
 import {clsx} from "clsx";
 
 /**
@@ -15,16 +16,22 @@ import {clsx} from "clsx";
  * style is in use — pale wood for Classic, near-black for Neon — and neither a light nor a dark
  * mark alone reads on both.
  *
+ * Where the move would leave the opponent a bikjang to call, it says 빅장. The dot swells to hold the
+ * word; a ring has no room for it without covering the piece it circles, so there the word sits on a
+ * small pill along the bottom of the point.
+ *
  * Given a delay, it pops in after it — the nearest points first and the furthest last, so the marks
  * spread outward from the piece in hand. Given none, it is simply there.
  */
 interface Props {
   readonly overPiece: boolean;
+  /** Whether the move would leave the opponent a bikjang to call. */
+  readonly bikjangRisk: boolean;
   /** How long to wait before popping in, in milliseconds, or undefined to appear at once. */
   readonly delay?: number;
 }
 
-export function MoveHint({overPiece, delay}: Props): React.JSX.Element {
+export function MoveHint({overPiece, bikjangRisk, delay}: Props): React.JSX.Element {
   return (
     <span
       className={clsx(
@@ -34,7 +41,15 @@ export function MoveHint({overPiece, delay}: Props): React.JSX.Element {
       style={delay === undefined ? undefined : {animationDelay: `${delay}ms`}}
     >
       {!overPiece && (
-        <span className="block h-[30%] rounded-full bg-white/70 ring-1 ring-black/30" style={{aspectRatio: 1}} />
+        <span
+          className={clsx(
+            "flex items-center justify-center rounded-full bg-white/70 ring-1 ring-black/30",
+            bikjangRisk ? "h-[64%]" : "h-[30%]",
+          )}
+          style={{aspectRatio: 1}}
+        >
+          {bikjangRisk && <BikjangLabel />}
+        </span>
       )}
 
       {overPiece && (
@@ -42,6 +57,12 @@ export function MoveHint({overPiece, delay}: Props): React.JSX.Element {
           className="block h-[82%] rounded-full border-[3px] border-white/80 ring-1 ring-black/30"
           style={{aspectRatio: 1}}
         />
+      )}
+
+      {overPiece && bikjangRisk && (
+        <span className="absolute bottom-[4%] left-1/2 -translate-x-1/2 rounded-full bg-white/85 px-1 py-0.5 whitespace-nowrap ring-1 ring-black/30">
+          <BikjangLabel />
+        </span>
       )}
     </span>
   );

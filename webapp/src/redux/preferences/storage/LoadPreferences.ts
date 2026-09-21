@@ -1,3 +1,4 @@
+import {BIKJANG_HINT_NAMES} from "@janggi/shared/janggi/settings/BikjangHintName";
 import {EFFECTS_NAMES} from "@janggi/shared/janggi/settings/EffectsName";
 import {FULL_VOLUME, MUTED_VOLUME} from "@janggi/shared/janggi/settings/Volume";
 import {MOVABLE_HIGHLIGHT_NAMES} from "@janggi/shared/janggi/settings/MovableHighlightName";
@@ -25,12 +26,13 @@ export function loadPreferences(storage: Pick<Storage, "getItem"> | undefined): 
   const defaults = defaultPreferences();
   if (!isObject(stored)) return defaults;
 
-  const {boardStyle, pieceSet, movableHighlight, effects, soundEffectsVolume, musicVolume} = stored;
+  const {boardStyle, pieceSet, movableHighlight, bikjangHint, effects, soundEffectsVolume, musicVolume} = stored;
 
   return {
     boardStyle: isStyleName(boardStyle) ? boardStyle : defaults.boardStyle,
     pieceSet: isStyleName(pieceSet) ? pieceSet : defaults.pieceSet,
     movableHighlight: isAmong(MOVABLE_HIGHLIGHT_NAMES, movableHighlight) ? movableHighlight : defaults.movableHighlight,
+    bikjangHint: isAmong(BIKJANG_HINT_NAMES, bikjangHint) ? bikjangHint : defaults.bikjangHint,
     effects: isAmong(EFFECTS_NAMES, effects) ? effects : defaults.effects,
     soundEffectsVolume: isVolume(soundEffectsVolume) ? soundEffectsVolume : defaults.soundEffectsVolume,
     musicVolume: isVolume(musicVolume) ? musicVolume : defaults.musicVolume,

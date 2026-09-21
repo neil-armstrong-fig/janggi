@@ -171,6 +171,15 @@ export class BoardDsl {
     }
   }
 
+  /** Whether the intersection is marked as a move that would let a bikjang be called. */
+  async isMarkedAsBikjangRisk(file: number, rank: number): Promise<boolean> {
+    try {
+      return await this.board.isMarkedAsBikjangRisk(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to check whether file ${file}, rank ${rank} is marked as a bikjang risk`, error);
+    }
+  }
+
   /** Whether the piece on an intersection is drawn raised off the board, as a piece in hand is. */
   async isPieceRaisedAt(file: number, rank: number): Promise<boolean> {
     try {

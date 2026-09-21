@@ -1,3 +1,4 @@
+import {BikjangHintSetting} from "@src/react/pages/game/components/settings/components/bikjang-hint-setting/BikjangHintSetting";
 import {BoardSetting} from "@src/react/pages/game/components/settings/components/board-setting/BoardSetting";
 import {BotStrengthSetting} from "@src/react/pages/game/components/settings/components/bot-strength-setting/BotStrengthSetting";
 import {EffectsSetting} from "@src/react/pages/game/components/settings/components/effects-setting/EffectsSetting";
@@ -114,6 +115,8 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
             <PieceSetSetting />
 
             <MovableHighlightSetting />
+
+            <BikjangHintSetting />
 
             <StylesButton onOpen={onOpenStyles} />
           </SettingsGroup>

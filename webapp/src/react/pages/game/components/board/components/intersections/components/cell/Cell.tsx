@@ -35,8 +35,9 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * A point the last move went between carries a wash under its piece and brackets in its corners over
  * it, both in the colours the board style gives in `lastMove`, and says which end it was in
  * `data-last-move`. A point in a check is ringed in red — the general under attack in
- * `data-under-attack`, each piece attacking it in `data-attacking`. All of these are marks rather than
- * motion, so they stay when effects are reduced.
+ * `data-under-attack`, each piece attacking it in `data-attacking`. A point the piece in hand may go to
+ * where the move would leave a bikjang to call has 빅장 written on its move hint. All of these are
+ * marks rather than motion, so they stay when effects are reduced.
  */
 interface Props {
   readonly position: Position;
@@ -45,6 +46,8 @@ interface Props {
   readonly canMoveTo: boolean;
   /** Whether the piece in question would land here, but for the piece of its own army standing here. */
   readonly covered: boolean;
+  /** Whether the piece in question moving here would leave the opponent a bikjang to call. */
+  readonly bikjangRisk: boolean;
   /** How loudly to mark the piece here as one its owner may move, or undefined not to. */
   readonly movable?: MovableEmphasis;
   readonly hovered: boolean;
@@ -71,6 +74,7 @@ export function Cell({
   selected,
   canMoveTo,
   covered,
+  bikjangRisk,
   movable,
   hovered,
   lastMove,
@@ -137,7 +141,7 @@ export function Cell({
 
       {selected && <span className="pointer-events-none absolute inset-0 bg-white/20" />}
 
-      {canMoveTo && <MoveHint overPiece={piece !== undefined} delay={hintDelay} />}
+      {canMoveTo && <MoveHint overPiece={piece !== undefined} bikjangRisk={bikjangRisk} delay={hintDelay} />}
 
       {covered && <CoverHint delay={hintDelay} />}
     </button>

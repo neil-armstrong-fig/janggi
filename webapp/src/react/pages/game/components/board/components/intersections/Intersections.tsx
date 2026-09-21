@@ -4,6 +4,8 @@ import type {Flourish} from "@src/react/pages/game/components/board/types/Flouri
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {PositionKey} from "@src/game/board/types/Position";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
+import {bikjangHintShown} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangHintShown";
+import {bikjangRisksFor} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangRisksFor";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
 import {emphasisFor} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/EmphasisFor";
@@ -27,12 +29,13 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * Every intersection on the board, one `Cell` each — and where a game is played by touch. It owns which
  * piece is in hand and which is under the pointer, lights the points the piece in question may reach —
  * and, marked differently, those of its own army it would otherwise land on — and dispatches a completed
- * move itself.
+ * move itself. Of the points it lights, those where the move would leave the opponent a bikjang to call
+ * are labelled 빅장 — where the player has that hint on and the opponent is one it is offered against.
  *
  * It reads what it draws from the store: the game, whether the player may touch it, the movable-piece
- * mark and whether effects are full. The styles it leaves to each `Cell`, which wears them itself.
- * Board hands down only the state its several layers coordinate — the current threat and motion — plus
- * the page-owned sound of picking a piece up.
+ * mark, the bikjang hint and whether effects are full. The styles it leaves to each `Cell`, which wears
+ * them itself. Board hands down only the state its several layers coordinate — the current threat and
+ * motion — plus the page-owned sound of picking a piece up.
  *
  * Every mark a cell carries is worked out here from the whole board and handed down one point at a
  * time, so a `Cell` knows only its own intersection: whether a piece there may move, whether it is the
@@ -58,7 +61,7 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   const {played, phase, opponent} = useAppSelector(state => state.game);
   const engineStatus = useAppSelector(state => state.botEngine.status);
   const dispatch = useAppDispatch();
-  const {movableHighlight, effects} = usePreferences();
+  const {movableHighlight, bikjangHint, effects} = usePreferences();
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
   // be touched until both armies have chosen. Closed while the bot is thinking too, and while its engine
@@ -76,6 +79,12 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   const placedPieces = useMemo(() => piecesByPosition(game.pieces), [game.pieces]);
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
   const coveredKeys = useMemo(() => new Set(covered.map(toPositionKey)), [covered]);
+  // Not asked at all where the hint is not offered, since it is one question of the engine per point.
+  const bikjangRiskKeys = useMemo(
+    () =>
+      bikjangHintShown(bikjangHint, opponent) ? bikjangRisksFor(game, selected ?? hovered, destinations) : NOTHING,
+    [game, selected, hovered, destinations, bikjangHint, opponent],
+  );
 
   // On [game] rather than on every render: the cells re-render as the pointer crosses them, and
   // asking the engine for every legal move on the board is not something to do per hover.
@@ -113,6 +122,7 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
             selected={heldKey === key}
             canMoveTo={canMoveTo}
             covered={isCovered}
+            bikjangRisk={bikjangRiskKeys.has(key)}
             movable={emphasisFor(movable, position, selected !== undefined)}
             hovered={hoveredKey === key}
             lastMove={lastMoveEndAt(lastMove, position)}
