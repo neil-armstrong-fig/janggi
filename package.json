@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "pnpm --filter @janggi/webapp start",
+    "start:preview": "pnpm --filter @janggi/webapp start:preview",
     "build": "pnpm --recursive build",
     "checks": "pnpm --recursive checks",
     "lint": "pnpm --recursive lint",
