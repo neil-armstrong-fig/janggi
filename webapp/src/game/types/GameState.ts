@@ -17,7 +17,7 @@ import type {Standing} from "@src/game/types/Standing";
  * is what was taken — and a result is a fact about the position rather than a second thing to keep
  * in step with it, which is why `outcomeOf` derives one.
  *
- * The four fields below the board are the ones a rule asked for, and each is here for the same
+ * The fields below the board are the ones a rule asked for, and each is here for the same
  * reason `consecutivePasses` is: **it cannot be read off the board.** A rested turn, a call, and the
  * fact that the general was the piece that took leave no mark on the pieces, and which of janggi's
  * two match formats is being played is not a fact about the position at all. That is the bar —
@@ -76,4 +76,11 @@ export interface GameState {
    * a casual game, 점수승 in a scored one.
    */
   readonly bikjangCalled: boolean;
+
+  /**
+   * Whether the players have stopped the game by agreeing to a draw. Like a call, it moves nothing and
+   * leaves nothing on the board to read it off; unlike one, it is a decision both players made, so it
+   * ends a casual game only — `docs/rules.md` §6.4.
+   */
+  readonly drawAgreed: boolean;
 }

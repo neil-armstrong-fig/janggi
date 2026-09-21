@@ -40,7 +40,7 @@ export function historyFor(played: PlayedGame): History {
 }
 
 function isReversible(transition: Transition | undefined): transition is Transition {
-  if (!transition || transition.kind === "bikjangCalled") return false;
+  if (!transition || transition.kind === "bikjangCalled" || transition.kind === "drawAgreed") return false;
 
   return transition.kind === "passed" || transition.taken === undefined;
 }

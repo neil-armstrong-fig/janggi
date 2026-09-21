@@ -51,6 +51,8 @@ function endingOf(outcome: Outcome): Ending {
     case "pointsWin":
       return "won";
     case "bikjang":
+    case "repetition":
+    case "agreement":
       return "drawn";
   }
 }

@@ -51,6 +51,7 @@ function toMove(sideToMove: Side, consecutivePasses: number, ...pieces: readonly
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

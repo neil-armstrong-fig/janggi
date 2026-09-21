@@ -13,7 +13,7 @@ whatever either of them did.
 Five files at the root are the whole of the loop — deal a game (`NewGame.ts`), ask what a piece may do
 (`MovesFrom.ts`), ask what the army may do (`LegalMovesFor.ts`), do it (`ApplyMove.ts`), and judge what
 that did (`OutcomeOf.ts`). Everything else is a rule family in a folder of its own — `bikjang/`,
-`check/`, `passing/`, `repetition/`, `scoring/` — and **each folder holds the question together with
+`check/`, `drawing/`, `passing/`, `repetition/`, `scoring/` — and **each folder holds the question together with
 the transition it guards**: `canPass` stands to `pass` as `movesFrom` stands to `applyMove`. `react/`
 calls into `check/`, `passing/`, `bikjang/` and `scoring/` directly.
 
@@ -53,8 +53,8 @@ board asks directly.
   has its own entry point, `pass`, with `canPass` standing to it as `movesFrom` stands to `applyMove`.
   Keeping it out of the move list is what leaves the 31 openings and `isCheckmate` saying what they
   always said.
-- **A result is derived, never stored.** `outcomeOf` reads the position, the pass count and whether a
-  bikjang was called; `GameState` carries no result, the same way it carries no "in check".
+- **A result is derived, never stored.** `outcomeOf` reads the position, `seen`, the pass count and
+  whether a bikjang was called or a draw agreed; `GameState` carries no result, the same way it carries no "in check".
 - **A field arrives on `GameState` when a rule asks and the board cannot answer** — and not before.
   `seen` is the same test applied to history — a position the game has left behind is gone from the
   board by definition.
@@ -73,10 +73,16 @@ board asks directly.
   professional's claim with no rulebook text behind it (`docs/opening-setups.md` §5.4). It reads the
   elephant _files_ rather than the setup's name, because which shape a name denotes is the one thing
   that research rates Low confidence.
-- **Bikjang is called, and repetition is reported.** Neither ends a game on its own. `callBikjang` is
-  an entry point beside `pass`, and `isRepetition` answers a question without acting on it, because
-  who is at fault in a repetition is clause ②'s judgement about intent and there is no referee here.
-  What the engine _does_ do is refuse the move that would make one, in `movesFrom`.
+- **Bikjang is called, and repetition is reported.** `callBikjang` is an entry point beside `pass`, and
+  `isRepetition` answers a question without acting on it, because who is at fault in a repetition is
+  clause ②'s judgement about intent and there is no referee here. What the engine _does_ do is refuse
+  the move that would make one, in `movesFrom` — above 30 points a side. Below it nothing refuses the
+  third standing, so `endsAGameByRepetition` ends the game there (a draw casually, points in Scored),
+  derived from the position and `seen`; `docs/rules.md` §6.4.
+- **A draw is agreed, and only ever in a casual game.** `agreeADraw` stands to `canAgreeADraw` as
+  `pass` stands to `canPass`, and needs `GameState.drawAgreed` because an agreement leaves nothing on
+  the board. Whether the other player says yes is not asked here: the offer is the page's, and only a
+  yes reaches the engine.
 - **Material is summed off the board.** Every setup deals the same sixteen pieces, so what is missing
   is what was taken and there is no captured pile to keep. `materialFor` is the piece score bikjang's
   threshold will want; `scoreFor` is that plus the 덤.

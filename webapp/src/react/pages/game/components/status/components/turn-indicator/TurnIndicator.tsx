@@ -57,7 +57,7 @@ export function TurnIndicator(): React.JSX.Element {
       data-bot-unavailable={engineFailed ? "" : undefined}
       data-laying-out={status.kind === "layingOut" ? "" : undefined}
       data-in-check={status.kind === "inCheck" ? "" : undefined}
-      data-drawn={status.kind === "drawn" ? "" : undefined}
+      data-drawn={status.kind === "drawn" ? status.by : undefined}
       data-winner={winner}
       aria-live="polite"
       className={clsx(
@@ -99,7 +99,7 @@ function announcementOf(status: GameStatus): string {
     case "wonOnPoints":
       return `${sideName(status.by)} wins on points`;
     case "drawn":
-      return "Drawn by bikjang";
+      return `Drawn by ${status.by}`;
     case "inCheck":
       return `${sideName(status.side)} is in check`;
     case "toMove":

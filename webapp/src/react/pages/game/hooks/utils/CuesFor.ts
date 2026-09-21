@@ -41,6 +41,8 @@ function doneBy(transition: Transition | undefined): Cue[] {
     case "passed":
       return [{name: "turnRested", weight: 1}];
     case "bikjangCalled":
+    case "drawAgreed":
+      // The same two gongs answering each other: the players have called it, or agreed to it.
       return [{name: "bikjang", weight: 1}];
   }
 }
@@ -54,8 +56,13 @@ function consequencesIn(after: GameState): Cue[] {
     case "pointsWin":
       return [{name: "pointsWin", weight: 1}];
     case "bikjang":
-      // A casual bikjang can only be reached by calling one, and the call has already been sounded.
+    case "agreement":
+      // A casual bikjang can only be reached by calling one, and an agreement only by agreeing to
+      // one — each has already been sounded.
       return [];
+    case "repetition":
+      // Nobody called it. The position came round, and the game stopped with the move that did it.
+      return [{name: "bikjang", weight: 1}];
     case "undecided":
       return isInCheck(after, after.sideToMove) ? [{name: "check", weight: 1}] : [];
   }

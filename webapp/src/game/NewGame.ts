@@ -23,5 +23,6 @@ export function newGame(hanSetup: Setup, choSetup: Setup, format: MatchFormat): 
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }

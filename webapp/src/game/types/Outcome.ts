@@ -34,14 +34,31 @@ interface Bikjang {
 }
 
 /**
+ * The same position stood a third time where nothing refuses it — each army under thirty points, so
+ * the repeat is allowed and nothing else would ever stop the game. A draw in a casual game; a scored
+ * game has none to reach, and settles the same stop on points as a `PointsWin`. `docs/rules.md` §6.4.
+ */
+interface Repetition {
+  readonly kind: "repetition";
+}
+
+/**
+ * The players agreed to a draw — 합의 무승부, which friendly janggi allows and a tournament does not.
+ * Casual only, since only a casual game can be offered one.
+ */
+interface Agreement {
+  readonly kind: "agreement";
+}
+
+/**
  * How a game of janggi has ended, or that it has not.
  *
- * Three endings. Checkmate is the one janggi is normally won by; a points win is what two
- * consecutive passes reach, and what a bikjang comes to in a scored game; a bikjang called in a
- * casual game is the only draw, which is why the kind names the ending rather than the result.
+ * Checkmate is the one janggi is normally won by; a points win is what two consecutive passes reach,
+ * and what a bikjang or a repetition comes to in a scored game. The three draws — a called bikjang, a
+ * repetition, an agreement — are all casual, and each kind names the ending rather than the result.
  *
- * Repetition is deliberately not here. `docs/rules.md` §6.4 decided that the engine reports a
- * repetition and refuses the move that would make one, but does not end a game on it — who is at
- * fault is clause ②'s judgement about intent, and that is a referee's to make.
+ * A repetition ends a game only where it is allowed, under thirty points a side. Above that
+ * `docs/rules.md` §6.4 has the engine refuse the move that would make one, and who is at fault stays
+ * a referee's call, because clause ② is a judgement about intent.
  */
-export type Outcome = Undecided | Checkmate | PointsWin | Bikjang;
+export type Outcome = Undecided | Checkmate | PointsWin | Bikjang | Repetition | Agreement;

@@ -103,6 +103,7 @@ function position(format: MatchFormat, sideToMove: Side, ...rest: readonly Place
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

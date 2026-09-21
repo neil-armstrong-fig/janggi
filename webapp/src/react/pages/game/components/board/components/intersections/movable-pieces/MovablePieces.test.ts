@@ -91,6 +91,7 @@ function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameStat
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

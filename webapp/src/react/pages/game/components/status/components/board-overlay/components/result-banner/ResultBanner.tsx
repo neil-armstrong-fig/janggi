@@ -20,7 +20,8 @@ import type {Wording} from "@src/react/pages/game/components/status/components/b
  *
  * **A game ended by a called bikjang says what one is.** Chess has nothing like it, so to a player who
  * knows chess a game stopping on a call — the bot's, above all, which comes with no warning — looks like
- * the app giving up. The line names who called it and why the call was theirs to make.
+ * the app giving up. The line names who called it and why the call was theirs to make. So does a game
+ * that a repetition ended, which chess would have drawn at any material.
  *
  * **A game against the bot says what it earned** — its XP, how far the XP the player now holds has come
  * towards the next unlock, and anything that XP unlocked — since the end of a game is when a player wants
@@ -35,6 +36,8 @@ interface Props {
   readonly scores: ArmyScores;
   /** The army that called the bikjang that ended the game, or undefined where no bikjang ended it. */
   readonly bikjangCalledBy: Side | undefined;
+  /** Whether a position standing a third time is what ended the game, which the announcement then explains. */
+  readonly repetitionEndedIt: boolean;
   /** The army the bot is playing, so a call can be put in its mouth, or undefined between two people. */
   readonly botSide: Side | undefined;
   /** What the game earned, or undefined where it earned nothing. */
@@ -49,6 +52,7 @@ export function ResultBanner({
   status,
   scores,
   bikjangCalledBy,
+  repetitionEndedIt,
   botSide,
   reward,
   xp,
@@ -94,6 +98,12 @@ export function ResultBanner({
           </p>
         )}
 
+        {repetitionEndedIt && (
+          <p data-testid="result-explanation" className="mx-auto mt-2 max-w-64 text-xs leading-snug text-white/70">
+            {repetitionExplanationOf(status)}
+          </p>
+        )}
+
         {reward && (
           <p data-testid="result-xp" data-xp={reward.xp} className="mt-2 text-sm font-semibold text-gold tabular-nums">
             +{reward.xp} XP
@@ -134,12 +144,27 @@ function wordingOf(status: GameStatus): Wording | undefined {
     case "wonOnPoints":
       return {korean: "점수승", english: `${sideName(status.by)} wins on points`};
     case "drawn":
-      return {korean: "빅장", english: "Drawn by bikjang"};
+      return {korean: status.by === "bikjang" ? "빅장" : "무승부", english: `Drawn by ${status.by}`};
     case "toMove":
     case "inCheck":
     case "layingOut":
       return undefined;
   }
+}
+
+/**
+ * A repetition that ended the game, told to someone who expects chess's rule and meets a different one:
+ * repeating is barred while an army holds thirty points, and below it nothing bars it, so it is what
+ * stops a game with nothing left to play for. What it settles is the format's — a casual game draws,
+ * and a scored one has no draw and goes to the points. `docs/rules.md` §6.4.
+ */
+function repetitionExplanationOf(status: GameStatus): string {
+  const cause =
+    "The same position stood a third time. With each army under thirty points, repeating is allowed, so nothing else would end it.";
+
+  if (status.kind === "drawn") return `${cause} A casual game is drawn.`;
+
+  return `${cause} A scored game has no draw, so it stops and the points decide it.`;
 }
 
 /**

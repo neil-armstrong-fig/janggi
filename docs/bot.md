@@ -21,7 +21,8 @@ Fairy-Stockfish defines four janggi variants in `src/variant.cpp`: `janggi`
 | Rule | Ours (`docs/rules.md` §6) | Fairy-Stockfish |
 | --- | --- | --- |
 | Bikjang | **Called** by a player. Scored: each side under 30 points, and not on the ply after a general's capture; settles on points. Casual: a draw | **Automatic**: generals facing for two plies ends the game. No threshold, no capture exception. While it stands, any move that keeps it is illegal (`legal()`) |
-| Repetition | A third standing is refused, unless each side is under 30 points — both formats | A draw (or a points result with counting); perpetual check loses. No 30-point exemption |
+| Repetition | A third standing is refused, unless each side is under 30 points — both formats. Under 30 it ends the game instead: a draw casually, points in Scored (§6.4) | A draw (or a points result with counting); perpetual check loses. No 30-point exemption |
+| Draw offer | Casual only, answered by the other player; the bot accepts only under 30 points a side and not while clearly ahead (`choice/would-accept-a-draw/`) | None — the engine has no offered draws |
 | Two passes in a row | Settled on points — both formats | Points with counting; a draw without |
 | Pass | Unrestricted, except while in check | Allowed to both sides; in a standing bikjang, even in check |
 | Material, 13/7/5/3/3/2 and Han's 1.5 덤 | Yes | Yes — `JANGGI_MATERIAL`, a `-1` tiebreak for the half point |

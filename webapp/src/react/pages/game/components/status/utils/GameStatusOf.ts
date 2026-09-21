@@ -1,3 +1,4 @@
+import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
 import type {GameState} from "@src/game/types/GameState";
 import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
@@ -40,12 +41,14 @@ interface WonOnPoints {
 }
 
 /**
- * The two generals faced each other and the call was made, in a game being played casually — 빅장,
- * and the one drawn ending janggi has. A scored game reaches `WonOnPoints` from the same call
- * instead, there being no draw in that format to reach.
+ * The game was drawn, which only a casual one can be: the two generals faced each other and the call
+ * was made — 빅장 — or a position stood a third time where nothing refuses it, or the players agreed.
+ * A scored game reaches `WonOnPoints` from the first two instead, there being no draw in that format
+ * to reach, and cannot be offered the third.
  */
 interface Drawn {
   readonly kind: "drawn";
+  readonly by: DrawnBy;
 }
 
 export type GameStatus = LayingOut | ToMove | InCheck | Won | WonOnPoints | Drawn;
@@ -79,7 +82,9 @@ export function gameStatusOf(game: GameState, phase: SetupPhase): GameStatus {
 
   if (outcome.kind === "pointsWin") return {kind: "wonOnPoints", by: outcome.winner};
 
-  if (outcome.kind === "bikjang") return {kind: "drawn"};
+  if (outcome.kind === "bikjang" || outcome.kind === "repetition" || outcome.kind === "agreement") {
+    return {kind: "drawn", by: outcome.kind};
+  }
 
   if (isInCheck(game, game.sideToMove)) return {kind: "inCheck", side: game.sideToMove};
 

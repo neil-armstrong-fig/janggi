@@ -22,6 +22,11 @@ export function MatchFormatExplanation(): React.JSX.Element {
             When the generals face each other down an open file, either player may call <strong>bikjang</strong>, and
             the game is a <strong>draw</strong>.
           </li>
+
+          <li>
+            Players may agree to a draw, and once <strong>both sides are under 30 points</strong> a position that comes
+            round a third time is a draw too.
+          </li>
         </ul>
       </section>
 
@@ -35,7 +40,7 @@ export function MatchFormatExplanation(): React.JSX.Element {
 
           <li>
             Bikjang can only be called once <strong>both sides are under 30 points</strong>, and whoever is ahead on
-            points <strong>wins</strong>.
+            points <strong>wins</strong>. So does a position that comes round a third time under 30 points.
           </li>
         </ul>
       </section>

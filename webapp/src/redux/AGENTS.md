@@ -27,7 +27,7 @@ hooks. Add state as a slice via `createSlice`.
 - **The store holds the setup phase, not two loose setups.** `state.game.phase` is the engine's
   `SetupPhase` — the format and what each army has chosen, where "has not chosen" is a real state and
   not a default. A scored game sits in it until both have laid out, and while it does there is no game
-  on the board: `isArranged` gates the board, Pass and Bikjang, and `canPlace` locks each picker. A
+  on the board: `isArranged` gates the board, Pass, Bikjang and Draw, and `canPlace` locks each picker. A
   casual game is dealt already arranged and never sits there, because the order is a regulation of
   official play (`docs/rules.md` §6.6). `redux/game/dealing/board-shown-for/BoardShownFor.ts` is the
   one seam worth knowing: a half-laid-out board still has to be drawn, so it stands `DEFAULT_SETUP` in

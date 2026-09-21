@@ -9,7 +9,10 @@ import type {SettledSideChoice} from "@src/redux/game/types/SettledSideChoice";
 import type {Setup} from "@src/game/setups/types/Setup";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {SideChoiceName} from "@janggi/shared/janggi/settings/SideChoiceName";
+import {acceptedADraw} from "@src/redux/game/drawing/AcceptedADraw";
+import {declinedADraw} from "@src/redux/game/drawing/DeclinedADraw";
 import {dealtGame} from "@src/redux/game/dealing/DealtGame";
+import {offeredADraw} from "@src/redux/game/drawing/OfferedADraw";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
 import {freshPhaseFor} from "@src/redux/game/dealing/FreshPhaseFor";
 import {place} from "@src/game/setups/Place";
@@ -62,6 +65,11 @@ import {withinReach} from "@src/redux/game/within-reach/WithinReach";
  * ordinary reason to reach for one. The controls are disabled off `canUndo`/`canRedo`, which is what
  * keeps a reducer from being dispatched into a record with nothing left to take back.
  *
+ * `drawOffered`, `drawDeclined` and `drawAccepted` are a conversation held beside the record. Only an
+ * accepted draw reaches it, as the agreement `agreeADrawIn` makes; an offer takes nobody's turn, and
+ * anything that then happens in the game — a move, a rested turn, an undo — lets it lapse, which is why
+ * each of those reducers puts `drawOffer` back to nothing.
+ *
  * `botLetOpen` touches neither the board nor the record. It is the player saying a game against the
  * bot may start, which a bot holding cho's first move waits for; every deal takes it back.
  *
@@ -76,15 +84,22 @@ export const gameSlice = createSlice({
     moved: (state, action: PayloadAction<Move>): GameSliceState => ({
       ...state,
       played: playMove(state.played, action.payload),
+      drawOffer: undefined,
     }),
 
-    passed: (state): GameSliceState => ({...state, played: restTurn(state.played)}),
+    passed: (state): GameSliceState => ({...state, played: restTurn(state.played), drawOffer: undefined}),
 
-    bikjangCalled: (state): GameSliceState => ({...state, played: callBikjangIn(state.played)}),
+    bikjangCalled: (state): GameSliceState => ({...state, played: callBikjangIn(state.played), drawOffer: undefined}),
 
-    takenBack: (state): GameSliceState => ({...state, played: undo(state.played)}),
+    takenBack: (state): GameSliceState => ({...state, played: undo(state.played), drawOffer: undefined}),
 
-    playedAgain: (state): GameSliceState => ({...state, played: redo(state.played)}),
+    playedAgain: (state): GameSliceState => ({...state, played: redo(state.played), drawOffer: undefined}),
+
+    drawOffered: (state): GameSliceState => offeredADraw(state),
+
+    drawDeclined: (state): GameSliceState => declinedADraw(state),
+
+    drawAccepted: (state): GameSliceState => acceptedADraw(state),
 
     botLetOpen: (state): GameSliceState => ({...state, botMayOpen: true}),
 
@@ -132,6 +147,9 @@ export const {
   moved,
   passed,
   bikjangCalled,
+  drawOffered,
+  drawDeclined,
+  drawAccepted,
   takenBack,
   playedAgain,
   botLetOpen,

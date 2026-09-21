@@ -72,10 +72,12 @@ painted, and say so.
   component repeated by only one parent reads itself (`Cell` wears the styles), rather than being
   handed it 90 times. Do not make a generic leaf used in several places (`Piece`) know the application
   store just to save its callers a prop.
-- **Something a player does that touches no intersection is a control, not a gesture.** Resting a turn
-  and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in `Status`, in the row
-  under the board — each enabled off a pure question the engine answers (`canPass`, `canCallBikjang`),
-  and disabled rather than hidden so the row does not reflow under a thumb.
+- **Something a player does that touches no intersection is a control, not a gesture.** Resting a turn,
+  calling a bikjang and offering a draw are the three, so `PassButton`, `BikjangButton` and `DrawButton`
+  sit in `Status`, in the row under the board — each enabled off a pure question the engine answers
+  (`canPass`, `canCallBikjang`, `canAgreeADraw`), and disabled rather than hidden so the row does not
+  reflow under a thumb. A draw is a question to the other player, so what follows the tap — Accept and
+  Decline between two people, a note where the bot declined — is drawn by `BoardOverlay`.
 - **Motion and sound key off one moment.** `useGameMoment` compares the record the page last drew with
   the one it holds now, through the engine's `changeBetween`, and hands out a `GameMoment` whose `id`
   changes once per change. The board's flights, the ending shake, the sound and the haptics all read

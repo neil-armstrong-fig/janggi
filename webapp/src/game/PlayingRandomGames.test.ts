@@ -481,6 +481,7 @@ function worthOf(piece: Piece): number {
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 
   return materialFor(alone, piece.side);

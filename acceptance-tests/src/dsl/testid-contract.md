@@ -9,7 +9,7 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `guide-piece-style-traditional`, `guide-piece-style-hangul`, `guide-piece-style-modern` and
   `guide-movement-destination`; `record` (the record sheet, `inert` while closed) with `record-elo`
   carrying `data-elo`; and the
-  controls `new-game`, `result-new-game`, `pass`, `bikjang`, `undo`, `redo`, `settings-open`,
+  controls `new-game`, `result-new-game`, `pass`, `bikjang`, `draw`, `undo`, `redo`, `settings-open`,
   `settings-close`, `settings-install`, `record-open`, `record-close`, `record-reset`, `guide-open`,
   `references-open`,
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
@@ -20,11 +20,13 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `-submit` and `-message` (`data-accepted`), and the editor's `style-editor-kind`, `-from`, `-name`,
   `-json`, `-save` and `-message` (`data-accepted`), or `style-editor-locked` in their place. On the
   result, `result-xp` carrying `data-xp`, `result-xp-bar` carrying `data-percent`, `result-unlocked` and,
-  shown only when a bikjang decided the game, `result-explanation` carrying `data-called-by`. On
-  `pass`, `bikjang`, `undo` and `redo` the `disabled` attribute is part of the contract: they are
-  disabled rather than hidden. `move-flight` and `impact` are drawn over the board only while motion
-  is shown, and only the effects specs look for them. `bot-go-ahead` and `repetition-notice` are
-  drawn over the board too, each shown only while its own condition holds.
+  shown only when a bikjang or a repetition decided the game, `result-explanation` (carrying
+  `data-called-by` for a bikjang). On `pass`, `bikjang`, `draw`, `undo` and `redo` the `disabled` attribute is part of
+  the contract: they are disabled rather than hidden. `move-flight` and `impact` are drawn over the
+  board only while motion is shown, and only the effects specs look for them. `bot-go-ahead`,
+  `repetition-notice`, `draw-offer` (carrying `data-offered-by`, with `draw-accept` and `draw-decline`
+  inside it) and `draw-declined` (carrying `data-declined-by`) are drawn over the board too, each
+  shown only while its own condition holds.
 - **`data-testid`, composed** — `cell-f<file>r<rank>`; `score-<side>`, `taken-<side>` and
   `plaque-<side>`, whose `plaque-player-<side>` carries `data-player` and `data-elo`, whose
   `plaque-xp-<side>` carries `data-xp` and whose `plaque-next-unlock-<side>` shows the army's next
@@ -51,7 +53,8 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `data-attacking` (the general in check, and each piece giving it). A destination where the move would
   leave the opponent a bikjang to call holds a `bikjang-risk` label reading 빅장 — text, so the question
   reads the word a player sees and not a flag beside it.
-- **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn`,
+- **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn` (the
+  `DrawnBy` word: `bikjang`, `repetition` or `agreement`),
   `data-laying-out`, `data-bot-loading` and `data-bot-unavailable` (the bot's engine is still being
   started, or could not be — both **beside** `data-bot-to-move`, never in place of it, so a wait for the
   bot cannot pass before it has played) and `data-bot-to-move`, each present only while it applies.

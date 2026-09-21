@@ -10,6 +10,7 @@ import {gameStatusOf} from "@src/react/pages/game/components/status/utils/GameSt
 import {newGame} from "@src/game/NewGame";
 import {place} from "@src/game/setups/Place";
 import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
+import {stoodBefore} from "@src/testing/StoodBefore";
 
 it("says whose move it is when nothing is hanging over them", () => {
   expect(gameStatusOf(opening(), LAID_OUT)).toEqual({kind: "toMove", side: "cho"});
@@ -70,7 +71,32 @@ it("still says whose move it is after only one rested turn", () => {
 it("is drawn once a bikjang has been called in a casual game", () => {
   const called = {...position("cho", cho("general", 5, 9), han("general", 5, 2)), bikjangCalled: true};
 
-  expect(gameStatusOf(called, LAID_OUT)).toEqual({kind: "drawn"});
+  expect(gameStatusOf(called, LAID_OUT)).toEqual({kind: "drawn", by: "bikjang"});
+});
+
+/**
+ * The two endings a player can only reach by tapping to under thirty points a side, or by an agreement
+ * the acceptance spec plays from the opening: this is where each is told apart from the call.
+ */
+it("is drawn by agreement once a draw has been agreed", () => {
+  const agreed = {...position("cho", cho("general", 5, 9), han("general", 4, 2)), drawAgreed: true};
+
+  expect(gameStatusOf(agreed, LAID_OUT)).toEqual({kind: "drawn", by: "agreement"});
+});
+
+it("is drawn by repetition once a casual game stands a third time in a position nothing refuses", () => {
+  const repeated = stoodBefore(position("cho", cho("general", 5, 9), han("general", 4, 2)), 2);
+
+  expect(gameStatusOf(repeated, LAID_OUT)).toEqual({kind: "drawn", by: "repetition"});
+});
+
+it("is won on points by the same repetition in a scored game, there being no draw to reach", () => {
+  const bare = position("cho", cho("general", 5, 9), han("general", 4, 2));
+
+  expect(gameStatusOf(stoodBefore({...bare, format: "Scored"}, 2), LAID_OUT)).toEqual({
+    kind: "wonOnPoints",
+    by: "han",
+  });
 });
 
 it("is won on points by the same call in a scored game, there being no draw to reach", () => {
@@ -128,6 +154,7 @@ function position(sideToMove: Side, ...pieces: readonly PlacedPiece[]): GameStat
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

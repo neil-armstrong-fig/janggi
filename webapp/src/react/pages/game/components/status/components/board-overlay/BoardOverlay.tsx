@@ -1,12 +1,15 @@
 import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
 import {botEngineRetried} from "@src/redux/bot-engine/BotEngineSlice";
-import {botLetOpen, restarted} from "@src/redux/game/GameSlice";
+import {botLetOpen, drawAccepted, drawDeclined, restarted} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {BotEngineNotice} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-engine-notice/BotEngineNotice";
 import {BotGoAhead} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-go-ahead/BotGoAhead";
+import {DrawDeclinedNote} from "@src/react/pages/game/components/status/components/board-overlay/components/draw-declined-note/DrawDeclinedNote";
+import {DrawOffer} from "@src/react/pages/game/components/status/components/board-overlay/components/draw-offer/DrawOffer";
 import {RepetitionNotice} from "@src/react/pages/game/components/status/components/board-overlay/components/repetition-notice/RepetitionNotice";
 import {ResultBanner} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/ResultBanner";
 import type {UnknownAction} from "@reduxjs/toolkit";
+import {endsAGameByRepetition} from "@src/game/repetition/EndsAGameByRepetition";
 import {opponentOf} from "@src/game/utils/OpponentOf";
 import {repetitionHoldsBackAMove} from "@src/game/repetition/RepetitionHoldsBackAMove";
 import {rewardFor} from "@src/react/pages/game/components/status/components/board-overlay/rewards/RewardFor";
@@ -25,9 +28,13 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * `botEngineHoldsPlay` — and takes the place of the go-ahead button until the engine is ready.
  *
  * Two of janggi's rules surprise a player who knows chess, and both are said in words here. A game
- * ended by a called bikjang explains the call on its announcement. And while the repetition rule holds
- * a move back, a note over the board says so — `repetitionHoldsBackAMove` — since a move that is simply
- * not offered looks like a bug to someone expecting chess's draw.
+ * ended by a called bikjang explains the call on its announcement, and so does one ended by a repetition.
+ * And while the repetition rule holds a move back, a note over the board says so —
+ * `repetitionHoldsBackAMove` — since a move that is simply not offered looks like a bug to someone
+ * expecting chess's draw.
+ *
+ * A draw on offer is a conversation, and it is held here: the question with its two buttons between two
+ * people, and a note where the offer was refused.
  *
  * **It reads the game and dispatches for itself**, and is handed only the tick a press makes — the sound
  * being the page's. The announcement and the notices beneath it are handed what they draw: each is a
@@ -38,7 +45,7 @@ interface Props {
 }
 
 export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
-  const {played, phase, opponent} = useAppSelector(state => state.game);
+  const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
   const xp = useAppSelector(state => state.progress.xp);
   const {effects} = usePreferences();
   const {status, botsTurn, awaitingGoAhead, engineHoldsPlay, botEngine} = useGameStatus();
@@ -56,6 +63,15 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
     (status.kind === "toMove" || status.kind === "inCheck" || status.kind === "won") &&
     repetitionHoldsBackAMove(game);
 
+  // A checkmate outranks a repetition, so it is only where the game did not end that way that the third
+  // standing is what ended it. `outcomeOf` has already said so; this is the one thing it does not say.
+  const repetitionEndedIt = status.kind !== "won" && endsAGameByRepetition(game);
+
+  // Between two people an offer waits on the other's tap. Against the bot the answer comes from the bot
+  // itself, so there is nobody here to ask — only a refusal to report.
+  const offerAwaitsAnAnswer = drawOffer !== undefined && !drawOffer.declined && botSide === undefined;
+  const offerRefused = drawOffer?.declined ? opponentOf(drawOffer.by) : undefined;
+
   function pressed(action: UnknownAction): void {
     onControlPressed();
     dispatch(action);
@@ -67,6 +83,16 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
 
       {engineHoldsPlay && <BotEngineNotice botEngine={botEngine} onRetry={() => pressed(botEngineRetried())} />}
 
+      {offerRefused && <DrawDeclinedNote decliner={offerRefused} botSide={botSide} />}
+
+      {offerAwaitsAnAnswer && (
+        <DrawOffer
+          offeredBy={drawOffer.by}
+          onAccept={() => pressed(drawAccepted())}
+          onDecline={() => pressed(drawDeclined())}
+        />
+      )}
+
       {awaitingGoAhead && !engineHoldsPlay && botSide !== undefined && (
         <BotGoAhead botSide={botSide} onGoAhead={() => pressed(botLetOpen())} />
       )}
@@ -75,6 +101,7 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
         status={status}
         scores={scores}
         bikjangCalledBy={game.bikjangCalled ? game.sideToMove : undefined}
+        repetitionEndedIt={repetitionEndedIt}
         botSide={botSide}
         reward={rewardFor(status, opponent, phase.format, xp)}
         xp={xp}
