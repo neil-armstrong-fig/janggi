@@ -88,6 +88,7 @@ function choToMove(...pieces: readonly PlacedPiece[]): GameState {
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

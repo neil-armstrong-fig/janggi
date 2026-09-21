@@ -4,6 +4,7 @@ import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import {SETUPS} from "@src/game/setups/Setups";
 import type {Setup} from "@src/game/setups/types/Setup";
+import {agreeADraw} from "@src/game/drawing/AgreeADraw";
 import {applyMove} from "@src/game/ApplyMove";
 import {callBikjang} from "@src/game/bikjang/CallBikjang";
 import {expect, it} from "vitest";
@@ -63,6 +64,12 @@ it("reads a called bikjang, which moves nothing and takes nobody's turn", () => 
   expect(transitionBetween(before, callBikjang(before))).toEqual({kind: "bikjangCalled"});
 });
 
+it("reads an agreed draw, which moves nothing and takes nobody's turn", () => {
+  const before = position(cho("general", 5, 9), han("general", 4, 2));
+
+  expect(transitionBetween(before, agreeADraw(before))).toEqual({kind: "drawAgreed"});
+});
+
 it("has nothing to say about a position and itself", () => {
   const game = opening();
 
@@ -113,6 +120,7 @@ function position(...pieces: readonly PlacedPiece[]): GameState {
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

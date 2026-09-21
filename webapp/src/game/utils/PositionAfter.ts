@@ -42,6 +42,7 @@ export function positionAfter(state: GameState, move: Move): GameState {
     seen: taken ? [] : [...state.seen, standingOf(state)],
     reachedByAGeneralCapture: taken !== undefined && moving.type === "general",
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

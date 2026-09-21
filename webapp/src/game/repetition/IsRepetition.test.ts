@@ -83,6 +83,7 @@ function position(...alsoStanding: readonly PlacedPiece[]): GameState {
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

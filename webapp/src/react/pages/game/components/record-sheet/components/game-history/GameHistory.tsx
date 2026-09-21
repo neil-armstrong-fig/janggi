@@ -63,5 +63,7 @@ const ENDING_WORDS: Record<GameEnding, string> = {
   checkmate: "checkmate",
   points: "on points",
   bikjang: "bikjang",
+  repetition: "repetition",
+  agreement: "agreement",
   abandoned: "left unfinished",
 };

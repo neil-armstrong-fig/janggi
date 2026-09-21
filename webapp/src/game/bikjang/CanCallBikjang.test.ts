@@ -74,6 +74,7 @@ function position(format: MatchFormat, sideToMove: Side, ...pieces: readonly Pla
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

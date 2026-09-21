@@ -882,10 +882,11 @@ describe("a game shuffling back and forth", () => {
 });
 
 /**
- * Clause ①'s exemption: under thirty points a side, a position may come round as often as the two
- * players like. Two bare generals and a chariot each is thirteen apiece, so the same circuit that
- * was barred from the opening is allowed here — and `isRepetition` still reports it, which is the
- * whole of "report, do not adjudicate". See `docs/rules.md` §6.4.
+ * Clause ①'s exemption: under thirty points a side, a position may be repeated, and nothing refuses
+ * the third standing. Two bare generals and a chariot each is thirteen apiece, so the same circuit
+ * that was barred from the opening is allowed here — and, with nothing to refuse it, is what ends the
+ * game: a casual one as a draw, since nothing else would ever stop two armies that cannot make
+ * progress. `isRepetition` still reports the plain fact. See `docs/rules.md` §6.4.
  */
 describe("an endgame where repeating is allowed", () => {
   let game: GameState;
@@ -908,12 +909,15 @@ describe("an endgame where repeating is allowed", () => {
       expect(isRepetition(game)).toBe(true);
     });
 
-    it("offered the move that brought it there rather than barring it", () => {
-      expect(outcomeOf(game)).toEqual({kind: "undecided"});
-      expect(legalMovesFor(game).length).toBeGreaterThan(0);
+    it("was offered the move that brought it there rather than barring it, and the game ends on it", () => {
+      expect(outcomeOf(game)).toEqual({kind: "repetition"});
     });
 
-    it("would go round again, the exemption not running out", () => {
+    it("refuses the turn after it, there being nothing left to play", () => {
+      expect(() => applyMove(game, move({file: 4, rank: 9}, {file: 4, rank: 10}))).toThrow();
+    });
+
+    it("would still offer the move, the exemption not running out — it is the ending that stops the game", () => {
       expect(movesFrom(game, {file: 4, rank: 9})).toContainEqual({file: 4, rank: 10});
     });
   });
@@ -1321,6 +1325,7 @@ function constructed(format: MatchFormat, sideToMove: Side, pieces: readonly Pla
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

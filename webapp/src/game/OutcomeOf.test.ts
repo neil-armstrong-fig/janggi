@@ -5,6 +5,7 @@ import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
 import {expect, it} from "vitest";
 import {outcomeOf} from "@src/game/OutcomeOf";
 import {placed} from "@src/testing/Placed";
+import {stoodBefore} from "@src/testing/StoodBefore";
 
 /**
  * Cho's general on its palace centre with three han chariots covering the palace is the mate these
@@ -82,6 +83,80 @@ it("is a checkmate ahead of a call, whatever else the state carries", () => {
   expect(outcomeOf(called(matedGame()))).toEqual({kind: "checkmate", winner: "han"});
 });
 
+/**
+ * Below thirty points a side a repeated position is allowed, so nothing refuses the third standing —
+ * and with nothing to refuse it, nothing would ever end the game. So the third standing ends it. The
+ * two armies are two bare generals here, which is as far under thirty as it gets. See
+ * `docs/rules.md` §6.4.
+ */
+it("is a draw when a casual game stands in a position for the third time under thirty points a side", () => {
+  const state = stoodBefore(restedTurns(0, cho("general", 5, 9), han("general", 5, 2)), 2);
+
+  expect(outcomeOf(state)).toEqual({kind: "repetition"});
+});
+
+it("settles a scored game on points at that third standing, there being no draw to reach", () => {
+  const state = stoodBefore({...restedTurns(0, cho("general", 5, 9), han("general", 5, 2)), format: "Scored"}, 2);
+
+  expect(outcomeOf(state)).toEqual({kind: "pointsWin", winner: "han", scores: {cho: 0, han: 1.5}});
+});
+
+it("is undecided the second time a position stands, one repeat being no loop", () => {
+  const state = stoodBefore(restedTurns(0, cho("general", 5, 9), han("general", 5, 2)), 1);
+
+  expect(outcomeOf(state)).toEqual({kind: "undecided"});
+});
+
+/**
+ * Above thirty points the third standing is not ended, it is refused: `movesFrom` does not offer the
+ * move, so a game never arrives here — and were it handed one that had, this is not the rule that
+ * ends it.
+ */
+it("is undecided at a third standing while either army holds thirty points or more", () => {
+  const state = restedTurns(
+    0,
+    cho("general", 5, 9),
+    cho("chariot", 1, 8),
+    cho("chariot", 2, 8),
+    cho("cannon", 3, 8),
+    han("general", 5, 2),
+  );
+
+  expect(outcomeOf(stoodBefore(state, 2))).toEqual({kind: "undecided"});
+});
+
+/**
+ * A mate with two chariots, twenty-six points against none, so that both armies are under thirty and
+ * the third standing really does end a game here — a mate with three would be past it and prove nothing.
+ * The chariot on rank 10 gives the check and the one on rank 9 covers the two points beside the general.
+ */
+it("is a checkmate ahead of a third standing, the complete win outranking a loop", () => {
+  const mated = restedTurns(
+    0,
+    cho("general", 4, 10),
+    han("general", 5, 2),
+    han("chariot", 9, 10),
+    han("chariot", 1, 9),
+  );
+
+  expect(outcomeOf(mated)).toEqual({kind: "checkmate", winner: "han"});
+  expect(outcomeOf(stoodBefore(mated, 2))).toEqual({kind: "checkmate", winner: "han"});
+});
+
+/**
+ * An agreed draw is a decision both players made, so it is not conditional on the position at all —
+ * only on the game being a casual one, which `agreeADraw` is what checks.
+ */
+it("is a draw once one has been agreed", () => {
+  const state: GameState = {...restedTurns(0, cho("general", 5, 9), han("general", 5, 2)), drawAgreed: true};
+
+  expect(outcomeOf(state)).toEqual({kind: "agreement"});
+});
+
+it("is a checkmate ahead of an agreement, whatever else the state carries", () => {
+  expect(outcomeOf({...matedGame(), drawAgreed: true})).toEqual({kind: "checkmate", winner: "han"});
+});
+
 function called(state: GameState): GameState {
   return {...state, bikjangCalled: true};
 }
@@ -106,6 +181,7 @@ function restedTurns(consecutivePasses: number, ...pieces: readonly PlacedPiece[
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

@@ -57,7 +57,7 @@ function gameFrom(value: unknown): GameSliceState | undefined {
 
   // A go-ahead missing — a game kept before the bot waited for one — is read as not given. It only ever
   // holds the bot's first move, and a kept game past its opening has had that already.
-  return {played, phase, opponent, botMayOpen: value["botMayOpen"] === true};
+  return {played, phase, opponent, botMayOpen: value["botMayOpen"] === true, drawOffer: undefined};
 }
 
 function recordFrom(value: unknown): PlayedGame | undefined {
@@ -85,7 +85,12 @@ function positionFrom(value: unknown): GameState | undefined {
   if (typeof reachedByAGeneralCapture !== "boolean" || typeof bikjangCalled !== "boolean") return undefined;
   if (!isABoard(pieces)) return undefined;
 
-  return {pieces, sideToMove, format, consecutivePasses, seen, reachedByAGeneralCapture, bikjangCalled};
+  // An agreement missing — a game kept before draws could be agreed — is read as not made. A position
+  // that had one would have ended the game, so it is the only reading a kept game could have meant.
+  const drawAgreed = value["drawAgreed"] === undefined ? false : value["drawAgreed"];
+  if (typeof drawAgreed !== "boolean") return undefined;
+
+  return {pieces, sideToMove, format, consecutivePasses, seen, reachedByAGeneralCapture, bikjangCalled, drawAgreed};
 }
 
 function placedPieceFrom(value: unknown): PlacedPiece | undefined {

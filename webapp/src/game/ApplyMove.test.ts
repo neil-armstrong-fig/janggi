@@ -16,6 +16,7 @@ const chariotFacingASoldier: GameState = {
   seen: [],
   reachedByAGeneralCapture: false,
   bikjangCalled: false,
+  drawAgreed: false,
 };
 
 it("stands the piece on the point it moved to", () => {

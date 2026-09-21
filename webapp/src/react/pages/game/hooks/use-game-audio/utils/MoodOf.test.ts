@@ -8,6 +8,7 @@ import {expect, it} from "vitest";
 import {moodOf} from "@src/react/pages/game/hooks/use-game-audio/utils/MoodOf";
 import {newGame} from "@src/game/NewGame";
 import {placed} from "@src/testing/Placed";
+import {stoodBefore} from "@src/testing/StoodBefore";
 
 it("is calm at the opening, and waiting for the game to get under way", () => {
   expect(moodOf(opening(), false)).toEqual({tension: 0, inCheck: false, ending: "none", underWay: false});
@@ -53,6 +54,18 @@ it("hears a casual bikjang as a draw", () => {
   expect(moodOf(drawn, true).ending).toBe("drawn");
 });
 
+it("hears a draw agreed as a draw", () => {
+  const agreed: GameState = {...position(cho("general", 5, 9), han("general", 4, 2)), drawAgreed: true};
+
+  expect(moodOf(agreed, true).ending).toBe("drawn");
+});
+
+it("hears a casual repetition as a draw", () => {
+  const repeated = stoodBefore(position(cho("general", 5, 9), han("general", 4, 2)), 2);
+
+  expect(moodOf(repeated, true).ending).toBe("drawn");
+});
+
 function opening(): GameState {
   return newGame(setup("Inner Elephant"), setup("Inner Elephant"), "Casual");
 }
@@ -92,6 +105,7 @@ function position(...pieces: readonly PlacedPiece[]): GameState {
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

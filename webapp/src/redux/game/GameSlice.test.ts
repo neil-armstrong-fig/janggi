@@ -9,6 +9,9 @@ import {
   botLetOpen,
   botStrengthChosen,
   choSetupChosen,
+  drawAccepted,
+  drawDeclined,
+  drawOffered,
   formatChosen,
   gameReducer,
   hanSetupChosen,
@@ -23,6 +26,7 @@ import {
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
 import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
+import {outcomeOf} from "@src/game/OutcomeOf";
 import {saveLoaded} from "@src/redux/saves/SaveLoaded";
 
 /**
@@ -224,6 +228,55 @@ it("deals a fresh game when either army's setup is chosen", () => {
  */
 it("refuses a call when the generals are not facing each other", () => {
   expect(() => gameReducer(opening(), bikjangCalled())).toThrow(/not facing each other/);
+});
+
+/**
+ * What an offer means is `drawing/`'s to test. What is worth testing here is the wiring: that an
+ * accepted draw reaches the record, and that everything else that happens in the game lets an offer
+ * lapse, so a stale question is never left over a game that has moved on.
+ */
+it("draws the game once the draw on offer is accepted", () => {
+  const drawn = gameReducer(gameReducer(opening(), drawOffered()), drawAccepted());
+
+  expect(outcomeOf(drawn.played.present)).toEqual({kind: "agreement"});
+  expect(drawn.drawOffer).toBeUndefined();
+});
+
+it("keeps a declined draw on show, and the game as it was", () => {
+  const declined = gameReducer(gameReducer(opening(), drawOffered()), drawDeclined());
+
+  expect(declined.drawOffer).toEqual({by: "cho", declined: true});
+  expect(outcomeOf(declined.played.present)).toEqual({kind: "undecided"});
+});
+
+it("lets an offer lapse when the game moves on by a move", () => {
+  expect(gameReducer(gameReducer(opening(), drawOffered()), moved(CHO_OPENING)).drawOffer).toBeUndefined();
+});
+
+it("lets an offer lapse when the game moves on by a rested turn", () => {
+  expect(gameReducer(gameReducer(opening(), drawOffered()), passed()).drawOffer).toBeUndefined();
+});
+
+it("lets an offer lapse when a move is taken back", () => {
+  const played = gameReducer(opening(), moved(CHO_OPENING));
+
+  expect(gameReducer(gameReducer(played, drawOffered()), takenBack()).drawOffer).toBeUndefined();
+});
+
+it("lets an offer lapse when a move is played again", () => {
+  const takenBackOnce = gameReducer(gameReducer(opening(), moved(CHO_OPENING)), takenBack());
+
+  expect(gameReducer(gameReducer(takenBackOnce, drawOffered()), playedAgain()).drawOffer).toBeUndefined();
+});
+
+it("takes an offer away with a new deal", () => {
+  expect(gameReducer(gameReducer(opening(), drawOffered()), restarted()).drawOffer).toBeUndefined();
+});
+
+it("takes an agreed draw back like any other ending", () => {
+  const drawn = gameReducer(gameReducer(opening(), drawOffered()), drawAccepted());
+
+  expect(outcomeOf(gameReducer(drawn, takenBack()).played.present)).toEqual({kind: "undecided"});
 });
 
 /** A format is dealt, not applied, exactly as a setup is — so choosing one starts the game over. */

@@ -24,7 +24,7 @@ export default [
         "error",
         {
           selector:
-            'CallExpression[callee.name="then"] CallExpression[callee.property.name=/^(tap|hover|resizeWindowTo|navigateToPage|setTo|set[A-Z].*To|startNewGame|pass|callBikjang|undo|redo|toggleMute|toggleExplanation|waitForTheBot|waitForTheBotToLoad|retryTheBot|holdBackTheBotsEngine|cutOffTheBotsEngine|restoreTheBotsEngine|reload|reloadOffline|resetRecord|openReferences|visitReferences|visitGuide|offerInstallation|chooseInstall|choose|openPiece|followToolsWithKeyboard|loadSave|importStyle|makeStyle|deleteStyle|setProgress|makeAvailable|refresh|leaveUntilLater)$/]',
+            'CallExpression[callee.name="then"] CallExpression[callee.property.name=/^(tap|hover|resizeWindowTo|navigateToPage|setTo|set[A-Z].*To|startNewGame|pass|callBikjang|offerDraw|acceptDraw|declineDraw|undo|redo|toggleMute|toggleExplanation|waitForTheBot|waitForTheBotToLoad|retryTheBot|holdBackTheBotsEngine|cutOffTheBotsEngine|restoreTheBotsEngine|reload|reloadOffline|resetRecord|openReferences|visitReferences|visitGuide|offerInstallation|chooseInstall|choose|openPiece|followToolsWithKeyboard|loadSave|importStyle|makeStyle|deleteStyle|setProgress|makeAvailable|refresh|leaveUntilLater)$/]',
           message:
             "Arrange in a beforeEach on the given or when, not inside a then. A criterion asserts; it does not set up.",
         },

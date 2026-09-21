@@ -45,6 +45,36 @@ it("reads a game kept before the bot waited to be let open as one it has not bee
   expect(loadGame(storageHolding({...underWay, botMayOpen: undefined})).botMayOpen).toBe(false);
 });
 
+it("reads a game kept before a draw could be agreed as one in which none has been", () => {
+  const before = {
+    ...underWay,
+    played: {...underWay.played, present: {...underWay.played.present, drawAgreed: undefined}},
+  };
+
+  expect(loadGame(storageHolding(before))).toEqual(underWay);
+});
+
+it("comes back to an agreed draw as the ending it was", () => {
+  const agreed = {...underWay, played: {...underWay.played, present: {...underWay.played.present, drawAgreed: true}}};
+
+  expect(loadGame(storageHolding(agreed)).played.present.drawAgreed).toBe(true);
+});
+
+it("deals the first game when a kept agreement is not a yes or a no", () => {
+  const tampered = {
+    ...underWay,
+    played: {...underWay.played, present: {...underWay.played.present, drawAgreed: "yes"}},
+  };
+
+  expect(loadGame(storageHolding(tampered))).toEqual(firstGame());
+});
+
+it("does not bring back a draw that was on offer, an offer belonging to the moment it was made in", () => {
+  const offered = {...underWay, drawOffer: {by: "cho", declined: false}};
+
+  expect(loadGame(storageHolding(offered)).drawOffer).toBeUndefined();
+});
+
 it("comes back with the app's own setups, found by name, rather than whatever was kept beside the name", () => {
   const tampered = {
     ...underWay,

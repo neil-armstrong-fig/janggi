@@ -15,7 +15,8 @@ export function MatchFormats(): React.JSX.Element {
 
           <p className="text-sm leading-relaxed text-wood/70">
             The armies begin in the common arrangement and can be rearranged before the first move. A called bikjang
-            ends the game as a draw. This is the simplest format for learning and local play.
+            ends the game as a draw, and so does an agreed draw or, once both sides are under 30 points, the same
+            position standing a third time. This is the simplest format for learning and local play.
           </p>
         </article>
 
@@ -26,7 +27,8 @@ export function MatchFormats(): React.JSX.Element {
 
           <p className="text-sm leading-relaxed text-wood/70">
             Han chooses an arrangement first, Cho responds and Han begins with an extra 1.5 points. Bikjang can normally
-            be called only when both sides have fewer than 30 points left, and the result is decided on points.
+            be called only when both sides have fewer than 30 points left, and the result is decided on points. So is a
+            game that goes round in circles under 30 points.
           </p>
         </article>
       </div>

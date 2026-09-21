@@ -22,11 +22,17 @@ interface BikjangCalled {
   readonly kind: "bikjangCalled";
 }
 
+/** The players agreed to a draw. Nothing moved and nobody's turn was taken. */
+interface DrawAgreed {
+  readonly kind: "drawAgreed";
+}
+
 /**
  * What one turn did, told apart by comparing the positions either side of it.
  *
- * The three kinds are the three things `record/` advances by — `playMove`, `restTurn` and
- * `callBikjangIn` — and are kept apart for the reason those are: a rested turn and a call are not
- * moves, and a union of `Move | "pass"` is exactly what `types/Move.ts` went out of its way to avoid.
+ * The four kinds are the four things `record/` advances by — `playMove`, `restTurn`, `callBikjangIn`
+ * and `agreeADrawIn` — and are kept apart for the reason those are: a rested turn, a call and an
+ * agreement are not moves, and a union of `Move | "pass"` is exactly what `types/Move.ts` went out of
+ * its way to avoid.
  */
-export type Transition = Moved | Passed | BikjangCalled;
+export type Transition = Moved | Passed | BikjangCalled | DrawAgreed;

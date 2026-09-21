@@ -1,3 +1,4 @@
+import type {DrawOffer} from "@src/redux/game/types/DrawOffer";
 import type {Opponent} from "@src/redux/game/types/Opponent";
 import type {PlayedGame} from "@src/game/record/types/PlayedGame";
 import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
@@ -41,4 +42,10 @@ export interface GameSliceState {
    * next change of mind as a loss. `botAwaitsGoAhead` is the question this answers.
    */
   readonly botMayOpen: boolean;
+  /**
+   * The draw on offer, if one is — a question waiting for an answer, or a refusal the page says so of
+   * until the game moves on. Dealt undefined with every game and never kept on the device: an offer
+   * belongs to the moment it was made in. `DrawOffer` says why it is not in the record.
+   */
+  readonly drawOffer: DrawOffer | undefined;
 }

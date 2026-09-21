@@ -13,7 +13,7 @@ it("earns a loss on points the XP for seeing it through", () => {
 });
 
 it("earns a bikjang draw the XP for seeing it through", () => {
-  expect(rewardFor({kind: "drawn"}, bot, "Casual", 500)?.xp).toBe(10);
+  expect(rewardFor({kind: "drawn", by: "bikjang"}, bot, "Casual", 500)?.xp).toBe(10);
 });
 
 it("names what the game's XP was enough to unlock", () => {

@@ -9,6 +9,7 @@ import {playMove} from "@src/game/record/PlayMove";
 import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
 import {ratingEventFor} from "@src/react/pages/game/hooks/use-rated-game/utils/RatingEventFor";
 import {restTurn} from "@src/game/record/RestTurn";
+import {stoodBefore} from "@src/testing/StoodBefore";
 
 const bot: Opponent = {name: "Bot", botElo: 1400, sideChoice: "Han", playerSide: "han"};
 const human: Opponent = {name: "Human", botElo: 1400, sideChoice: "Cho", playerSide: "cho"};
@@ -108,6 +109,38 @@ it("finishes a casual game drawn by a called bikjang as a draw", () => {
     kind: "finished",
     result: "drawn",
     ending: "bikjang",
+  });
+});
+
+it("finishes a casual game drawn by agreement as a draw", () => {
+  const agreed: GameState = {
+    ...newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual"),
+    drawAgreed: true,
+  };
+  const played: PlayedGame = {past: [agreed, agreed], present: agreed, future: []};
+
+  expect(ratingEventFor({change: ADVANCED, played, opponent: bot, inProgress: true})).toEqual({
+    kind: "finished",
+    result: "drawn",
+    ending: "agreement",
+  });
+});
+
+it("finishes a casual game stopped by a repetition as a draw", () => {
+  const bare: GameState = {
+    ...newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual"),
+    pieces: [
+      {piece: {side: "han", type: "general"}, position: {file: 4, rank: 2}},
+      {piece: {side: "cho", type: "general"}, position: {file: 5, rank: 9}},
+    ],
+  };
+  const repeated = stoodBefore(bare, 2);
+  const played: PlayedGame = {past: [bare, bare], present: repeated, future: []};
+
+  expect(ratingEventFor({change: ADVANCED, played, opponent: bot, inProgress: true})).toEqual({
+    kind: "finished",
+    result: "drawn",
+    ending: "repetition",
   });
 });
 

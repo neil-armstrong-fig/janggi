@@ -1,4 +1,6 @@
 import type {Locator, Page} from "@playwright/test";
+import {DRAWN_BY} from "@janggi/shared/janggi/results/DrawnBy";
+import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
@@ -31,6 +33,11 @@ export class StatusPlaywright extends BaseComponent {
   private readonly takeBack: Locator;
   private readonly playAgain: Locator;
   private readonly bikjang: Locator;
+  private readonly draw: Locator;
+  private readonly drawOffer: Locator;
+  private readonly drawAccept: Locator;
+  private readonly drawDecline: Locator;
+  private readonly drawDeclined: Locator;
   private readonly scores: Record<Side, Locator>;
   private readonly taken: Record<Side, Locator>;
   private readonly result: Locator;
@@ -50,6 +57,11 @@ export class StatusPlaywright extends BaseComponent {
     this.takeBack = page.getByTestId("undo");
     this.playAgain = page.getByTestId("redo");
     this.bikjang = page.getByTestId("bikjang");
+    this.draw = page.getByTestId("draw");
+    this.drawOffer = page.getByTestId("draw-offer");
+    this.drawAccept = page.getByTestId("draw-accept");
+    this.drawDecline = page.getByTestId("draw-decline");
+    this.drawDeclined = page.getByTestId("draw-declined");
     this.scores = {cho: page.getByTestId("score-cho"), han: page.getByTestId("score-han")};
     this.taken = {cho: page.getByTestId("taken-cho"), han: page.getByTestId("taken-han")};
     this.result = page.getByTestId("result");
@@ -344,11 +356,64 @@ export class StatusPlaywright extends BaseComponent {
     return await this.bikjang.isEnabled();
   }
 
-  /** Whether the game ended drawn, which only a called bikjang in a casual game does. */
+  /** Whether the game ended drawn, which only a casual game does. */
   async isDrawn(): Promise<boolean> {
     await this.container.waitFor({state: "visible"});
 
     return (await this.container.getAttribute("data-drawn")) !== null;
+  }
+
+  /** How the game was drawn, which the turn line carries as `data-drawn`. */
+  async getDrawnBy(): Promise<DrawnBy | undefined> {
+    await this.container.waitFor({state: "visible"});
+
+    const drawnBy = await this.container.getAttribute("data-drawn");
+
+    return DRAWN_BY.find(candidate => candidate === drawnBy);
+  }
+
+  async offerDraw(): Promise<void> {
+    await this.draw.click();
+  }
+
+  /** Whether a draw may be offered, which the control says by being enabled or not. */
+  async canOfferDraw(): Promise<boolean> {
+    await this.draw.waitFor({state: "visible"});
+
+    return await this.draw.isEnabled();
+  }
+
+  /** The army whose offer the question over the board says is waiting, or undefined where there is none. */
+  async getDrawOfferedBy(): Promise<Side | undefined> {
+    if ((await this.drawOffer.count()) === 0) return undefined;
+
+    const offeredBy = await this.drawOffer.getAttribute("data-offered-by");
+
+    return SIDES.find(candidate => candidate === offeredBy);
+  }
+
+  /**
+   * The army the note over the board says turned a draw down, once it appears — the bot's answer comes
+   * a moment after the offer, so this waits for it. Undefined where no refusal is reported by then.
+   */
+  async getDrawDeclinedBy(): Promise<Side | undefined> {
+    const reported = await this.drawDeclined.waitFor({state: "visible", timeout: BOT_REPLIES_WITHIN_MS}).then(
+      () => true,
+      () => false,
+    );
+    if (!reported) return undefined;
+
+    const declinedBy = await this.drawDeclined.getAttribute("data-declined-by");
+
+    return SIDES.find(candidate => candidate === declinedBy);
+  }
+
+  async acceptDraw(): Promise<void> {
+    await this.drawAccept.click();
+  }
+
+  async declineDraw(): Promise<void> {
+    await this.drawDecline.click();
   }
 
   async undo(): Promise<void> {

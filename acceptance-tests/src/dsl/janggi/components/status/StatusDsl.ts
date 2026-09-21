@@ -1,5 +1,6 @@
 import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
+import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {StatusPlaywright} from "@src/dsl/janggi/components/status/playwright/StatusPlaywright";
@@ -102,6 +103,69 @@ export class StatusDsl {
       return await this.status.isDrawn();
     } catch (error) {
       throw new DslError("Failed to read whether the game was drawn", error);
+    }
+  }
+
+  /** How the game was drawn, or undefined where it was not. */
+  async getDrawnBy(): Promise<DrawnBy | undefined> {
+    try {
+      return await this.status.getDrawnBy();
+    } catch (error) {
+      throw new DslError("Failed to read how the game was drawn", error);
+    }
+  }
+
+  /** Offers the other army a draw, which it may accept or decline. */
+  async offerDraw(): Promise<void> {
+    try {
+      await this.status.offerDraw();
+    } catch (error) {
+      throw new DslError("Failed to offer a draw", error);
+    }
+  }
+
+  /** Whether the army to move may offer a draw. */
+  async canOfferDraw(): Promise<boolean> {
+    try {
+      return await this.status.canOfferDraw();
+    } catch (error) {
+      throw new DslError("Failed to read whether a draw may be offered", error);
+    }
+  }
+
+  /** The army whose offer of a draw is waiting for an answer, or undefined where none is. */
+  async getDrawOfferedBy(): Promise<Side | undefined> {
+    try {
+      return await this.status.getDrawOfferedBy();
+    } catch (error) {
+      throw new DslError("Failed to read who has offered a draw", error);
+    }
+  }
+
+  /** The army the game says turned a draw down, or undefined where it reports no refusal. */
+  async getDrawDeclinedBy(): Promise<Side | undefined> {
+    try {
+      return await this.status.getDrawDeclinedBy();
+    } catch (error) {
+      throw new DslError("Failed to read who declined the draw", error);
+    }
+  }
+
+  /** Accepts the draw on offer. */
+  async acceptDraw(): Promise<void> {
+    try {
+      await this.status.acceptDraw();
+    } catch (error) {
+      throw new DslError("Failed to accept the draw", error);
+    }
+  }
+
+  /** Declines the draw on offer. */
+  async declineDraw(): Promise<void> {
+    try {
+      await this.status.declineDraw();
+    } catch (error) {
+      throw new DslError("Failed to decline the draw", error);
     }
   }
 

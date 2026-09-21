@@ -49,5 +49,9 @@ function finishedAs(outcome: Exclude<Outcome, {kind: "undecided"}>, playerSide: 
       return {kind: "finished", result: outcome.winner === playerSide ? "won" : "lost", ending: "points"};
     case "bikjang":
       return {kind: "finished", result: "drawn", ending: "bikjang"};
+    case "repetition":
+      return {kind: "finished", result: "drawn", ending: "repetition"};
+    case "agreement":
+      return {kind: "finished", result: "drawn", ending: "agreement"};
   }
 }

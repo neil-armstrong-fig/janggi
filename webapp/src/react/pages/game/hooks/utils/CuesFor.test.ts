@@ -10,6 +10,7 @@ import {cuesFor} from "@src/react/pages/game/hooks/utils/CuesFor";
 import {expect, it} from "vitest";
 import {newGame} from "@src/game/NewGame";
 import {placed} from "@src/testing/Placed";
+import {stoodBefore} from "@src/testing/StoodBefore";
 
 /**
  * Changes are written out by hand, because what is under test is which sounds a change makes, not
@@ -63,6 +64,25 @@ it("sounds a win on points after a scored bikjang, which the call settles", () =
   const change: RecordChange = {direction: "advanced", transition: {kind: "bikjangCalled"}};
 
   expect(names(cuesFor(change, calledBikjang("Scored")))).toEqual(["bikjang", "pointsWin"]);
+});
+
+it("sounds an agreed draw once, the two players answering each other, and nothing after it", () => {
+  const change: RecordChange = {direction: "advanced", transition: {kind: "drawAgreed"}};
+  const agreed: GameState = {...position("Casual", cho("general", 5, 9), han("general", 4, 2)), drawAgreed: true};
+
+  expect(names(cuesFor(change, agreed))).toEqual(["bikjang"]);
+});
+
+it("sounds the end of a casual game that a move has repeated for the third time, which nobody called", () => {
+  const repeated = stoodBefore(position("Casual", cho("general", 5, 9), han("general", 4, 2)), 2);
+
+  expect(names(cuesFor(moved("soldier"), repeated))).toEqual(["pieceTaken", "bikjang"]);
+});
+
+it("sounds a win on points after a scored game is stopped by a repetition", () => {
+  const repeated = stoodBefore(position("Scored", cho("general", 5, 9), han("general", 4, 2)), 2);
+
+  expect(names(cuesFor(moved("soldier"), repeated))).toEqual(["pieceTaken", "pointsWin"]);
 });
 
 it("plays a move replayed the way it played the first time", () => {
@@ -135,6 +155,7 @@ function position(format: MatchFormat, ...pieces: readonly PlacedPiece[]): GameS
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

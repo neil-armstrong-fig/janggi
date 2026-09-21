@@ -73,6 +73,7 @@ function position(format: MatchFormat, ...pieces: readonly PlacedPiece[]): GameS
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }
 

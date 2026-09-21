@@ -37,5 +37,6 @@ export function pass(state: GameState): GameState {
     seen: [...state.seen, standingOf(state)],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
   };
 }

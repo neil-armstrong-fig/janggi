@@ -1,4 +1,4 @@
-import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
+import type {GoAheadQuestion} from "@src/react/pages/game/bot-duty/types/GoAheadQuestion";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 
 /**
@@ -17,7 +17,7 @@ import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
  * army: the board stays closed and Pass and Bikjang stay off. What it changes is only whether the
  * engine is asked, and so whether the herald says the bot is thinking.
  */
-export function botAwaitsGoAhead({played, phase, opponent, botMayOpen}: GameSliceState): boolean {
+export function botAwaitsGoAhead({played, phase, opponent, botMayOpen}: GoAheadQuestion): boolean {
   if (botMayOpen || played.past.length > 0) return false;
 
   return botDutyFor(played, phase, opponent)?.kind === "play";

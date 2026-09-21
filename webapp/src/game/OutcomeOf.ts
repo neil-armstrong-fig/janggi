@@ -1,6 +1,7 @@
 import type {GameState} from "@src/game/types/GameState";
 import type {Outcome} from "@src/game/types/Outcome";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
+import {endsAGameByRepetition} from "@src/game/repetition/EndsAGameByRepetition";
 import {isCheckmate} from "@src/game/check/IsCheckmate";
 import {opponentOf} from "@src/game/utils/OpponentOf";
 import {scoreFor} from "@src/game/scoring/ScoreFor";
@@ -13,16 +14,30 @@ import {scoreFor} from "@src/game/scoring/ScoreFor";
  * carries no result field.
  *
  * The order matters. Checkmate is asked first because it outranks everything else — 완승 is a
- * complete win and nothing about the material can take it away.
+ * complete win and nothing about the material can take it away. A repetition is asked before the
+ * rest, since it is a fact of the position and not something anyone did.
  */
 export function outcomeOf(state: GameState): Outcome {
   if (isCheckmate(state, state.sideToMove)) return {kind: "checkmate", winner: opponentOf(state.sideToMove)};
+
+  if (endsAGameByRepetition(state)) return stoppedByRepetition(state);
+
+  if (state.drawAgreed) return {kind: "agreement"};
 
   if (state.bikjangCalled) return calledBikjang(state);
 
   if (state.consecutivePasses >= PASSES_THAT_STOP_A_GAME) return decidedOnPoints(state);
 
   return {kind: "undecided"};
+}
+
+/**
+ * What a game stopped by a repetition comes to, which is the same split a called bikjang makes: a
+ * casual game draws — 친선 ends a repeat by agreement — and a scored game has no draw, so it stops and
+ * counts the points. See `docs/rules.md` §6.4.
+ */
+function stoppedByRepetition(state: GameState): Outcome {
+  return state.format === "Casual" ? {kind: "repetition"} : decidedOnPoints(state);
 }
 
 /**

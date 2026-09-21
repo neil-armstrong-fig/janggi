@@ -648,6 +648,62 @@ question it asks; like `isRepetition` it reports and refuses nothing.
 `acceptance-tests/…/game/RepeatingAPosition.test.ts` plays the plies out to show
 that the rule and the note both reach the board.
 
+**Below thirty points the repeat ends the game — decided 2026-09-21.** Everything
+above is about a repeat that is *refused*. Clause ①'s exemption leaves the other
+half open: with each side under thirty points nothing refuses the third standing,
+and a game where neither army can make progress — a general and a chariot a side
+going round a palace — has nothing else to stop it. The bot never rests a turn, so
+§6.3's two consecutive passes never arrive, and the game looped for ever. Reported
+against the bot as "there is no way for any side to win, the game just loops".
+
+The sources for what stops it (retrieved 2026-09-21):
+
+> "친선으로 둘 때는 왕과 왕이 마주치거나 반복수가 반복되면 합의하에 무승부가
+> 되지만 대회에서는 점수제를 채택하므로 무승부가 없다." — 한게임 장기 규칙
+
+> "비기는 기물(소삼능 등)의 형태가 남았거나 총 대국 시간이 종료가 되었을 경우
+> 대국을 중지하고 남은 기물의 점수로 승패를 가린다." — the same page, quoting the
+> KJA's rule
+
+_A friendly game draws a repetition by agreement; a tournament has no draw, stops
+the game and counts the points._ It is the same split as §6.2's bikjang, so it is
+handled the same way, and both formats are answered:
+
+- **The third standing ends the game where nothing refuses it.**
+  `webapp/src/game/repetition/EndsAGameByRepetition.ts` is `isRepetition` and
+  `underThirtyPointsEach`, and `OutcomeOf.ts` asks it straight after checkmate, so
+  a mate on the very move that repeats is still a mate. A casual game is drawn —
+  `Outcome`'s `repetition` kind — and a scored one settles on points, exactly as a
+  called bikjang does. It is derived from the position and `seen`, so it adds no
+  field to `GameState` and taking the move back undoes it.
+- **Perpetual check is caught too.** "동일수(반복장군 포함)" allows it below thirty
+  points, so nothing else could end it. Casually it is drawn and in a scored game
+  it goes to the points; who was at fault stays unadjudicated, for the reason
+  above.
+- **A draw may also be agreed.** `game/drawing/CanAgreeADraw.ts` and
+  `AgreeADraw.ts` stand to each other as `canPass` stands to `pass`; the outcome
+  is `agreement`, and it needs the one field, `GameState.drawAgreed`, because an
+  agreement leaves nothing on the board. **Casual only** — a scored game has no
+  draw to agree to, and two players who want to stop it already have two rested
+  turns in a row.
+- **Whether the other player agrees is not the engine's.** An offer is a
+  conversation held beside the record (`redux/game/types/DrawOffer.ts`); only a
+  yes reaches it, as `agreeADrawIn`. Between two people the other taps Accept or
+  Decline. The bot answers for itself (`bot/choice/would-accept-a-draw/`): it
+  accepts only where each army is under thirty points, so a draw cannot be had
+  from the opening on demand for the rating it earns, and only while its own
+  evaluation is not clearly ahead (about a soldier).
+
+**Shown.** A **Draw** control sits beside Pass and Bikjang. The turn line reads
+"Drawn by repetition" or "Drawn by agreement", and the announcement explains a
+repetition to a player who expects chess's rule — a scored game says it stopped
+and the points decided it. A note says who declined an offer.
+`acceptance-tests/…/game/OfferingADraw.test.ts` plays the offer between two
+people from the opening, and `…/bot/OfferingADrawToTheBot.test.ts` the bot's
+refusal. **What ends a looping endgame is deeper than anyone can tap** — under
+thirty points a side — so it is covered by unit tests on `outcomeOf` and its
+neighbours, per `webapp/AGENTS.md`.
+
 ### 6.5 Scoring, piece values and the 덤
 
 Used to decide a game that reaches the time limit or a drawn-material ending,

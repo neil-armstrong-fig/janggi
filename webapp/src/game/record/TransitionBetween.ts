@@ -8,8 +8,8 @@ import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
 import {toPositionKey} from "@src/game/board/PositionKeys";
 
 /**
- * What the turn from `before` to `after` did — a move and what it took, a rested turn, or a called
- * bikjang — or undefined where no single turn leads from one to the other.
+ * What the turn from `before` to `after` did — a move and what it took, a rested turn, a called
+ * bikjang or an agreed draw — or undefined where no single turn leads from one to the other.
  *
  * **Derived rather than recorded.** A record keeps positions, not moves (`types/PlayedGame.ts`), and
  * `GameState` keeps no last move, because no rule asks for one. Yet everything a board wants to say
@@ -24,6 +24,10 @@ import {toPositionKey} from "@src/game/board/PositionKeys";
 export function transitionBetween(before: GameState, after: GameState): Transition | undefined {
   if (!before.bikjangCalled && after.bikjangCalled && before.sideToMove === after.sideToMove) {
     return {kind: "bikjangCalled"};
+  }
+
+  if (!before.drawAgreed && after.drawAgreed && before.sideToMove === after.sideToMove) {
+    return {kind: "drawAgreed"};
   }
 
   if (after.sideToMove === before.sideToMove) return undefined;

@@ -468,6 +468,7 @@ function matedGame(): GameState {
     seen: [],
     reachedByAGeneralCapture: false,
     bikjangCalled: false,
+    drawAgreed: false,
     pieces: [
       {piece: {side: "cho", type: "general"}, position: MATED_GENERAL},
       {piece: {side: "cho", type: "chariot"}, position: MATED_CHARIOT},

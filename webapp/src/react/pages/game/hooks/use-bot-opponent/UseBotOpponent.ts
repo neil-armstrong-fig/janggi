@@ -4,6 +4,8 @@ import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {botEngineFailed} from "@src/redux/bot-engine/BotEngineSlice";
 import {failureReasonOf} from "@src/react/pages/game/hooks/bot-failure/FailureReasonOf";
 import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/BotReplyFor";
+import {drawAnswerFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/DrawAnswerFor";
+import {opponentOf} from "@src/game/utils/OpponentOf";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useRef} from "react";
 
@@ -28,12 +30,34 @@ import {useEffect, useRef} from "react";
  * A reply comes no sooner than `THINKS_FOR_AT_LEAST_MS` after the turn began, however quickly the
  * engine answered: a bottom-rung bot replying before the player's piece has finished landing reads as
  * the app playing both sides, not as an opponent.
+ *
+ * **It also answers a draw the player offers it**, after the same pause and for the same reason, from
+ * what the engine last made of the position — `drawAnswerFor`. That is not a turn: nothing is searched,
+ * and a move, a rested turn or an undo before the pause is over withdraws the offer and the answer with
+ * it. It is a second effect rather than a duty because the game is not waiting on the bot's army, and
+ * `botDutyFor` would close the board and grey the controls for as long as it did.
  */
 export function useBotOpponent(engine: Engine): void {
-  const {played, phase, opponent, botMayOpen} = useAppSelector(state => state.game);
+  const {played, phase, opponent, botMayOpen, drawOffer} = useAppSelector(state => state.game);
   const engineStatus = useAppSelector(state => state.botEngine.status);
   const dispatch = useAppDispatch();
   const evaluationRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (opponent.name !== "Bot" || !drawOffer || drawOffer.declined) return;
+    if (drawOffer.by === opponentOf(opponent.playerSide)) return;
+
+    // The evaluation the bot last reached, as a turn carries it — belonging to this game only once
+    // something has been played in it.
+    const carried = played.past.length === 0 ? undefined : evaluationRef.current;
+    const timer = setTimeout(() => {
+      dispatch(drawAnswerFor(played.present, carried));
+    }, THINKS_FOR_AT_LEAST_MS);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [drawOffer, played, opponent, dispatch]);
 
   useEffect(() => {
     const duty = botDutyFor(played, phase, opponent);
