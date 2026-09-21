@@ -3,14 +3,15 @@ import {clsx} from "clsx";
 import {toSlug} from "@src/react/pages/game/components/settings/components/option-picker/utils/ToSlug";
 
 /**
- * A picker's options as a native dropdown, for a list too long for a row of buttons.
+ * A picker's options as a native dropdown, for a list too long for buttons or one whose options can be
+ * locked.
  *
  * Native rather than drawn, because on a phone it opens the device's own picker, which is what a
  * thumb already knows. Each option still carries the same `<id>-option-<slug>` test id a button
  * would, so the acceptance tests name an option the same way whichever shape the picker takes.
  *
- * While nothing has been chosen — a scored game's setups — the dropdown shows a placeholder that
- * cannot itself be picked, and it goes away once a real option has been.
+ * While nothing has been chosen the dropdown shows a placeholder that cannot itself be picked, and it
+ * goes away once a real option has been.
  *
  * **A locked option is listed but cannot be picked**, with a padlock and the reason after its name —
  * a native option has nowhere else to say it. Its `value` stays the bare name, so a spec still chooses

@@ -5,16 +5,17 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 
 /**
  * Cho's opening-setup picker. The two armies choose separately, so each has its own picker and
- * its own component — a dropdown driven as `HanSetupSettingPlaywright` describes.
+ * its own component — a grid of buttons behind the army switch, driven as `HanSetupSettingPlaywright`
+ * describes.
  */
 export class ChoSetupSettingPlaywright extends SettingsSheetComponent {
-  private readonly select: Locator;
+  private readonly army: Locator;
   private readonly options: Record<SetupName, Locator>;
 
   constructor(page: Page) {
     super(page);
 
-    this.select = page.getByTestId("cho-setup-select");
+    this.army = page.getByTestId("setup-army-cho");
     this.options = {
       "Inner Elephant": page.getByTestId("cho-setup-option-inner-elephant"),
       "Outer Elephant": page.getByTestId("cho-setup-option-outer-elephant"),
@@ -24,24 +25,36 @@ export class ChoSetupSettingPlaywright extends SettingsSheetComponent {
     };
   }
 
-  /** Whether the picker is still live — the pickers lock once a move has been played. */
-  async isChoosable(): Promise<boolean> {
-    return await this.select.isEnabled();
-  }
-
-  async choose(name: SetupName): Promise<void> {
-    const value = await this.options[name].getAttribute("value");
-    if (value === null) throw new Error(`The "${name}" option carries no value to select`);
-
-    await this.inSheet(this.select, async () => {
-      await this.select.selectOption(value);
+  async show(): Promise<void> {
+    await this.inSheet(this.army, async () => {
+      if ((await this.army.getAttribute("aria-pressed")) !== "true") await this.army.click();
     });
   }
 
-  /** The name of the chosen option, or undefined while the dropdown still shows no choice. */
-  async getSelected(): Promise<SetupName | undefined> {
-    const name = await this.select.locator("option:checked").textContent();
+  /** Whether this army's grid is on screen — the other's is hidden, not removed. */
+  async isShown(): Promise<boolean> {
+    return await this.options["Inner Elephant"].isVisible();
+  }
 
-    return SETUP_NAMES.find(candidate => candidate === name);
+  /** Whether the picker is still live — the pickers lock once a move has been played, all options at once. */
+  async isChoosable(): Promise<boolean> {
+    return await this.options["Inner Elephant"].isEnabled();
+  }
+
+  async choose(name: SetupName): Promise<void> {
+    await this.inSheet(this.options[name], async () => {
+      if ((await this.army.getAttribute("aria-pressed")) !== "true") await this.army.click();
+
+      await this.options[name].click();
+    });
+  }
+
+  /** The name of the pressed option, or undefined while none is — a scored game's setups open empty. */
+  async getSelected(): Promise<SetupName | undefined> {
+    for (const name of SETUP_NAMES) {
+      if ((await this.options[name].getAttribute("aria-pressed")) === "true") return name;
+    }
+
+    return undefined;
   }
 }

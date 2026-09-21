@@ -1,8 +1,8 @@
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import {CustomStyleRow} from "@src/react/pages/game/components/styles-sheet/components/custom-style-row/CustomStyleRow";
-import type {PasteResult} from "@src/react/pages/game/components/settings/components/progress/components/paste-key/types/PasteResult";
-import {PasteKey} from "@src/react/pages/game/components/settings/components/progress/components/paste-key/PasteKey";
+import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
+import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
 import {StyleEditor} from "@src/react/pages/game/components/styles-sheet/components/style-editor/StyleEditor";
 import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
 import {boardStyleChosen, pieceSetChosen} from "@src/redux/preferences/PreferencesSlice";
@@ -80,7 +80,7 @@ export function StylesSheet({open, onClose}: Props): React.JSX.Element {
         aria-modal={open}
         inert={!open}
         className={clsx(
-          "fixed inset-x-0 bottom-0 z-20 mx-auto flex max-h-[85dvh] w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
+          "fixed inset-x-0 bottom-0 z-20 mx-auto flex max-h-[85dvh] select-none w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
           open ? "translate-y-0 shadow-2xl shadow-black" : "translate-y-full",
         )}
       >

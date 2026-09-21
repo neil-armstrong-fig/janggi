@@ -1,4 +1,4 @@
-import {ShareKey} from "@src/react/pages/game/components/settings/components/progress/components/share-key/ShareKey";
+import {ShareKey} from "@src/react/pages/game/components/share-key/ShareKey";
 import type {StyleKind} from "@janggi/shared/janggi/settings/StyleKind";
 
 /**

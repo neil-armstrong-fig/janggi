@@ -27,6 +27,15 @@ export class BotStrengthSettingDsl {
     }
   }
 
+  /** Whether the picker is laid out at all, which it is only against the bot. */
+  async isShown(): Promise<boolean> {
+    try {
+      return await this.strength.isShown();
+    } catch (error) {
+      throw new DslError("Failed to check whether the bot's strength is shown", error);
+    }
+  }
+
   async isChoosable(): Promise<boolean> {
     try {
       return await this.strength.isChoosable();

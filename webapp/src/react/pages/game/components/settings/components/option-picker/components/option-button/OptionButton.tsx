@@ -38,7 +38,7 @@ export function OptionButton<Option extends WithName>({
       title={locked ? `Locked: ${lockedReason}` : undefined}
       onClick={() => onSelect(option)}
       className={clsx(
-        "min-w-fit flex-1 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150 enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none",
+        "min-h-11 min-w-fit flex-1 rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150 enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none",
         selected ? "bg-wood text-ink shadow" : "text-white/70 enabled:hover:bg-white/10",
       )}
     >

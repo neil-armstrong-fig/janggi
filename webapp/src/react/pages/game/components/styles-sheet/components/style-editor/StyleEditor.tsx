@@ -1,6 +1,6 @@
 import {STYLE_KINDS} from "@janggi/shared/janggi/settings/StyleKind";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
-import type {PasteResult} from "@src/react/pages/game/components/settings/components/progress/components/paste-key/types/PasteResult";
+import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {StyleKind} from "@janggi/shared/janggi/settings/StyleKind";
 import {clsx} from "clsx";
@@ -140,7 +140,7 @@ export function StyleEditor({unlocked, price, boards, pieceSets, onSaveBoard, on
               setJson(event.target.value);
               setPasteResult(undefined);
             }}
-            className="w-full rounded-xl bg-black/25 px-3 py-2 font-mono text-base leading-snug text-white/90"
+            className="w-full rounded-xl bg-black/25 px-3 py-2 font-mono text-base leading-snug text-white/90 select-text"
           />
 
           <button
@@ -173,4 +173,4 @@ function writtenOut(style: BoardStyle | PieceSetStyle | undefined): string {
   return style === undefined ? "{}" : JSON.stringify({...style, name: undefined}, null, 2);
 }
 
-const FIELD = "w-full rounded-xl bg-black/25 px-3 py-2.5 text-base text-white/90 placeholder:text-white/30";
+const FIELD = "w-full rounded-xl bg-black/25 px-3 py-2.5 text-base text-white/90 select-text placeholder:text-white/30";

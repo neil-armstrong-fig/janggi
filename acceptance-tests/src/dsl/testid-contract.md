@@ -68,9 +68,11 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `references-<section>-jump`, `references-<section>-heading`, and `reference-<source>`. Its link in
   Settings is `references-open`.
 - **On the release notice** — `release-update`, `release-update-refresh` and `release-update-later`.
-- **On a settings section** — every folding section in the sheet is a `settings-section` carrying
-  `data-section` with its title, and a `settings-section-toggle` folds and unfolds it — the fold
-  behaviour `inSheet` drives (see the DSL `AGENTS.md`) is these two.
+- **On a settings tab** — the sheet is divided into tabs, each a `settings-tab` carrying `data-tab`
+  with its label and `aria-selected`, and each pane is a `settings-pane` carrying `data-pane` with the
+  same label, `hidden` unless its tab is showing. The tab-switching `inSheet` drives (see the DSL
+  `AGENTS.md`) is these two. In the Game pane, `setup-army-han` and `setup-army-cho` are the
+  `aria-pressed` buttons choosing which army's setup grid is showing.
 - **On the Janggi guide** — `guide-piece-<type>` is an expandable movement card, and `guide-section`
   is every top-level section of the reading page. `guide` wraps the page and carries
   `data-guide-ready` once it has finished rendering, `guide-play` is its primary route into the game,
