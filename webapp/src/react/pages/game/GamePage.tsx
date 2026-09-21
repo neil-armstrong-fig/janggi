@@ -5,6 +5,7 @@ import {createFairyStockfish} from "@src/bot/engine/CreateFairyStockfish";
 import {Status} from "@src/react/pages/game/components/status/Status";
 import {StylesSheet} from "@src/react/pages/game/components/styles-sheet/StylesSheet";
 import {useAppSelector} from "@src/redux/Hooks";
+import {useBotEngine} from "@src/react/pages/game/hooks/use-bot-engine/UseBotEngine";
 import {useBotOpponent} from "@src/react/pages/game/hooks/use-bot-opponent/UseBotOpponent";
 import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAudio";
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
@@ -43,8 +44,8 @@ import {useState} from "react";
  * player's preferences through `usePreferences`.
  *
  * The bot plays from here, and the rating is kept from here, because both answer the game as a whole
- * rather than any one section of it. The engine is made here once and costs nothing until the bot is
- * first asked for a move — it downloads nothing before then.
+ * rather than any one section of it. The engine is made here once and costs nothing until the bot is the
+ * opponent — it downloads nothing before then, and `useBotEngine` starts it the moment the bot is chosen.
  */
 export function GamePage(): React.JSX.Element {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -57,6 +58,7 @@ export function GamePage(): React.JSX.Element {
 
   const sound = useGameAudio({played, moment, soundEffectsVolume, musicVolume});
   useHaptics(played, moment, effects.full);
+  useBotEngine(engine);
   useBotOpponent(engine);
   useRatedGame(moment);
 

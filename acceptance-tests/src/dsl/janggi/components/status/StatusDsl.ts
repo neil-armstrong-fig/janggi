@@ -213,6 +213,42 @@ export class StatusDsl {
     }
   }
 
+  /** Whether the game is saying the bot's engine has not finished loading, and holding the board until it has. */
+  async isWaitingForTheBotToLoad(): Promise<boolean> {
+    try {
+      return await this.status.isWaitingForTheBotToLoad();
+    } catch (error) {
+      throw new DslError("Failed to read whether the bot is still loading", error);
+    }
+  }
+
+  /** Whether the game is saying the bot could not be started, and offering to try again. */
+  async isTheBotUnavailable(): Promise<boolean> {
+    try {
+      return await this.status.isTheBotUnavailable();
+    } catch (error) {
+      throw new DslError("Failed to read whether the bot is unavailable", error);
+    }
+  }
+
+  /** Waits for the bot to finish loading, and returns at once when it is not loading. */
+  async waitForTheBotToLoad(): Promise<void> {
+    try {
+      await this.status.waitForTheBotToLoad();
+    } catch (error) {
+      throw new DslError("Failed to wait for the bot to load", error);
+    }
+  }
+
+  /** Asks for the bot to be started again after it could not be. */
+  async retryTheBot(): Promise<void> {
+    try {
+      await this.status.retryTheBot();
+    } catch (error) {
+      throw new DslError("Failed to try starting the bot again", error);
+    }
+  }
+
   /** Whether the bot is holding the game's first move until the player lets it start. */
   async isWaitingToLetTheBotStart(): Promise<boolean> {
     try {

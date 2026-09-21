@@ -1,4 +1,4 @@
-import {evaluationIn} from "@src/bot/engine/uci-lines/EvaluationIn";
+import {evaluationIn} from "@src/bot/engine/conversation/uci-lines/EvaluationIn";
 import {expect, it} from "vitest";
 
 it("reads the score in centipawns off an info line", () => {

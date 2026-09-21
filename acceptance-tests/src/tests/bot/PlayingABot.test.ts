@@ -19,6 +19,7 @@ given("a player takes on the bot", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.opponent.setTo("Bot");
     await janggi.settings.botStrength.setTo(800);
+    await janggi.status.waitForTheBotToLoad();
   });
 
   when("nobody has played anything yet", () => {
@@ -118,6 +119,7 @@ given("a player takes on the bot in a scored game", () => {
     await janggi.settings.matchFormat.setTo("Scored");
     await janggi.settings.opponent.setTo("Bot");
     await janggi.settings.botStrength.setTo(800);
+    await janggi.status.waitForTheBotToLoad();
   });
 
   when("they play cho", () => {

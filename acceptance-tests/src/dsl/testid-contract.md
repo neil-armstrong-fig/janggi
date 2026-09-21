@@ -50,8 +50,12 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   its own army), `data-last-move` (`from` or `to`; `getLastMove` reads the two cells' ids back into a move), and `data-under-attack` and
   `data-attacking` (the general in check, and each piece giving it).
 - **On the turn line** — `data-side` always, plus `data-in-check`, `data-winner`, `data-drawn`,
-  `data-laying-out` and `data-bot-to-move`, each present only while it applies. `waitForTheBot` waits
-  on the last.
+  `data-laying-out`, `data-bot-loading` and `data-bot-unavailable` (the bot's engine is still being
+  started, or could not be — both **beside** `data-bot-to-move`, never in place of it, so a wait for the
+  bot cannot pass before it has played) and `data-bot-to-move`, each present only while it applies.
+  Over the board the engine's notice is `bot-engine-notice`, with `bot-engine-loading`,
+  `bot-engine-reason` and the `bot-engine-retry` button. `waitForTheBot` waits on `data-bot-to-move`,
+  and `waitForTheBotToLoad` on `data-bot-loading`.
 - **On a score** — `data-score`, that army's score with the 덤 folded in. The words beside it roll to
   a new value with motion on; the attribute never does.
 - **On the pairing line** — `data-pairing`.

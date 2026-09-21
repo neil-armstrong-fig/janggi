@@ -1,6 +1,8 @@
 import "@src/index.css";
 import {App} from "@src/react/App";
 import {PROGRESS_STORAGE_KEY} from "@src/redux/progress/storage/ProgressStorageKey";
+import {ISOLATION_RELOAD_SPENT_KEY} from "@src/isolation/IsolationReloadSpentKey";
+import {reloadMayStillCome} from "@src/isolation/ReloadMayStillCome";
 import {listenForDebugMessages} from "@src/redux/debug/ListenForDebugMessages";
 import {store} from "@src/redux/Store";
 import {StrictMode} from "react";
@@ -31,13 +33,13 @@ createRoot(rootElement).render(
  * a reload loop. The bot is simply unavailable there.
  */
 function reloadOnceIsolatedByTheServiceWorker(): void {
-  if (globalThis.crossOriginIsolated || !("serviceWorker" in navigator)) return;
+  if (!reloadMayStillCome()) return;
 
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     try {
-      if (sessionStorage.getItem(RELOADED_FOR_ISOLATION) !== null) return;
+      if (sessionStorage.getItem(ISOLATION_RELOAD_SPENT_KEY) !== null) return;
 
-      sessionStorage.setItem(RELOADED_FOR_ISOLATION, "true");
+      sessionStorage.setItem(ISOLATION_RELOAD_SPENT_KEY, "true");
       location.reload();
     } catch {
       // No session storage to remember the reload by, so no reload: better no bot than a loop.
@@ -61,5 +63,3 @@ function hintAtTheHackerTheme(): void {
     "color: #00ff66; background: #050805; font-family: monospace; padding: 2px 6px",
   );
 }
-
-const RELOADED_FOR_ISOLATION = "janggi.reloadedForIsolation";

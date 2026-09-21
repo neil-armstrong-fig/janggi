@@ -1,9 +1,11 @@
 import {configureStore} from "@reduxjs/toolkit";
+import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSliceState";
 import {CUSTOM_STYLES_STORAGE_KEY} from "@src/redux/custom-styles/storage/CustomStylesStorageKey";
 import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
 import {GAME_STORAGE_KEY} from "@src/redux/game/storage/GameStorageKey";
 import {PROGRESS_STORAGE_KEY} from "@src/redux/progress/storage/ProgressStorageKey";
 import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceState";
+import {botEngineReducer} from "@src/redux/bot-engine/BotEngineSlice";
 import {botKeptWithinReach} from "@src/redux/game/GameSlice";
 import {customStylesReducer} from "@src/redux/custom-styles/CustomStylesSlice";
 import {loadCustomStyles} from "@src/redux/custom-styles/storage/LoadCustomStyles";
@@ -39,7 +41,11 @@ export interface RootState {
   readonly ratings: RatingsSliceState;
   readonly progress: ProgressSliceState;
   readonly customStyles: CustomStylesSliceState;
+  readonly botEngine: BotEngineSliceState;
 }
+
+/** The slices that are written to the device. The engine's is not: it is what this page has started. */
+type KeptSlice = Exclude<keyof RootState, "botEngine">;
 
 export type AppStore = ReturnType<typeof configureStore<RootState>>;
 export type AppDispatch = AppStore["dispatch"];
@@ -76,6 +82,7 @@ export function createStore(storage?: Storage): AppStore {
       ratings: ratingsReducer,
       progress: progressReducer,
       customStyles: customStylesReducer,
+      botEngine: botEngineReducer,
     },
     preloadedState: {
       game,
@@ -99,8 +106,8 @@ export function createStore(storage?: Storage): AppStore {
 function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   // Local rather than module constants: `store` is made at the top of this module, before anything
   // declared below it with `const` exists.
-  const slices: readonly (keyof RootState)[] = ["game", "preferences", "ratings", "progress", "customStyles"];
-  const keys: Record<keyof RootState, string> = {
+  const slices: readonly KeptSlice[] = ["game", "preferences", "ratings", "progress", "customStyles"];
+  const keys: Record<KeptSlice, string> = {
     game: GAME_STORAGE_KEY,
     preferences: PREFERENCES_STORAGE_KEY,
     ratings: RATINGS_STORAGE_KEY,

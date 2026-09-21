@@ -111,6 +111,12 @@ detail gets complex enough to obscure the adapter, move it beneath the `playwrig
 subject-named subfolder; use `utils/` only as the last resort, following the webapp's own locality
 rule.
 
+**A `*Playwright` keeps no state between calls.** Its members are locators and helpers; every other
+method is a pure act on, or question of, the page, and what it needs to know comes from the webapp —
+the DOM, the URL, or a flag the page itself carries — never from a field written by an earlier call.
+A spec's steps can then be reordered, repeated or split across a `beforeEach` without the object
+disagreeing with the browser, which is the one thing a stale field can do.
+
 ## Where a method goes
 
 `janggi` is the whole application and every area of it hangs off that as a member, so a spec reads

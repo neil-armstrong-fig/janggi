@@ -10,6 +10,15 @@ import type {SearchData} from "@src/dsl/janggi/types/SearchData";
  */
 const ISOLATION_TIMEOUT_MS = 15_000;
 
+/** The script the page loads the bot's engine from, and so the first thing that fails when it cannot. */
+const ENGINE_SCRIPT = "**/engine/stockfish.js";
+
+/**
+ * The property the page is given once a held-back engine may arrive. It lives on the page, so a reload
+ * clears it and the next load is held afresh — the browser is the memory, not the DSL.
+ */
+const ENGINE_MAY_ARRIVE = "janggiBotEngineMayArrive";
+
 /**
  * The app, and the only screen it has. The bottom of the stack: this is the layer that actually
  * drives Playwright, and the only one that may.
@@ -21,7 +30,6 @@ const ISOLATION_TIMEOUT_MS = 15_000;
  * what turns it into a sentence about the intention.
  */
 export class JanggiPlaywright extends BasePage {
-  /** Declared only because `BasePage`'s constructor is protected; there is nothing of its own to set up. */
   constructor(page: Page) {
     super(page);
   }
@@ -39,6 +47,50 @@ export class JanggiPlaywright extends BasePage {
   async open(): Promise<void> {
     await this.page.goto("./");
     await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
+  }
+
+  /**
+   * From now on the bot's engine does not arrive until `restoreTheBotsEngine`, however long that is —
+   * a slow connection, or a phone still starting its threads. Takes effect for the next time the page
+   * asks for it, so it is said before the bot is chosen.
+   */
+  async holdBackTheBotsEngine(): Promise<void> {
+    await this.reachTheEngineOnlyThroughTheNetwork();
+    await this.page.route(ENGINE_SCRIPT, async route => {
+      await this.page.waitForFunction(name => Reflect.get(globalThis, name) === true, ENGINE_MAY_ARRIVE, {
+        timeout: 0,
+      });
+      await route.continue();
+    });
+  }
+
+  /** From now on the bot's engine cannot be fetched at all, until `restoreTheBotsEngine`. */
+  async cutOffTheBotsEngine(): Promise<void> {
+    await this.reachTheEngineOnlyThroughTheNetwork();
+    await this.page.route(ENGINE_SCRIPT, route => route.abort());
+  }
+
+  /**
+   * Lets the bot's engine arrive again: whatever was held goes through, and nothing more is held or refused.
+   *
+   * What lets a held request go is a flag on the page, so no memory of the hold is kept here. The routes
+   * are then taken off only once the handlers still running have finished: switching interception off
+   * under a request it has paused fails that request.
+   */
+  async restoreTheBotsEngine(): Promise<void> {
+    await this.page.evaluate(name => Reflect.set(globalThis, name, true), ENGINE_MAY_ARRIVE);
+    await this.page.unrouteAll({behavior: "wait"});
+  }
+
+  /**
+   * Where the app's service worker is running it answers the engine's script out of its precache, and a
+   * route on the page never sees the request. Bypassing it sends every request over the network instead —
+   * and the server sends the isolation headers itself, so the page stays isolated.
+   */
+  private async reachTheEngineOnlyThroughTheNetwork(): Promise<void> {
+    const session = await this.page.context().newCDPSession(this.page);
+    await session.send("Network.enable");
+    await session.send("Network.setBypassServiceWorker", {bypass: true});
   }
 
   async reload(): Promise<void> {

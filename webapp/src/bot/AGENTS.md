@@ -22,6 +22,10 @@ levels/                how long it thinks at each Elo, and over each opening it 
   forced.
 - **Its answer is matched, not parsed and trusted.** `botTurnFor` looks the `bestmove` up in the list
   it offered; anything else falls back to a legal candidate.
+- **An engine that does not come is reported, never waited on.** `FairyStockfish` rejects a start that
+  fails or is late (`prepare`) and a search that gets no answer, and starts afresh next time — so the page
+  can say the bot is loading, or unavailable, instead of "thinking" for good. Each running engine has its
+  own `UciConversation`, so one given up on can never answer for the next. `docs/bot.md` §4 has why.
 - **Ranks count up from Cho's edge in the engine's notation**, the opposite of `docs/rules.md` §1:
   `squares/SquareOf.ts` is the one place that turns round.
 
@@ -30,7 +34,7 @@ levels/                how long it thinks at each Elo, and over each opening it 
 **Everything above `engine/` is tested against a fake `Engine`,** a turn at a time. The real engine is
 played by one test only — `pages/game/PlayingTheBotToTheEnd.test.ts`, which plays whole games on it —
 started under Node by `src/testing/CreateNodeFairyStockfish.ts`. Only the start differs from the
-page's: both hand `fairyStockfishFrom` a way to start the engine, so the conversation that test holds
+page's: both hand `FairyStockfish` a way to start the engine, so the conversation that test holds
 is the page's own rather than a copy of it. Its searches are capped at 100ms, so both games take
 seconds; it asserts that each game ends and never who wins, because the engine is not deterministic.
 `pnpm test` leaves it out — `pnpm test:bot-games` runs it, in `.github/workflows/bot-games.yml`, which
