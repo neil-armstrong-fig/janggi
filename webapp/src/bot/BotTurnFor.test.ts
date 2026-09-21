@@ -21,6 +21,7 @@ function answering(result: SearchResult): FakeEngine {
 
   return {
     asked,
+    prepare: () => Promise.resolve(),
     search: search => {
       asked.push(search);
       return Promise.resolve(result);

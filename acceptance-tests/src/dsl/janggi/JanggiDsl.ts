@@ -78,6 +78,33 @@ export class JanggiDsl {
     }
   }
 
+  /** Makes the bot's engine slow: it does not arrive until it is restored. Said before the bot is chosen. */
+  async holdBackTheBotsEngine(): Promise<void> {
+    try {
+      await this.janggi.holdBackTheBotsEngine();
+    } catch (error) {
+      throw new DslError("Failed to hold back the bot's engine", error);
+    }
+  }
+
+  /** Makes the bot's engine impossible to fetch, until it is restored. Said before the bot is chosen. */
+  async cutOffTheBotsEngine(): Promise<void> {
+    try {
+      await this.janggi.cutOffTheBotsEngine();
+    } catch (error) {
+      throw new DslError("Failed to cut off the bot's engine", error);
+    }
+  }
+
+  /** Lets the bot's engine arrive again after it was held back or cut off. */
+  async restoreTheBotsEngine(): Promise<void> {
+    try {
+      await this.janggi.restoreTheBotsEngine();
+    } catch (error) {
+      throw new DslError("Failed to restore the bot's engine", error);
+    }
+  }
+
   async reloadOffline(): Promise<void> {
     try {
       await this.janggi.reloadOffline();

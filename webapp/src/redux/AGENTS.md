@@ -67,8 +67,14 @@ hooks. Add state as a slice via `createSlice`.
   `isCssValue` refuses any value that could load from elsewhere (`url(https://…)`, `image-set`) or
   climb out of its property: nobody moderates shared styles, so a style must not be able to fetch a
   picture or tell its author who is looking.
-- **The whole store is kept on the device.** `Store.ts` loads every slice from `localStorage` and
-  writes each back when it changes, so a closed page reopens on the same game, preferences and record.
+- **The bot's engine has a status of its own, and is not kept.** `state.botEngine` says whether the
+  engine the page started is `idle`, `loading`, `ready` or `failed` (with why). `useBotEngine` starts it
+  once the bot is the opponent, and `botEngineHoldsPlay` closes the board and the controls — with a notice
+  over the board saying why — until it is `ready`, so no rated game can begin against a bot that never
+  came. Retrying is the status going back to `idle`. It is left out of `keptOnTheDevice`'s list, being what
+  this page has managed to start rather than part of a game.
+- **The rest of the store is kept on the device.** `Store.ts` loads every other slice from `localStorage`
+  and writes each back when it changes, so a closed page reopens on the same game, preferences and record.
   **What is read back is untrusted**: each slice has a loader under its own `storage/` that checks
   every field against the vocabulary it claims — `redux/untrusted/` — and falls back to a fresh start.
   The game is refused whole if any position fails (a crash in `applyMove` is what a half-trusted board

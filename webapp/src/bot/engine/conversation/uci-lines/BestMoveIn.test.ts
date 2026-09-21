@@ -1,4 +1,4 @@
-import {bestMoveIn} from "@src/bot/engine/uci-lines/BestMoveIn";
+import {bestMoveIn} from "@src/bot/engine/conversation/uci-lines/BestMoveIn";
 import {expect, it} from "vitest";
 
 it("reads the move off a bestmove line, leaving the ponder move behind", () => {

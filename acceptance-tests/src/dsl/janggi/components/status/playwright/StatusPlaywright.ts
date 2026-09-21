@@ -10,6 +10,9 @@ const SETTLES_WITHIN_MS = 3_000;
 
 const BOT_REPLIES_WITHIN_MS = 20_000;
 
+/** The engine's download, compile and thread start, which the bot's first reply used to include. */
+const BOT_LOADS_WITHIN_MS = 20_000;
+
 /** Well past the bot's least thinking time and the engine's first load, at the bottom rung. */
 const BOT_OPENS_WITHIN_MS = 4_000;
 
@@ -36,6 +39,7 @@ export class StatusPlaywright extends BaseComponent {
   private readonly newGame: Locator;
   private readonly players: Record<Side, Locator>;
   private readonly botGoAhead: Locator;
+  private readonly botEngineRetry: Locator;
   private readonly repetitionNotice: Locator;
 
   constructor(page: Page) {
@@ -54,6 +58,7 @@ export class StatusPlaywright extends BaseComponent {
     this.newGame = page.getByTestId("result-new-game");
     this.players = {cho: page.getByTestId("plaque-player-cho"), han: page.getByTestId("plaque-player-han")};
     this.botGoAhead = page.getByTestId("bot-go-ahead");
+    this.botEngineRetry = page.getByTestId("bot-engine-retry");
     this.repetitionNotice = page.getByTestId("repetition-notice");
   }
 
@@ -66,16 +71,50 @@ export class StatusPlaywright extends BaseComponent {
     await this.page.waitForTimeout(BOT_OPENS_WITHIN_MS);
   }
 
-  /** Presses the button over the board that lets the bot make the game's first move. */
+  /**
+   * Whether the turn line says the bot's engine is still loading. Counted rather than waited for: it is
+   * derived from the store in the same render that chooses the bot, so its absence is the answer.
+   */
+  async isWaitingForTheBotToLoad(): Promise<boolean> {
+    return (await this.page.locator("[data-testid='turn'][data-bot-loading]").count()) > 0;
+  }
+
+  /** Whether the turn line says the bot's engine could not be started. */
+  async isTheBotUnavailable(): Promise<boolean> {
+    return (await this.page.locator("[data-testid='turn'][data-bot-unavailable]").count()) > 0;
+  }
+
+  /** Waits for the bot's engine to finish loading, which the turn line marks with `data-bot-loading`. */
+  async waitForTheBotToLoad(): Promise<void> {
+    await this.container.waitFor({state: "visible"});
+    await this.page
+      .locator("[data-testid='turn'][data-bot-loading]")
+      .waitFor({state: "detached", timeout: BOT_LOADS_WITHIN_MS});
+  }
+
+  /** Presses the button over the board that tries to start the bot's engine again. */
+  async retryTheBot(): Promise<void> {
+    await this.botEngineRetry.click();
+  }
+
+  /**
+   * Presses the button over the board that lets the bot make the game's first move. The button is not
+   * there while the bot's engine is loading, so this waits for that first.
+   */
   async letTheBotStart(): Promise<void> {
+    await this.waitForTheBotToLoad();
     await this.botGoAhead.click();
   }
 
   /**
    * Whether the board is holding the bot's first move until the player lets it start. Counted rather
-   * than waited for: the button is drawn in the same render as the change that puts the bot on move.
+   * than waited for: the button is drawn in the same render as the change that puts the bot on move —
+   * **once the bot's engine is up**. While it is loading a notice covers the board instead, so this waits
+   * for that first, or it would count no button for as long as the engine took.
    */
   async isWaitingToLetTheBotStart(): Promise<boolean> {
+    await this.waitForTheBotToLoad();
+
     return (await this.botGoAhead.count()) > 0;
   }
 

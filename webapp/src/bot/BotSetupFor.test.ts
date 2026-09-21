@@ -113,6 +113,7 @@ function rating(evaluationOf: Rating, onSearch: () => void = () => undefined): F
 
   return {
     asked,
+    prepare: () => Promise.resolve(),
     search: search => {
       asked.push(search);
       onSearch();

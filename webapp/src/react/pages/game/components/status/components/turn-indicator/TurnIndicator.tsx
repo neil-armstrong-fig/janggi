@@ -5,6 +5,16 @@ import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
+/** What the line has to choose its words from. */
+interface Announcement {
+  readonly status: GameStatus;
+  readonly botToMove: boolean;
+  /** The bot's engine could not be started, and the game is held until it can. */
+  readonly engineFailed: boolean;
+  /** The bot's engine is still being started, and the game is held until it is up. */
+  readonly engineLoading: boolean;
+}
+
 /**
  * The herald: whose turn it is, whether their general is under attack, and how the game ended — a
  * checkmate, a win on points once both players have rested a turn, or a draw where a bikjang was
@@ -17,7 +27,10 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  *
  * Tinted by what it announces: the colour of the army to move, red for a check, gold for a result. While
  * the game waits on the bot it says so, in words and in `data-bot-to-move` — the attribute a spec waits on
- * to know the bot has played. With effects in full the words give a small bump each time they change.
+ * to know the bot has played. While the bot's engine is not yet up it says that instead, in
+ * `data-bot-loading`, or `data-bot-unavailable` where it could not be started: beside `data-bot-to-move`
+ * rather than in place of it, so a wait for the bot never passes before the bot has played. With effects
+ * in full the words give a small bump each time they change.
  *
  * It reads the game for itself, through `useGameStatus`, and is handed nothing.
  *
@@ -26,18 +39,22 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * than a silent change to a line nobody is looking at.
  */
 export function TurnIndicator(): React.JSX.Element {
-  const {status, botsTurn, awaitingGoAhead} = useGameStatus();
+  const {status, botsTurn, awaitingGoAhead, engineHoldsPlay, botEngine} = useGameStatus();
   const {effects} = usePreferences();
 
   const botToMove = botsTurn && !awaitingGoAhead;
+  const engineFailed = engineHoldsPlay && botEngine.status === "failed";
+  const engineLoading = engineHoldsPlay && !engineFailed;
   const winner = winnerOf(status);
-  const announcement = botToMove ? botAnnouncementOf(status) : announcementOf(status);
+  const announcement = announcementFor({status, botToMove, engineFailed, engineLoading});
 
   return (
     <p
       data-testid="turn"
       data-side={winner ?? sideOf(status)}
       data-bot-to-move={botToMove ? "" : undefined}
+      data-bot-loading={engineLoading ? "" : undefined}
+      data-bot-unavailable={engineFailed ? "" : undefined}
       data-laying-out={status.kind === "layingOut" ? "" : undefined}
       data-in-check={status.kind === "inCheck" ? "" : undefined}
       data-drawn={status.kind === "drawn" ? "" : undefined}
@@ -45,7 +62,7 @@ export function TurnIndicator(): React.JSX.Element {
       aria-live="polite"
       className={clsx(
         "h-6 shrink-0 self-center rounded-full px-3 text-center text-xs leading-6 font-semibold tracking-wide uppercase transition-colors duration-300 motion-reduce:transition-none",
-        toneOf(status),
+        engineFailed ? "bg-danger/20 text-danger" : toneOf(status),
       )}
     >
       {/* Keyed by the words, so each new announcement bumps from the start; the live region itself
@@ -58,6 +75,17 @@ export function TurnIndicator(): React.JSX.Element {
       </span>
     </p>
   );
+}
+
+/**
+ * What the line says. A bot whose engine is not up comes before whose turn it is: the game is held, and
+ * "thinking" would be a lie about a bot that has not been asked.
+ */
+function announcementFor({status, botToMove, engineFailed, engineLoading}: Announcement): string {
+  if (engineFailed) return "Bot unavailable";
+  if (engineLoading) return "Bot is loading";
+
+  return botToMove ? botAnnouncementOf(status) : announcementOf(status);
 }
 
 function botAnnouncementOf(status: GameStatus): string {

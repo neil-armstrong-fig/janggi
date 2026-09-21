@@ -53,6 +53,13 @@ shared union without a locator here and it will not compile.
   worker taking control to make the page cross-origin isolated, which Pages cannot do with headers.
   Every test's context is a first visit, so `JanggiPlaywright.open()` waits for `crossOriginIsolated`
   before a spec may touch anything. Only `:production` shows it; locally the server sends the headers.
+- **The bot's engine loads once the page has settled and the bot is the opponent, and the app ships
+  against the bot** — so a spec that needs the engine slow or missing (`LoadingTheBot.test.ts`) says
+  `holdBackTheBotsEngine` / `cutOffTheBotsEngine`, then `reload`s, then chooses the bot. Those bypass the
+  service worker over CDP, because a route on the page never sees a request the worker answers from its
+  precache. A held-back engine waits on a flag the _page_ carries, which `restoreTheBotsEngine` sets and a
+  reload clears; restoring unroutes with `behavior: "wait"`, because switching interception off under a
+  paused request fails it.
 - **The dev server dies with the session that started it.** If every spec fails at once, check
   `curl localhost:3000` before debugging anything.
 - **`playwright test --list | tail -1` gives the spec count with no dev server running** — the

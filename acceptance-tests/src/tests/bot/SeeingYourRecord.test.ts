@@ -30,6 +30,7 @@ given("a player who has never played the bot", () => {
     beforeEach(async ({janggi}) => {
       await janggi.settings.opponent.setTo("Bot");
       await janggi.settings.botStrength.setTo(1200);
+      await janggi.status.waitForTheBotToLoad();
       await janggi.board.tap(1, 7);
       await janggi.board.tap(1, 6);
       await janggi.status.waitForTheBot();
@@ -97,6 +98,7 @@ given("a player who has never played the bot", () => {
     beforeEach(async ({janggi}) => {
       await janggi.settings.opponent.setTo("Bot");
       await janggi.settings.botStrength.setTo(800);
+      await janggi.status.waitForTheBotToLoad();
       await janggi.board.tap(1, 7);
       await janggi.board.tap(1, 6);
       await janggi.status.waitForTheBot();

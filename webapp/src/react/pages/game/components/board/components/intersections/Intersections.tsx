@@ -5,6 +5,7 @@ import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {PositionKey} from "@src/game/board/types/Position";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
+import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
 import {emphasisFor} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/EmphasisFor";
 import {flourishesOf} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/FlourishesOf";
 import {hintDelay} from "@src/react/pages/game/components/board/components/intersections/motion/HintDelay";
@@ -55,12 +56,17 @@ interface Props {
 
 export function Intersections({threat, concealed, moment, onPickUp}: Props): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
+  const engineStatus = useAppSelector(state => state.botEngine.status);
   const dispatch = useAppDispatch();
   const {movableHighlight, effects} = usePreferences();
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
-  // be touched until both armies have chosen. Closed while the bot is thinking too.
-  const playable = isArranged(phase) && botDutyFor(played, phase, opponent) === undefined;
+  // be touched until both armies have chosen. Closed while the bot is thinking too, and while its engine
+  // is not up: a first move made then would begin a rated game against nobody.
+  const playable =
+    isArranged(phase) &&
+    botDutyFor(played, phase, opponent) === undefined &&
+    !botEngineHoldsPlay(played, opponent, engineStatus);
   const animated = effects.full;
   const {selected, hovered, destinations, covered, tap, hover} = useMoveSelection(
     game,

@@ -86,7 +86,7 @@ it("forgets the last evaluation on a record with no turns in it", async () => {
 });
 
 function answering(result: SearchResult): Engine {
-  return {search: () => Promise.resolve(result), stop: () => undefined};
+  return {prepare: () => Promise.resolve(), search: () => Promise.resolve(result), stop: () => undefined};
 }
 
 function live(): AbortSignal {

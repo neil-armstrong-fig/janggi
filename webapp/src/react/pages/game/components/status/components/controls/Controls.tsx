@@ -43,12 +43,12 @@ interface Props {
 
 export function Controls({onControlPressed, onOpenSettings}: Props): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
-  const {botsTurn} = useGameStatus();
+  const {botsTurn, engineHoldsPlay} = useGameStatus();
   const dispatch = useAppDispatch();
 
   const game = played.present;
   const againstBot = opponent.name === "Bot";
-  const playersTurn = isArranged(phase) && !botsTurn;
+  const playersTurn = isArranged(phase) && !botsTurn && !engineHoldsPlay;
 
   // Every control ticks before it does what it does, so each handler below is one call rather than the
   // tick and the dispatch repeated.

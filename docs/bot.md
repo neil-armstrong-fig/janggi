@@ -37,7 +37,7 @@ The engine is never asked an open question.
 
 - **It runs `janggibot`**, a variant defined in the page:
   `[janggibot:janggi]` with `bikjangRule = false`, `materialCounting = janggi`
-  (`engine/FairyStockfishFrom.ts`). Facing generals are then an ordinary
+  (`engine/janggibot/OpenJanggibot.ts`). Facing generals are then an ordinary
   position to it, and a double pass a points decision — which is how ours behaves
   in both formats. That leaves bikjang the only place the formats differ, and
   bikjang is ours to handle.
@@ -100,6 +100,24 @@ worker exists, so `main.tsx` reloads once, per session, when it takes control.
 Where a browser still will not isolate the page, the opponent picker is closed
 and says why. Moving hosting to one that sends headers would make the reload
 unnecessary.
+
+**A saved bot game does not need the picker, so the engine has to say for itself
+that it cannot start.** The opponent is kept with the game, and a page reloaded
+without isolation — a hard refresh bypasses the service worker, and
+`sessionStorage` remembers the one reload already spent — resumes a bot game
+whose threads would only hang. The engine used to start on the first search, so
+that showed as "the bot is thinking" for good, and only reloading cleared it.
+Now the engine is started as soon as the bot is the opponent, and until it is
+up the board is closed under a notice saying it is loading — or, if the start
+fails or takes longer than 45 seconds, that the bot could not be started and
+why, with a button to try again. A failed start is forgotten so the retry
+starts afresh; a search that gets no answer within its own time and 15 seconds
+is treated the same way, and the engine that stopped answering is discarded
+rather than reused, since a late `bestmove` from it could be mistaken for the
+answer to the next question. The one case that waits instead of failing is a
+first visit, where `main.tsx` is about to reload the page under the service
+worker (`webapp/src/isolation/ReloadMayStillCome.ts`): calling the bot unavailable a
+moment before that reload would be wrong.
 
 ## 5. Licence
 

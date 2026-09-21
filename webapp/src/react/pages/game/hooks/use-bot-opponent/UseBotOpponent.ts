@@ -1,6 +1,8 @@
 import type {Engine} from "@src/bot/engine/types/Engine";
 import {botAwaitsGoAhead} from "@src/react/pages/game/bot-duty/BotAwaitsGoAhead";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
+import {botEngineFailed} from "@src/redux/bot-engine/BotEngineSlice";
+import {failureReasonOf} from "@src/react/pages/game/hooks/bot-failure/FailureReasonOf";
 import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/BotReplyFor";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useRef} from "react";
@@ -19,18 +21,23 @@ import {useEffect, useRef} from "react";
  * **It holds the game's first move** while `botAwaitsGoAhead` says the player has not yet let the bot
  * start, so choosing to play Han is not what starts a rated game.
  *
+ * **It asks nothing of the engine until the store says it is ready** (`useBotEngine` starts it), and a
+ * search that fails or gets no answer is reported there too — as a bot that could not be started, with a
+ * way to try again — rather than left as a bot that is thinking for good.
+ *
  * A reply comes no sooner than `THINKS_FOR_AT_LEAST_MS` after the turn began, however quickly the
  * engine answered: a bottom-rung bot replying before the player's piece has finished landing reads as
  * the app playing both sides, not as an opponent.
  */
 export function useBotOpponent(engine: Engine): void {
   const {played, phase, opponent, botMayOpen} = useAppSelector(state => state.game);
+  const engineStatus = useAppSelector(state => state.botEngine.status);
   const dispatch = useAppDispatch();
   const evaluationRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const duty = botDutyFor(played, phase, opponent);
-    if (!duty || botAwaitsGoAhead({played, phase, opponent, botMayOpen})) return;
+    if (!duty || botAwaitsGoAhead({played, phase, opponent, botMayOpen}) || engineStatus !== "ready") return;
 
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -57,6 +64,7 @@ export function useBotOpponent(engine: Engine): void {
         if (cancelled) return;
 
         console.error("The bot could not choose a move", error);
+        dispatch(botEngineFailed(failureReasonOf(error)));
       });
 
     return () => {
@@ -65,7 +73,7 @@ export function useBotOpponent(engine: Engine): void {
       stopping.abort();
       engine.stop();
     };
-  }, [played, phase, opponent, botMayOpen, engine, dispatch]);
+  }, [played, phase, opponent, botMayOpen, engineStatus, engine, dispatch]);
 }
 
 const THINKS_FOR_AT_LEAST_MS = 500;

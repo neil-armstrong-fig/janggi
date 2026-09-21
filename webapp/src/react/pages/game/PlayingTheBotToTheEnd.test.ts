@@ -120,6 +120,7 @@ function waitedOn({played, phase, opponent}: GameSliceState): Waiting {
 /** The engine, never let think for longer than `most` milliseconds over a move. */
 function cappedAt(most: number, capped: Engine): Engine {
   return {
+    prepare: () => capped.prepare(),
     search: search => capped.search({...search, moveTimeMs: Math.min(search.moveTimeMs, most)}),
     stop: () => {
       capped.stop();
