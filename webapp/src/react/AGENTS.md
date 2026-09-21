@@ -62,9 +62,13 @@ painted, and say so.
   Where several siblings ask the same derived question, one hook keeps their answer together
   (`useGameStatus`) rather than restoring the prop tunnel at their parent. Props carry only what the
   store does not hold: page-owned sound/sheet state; a `GameMoment`; a component's coordinated
-  animation state; identity, such as which side a plaque draws; and everything a generic or repeated
-  component needs (`OptionPicker`, `VolumeSlider`, `Cell`, `Piece`, `ResultBanner`). Do not make a
-  generic leaf know the application store just to save its concrete caller a prop.
+  animation state; identity, such as which side a plaque draws; and whatever differs from one instance
+  of a generic or repeated component to the next (`OptionPicker`, `VolumeSlider`, `Cell`, `Piece`,
+  `ResultBanner`) — a `Cell`'s marks are worked out once from the whole board and handed down a point
+  at a time. What is the same for every instance and held by the store, the player's preferences, a
+  component repeated by only one parent reads itself (`Cell` wears the styles), rather than being
+  handed it 90 times. Do not make a generic leaf used in several places (`Piece`) know the application
+  store just to save its callers a prop.
 - **Something a player does that touches no intersection is a control, not a gesture.** Resting a turn
   and calling a bikjang are the two, so `PassButton` and `BikjangButton` sit in `Status`, in the row
   under the board — each enabled off a pure question the engine answers (`canPass`, `canCallBikjang`),

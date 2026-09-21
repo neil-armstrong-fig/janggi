@@ -8,10 +8,8 @@ import {MovableMark} from "@src/react/pages/game/components/board/components/int
 import {MoveHint} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/move-hint/MoveHint";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
-import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {LastMoveEnd} from "@src/react/pages/game/components/board/components/intersections/types/LastMoveEnd";
 import type {PieceLift} from "@src/react/pages/game/components/board/types/PieceLift";
-import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/intersections/types/MovableEmphasis";
 import type {Position} from "@src/game/board/types/Position";
 import {ThreatMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/threat-mark/ThreatMark";
@@ -19,11 +17,13 @@ import {cellShapeAt} from "@src/react/pages/game/components/board/components/int
 import {resolveCellStyle} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/ResolveCellStyle";
 import {clsx} from "clsx";
 import {toPositionKey} from "@src/game/board/PositionKeys";
+import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
 /**
- * One intersection. Takes its geometry from the board and its appearance from the style, and is the
- * only thing that knows how to turn a `CellStyle` into pixels — which is what lets a style be plain
- * data a user can author.
+ * One intersection. Takes its geometry and its marks from the board, and reads the player's styles and
+ * whether effects are full for itself — those are the same for every cell, so tunnelling them through
+ * `Intersections` would only be a prop each. It is the only thing that knows how to turn a `CellStyle`
+ * into pixels, which is what lets a style be plain data a user can author.
  *
  * A piece standing here is drawn over the lines rather than among them, in its own square element,
  * so it keeps its shape on a board whose cells are wider than they are tall.
@@ -40,8 +40,6 @@ import {toPositionKey} from "@src/game/board/PositionKeys";
  */
 interface Props {
   readonly position: Position;
-  readonly style: BoardStyle;
-  readonly pieceStyle: PieceSetStyle;
   readonly piece?: PieceIdentity;
   readonly selected: boolean;
   readonly canMoveTo: boolean;
@@ -63,16 +61,12 @@ interface Props {
   readonly flourish: Flourish | undefined;
   /** How long the move hint here waits before popping in, or undefined for it to appear at once. */
   readonly hintDelay: number | undefined;
-  /** Whether marks that can move — the ring round a general in check — should. */
-  readonly pulsing: boolean;
   readonly onTap: (position: Position) => void;
   readonly onHover: (position: Position | undefined) => void;
 }
 
 export function Cell({
   position,
-  style,
-  pieceStyle,
   piece,
   selected,
   canMoveTo,
@@ -86,10 +80,11 @@ export function Cell({
   lift,
   flourish,
   hintDelay,
-  pulsing,
   onTap,
   onHover,
 }: Props): React.JSX.Element {
+  const {boardStyle: style, pieceStyle, effects} = usePreferences();
+  const pulsing = effects.full;
   const cellStyle = resolveCellStyle(style, position);
 
   return (

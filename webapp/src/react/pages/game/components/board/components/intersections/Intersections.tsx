@@ -28,9 +28,10 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * and, marked differently, those of its own army it would otherwise land on — and dispatches a completed
  * move itself.
  *
- * It reads what it draws from the store: the game, whether the player may touch it, both styles, the
- * movable-piece mark and whether effects are full. Board hands down only the state its several layers
- * coordinate — the current threat and motion — plus the page-owned sound of picking a piece up.
+ * It reads what it draws from the store: the game, whether the player may touch it, the movable-piece
+ * mark and whether effects are full. The styles it leaves to each `Cell`, which wears them itself.
+ * Board hands down only the state its several layers coordinate — the current threat and motion — plus
+ * the page-owned sound of picking a piece up.
  *
  * Every mark a cell carries is worked out here from the whole board and handed down one point at a
  * time, so a `Cell` knows only its own intersection: whether a piece there may move, whether it is the
@@ -55,7 +56,7 @@ interface Props {
 export function Intersections({threat, concealed, moment, onPickUp}: Props): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
   const dispatch = useAppDispatch();
-  const {boardStyle: style, pieceStyle, movableHighlight, effects} = usePreferences();
+  const {movableHighlight, effects} = usePreferences();
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
   // be touched until both armies have chosen. Closed while the bot is thinking too.
@@ -102,8 +103,6 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
           <Cell
             key={key}
             position={position}
-            style={style}
-            pieceStyle={pieceStyle}
             piece={pieceAt(placedPieces, position)}
             selected={heldKey === key}
             canMoveTo={canMoveTo}
@@ -117,7 +116,6 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
             lift={liftAt(key, {heldKey, hoveredKey, animated})}
             flourish={flourishes.get(key)}
             hintDelay={hintOrigin && (canMoveTo || isCovered) ? hintDelay(hintOrigin, position) : undefined}
-            pulsing={animated}
             onTap={tap}
             onHover={hover}
           />
