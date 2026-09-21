@@ -45,16 +45,31 @@ function tailOf(context: BaseAudioContext): AudioBuffer {
     const samples = tail.getChannelData(channel);
 
     for (let index = 0; index < length; index += 1) {
-      samples[index] = (Math.random() * 2 - 1) * (1 - index / length) ** DECAY;
+      const seconds = index / context.sampleRate;
+      const dyingAway = (1 - seconds / FULL_TAIL_S) ** DECAY;
+      const tapered = Math.min(1, (TAIL_S - seconds) / TAPER_S);
+
+      samples[index] = (Math.random() * 2 - 1) * dyingAway * tapered;
     }
   }
 
   return tail;
 }
 
-/** How long the room rings for, in seconds, and how steeply it dies away across that time. */
-const TAIL_S = 2.8;
+/**
+ * How long the room rings for, in seconds, and how steeply it dies away across that time.
+ *
+ * The room is cut short and not steepened: it dies along the curve of a 2.8 second room, `DECAY` and all,
+ * and is let go at 1.6, where that curve is under −20 dB, the last stretch tapering to nothing. The
+ * convolver is the dearest node the music has and its cost goes with the length of the tail, so the
+ * seconds nobody hears under the music are not paid for.
+ */
+const TAIL_S = 1.6;
+const FULL_TAIL_S = 2.8;
 const DECAY = 3;
+
+/** The end of the tail is faded over this long, so cutting it short leaves no click. */
+const TAPER_S = 0.25;
 
 /** How loud the ringing is under the music itself. */
 const WET = 0.35;

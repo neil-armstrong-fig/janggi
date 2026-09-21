@@ -6,6 +6,7 @@ import type {Cue} from "@src/audio/types/Cue";
 import type {Mood} from "@src/audio/types/Mood";
 import {channelGainFor} from "@src/audio/utils/ChannelGainFor";
 import {createConductor} from "@src/audio/music/CreateConductor";
+import {softClipCurve} from "@src/audio/soft-clip/SoftClipCurve";
 
 /** The audio device, and the two channels everything is routed through on the way to it. */
 interface Graph {
@@ -25,7 +26,9 @@ interface Graph {
  * note cannot arrive ahead of the automation meant to bring it in.
  *
  * **Two channels, faded rather than cut.** Sound effects and music each go through their own level into
- * a gentle limiter, so a capture landing on a loud bar of music does not clip. A change of volume fades
+ * a soft clip, so a capture landing on a loud bar of music is rounded off rather than clipped. It is a
+ * fixed curve and not a compressor, so it never reacts to what came before: a compressor here took short
+ * effects down by some 12 dB in Firefox, and reshaped them, while Chrome's left them alone. A change of volume fades
  * to its new level — slowly when the music first starts, so it fades in rather than arriving, and only
  * once: a later tap does not hurry it. Turning the music all the way down stops the conductor once the fade has finished,
  * so it is not left scheduling notes nobody can hear.
@@ -171,9 +174,8 @@ async function wake(context: AudioContext): Promise<boolean> {
 }
 
 function buildGraph(context: AudioContext): Graph {
-  const limiter = context.createDynamicsCompressor();
-  limiter.threshold.value = -12;
-  limiter.ratio.value = 6;
+  const softClip = context.createWaveShaper();
+  softClip.curve = softClipCurve();
 
   const effects = context.createGain();
   effects.gain.value = EFFECTS_LEVEL;
@@ -182,9 +184,9 @@ function buildGraph(context: AudioContext): Graph {
   const music = context.createGain();
   music.gain.value = 0;
 
-  effects.connect(limiter);
-  music.connect(limiter);
-  limiter.connect(context.destination);
+  effects.connect(softClip);
+  music.connect(softClip);
+  softClip.connect(context.destination);
 
   return {context, effects, music};
 }
@@ -199,10 +201,13 @@ const CALM: Mood = {tension: 0, inCheck: false, ending: "none", underWay: false}
 const LATENCY_HINT: AudioContextLatencyCategory = "playback";
 
 /**
- * Each channel at full volume: sound effects at nearly full, and music well underneath them — it is
+ * Each channel at full volume: sound effects over the music, which is well underneath them — it is
  * there to be felt, not listened to.
+ *
+ * The effects are set so the hardest strike, a heavy piece slammed down, peaks a little under full scale
+ * on its own (about 0.85, measured); at 0.9 it went past it, and only a compressor kept it from clipping.
  */
-const EFFECTS_LEVEL = 0.9;
+const EFFECTS_LEVEL = 0.55;
 const MUSIC_LEVEL = 0.35;
 
 /** How quickly a channel fades to a new volume, as a time constant in seconds. */

@@ -30,6 +30,7 @@ what each one is voiced to sound like; they are a catalogue of sounds, not a rea
 CreateAudioDirector.ts  createAudioDirector(): AudioDirector — the one object the page holds
 types/                  Cue, CueName, Mood, Ending, AudioChannels, AudioDirector — all the page sees
 utils/ChannelGainFor.ts channelGainFor(volume, full): number — a slider's volume as a gain, squared
+soft-clip/              softClipCurve() — the last stage before the speaker, in place of a compressor
 
 cues/CueVoicings.ts     how every cue is played, typed against the list of cues
 instruments/            one synthesised instrument each: WoodBlock, Janggu, Gayageum, Daegeum, Gong, Breath
