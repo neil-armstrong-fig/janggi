@@ -4,8 +4,14 @@ import {ProgressPane} from "@src/react/pages/game/components/settings/tabs/progr
 import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
 import {SettingsTabs} from "@src/react/pages/game/components/settings/components/settings-tabs/SettingsTabs";
 import {SoundPane} from "@src/react/pages/game/components/settings/tabs/sound-pane/SoundPane";
+import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {clsx} from "clsx";
 import {useState} from "react";
+
+/** Lets `Settings.tsx` set `--sheet-opacity` inline without an unnamed cast at the call site. */
+interface SheetPanelStyle extends React.CSSProperties {
+  "--sheet-opacity": string;
+}
 
 /**
  * Everything a player may choose about the game and about how it is drawn, in a sheet that slides
@@ -16,7 +22,8 @@ import {useState} from "react";
  * little see-through, so choosing a setup shows the pieces being laid out again where the thumb is
  * pressing, and a new board style or piece set is seen being worn the moment it is picked. Only the
  * panel's **background** is see-through: the text and the controls are drawn at full strength, so what
- * is behind is a suggestion and never something to read past.
+ * is behind is a suggestion and never something to read past. How much is the player's own choice, in
+ * the Look tab, since the same blur reads differently from one screen to another.
  *
  * **Four tabs, one pane at a time**, so the sheet is never one long scroll — `GamePane`, `LookPane`,
  * `SoundPane` and `ProgressPane`, each of which lays out its own settings. **Game** is what a player
@@ -44,6 +51,7 @@ interface Props {
 
 export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): React.JSX.Element {
   const [tab, setTab] = useState<SettingsTabName>("Game");
+  const {sheetOpacity} = usePreferences();
 
   return (
     <>
@@ -62,8 +70,9 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
         aria-label="Settings"
         aria-modal={open}
         inert={!open}
+        style={{"--sheet-opacity": `${sheetOpacity}%`} as SheetPanelStyle}
         className={clsx(
-          "fixed inset-x-0 bottom-0 z-20 mx-auto flex h-[60dvh] w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised/80 backdrop-blur-[1px] transition-transform duration-300 ease-out select-none not-supports-[backdrop-filter:blur(1px)]:bg-ground-raised motion-reduce:transition-none md:bg-ground-raised/95",
+          "settings-sheet-panel fixed inset-x-0 bottom-0 z-20 mx-auto flex h-[60dvh] w-full max-w-lg flex-col rounded-t-2xl backdrop-blur-[1px] transition-transform duration-300 ease-out select-none not-supports-[backdrop-filter:blur(1px)]:bg-ground-raised motion-reduce:transition-none",
           open ? "translate-y-0 shadow-2xl shadow-black" : "translate-y-full",
         )}
       >

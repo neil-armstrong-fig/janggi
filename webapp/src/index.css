@@ -36,6 +36,19 @@
     /* Keep content clear of notches and home indicators when installed. */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
+
+  /*
+   * The settings sheet's own translucency, chosen by the player rather than fixed per device.
+   * `--sheet-opacity` is set inline by `Settings.tsx`; `color-mix` turns it into the same kind of
+   * result a Tailwind `/N` opacity modifier gives a fixed value, but continuously. This sits in
+   * `base` deliberately: Tailwind's `utilities` layer, where
+   * `not-supports-[backdrop-filter]:bg-ground-raised` compiles to, always wins over `base` no matter
+   * the source order, so that fallback for browsers without `backdrop-filter` stays unaffected by
+   * this rule.
+   */
+  .settings-sheet-panel {
+    background-color: color-mix(in srgb, var(--color-ground-raised) var(--sheet-opacity, 100%), transparent);
+  }
 }
 
 /*

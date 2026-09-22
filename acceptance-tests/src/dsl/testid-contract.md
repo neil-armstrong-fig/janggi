@@ -43,7 +43,8 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `*Playwright` must switch shape. Each of the player's own styles is a `custom-style` row carrying
   `data-kind` and `data-name`, holding `custom-style-copy`, `custom-style-key` and
   `custom-style-delete`. The two volumes, `sound-effects` and `music`, are an `<id>-volume` range input and an
-  `<id>-mute` button whose `aria-pressed` is what "muted" means to a spec.
+  `<id>-mute` button whose `aria-pressed` is what "muted" means to a spec. The settings sheet's own
+  opacity is the same range-input shape, without a mute: `sheet-opacity`.
 - **On a piece** — `data-piece`, written `<side>-<type>` and parsed back into a `Piece` by
   `@janggi/shared`. The pieces in a `taken-<side>` tray carry it too.
 - **On a cell** — `aria-pressed` (the piece in hand), `data-can-move-to` (a legal destination),
