@@ -19,8 +19,8 @@ export function Hero(): React.JSX.Element {
         </h1>
 
         <p className="max-w-2xl text-lg leading-relaxed text-wood/80 sm:text-xl">
-          Learn the board, all seven pieces and the rules that make Korea’s chess game distinctive. Then put them into
-          practice immediately against a friend or the computer.
+          Learn the board, all seven pieces and the rules that make it distinctive. Then play against a friend or the
+          computer.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -51,7 +51,7 @@ export function Hero(): React.JSX.Element {
           </a>
         </div>
 
-        <p className="mt-3 text-xs text-wood/55">No account · Play in your browser · Available offline once saved</p>
+        <p className="mt-3 text-xs text-wood/55">No account needed</p>
       </div>
 
       <aside

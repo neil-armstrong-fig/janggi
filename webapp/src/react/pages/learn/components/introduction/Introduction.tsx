@@ -13,9 +13,9 @@ export function Introduction(): React.JSX.Element {
 
       <div className="grid gap-6 text-base leading-relaxed text-wood/80 sm:text-lg md:grid-cols-2 md:gap-12">
         <p>
-          <strong>Janggi (장기)</strong>, usually called Korean chess in English, is a two-player strategy board game
-          from Korea. It belongs to the same chess family as chess, xiangqi and shogi, but its open board, long
-          elephants, jumping cannons and palace diagonals give it a tactical character of its own.
+          <strong>Janggi (장기)</strong>, usually called Korean chess in English, is a two-player strategy board game.
+          It belongs to the same chess family as chess, xiangqi and shogi, but plays differently: an open board, long
+          elephants, jumping cannons and active palace diagonals.
         </p>
 
         <p>

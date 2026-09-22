@@ -15,7 +15,7 @@ export function Winning(): React.JSX.Element {
         <p>
           Captures happen by moving onto an enemy piece. Unlike chess, stalemate does not end a Janggi game because a
           player may skip a turn. In this app, two passes in a row stop the game and the points from the pieces still on
-          the board decide the result. Han begins scored games with an extra 1.5 points.
+          the board decide the result.
         </p>
       </div>
     </section>
