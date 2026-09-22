@@ -46,10 +46,7 @@ export function MoveHint({overPiece, bikjangRisk, hintsStyle, delay}: Props): Re
       {!overPiece && (
         <span
           data-testid="move-hint"
-          className={clsx(
-            "rounded-full",
-            bikjangRisk ? "flex h-[64%] items-center justify-center" : "block h-[30%]",
-          )}
+          className={clsx("rounded-full", bikjangRisk ? "flex h-[64%] items-center justify-center" : "block h-[30%]")}
           style={{aspectRatio: 1, background: tintOf(hintsStyle.colour, 70), boxShadow: edge(hintsStyle)}}
         >
           {bikjangRisk && <BikjangLabel />}
