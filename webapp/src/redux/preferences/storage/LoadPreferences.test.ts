@@ -16,6 +16,7 @@ const chosen: PreferencesSliceState = {
   effects: "Reduced",
   soundEffectsVolume: 40,
   musicVolume: 0,
+  sheetOpacity: 85,
 };
 
 it("starts from the defaults when nothing has been kept", () => {
@@ -64,6 +65,15 @@ it("puts back the default for a volume outside the slider's range", () => {
   );
   expect(loadPreferences(storageHolding({...chosen, soundEffectsVolume: "loud"})).soundEffectsVolume).toBe(
     defaultPreferences().soundEffectsVolume,
+  );
+});
+
+it("puts back the default for a sheet opacity outside the slider's range", () => {
+  expect(loadPreferences(storageHolding({...chosen, sheetOpacity: 40})).sheetOpacity).toBe(
+    defaultPreferences().sheetOpacity,
+  );
+  expect(loadPreferences(storageHolding({...chosen, sheetOpacity: "see-through"})).sheetOpacity).toBe(
+    defaultPreferences().sheetOpacity,
   );
 });
 

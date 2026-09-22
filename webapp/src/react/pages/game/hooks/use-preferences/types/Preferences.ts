@@ -2,6 +2,7 @@ import type {BikjangHint} from "@src/react/pages/game/types/BikjangHint";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {Effects} from "@src/react/pages/game/types/Effects";
 import type {MovableHighlight} from "@src/react/pages/game/types/MovableHighlight";
+import type {Opacity} from "@janggi/shared/janggi/settings/Opacity";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 
@@ -20,4 +21,5 @@ export interface Preferences {
   readonly effects: Effects;
   readonly soundEffectsVolume: Volume;
   readonly musicVolume: Volume;
+  readonly sheetOpacity: Opacity;
 }
