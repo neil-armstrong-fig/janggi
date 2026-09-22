@@ -163,12 +163,16 @@ others. `EnterWorktree` makes one under `.claude/worktrees/<name>` on branch `wo
    `pnpm test:bot-games` when the bot is involved.
 5. **Stop, and leave the work uncommitted.** Say what changed and what you ran — the branch is
    reviewed and committed by hand.
-6. **Merge from the main checkout only, once that commit exists**
-   (`git -C /path/to/main-checkout merge worktree-<name>`) — expect a real merge, not a
-   fast-forward. **A clean text merge proves nothing**: re-run `pnpm checks` (and the acceptance suite
-   where both sides touched the same area), then tear down: `git worktree remove
-   .claude/worktrees/<name>` and `git branch -d worktree-<name>` (`ExitWorktree` is a no-op against a
-   worktree from an earlier session).
+6. **Integrate from the main checkout only, once that commit exists.** Default to a real merge
+   (`git -C /path/to/main-checkout merge worktree-<name>`), not a fast-forward — it's the safer choice
+   where main may have moved on. For a linear history instead, rebase the worktree branch onto main
+   first (`git rebase main` on `worktree-<name>`) and fast-forward main onto the result
+   (`git merge --ff-only worktree-<name>`); ask before rewriting a worktree branch that another
+   worktree or session might still be building on. **A clean text merge proves nothing**: re-run
+   `pnpm checks` (and the acceptance suite where both sides touched the same area) from the main
+   checkout after either route, then tear down: `git worktree remove .claude/worktrees/<name>` and
+   `git branch -d worktree-<name>` (`ExitWorktree` is a no-op against a worktree from an earlier
+   session).
 7. **Kill any dev server you started by process, not wrapper** — `pkill -f "vite.*--port <port>"`, or
    the next `--strictPort` start fails with "Port is already in use".
 
