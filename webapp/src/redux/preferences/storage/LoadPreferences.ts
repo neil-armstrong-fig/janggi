@@ -1,6 +1,7 @@
 import {BIKJANG_HINT_NAMES} from "@janggi/shared/janggi/settings/BikjangHintName";
 import {EFFECTS_NAMES} from "@janggi/shared/janggi/settings/EffectsName";
 import {FULL_VOLUME, MUTED_VOLUME} from "@janggi/shared/janggi/settings/Volume";
+import {FULL_OPACITY, MINIMUM_OPACITY} from "@janggi/shared/janggi/settings/Opacity";
 import {MOVABLE_HIGHLIGHT_NAMES} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import {PREFERENCES_STORAGE_KEY} from "@src/redux/preferences/storage/PreferencesStorageKey";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -8,6 +9,7 @@ import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 import {defaultPreferences} from "@src/redux/preferences/default-preferences/DefaultPreferences";
 import {isAmong} from "@src/redux/untrusted/IsAmong";
 import {isFiniteNumber} from "@src/redux/untrusted/IsFiniteNumber";
+import {isNumberBetween} from "@src/redux/untrusted/IsNumberBetween";
 import {isObject} from "@src/redux/untrusted/IsObject";
 import {readJson} from "@src/redux/device-storage/ReadJson";
 
@@ -26,7 +28,8 @@ export function loadPreferences(storage: Pick<Storage, "getItem"> | undefined): 
   const defaults = defaultPreferences();
   if (!isObject(stored)) return defaults;
 
-  const {boardStyle, pieceSet, movableHighlight, bikjangHint, effects, soundEffectsVolume, musicVolume} = stored;
+  const {boardStyle, pieceSet, movableHighlight, bikjangHint, effects, soundEffectsVolume, musicVolume, sheetOpacity} =
+    stored;
 
   return {
     boardStyle: isStyleName(boardStyle) ? boardStyle : defaults.boardStyle,
@@ -36,6 +39,7 @@ export function loadPreferences(storage: Pick<Storage, "getItem"> | undefined): 
     effects: isAmong(EFFECTS_NAMES, effects) ? effects : defaults.effects,
     soundEffectsVolume: isVolume(soundEffectsVolume) ? soundEffectsVolume : defaults.soundEffectsVolume,
     musicVolume: isVolume(musicVolume) ? musicVolume : defaults.musicVolume,
+    sheetOpacity: isNumberBetween(sheetOpacity, MINIMUM_OPACITY, FULL_OPACITY) ? sheetOpacity : defaults.sheetOpacity,
   };
 }
 

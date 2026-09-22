@@ -6,6 +6,7 @@ import {
   musicVolumeChanged,
   pieceSetChosen,
   preferencesReducer,
+  sheetOpacityChanged,
   soundEffectsVolumeChanged,
 } from "@src/redux/preferences/PreferencesSlice";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -20,6 +21,7 @@ it("starts on the classic board and the modern set, with every mark, motion and 
     effects: "Full",
     soundEffectsVolume: 100,
     musicVolume: 100,
+    sheetOpacity: 90,
   });
 });
 
@@ -58,6 +60,10 @@ it("plays the sound effects at the volume chosen", () => {
 
 it("plays the music at the volume chosen", () => {
   expect(preferencesReducer(initial(), musicVolumeChanged(25))).toEqual({...initial(), musicVolume: 25});
+});
+
+it("keeps the sheet at the opacity chosen", () => {
+  expect(preferencesReducer(initial(), sheetOpacityChanged(85))).toEqual({...initial(), sheetOpacity: 85});
 });
 
 function initial(): PreferencesSliceState {
