@@ -1,4 +1,4 @@
-import type {Page} from "@playwright/test";
+import type {CDPSession, Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 import type {InstallationAppearance, InstallationIcon} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {InstallationManifest} from "@src/dsl/janggi/types/InstallationManifest";
@@ -30,6 +30,19 @@ const ENGINE_MAY_ARRIVE = "janggiBotEngineMayArrive";
  * what turns it into a sentence about the intention.
  */
 export class JanggiPlaywright extends BasePage {
+  /**
+   * Holds the one CDP session that toggles the service worker bypass on and off, against the "no
+   * state between calls" rule every other `*Playwright` follows — Chromium keeps that bypass per
+   * attaching session rather than per page, so a second session's `false` does not cancel a first
+   * session's `true`; only the session that set it can unset it. It exists for exactly that one
+   * pairing (`reachTheEngineOnlyThroughTheNetwork` / `restoreTheBotsEngine`) and nothing reads it
+   * as a signal of anything the app itself is doing. Safe against the fixture's own reordering
+   * concern too: a fresh `JanggiPlaywright` is built for every test, so nothing here can be stale
+   * from one test to the next — only from one call to the next within the same test, which this
+   * one pairing requires by nature.
+   */
+  private cdpSession: CDPSession | undefined;
+
   constructor(page: Page) {
     super(page);
   }
@@ -75,22 +88,31 @@ export class JanggiPlaywright extends BasePage {
    *
    * What lets a held request go is a flag on the page, so no memory of the hold is kept here. The routes
    * are then taken off only once the handlers still running have finished: switching interception off
-   * under a request it has paused fails that request.
+   * under a request it has paused fails that request. The service worker bypass is switched off too — the
+   * engine's own script spawns a worker once it runs, and on `:production` that worker script needs the
+   * `Cross-Origin-Embedder-Policy` header only the service worker adds; left bypassed, that fetch would
+   * reach a host sending no headers at all and the worker would be blocked from starting.
    */
   async restoreTheBotsEngine(): Promise<void> {
     await this.page.evaluate(name => Reflect.set(globalThis, name, true), ENGINE_MAY_ARRIVE);
     await this.page.unrouteAll({behavior: "wait"});
+    await this.setServiceWorkerBypass(false);
   }
 
   /**
    * Where the app's service worker is running it answers the engine's script out of its precache, and a
    * route on the page never sees the request. Bypassing it sends every request over the network instead —
-   * and the server sends the isolation headers itself, so the page stays isolated.
+   * which on `:production` means those requests miss the isolation headers only the service worker adds,
+   * so it must come off again before the engine's own worker script is fetched (`restoreTheBotsEngine`).
    */
   private async reachTheEngineOnlyThroughTheNetwork(): Promise<void> {
-    const session = await this.page.context().newCDPSession(this.page);
-    await session.send("Network.enable");
-    await session.send("Network.setBypassServiceWorker", {bypass: true});
+    await this.setServiceWorkerBypass(true);
+  }
+
+  private async setServiceWorkerBypass(bypass: boolean): Promise<void> {
+    this.cdpSession ??= await this.page.context().newCDPSession(this.page);
+    await this.cdpSession.send("Network.enable");
+    await this.cdpSession.send("Network.setBypassServiceWorker", {bypass});
   }
 
   async reload(): Promise<void> {
