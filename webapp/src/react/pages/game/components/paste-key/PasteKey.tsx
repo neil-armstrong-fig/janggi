@@ -58,7 +58,11 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
           data-testid={`${id}-message`}
           data-accepted={pasteResult.accepted}
           role="status"
-          className={clsx("text-xs break-words", pasteResult.accepted ? "text-cho" : "text-danger")}
+          className={clsx(
+            "text-xs break-words",
+            pasteResult.accepted && "text-cho",
+            !pasteResult.accepted && "text-danger",
+          )}
         >
           {pasteResult.message}
         </p>

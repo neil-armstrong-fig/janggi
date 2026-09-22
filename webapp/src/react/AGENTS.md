@@ -104,8 +104,9 @@ painted, and say so.
   is on you.
 - **Two conditionals rather than a ternary** when picking between JSX elements — a ternary forces a
   reader to hold both branches at once. A discriminated union narrows correctly in each branch, so
-  nothing is lost. A ternary is still right for a value (a class name, a colour), just not for
-  choosing a component.
+  nothing is lost. A ternary is still right for a plain value, such as a colour — a class name goes
+  through `clsx`'s paired `flag && "class"` / `!flag && "class"` style instead (webapp `AGENTS.md`),
+  never a ternary, and neither does choosing a component.
 
 ## Decided against
 

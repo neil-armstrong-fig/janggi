@@ -34,7 +34,8 @@ export function ArmySwitch({showing, onShow}: Props): React.JSX.Element {
             onClick={() => onShow(side)}
             className={clsx(
               "min-h-11 flex-1 cursor-pointer rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 motion-reduce:transition-none",
-              side === showing ? "bg-wood text-ink shadow" : "text-white/70 hover:bg-white/10",
+              side === showing && "bg-wood text-ink shadow",
+              side !== showing && "text-white/70 hover:bg-white/10",
             )}
           >
             {sideName(side)}

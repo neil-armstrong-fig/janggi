@@ -62,7 +62,8 @@ export function TurnIndicator(): React.JSX.Element {
       aria-live="polite"
       className={clsx(
         "h-6 shrink-0 self-center rounded-full px-3 text-center text-xs leading-6 font-semibold tracking-wide uppercase transition-colors duration-300 motion-reduce:transition-none",
-        engineFailed ? "bg-danger/20 text-danger" : toneOf(status),
+        engineFailed && "bg-danger/20 text-danger",
+        !engineFailed && toneOf(status),
       )}
     >
       {/* Keyed by the words, so each new announcement bumps from the start; the live region itself

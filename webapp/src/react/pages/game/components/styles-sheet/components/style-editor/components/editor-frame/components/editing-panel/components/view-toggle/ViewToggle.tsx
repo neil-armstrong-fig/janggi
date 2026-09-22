@@ -20,7 +20,8 @@ export function ViewToggle({styleView, onView}: Props): React.JSX.Element {
           onClick={() => onView(option)}
           className={clsx(
             "h-8 flex-1 cursor-pointer rounded-md text-xs capitalize",
-            styleView === option ? "bg-wood font-semibold text-ink" : "text-white/70 hover:bg-white/10",
+            styleView === option && "bg-wood font-semibold text-ink",
+            styleView !== option && "text-white/70 hover:bg-white/10",
           )}
         >
           {option === "raw" ? "Raw JSON" : "Controls"}
