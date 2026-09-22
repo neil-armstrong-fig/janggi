@@ -12,7 +12,8 @@ import {defaultPreferences} from "@src/redux/preferences/default-preferences/Def
 import {pieceSetPrice} from "@src/redux/progress/unlocks/PieceSetPrice";
 
 /**
- * The styles and options the store's preferences name, and the two volumes as they are.
+ * The styles and options the store's preferences name, and the two volumes and the sheet's opacity as
+ * they are.
  *
  * A style is worn only where the player may wear it — a built-in their XP has unlocked, or one of their
  * own — and `xp` and `customStyles` are what that is asked of.
@@ -42,6 +43,7 @@ export function preferencesFrom(
     effects: namedIn(EFFECTS, names.effects),
     soundEffectsVolume: names.soundEffectsVolume,
     musicVolume: names.musicVolume,
+    sheetOpacity: names.sheetOpacity,
   };
 }
 

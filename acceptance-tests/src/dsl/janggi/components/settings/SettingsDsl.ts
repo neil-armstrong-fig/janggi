@@ -9,6 +9,7 @@ import {InstallButtonDsl} from "@src/dsl/janggi/components/settings/components/i
 import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
 import {MusicSettingDsl} from "@src/dsl/janggi/components/settings/components/music-setting/MusicSettingDsl";
+import {OpacitySettingDsl} from "@src/dsl/janggi/components/settings/components/opacity-setting/OpacitySettingDsl";
 import {OpponentSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-setting/OpponentSettingDsl";
 import {SoundEffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/sound-effects-setting/SoundEffectsSettingDsl";
 import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
@@ -52,6 +53,7 @@ export class SettingsDsl {
   readonly botStrength: BotStrengthSettingDsl;
   readonly yourSide: YourSideSettingDsl;
   readonly effects: EffectsSettingDsl;
+  readonly opacity: OpacitySettingDsl;
   readonly soundEffects: SoundEffectsSettingDsl;
   readonly music: MusicSettingDsl;
   readonly progress: ProgressSettingDsl;
@@ -71,6 +73,7 @@ export class SettingsDsl {
     this.botStrength = new BotStrengthSettingDsl(page);
     this.yourSide = new YourSideSettingDsl(page);
     this.effects = new EffectsSettingDsl(page);
+    this.opacity = new OpacitySettingDsl(page);
     this.soundEffects = new SoundEffectsSettingDsl(page);
     this.music = new MusicSettingDsl(page);
     this.progress = new ProgressSettingDsl(page);
