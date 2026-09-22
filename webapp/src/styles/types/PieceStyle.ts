@@ -54,6 +54,11 @@ export interface PieceInlayStyle {
  */
 export type PieceGlyphStyle = CharacterGlyphStyle | PictographGlyphStyle;
 
+/** Listed as well as typed, because a set somebody else wrote has its shape checked against the list. */
+export const PIECE_GLYPH_KINDS = ["character", "pictograph"] as const;
+
+export type PieceGlyphKind = (typeof PIECE_GLYPH_KINDS)[number];
+
 export interface CharacterGlyphStyle {
   readonly kind: "character";
   readonly characters: CharacterSet;

@@ -1,96 +1,49 @@
-import {DslError} from "@src/dsl/errors/DslError";
 import type {Page} from "@playwright/test";
+import {OwnStylesDsl} from "@src/dsl/janggi/components/styles-sheet/components/own-styles/OwnStylesDsl";
+import {StyleEditorDsl} from "@src/dsl/janggi/components/styles-sheet/components/style-editor/StyleEditorDsl";
+import {StyleImporterDsl} from "@src/dsl/janggi/components/styles-sheet/components/style-importer/StyleImporterDsl";
 import type {StyleKind} from "@janggi/shared/janggi/settings/StyleKind";
-import {StylesSheetPlaywright} from "@src/dsl/janggi/components/styles-sheet/playwright/StylesSheetPlaywright";
+import {StyleStarterDsl} from "@src/dsl/janggi/components/styles-sheet/components/style-starter/StyleStarterDsl";
 
 /**
- * The player's own board styles and piece sets, reached as `janggi.stylesSheet` — importing a style
- * somebody shared, sharing one back, deleting one, and making one of their own.
+ * The player's own styles, reached as `janggi.stylesSheet` — a sheet that slides up over the game,
+ * opened from the Appearance section of the settings sheet, which it replaces on screen.
+ *
+ * One member per part of the sheet, so a spec says which one it means before it says what to do with
+ * it: `ownStyles` lists what the player has, `styleImporter` adds one from a shared key, `styleStarter`
+ * opens the editor on a style, and `styleEditor` is what changes it — itself divided the same way its
+ * `tools`, `preview` and `controls` are.
+ *
+ * No member of its own: opening and closing the sheet is common to every part of it, so it lives on
+ * `StylesSheetComponent`, which each child's `*Playwright` extends rather than holds, and there is
+ * nothing left here that belongs to no single child except `makeStyle`.
  */
 export class StylesSheetDsl {
-  private readonly styles: StylesSheetPlaywright;
+  readonly ownStyles: OwnStylesDsl;
+  readonly styleImporter: StyleImporterDsl;
+  readonly styleStarter: StyleStarterDsl;
+  readonly styleEditor: StyleEditorDsl;
 
   constructor(page: Page) {
-    this.styles = new StylesSheetPlaywright(page);
-  }
-
-  /** Pastes a board or piece set key into the import box and imports it. */
-  async importStyle(key: string): Promise<void> {
-    try {
-      await this.styles.importStyle(key);
-    } catch (error) {
-      throw new DslError("Failed to import a style", error);
-    }
-  }
-
-  async isImportRefused(): Promise<boolean> {
-    try {
-      return await this.styles.isImportRefused();
-    } catch (error) {
-      throw new DslError("Failed to read whether the style was refused", error);
-    }
-  }
-
-  /** What the player was told about the last style they imported. */
-  async getImportMessage(): Promise<string> {
-    try {
-      return await this.styles.getImportMessage();
-    } catch (error) {
-      throw new DslError("Failed to read what the player was told about the import", error);
-    }
-  }
-
-  async getOwnStyleNames(kind: StyleKind): Promise<readonly string[]> {
-    try {
-      return await this.styles.getOwnStyleNames(kind);
-    } catch (error) {
-      throw new DslError(`Failed to read the player's own ${kind.toLowerCase()} styles`, error);
-    }
-  }
-
-  /** The key the player would copy to share one of their own styles. */
-  async getStyleKey(kind: StyleKind, name: string): Promise<string> {
-    try {
-      return await this.styles.getStyleKey(kind, name);
-    } catch (error) {
-      throw new DslError(`Failed to read the key for "${name}"`, error);
-    }
-  }
-
-  async deleteStyle(kind: StyleKind, name: string): Promise<void> {
-    try {
-      await this.styles.deleteStyle(kind, name);
-    } catch (error) {
-      throw new DslError(`Failed to delete "${name}"`, error);
-    }
-  }
-
-  async canMakeStyles(): Promise<boolean> {
-    try {
-      return await this.styles.canMakeStyles();
-    } catch (error) {
-      throw new DslError("Failed to check whether the player may make a style", error);
-    }
+    this.ownStyles = new OwnStylesDsl(page);
+    this.styleImporter = new StyleImporterDsl(page);
+    this.styleStarter = new StyleStarterDsl(page);
+    this.styleEditor = new StyleEditorDsl(page);
   }
 
   /**
-   * Makes a style in the editor, starting from one the player has, under `name` — with the JSON as the
-   * editor fills it in, or replaced by `json` where one is given.
+   * Makes a style in the editor, starting from one the player has, under `name` — as the editor fills it
+   * in, or with its raw JSON replaced by `json` where one is given — and saves it. Reaches across
+   * `styleStarter` and `styleEditor`, which is why it is here rather than on either.
    */
-  async makeStyle(kind: StyleKind, from: string, name: string, json?: string): Promise<void> {
-    try {
-      await this.styles.makeStyle(kind, from, name, json);
-    } catch (error) {
-      throw new DslError(`Failed to make the style "${name}"`, error);
-    }
-  }
+  async makeStyle(styleKind: StyleKind, from: string, name: string, json?: string): Promise<void> {
+    await this.styleStarter.start(styleKind, from);
 
-  /** Whether the editor refused the last style saved in it. */
-  async isEditorRefused(): Promise<boolean> {
-    try {
-      return await this.styles.isEditorRefused();
-    } catch (error) {
-      throw new DslError("Failed to read whether the editor refused the style", error);
+    if (json !== undefined) {
+      await this.styleEditor.showRaw();
+      await this.styleEditor.setRaw(json);
     }
+
+    await this.styleEditor.save(name);
   }
 }

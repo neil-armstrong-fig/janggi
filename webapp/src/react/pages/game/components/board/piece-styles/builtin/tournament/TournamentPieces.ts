@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {MODERN_SANS} from "@src/react/pages/game/components/board/piece-styles/builtin/utils/ModernSet";
 import {HANJA_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HanjaCharacters";
@@ -34,12 +35,13 @@ const GENERAL_SIZE = 0.9;
  *
  * **Its rim is thinner than it looks like it should be, and the pieces sit a little inside the cell.** A
  * piece is drawn at radius 46 of a 100-wide box, and a piece under the pointer has its stroke multiplied
- * (`EMPHASISED_STROKE_SCALE`) — a 5-wide rim became 11 and put the outer edge past the box, which clipped
+ * (the set's `handling.hoverOutline`) — a 5-wide rim became 11 and put the outer edge past the box, which clipped
  * it flat at top, bottom and both sides. Three leaves room for that, and the smaller sizes leave room for
  * the moulded look without crowding the point the piece stands on.
  */
 export const tournamentPieces: BuiltInPieceSetStyle = {
   name: "Tournament",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {
     han: plastic("han", STANDARD_SIZE),
     cho: plastic("cho", STANDARD_SIZE),

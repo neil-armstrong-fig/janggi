@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {expect, it} from "vitest";
 import {mergedAll} from "@src/redux/custom-styles/joining/MergedAll";
@@ -25,6 +26,7 @@ it("numbers two styles of one name carried in the same save", () => {
 function board(name: string, surface = "#ffffff"): BoardStyle {
   return {
     name,
+    ...DEFAULT_BOARD_MARKS,
     surface,
     defaultCell: {stroke: "#000000", strokeWidth: 1},
     lastMove: {wash: "rgba(0, 0, 0, 0.2)", brackets: "#000000"},

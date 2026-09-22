@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {HANJA_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HanjaCharacters";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
@@ -18,6 +19,7 @@ const LACQUER: Record<Side, string> = {
  */
 export const dancheongPieces: BuiltInPieceSetStyle = {
   name: "Dancheong",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {
     han: lacquered("han", 0.82),
     cho: lacquered("cho", 0.82),

@@ -35,21 +35,21 @@ given("a player with no XP is handed styles somebody else made", () => {
 
   when("they import a board", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.stylesSheet.importStyle(encodeKey("board", SHARED_BOARD));
+      await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
     });
 
     then("it is taken", async ({janggi}) => {
-      expect(await janggi.stylesSheet.isImportRefused()).toBe(false);
+      expect(await janggi.stylesSheet.styleImporter.isRefused()).toBe(false);
     });
 
     then("it is among their own boards", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Board")).toEqual(["Midnight"]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Board")).toEqual(["Midnight"]);
     });
   });
 
   when("they import a board and wear it", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.stylesSheet.importStyle(encodeKey("board", SHARED_BOARD));
+      await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
       await janggi.settings.board.setOwnStyleTo("Midnight");
     });
 
@@ -60,12 +60,12 @@ given("a player with no XP is handed styles somebody else made", () => {
 
   when("they import a piece set and wear it", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.stylesSheet.importStyle(encodeKey("pieces", SHARED_PIECES));
+      await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", SHARED_PIECES));
       await janggi.settings.pieceSet.setOwnStyleTo("Letters");
     });
 
     then("it is among their own piece sets", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Pieces")).toEqual(["Letters"]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Pieces")).toEqual(["Letters"]);
     });
 
     then("the pieces carry its writing", async ({janggi}) => {
@@ -76,67 +76,67 @@ given("a player with no XP is handed styles somebody else made", () => {
   when("they import a board that would load a picture from somewhere else", () => {
     beforeEach(async ({janggi}) => {
       const fetching = {...SHARED_BOARD, surface: "url(https://example.com/picture.png)"};
-      await janggi.stylesSheet.importStyle(encodeKey("board", fetching));
+      await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", fetching));
     });
 
     then("it is refused", async ({janggi}) => {
-      expect(await janggi.stylesSheet.isImportRefused()).toBe(true);
+      expect(await janggi.stylesSheet.styleImporter.isRefused()).toBe(true);
     });
 
     then("they are told which part of it is to blame", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getImportMessage()).toContain("style.surface");
+      expect(await janggi.stylesSheet.styleImporter.getMessage()).toContain("style.surface");
     });
 
     then("nothing is added", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Board")).toEqual([]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Board")).toEqual([]);
     });
   });
 
   when("they paste a save key where a style key goes", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.stylesSheet.importStyle(saveKeyWith({xp: 0}));
+      await janggi.stylesSheet.styleImporter.importStyle(saveKeyWith({xp: 0}));
     });
 
     then("it is refused", async ({janggi}) => {
-      expect(await janggi.stylesSheet.isImportRefused()).toBe(true);
+      expect(await janggi.stylesSheet.styleImporter.isRefused()).toBe(true);
     });
   });
 });
 
 given("a player who has imported a board", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.stylesSheet.importStyle(encodeKey("board", SHARED_BOARD));
+    await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
   });
 
   when("they copy its key, delete it, and import the key they copied", () => {
     beforeEach(async ({janggi}) => {
-      const key = await janggi.stylesSheet.getStyleKey("Board", "Midnight");
-      await janggi.stylesSheet.deleteStyle("Board", "Midnight");
-      await janggi.stylesSheet.importStyle(key);
+      const key = await janggi.stylesSheet.ownStyles.getKey("Board", "Midnight");
+      await janggi.stylesSheet.ownStyles.delete("Board", "Midnight");
+      await janggi.stylesSheet.styleImporter.importStyle(key);
     });
 
     then("it is back among their own boards", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Board")).toEqual(["Midnight"]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Board")).toEqual(["Midnight"]);
     });
   });
 
   when("they delete it", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.stylesSheet.deleteStyle("Board", "Midnight");
+      await janggi.stylesSheet.ownStyles.delete("Board", "Midnight");
     });
 
     then("it is gone", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Board")).toEqual([]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Board")).toEqual([]);
     });
   });
 
   when("they import it a second time", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.stylesSheet.importStyle(encodeKey("board", SHARED_BOARD));
+      await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
     });
 
     then("both are kept, the second under a name of its own", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Board")).toEqual(["Midnight", "Midnight (2)"]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Board")).toEqual(["Midnight", "Midnight (2)"]);
     });
   });
 });

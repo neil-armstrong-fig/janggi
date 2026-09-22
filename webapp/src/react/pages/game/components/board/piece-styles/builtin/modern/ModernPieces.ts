@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {
   GENERAL_SIZE,
@@ -26,6 +27,7 @@ const MARK: PictographGlyphStyle = {
  */
 export const modernPieces: BuiltInPieceSetStyle = {
   name: "Modern",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {
     han: {body: modernBody("han"), glyph: MARK, size: STANDARD_SIZE},
     cho: {body: modernBody("cho"), glyph: MARK, size: STANDARD_SIZE},

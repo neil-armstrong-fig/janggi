@@ -1,3 +1,5 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
@@ -61,6 +63,7 @@ it("keeps both where a save carries a different style under a name the player al
 function board(name: string, surface = "#ffffff"): BoardStyle {
   return {
     name,
+    ...DEFAULT_BOARD_MARKS,
     surface,
     defaultCell: {stroke: "#000000", strokeWidth: 1},
     lastMove: {wash: "rgba(0, 0, 0, 0.2)", brackets: "#000000"},
@@ -79,7 +82,7 @@ function pieceSet(name: string): PieceSetStyle {
     size: 0.86,
   } as const;
 
-  return {name, sides: {han: piece, cho: piece}};
+  return {name, sides: {han: piece, cho: piece}, handling: DEFAULT_PIECE_HANDLING};
 }
 
 function holding(style: BoardStyle): CustomStylesSliceState {

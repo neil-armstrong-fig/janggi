@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {SaveBuilder} from "@src/redux/saves/SaveBuilder";
 import {decodeKey} from "@janggi/shared/janggi/share-keys/DecodeKey";
@@ -8,6 +9,7 @@ import {saveFrom} from "@src/redux/saves/SaveFrom";
 
 const mine: BoardStyle = {
   name: "Mine",
+  ...DEFAULT_BOARD_MARKS,
   surface: "#ffffff",
   defaultCell: {stroke: "#000000", strokeWidth: 1},
   lastMove: {wash: "rgba(0, 0, 0, 0.2)", brackets: "#000000"},

@@ -1,3 +1,4 @@
+import type {PieceHandlingStyle} from "@src/styles/types/PieceHandlingStyle";
 import type {PieceKey} from "@janggi/shared/janggi/pieces/PieceKey";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
@@ -19,6 +20,8 @@ export type SideStyles = Readonly<Record<Side, PieceStyle>>;
 export interface PieceSetStyle {
   readonly name: string;
   readonly sides: SideStyles;
+  /** What the set does when touched. Every set has one, since a piece being held must read on every set. */
+  readonly handling: PieceHandlingStyle;
   /**
    * Typed as the 14 real keys, so an override written for a piece that does not exist fails to
    * compile rather than silently never matching.

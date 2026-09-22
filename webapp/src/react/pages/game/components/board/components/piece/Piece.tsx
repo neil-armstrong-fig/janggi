@@ -65,6 +65,7 @@ export function Piece({
             "absolute inset-0 flex items-center justify-center transition-[scale,translate,filter] duration-150 ease-out motion-reduce:transition-none",
             LIFTS[lift],
           )}
+          style={lift === "held" ? {filter: `drop-shadow(0 5px 4px ${style.handling.shadow})`} : undefined}
         >
           <svg
             {...PIECE_SVG_PROPS}
@@ -74,7 +75,7 @@ export function Piece({
             aria-label={pieceName(piece)}
             style={{height: `${pieceStyle.size * 100}%`, aspectRatio: 1}}
           >
-            <PieceBody body={pieceStyle.body} strokeScale={emphasised ? EMPHASISED_STROKE_SCALE : 1} />
+            <PieceBody body={pieceStyle.body} strokeScale={emphasised ? style.handling.hoverOutline : 1} />
 
             {glyph.kind === "character" && (
               <CharacterGlyph character={characterFor(glyph.characters, piece)} glyph={glyph} />
@@ -88,14 +89,11 @@ export function Piece({
   );
 }
 
-/** Enough to read as deliberate at a glance, and not so much that a heavy set turns into a blob. */
-const EMPHASISED_STROKE_SCALE = 2.25;
-
-/** Nudged up under a pointer, and lifted clean off the board, shadow and all, while in hand. */
+/** Nudged up under a pointer, and lifted clean off the board while in hand — its shadow is the set's own. */
 const LIFTS: Record<PieceLift, string> = {
   resting: "",
   hovered: "-translate-y-[3%]",
-  held: "scale-110 drop-shadow-[0_5px_4px_rgb(0_0_0/0.45)]",
+  held: "scale-110",
 };
 
 const FLOURISHES: Record<FlourishKind, string> = {

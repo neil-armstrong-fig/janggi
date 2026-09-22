@@ -2,22 +2,21 @@ import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/components
 import {Cell} from "@src/react/pages/game/components/board/components/intersections/components/cell/Cell";
 import type {Flourish} from "@src/react/pages/game/components/board/types/Flourish";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
+import type {MarkSources} from "@src/react/pages/game/components/board/components/intersections/cell-marks/types/MarkSources";
 import type {PositionKey} from "@src/game/board/types/Position";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
 import {bikjangHintShown} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangHintShown";
 import {bikjangRisksFor} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangRisksFor";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
-import {emphasisFor} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/EmphasisFor";
+import {cellMarksAt} from "@src/react/pages/game/components/board/components/intersections/cell-marks/CellMarksAt";
 import {flourishesOf} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/FlourishesOf";
 import {hintDelay} from "@src/react/pages/game/components/board/components/intersections/motion/HintDelay";
 import {isArranged} from "@src/game/setups/IsArranged";
-import {lastMoveEndAt} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveEndAt";
 import {lastMoveOf} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveOf";
 import {liftAt} from "@src/react/pages/game/components/board/components/intersections/motion/LiftAt";
 import {movablePieces} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/MovablePieces";
 import {moved} from "@src/redux/game/GameSlice";
-import {pieceAt} from "@src/game/board/lookup/PieceAt";
 import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
 import {toPositionKey} from "@src/game/board/PositionKeys";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
@@ -102,6 +101,18 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   // The hints pop in outward from the piece in question, where there is motion to show it with.
   const hintOrigin = animated ? (selected ?? hovered) : undefined;
 
+  const markSources: MarkSources = {
+    pieces: placedPieces,
+    heldKey,
+    reachable,
+    covered: coveredKeys,
+    movable,
+    lastMove,
+    threatenedKey,
+    attackerKeys,
+    bikjangRiskKeys,
+  };
+
   const pickUp = useEffectEvent(onPickUp);
   useEffect(() => {
     if (heldKey) pickUp();
@@ -111,27 +122,20 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
     <>
       {BOARD_POSITIONS.map(position => {
         const key = toPositionKey(position);
-        const canMoveTo = reachable.has(key);
-        const isCovered = coveredKeys.has(key);
+        const cellMarks = cellMarksAt(position, markSources);
 
         return (
           <Cell
             key={key}
             position={position}
-            piece={pieceAt(placedPieces, position)}
-            selected={heldKey === key}
-            canMoveTo={canMoveTo}
-            covered={isCovered}
-            bikjangRisk={bikjangRiskKeys.has(key)}
-            movable={emphasisFor(movable, position, selected !== undefined)}
+            {...cellMarks}
             hovered={hoveredKey === key}
-            lastMove={lastMoveEndAt(lastMove, position)}
             concealed={concealed === key}
-            underAttack={threatenedKey === key}
-            attacking={attackerKeys.has(key)}
             lift={liftAt(key, {heldKey, hoveredKey, animated})}
             flourish={flourishes.get(key)}
-            hintDelay={hintOrigin && (canMoveTo || isCovered) ? hintDelay(hintOrigin, position) : undefined}
+            hintDelay={
+              hintOrigin && (cellMarks.canMoveTo || cellMarks.covered) ? hintDelay(hintOrigin, position) : undefined
+            }
             onTap={tap}
             onHover={hover}
           />

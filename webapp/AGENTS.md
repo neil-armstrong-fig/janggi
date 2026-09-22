@@ -4,10 +4,10 @@ Vite + React 19 + Redux Toolkit + Tailwind v4, client-side rendered, installable
 
 `src/game/`, `src/audio/`, `src/bot/`, `src/react/` and `src/redux/` each have their own `AGENTS.md`
 — read the one for what you're touching, in addition to this one, before you touch it. `src/styles/`
-(the shape of a board/piece style, types only), `src/sw/` (the service worker) and `src/isolation/`
-(whether a reload into cross-origin isolation may still come — asked by `main.tsx`, which does the
-reload, and by the bot's engine, which waits for it) don't have one yet; nothing folder-specific has
-accumulated there.
+(the shape of a board/piece style, the ranges its numbers may take, and what a style that says nothing
+of a part gets), `src/sw/` (the service worker) and `src/isolation/` (whether a reload into
+cross-origin isolation may still come — asked by `main.tsx`, which does the reload, and by the bot's
+engine, which waits for it) don't have one yet; nothing folder-specific has accumulated there.
 
 ## Import boundaries
 

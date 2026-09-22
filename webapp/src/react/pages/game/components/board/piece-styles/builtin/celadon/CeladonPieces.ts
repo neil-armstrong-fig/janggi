@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {HANGUL_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HangulCharacters";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
@@ -22,6 +23,7 @@ const INLAY: Record<Side, string> = {
  */
 export const celadonPieces: BuiltInPieceSetStyle = {
   name: "Celadon",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {
     han: glazed("han", 0.84),
     cho: glazed("cho", 0.84),

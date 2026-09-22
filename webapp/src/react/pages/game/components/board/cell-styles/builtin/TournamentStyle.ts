@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 import type {CellOverrides} from "@src/styles/types/BoardStyle";
 import type {CellStyle} from "@src/styles/types/CellStyle";
@@ -15,6 +16,7 @@ const LINE: CellStyle = {stroke: "#2d3b1f", strokeWidth: 1};
  */
 export const tournamentStyle: BuiltInBoardStyle = {
   name: "Tournament",
+  ...DEFAULT_BOARD_MARKS,
   surface: "#eeeed2",
   defaultCell: LINE,
   cells: checkered(),

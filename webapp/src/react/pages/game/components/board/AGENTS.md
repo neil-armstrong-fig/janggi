@@ -36,7 +36,24 @@ stays exactly where the game says it is, and a tap mid-flight lands on the point
 A mark's _colours_ may still belong to the board — whether it is drawn never does. The last move is
 the case: a `BoardStyle` carries `lastMove` (`LastMoveStyle` has why), because one warm wash vanished
 into Classic's pale wood, and a wash alone is hidden under the piece that arrived — the brackets sit
-in the corners, the one part of a cell no piece set reaches.
+in the corners, the one part of a cell no piece set reaches. The rest follow it: `bikjang` and `check`
+(the lines, and a check's rings — red vanishes on Dancheong's lacquer red), and `hints` (the move,
+cover, movable and selected marks: `colour` with a hairline of `outline`). A piece set carries
+`handling` — the held piece's shadow and how far its outline thickens under the pointer. A style that
+says nothing of them gets `DEFAULT_BOARD_MARKS` / `DEFAULT_PIECE_HANDLING`, which are how they were
+drawn before any of them could be chosen; `tintOf` makes a quieter tint of whatever colour they are.
+
+`BoardGrid` (`components/board-grid/`) is the grid and surface a board is drawn on, shared by `Board` and
+the style editor's preview, so the two are the same shape by construction — the preview's cells are the
+real `Cell`s, given the draft style through their optional style props. Its scenes are real positions the
+engine reached (`styles-sheet/.../style-editor/components/preview-scenes/`), not marks drawn by hand.
+`Board` hands it Han's and Cho's `surface` as two layers, `bottomSurface` painted over the lower half —
+always, whether or not the player has chosen the armies apart, since the two are equal and the split
+shows nothing where they have not. The style editor's preview has no half to draw, so it never passes one.
+
+`cellMarksAt` (`intersections/cell-marks/`) works out what one point is marked with from the game and
+the piece in hand, and is the one place that does — `Intersections` calls it, and so may any other
+board that shows a position (the style editor's preview).
 
 ## Rendering gotchas and style contract
 

@@ -14,6 +14,9 @@ const SHAKE_STARTS_WITHIN_MS = 1_500;
 
 const POLL_MS = 50;
 
+/** Ranks 1-5 are Han's half of the board, 6-10 Cho's — the boundary `getSurfaceAt` splits on. */
+const HALF_RANK_COUNT = 5;
+
 /**
  * How long, once every animation has finished, the page is given to catch up with it — long enough for
  * a flight that has just touched down to unhide its piece, and no longer.
@@ -206,6 +209,56 @@ export class BoardPlaywright extends BaseComponent {
     return (await label.textContent()) === "빅장";
   }
 
+  /** The colour the lines of an intersection are drawn in, as the browser resolves it — `rgb(…)`. */
+  async getLineColourAt(file: number, rank: number): Promise<string> {
+    return await this.cellLocator(file, rank)
+      .locator("svg line")
+      .first()
+      .evaluate(line => getComputedStyle(line).stroke);
+  }
+
+  /**
+   * The board's own background behind a rank, as the browser resolves it. Han's half is ranks 1-5,
+   * Cho's 6-10 — where the two armies wear different boards, the bottom half is its own layer
+   * (`${testId}-bottom-surface`); where they do not, both halves resolve to the one surface.
+   */
+  async getSurfaceAt(rank: number): Promise<string> {
+    const bottomHalf = this.page.getByTestId("board-bottom-surface");
+    const inBottomHalf = rank > HALF_RANK_COUNT && (await bottomHalf.count()) > 0;
+    const element = inBottomHalf ? bottomHalf : this.container;
+
+    return await element.evaluate(surface => {
+      // The shorthand carries layout defaults along with the colour; a gradient shows up as the
+      // image and leaves the colour transparent, so read whichever of the two is actually painting.
+      const style = getComputedStyle(surface);
+      return style.backgroundImage === "none" ? style.backgroundColor : style.backgroundImage;
+    });
+  }
+
+  /** The colour the line down the open file is drawn in, as the browser resolves it — `rgb(…)` — or undefined with no bikjang called. */
+  async getBikjangLineColour(): Promise<string | undefined> {
+    return await this.lineStyle("bikjang-line", "stroke");
+  }
+
+  /** How thick, in pixels, the line down the open file is drawn, or undefined with no bikjang called. */
+  async getBikjangLineWidth(): Promise<number | undefined> {
+    const width = await this.lineStyle("bikjang-line", "strokeWidth");
+
+    return width === undefined ? undefined : Number.parseFloat(width);
+  }
+
+  /** The colour the lines of a check are drawn in, as the browser resolves it, or undefined with no check. */
+  async getCheckLineColour(): Promise<string | undefined> {
+    return await this.lineStyle("check-lines", "stroke");
+  }
+
+  private async lineStyle(testId: string, property: "stroke" | "strokeWidth"): Promise<string | undefined> {
+    const line = this.page.getByTestId(testId).locator("line").first();
+    if ((await line.count()) === 0) return undefined;
+
+    return await line.evaluate((element, name) => getComputedStyle(element)[name], property);
+  }
+
   /**
    * Whether the piece on an intersection is drawn raised off the board, the way a piece in hand is.
    * Asked once every animation on the page has run its course, so a lift still rising or settling is
@@ -221,6 +274,39 @@ export class BoardPlaywright extends BaseComponent {
     });
 
     return scale !== "none" && Number.parseFloat(scale) > 1;
+  }
+
+  /** The colour of the dot marking a point the piece in hand may move to, as the browser resolves it. */
+  async getMoveHintColourAt(file: number, rank: number): Promise<string> {
+    return await this.cellLocator(file, rank)
+      .getByTestId("move-hint")
+      .evaluate(hint => getComputedStyle(hint).backgroundColor);
+  }
+
+  /** The colour washed over the point of the piece in hand, as the browser resolves it. */
+  async getSelectionColourAt(file: number, rank: number): Promise<string> {
+    return await this.cellLocator(file, rank)
+      .getByTestId("selected-wash")
+      .evaluate(wash => getComputedStyle(wash).backgroundColor);
+  }
+
+  /** How thick the outline of a piece's body is drawn, in the units of the piece — thicker under the pointer. */
+  async getPieceOutlineWidthAt(file: number, rank: number): Promise<number> {
+    return await this.pieceLocator(file, rank)
+      .locator("[stroke-width]")
+      .first()
+      .evaluate(body => Number.parseFloat(getComputedStyle(body).strokeWidth));
+  }
+
+  /** The shadow cast under a piece drawn raised off the board, as the browser resolves it. */
+  async getHeldShadowAt(file: number, rank: number): Promise<string> {
+    await this.motionSettled();
+
+    return await this.pieceLocator(file, rank).evaluate(piece => {
+      const lifter = piece.parentElement;
+
+      return lifter ? getComputedStyle(lifter).filter : "none";
+    });
   }
 
   /**

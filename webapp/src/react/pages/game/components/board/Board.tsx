@@ -1,7 +1,6 @@
 import {BikjangLine} from "@src/react/pages/game/components/board/components/bikjang-line/BikjangLine";
-import {CELL_ASPECT_RATIO} from "@src/react/pages/game/components/board/utils/CellAspectRatio";
+import {BoardGrid} from "@src/react/pages/game/components/board/components/board-grid/BoardGrid";
 import {CheckLines} from "@src/react/pages/game/components/board/components/check-lines/CheckLines";
-import {FILE_COUNT, RANK_COUNT} from "@src/game/board/BoardDimensions";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import {Impact} from "@src/react/pages/game/components/board/components/impact/Impact";
 import {Intersections} from "@src/react/pages/game/components/board/components/intersections/Intersections";
@@ -39,6 +38,11 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * by moving them, so every cell stays exactly where the game says it is, a tap during a flight lands on
  * the point under it, and nothing an acceptance test reads ever waits on motion.
  *
+ * The surface is handed to `BoardGrid` as Han's and Cho's halves separately, whether or not the player
+ * has chosen them apart — where they have not, both halves name the one board, and the split shows
+ * nothing. Everything that is not per-point (the marks, `check` and `bikjang`) stays the one combined
+ * style, `usePreferences().boardStyle` (`redux/AGENTS.md` has why).
+ *
  * Fills whatever box it is given and centres a correctly proportioned board inside it.
  */
 interface Props {
@@ -50,7 +54,7 @@ interface Props {
 
 export function Board({moment, onPickUp}: Props): React.JSX.Element {
   const {played, phase} = useAppSelector(state => state.game);
-  const {boardStyle: style, pieceStyle, effects} = usePreferences();
+  const {boardStyle: style, armyBoardStyles, pieceStyle, effects} = usePreferences();
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
   // be touched until both armies have chosen.
@@ -64,53 +68,39 @@ export function Board({moment, onPickUp}: Props): React.JSX.Element {
   useEndingShake({moment, game, animated, shake});
 
   return (
-    <div className="flex h-full w-full items-center justify-center" style={{containerType: "size"}}>
-      <div
-        ref={shaken}
-        data-testid="board"
-        className="relative grid"
-        style={{
-          // minmax(0, ...) rather than a bare 1fr: a track's automatic minimum is its content's
-          // min-content size, and a cell's <svg> is intrinsically square, so bare 1fr rows floor
-          // at the cell's width and the grid outgrows the aspect ratio set below.
-          gridTemplateColumns: `repeat(${FILE_COUNT}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${RANK_COUNT}, minmax(0, 1fr))`,
-          aspectRatio: BOARD_ASPECT_RATIO,
-          // Whichever of the two the parent runs out of first is what the board is sized against.
-          width: `min(100cqw, 100cqh * ${BOARD_ASPECT_RATIO})`,
-          background: style.surface,
-        }}
-      >
-        <Intersections threat={threat} concealed={concealed} moment={moment} onPickUp={onPickUp} />
+    <BoardGrid
+      testId="board"
+      surface={armyBoardStyles.han.surface}
+      bottomSurface={armyBoardStyles.cho.surface}
+      gridRef={shaken}
+    >
+      <Intersections threat={threat} concealed={concealed} moment={moment} onPickUp={onPickUp} />
 
-        <CheckLines threat={threat} momentId={momentId} drawing={animated} />
+      <CheckLines threat={threat} checkStyle={style.check} momentId={momentId} drawing={animated} />
 
-        <BikjangLine game={game} momentId={momentId} drawing={animated} />
+      <BikjangLine game={game} bikjangStyle={style.bikjang} momentId={momentId} drawing={animated} />
 
-        {flight?.taken && landing && (
-          <Impact
-            key={`impact-${flight.id}`}
-            move={flight.move}
-            taken={flight.taken}
-            style={pieceStyle}
-            seed={flight.id}
-            onStrike={shake}
-            onSettled={settle}
-          />
-        )}
+      {flight?.taken && landing && (
+        <Impact
+          key={`impact-${flight.id}`}
+          move={flight.move}
+          taken={flight.taken}
+          style={pieceStyle}
+          seed={flight.id}
+          onStrike={shake}
+          onSettled={settle}
+        />
+      )}
 
-        {flight && flying && (
-          <MoveFlight
-            key={`flight-${flight.id}`}
-            piece={flight.piece}
-            move={flight.move}
-            style={pieceStyle}
-            onLanded={land}
-          />
-        )}
-      </div>
-    </div>
+      {flight && flying && (
+        <MoveFlight
+          key={`flight-${flight.id}`}
+          piece={flight.piece}
+          move={flight.move}
+          style={pieceStyle}
+          onLanded={land}
+        />
+      )}
+    </BoardGrid>
   );
 }
-
-const BOARD_ASPECT_RATIO = (FILE_COUNT * CELL_ASPECT_RATIO) / RANK_COUNT;

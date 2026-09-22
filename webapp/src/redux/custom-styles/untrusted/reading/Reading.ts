@@ -1,3 +1,4 @@
+import type {NumberRange} from "@src/styles/limits/types/NumberRange";
 import {RefusedReading} from "@src/redux/custom-styles/untrusted/reading/RefusedReading";
 import type {Unchecked} from "@src/redux/untrusted/types/Unchecked";
 import {isAmong} from "@src/redux/untrusted/IsAmong";
@@ -80,7 +81,7 @@ export class Reading {
     return this.isGiven(key) ? this.css(key) : undefined;
   }
 
-  number(key: string, least: number, most: number): number {
+  number(key: string, {least, most}: NumberRange): number {
     const value = this.fields[key];
     if (!isNumberBetween(value, least, most)) {
       throw new RefusedReading(`${this.at(key)} should be a number from ${least} to ${most}`);
@@ -89,8 +90,8 @@ export class Reading {
     return value;
   }
 
-  optionalNumber(key: string, least: number, most: number): number | undefined {
-    return this.isGiven(key) ? this.number(key, least, most) : undefined;
+  optionalNumber(key: string, numberRange: NumberRange): number | undefined {
+    return this.isGiven(key) ? this.number(key, numberRange) : undefined;
   }
 
   among<Member extends string>(key: string, members: readonly Member[]): Member {

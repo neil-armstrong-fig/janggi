@@ -1,5 +1,6 @@
 import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/intersections/types/MovableEmphasis";
-import {clsx} from "clsx";
+import type {HintsStyle} from "@src/styles/types/board-marks/HintsStyle";
+import {tintOf} from "@src/react/pages/game/components/board/utils/TintOf";
 
 /**
  * The mark on a piece its owner may move this turn: a ring standing just outside it.
@@ -22,17 +23,19 @@ import {clsx} from "clsx";
  */
 interface Props {
   readonly emphasis: MovableEmphasis;
+  readonly hintsStyle: HintsStyle;
 }
 
-export function MovableMark({emphasis}: Props): React.JSX.Element {
+export function MovableMark({emphasis, hintsStyle}: Props): React.JSX.Element {
   return (
     <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <span
-        className={clsx(
-          "block h-[98%] rounded-full border-2 ring-1 ring-black/25",
-          emphasis === "full" ? "border-white/60" : "border-white/25",
-        )}
-        style={{aspectRatio: 1}}
+        className="block h-[98%] rounded-full border-2"
+        style={{
+          aspectRatio: 1,
+          borderColor: tintOf(hintsStyle.colour, emphasis === "full" ? 60 : 25),
+          boxShadow: `0 0 0 1px ${tintOf(hintsStyle.outline, 25)}`,
+        }}
       />
     </span>
   );

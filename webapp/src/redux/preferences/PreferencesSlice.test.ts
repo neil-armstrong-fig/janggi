@@ -1,10 +1,14 @@
 import {
+  armyBoardStyleChosen,
+  armyPieceSetChosen,
   bikjangHintChosen,
   boardStyleChosen,
+  boardStyleSplit,
   effectsChosen,
   movableHighlightChosen,
   musicVolumeChanged,
   pieceSetChosen,
+  pieceSetSplit,
   preferencesReducer,
   sheetOpacityChanged,
   soundEffectsVolumeChanged,
@@ -15,7 +19,9 @@ import {expect, it} from "vitest";
 it("starts on the classic board and the modern set, with every mark, motion and sound in full", () => {
   expect(initial()).toEqual({
     boardStyle: "Classic",
+    hanBoardStyle: undefined,
     pieceSet: "Modern",
+    hanPieceSet: undefined,
     movableHighlight: "Shown",
     bikjangHint: "Shown",
     effects: "Full",
@@ -27,6 +33,45 @@ it("starts on the classic board and the modern set, with every mark, motion and 
 
 it("wears the board style chosen", () => {
   expect(preferencesReducer(initial(), boardStyleChosen("Neon"))).toEqual({...initial(), boardStyle: "Neon"});
+});
+
+it("chooses the board for both armies at once, putting them back together after being chosen apart", () => {
+  const apart = {...initial(), boardStyle: "Neon", hanBoardStyle: "Dancheong"};
+
+  expect(preferencesReducer(apart, boardStyleChosen("Classic"))).toEqual({
+    ...initial(),
+    boardStyle: "Classic",
+    hanBoardStyle: undefined,
+  });
+});
+
+it("chooses Han's board apart from Cho's", () => {
+  expect(preferencesReducer(initial(), armyBoardStyleChosen({side: "han", name: "Dancheong"}))).toEqual({
+    ...initial(),
+    hanBoardStyle: "Dancheong",
+  });
+});
+
+it("chooses Cho's board apart from Han's, leaving Han on the board both wore", () => {
+  expect(preferencesReducer(initial(), armyBoardStyleChosen({side: "cho", name: "Neon"}))).toEqual({
+    ...initial(),
+    boardStyle: "Neon",
+    hanBoardStyle: "Classic",
+  });
+});
+
+it("leaves Han where the player put it when Cho's board is chosen", () => {
+  const apart = {...initial(), hanBoardStyle: "Dancheong"};
+
+  expect(preferencesReducer(apart, armyBoardStyleChosen({side: "cho", name: "Neon"}))).toEqual({
+    ...initial(),
+    boardStyle: "Neon",
+    hanBoardStyle: "Dancheong",
+  });
+});
+
+it("splits the armies with each still on the board both wore, which changes nothing on the board", () => {
+  expect(preferencesReducer(initial(), boardStyleSplit())).toEqual({...initial(), hanBoardStyle: "Classic"});
 });
 
 it("wears the piece set chosen", () => {
@@ -69,3 +114,42 @@ it("keeps the sheet at the opacity chosen", () => {
 function initial(): PreferencesSliceState {
   return preferencesReducer(undefined, {type: "test/initialised"});
 }
+
+it("chooses the pieces for both armies at once, putting them back together after being chosen apart", () => {
+  const apart = {...initial(), pieceSet: "Hangul", hanPieceSet: "Hanja"};
+
+  expect(preferencesReducer(apart, pieceSetChosen("Modern"))).toEqual({
+    ...initial(),
+    pieceSet: "Modern",
+    hanPieceSet: undefined,
+  });
+});
+
+it("chooses Han's pieces apart from Cho's", () => {
+  expect(preferencesReducer(initial(), armyPieceSetChosen({side: "han", name: "Hanja"}))).toEqual({
+    ...initial(),
+    hanPieceSet: "Hanja",
+  });
+});
+
+it("chooses Cho's pieces apart from Han's, leaving Han in the set both wore", () => {
+  expect(preferencesReducer(initial(), armyPieceSetChosen({side: "cho", name: "Hangul"}))).toEqual({
+    ...initial(),
+    pieceSet: "Hangul",
+    hanPieceSet: "Modern",
+  });
+});
+
+it("leaves Han where the player put them when Cho's are chosen", () => {
+  const apart = {...initial(), hanPieceSet: "Hanja"};
+
+  expect(preferencesReducer(apart, armyPieceSetChosen({side: "cho", name: "Hangul"}))).toEqual({
+    ...initial(),
+    pieceSet: "Hangul",
+    hanPieceSet: "Hanja",
+  });
+});
+
+it("splits the armies with each still in the set both wore, which changes nothing on the board", () => {
+  expect(preferencesReducer(initial(), pieceSetSplit())).toEqual({...initial(), hanPieceSet: "Modern"});
+});

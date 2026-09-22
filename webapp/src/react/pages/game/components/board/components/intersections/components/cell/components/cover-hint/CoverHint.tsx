@@ -1,4 +1,6 @@
 import {clsx} from "clsx";
+import type {HintsStyle} from "@src/styles/types/board-marks/HintsStyle";
+import {tintOf} from "@src/react/pages/game/components/board/utils/TintOf";
 
 /**
  * The mark on a point the piece in question would land on, were a piece of its own army not already
@@ -17,11 +19,12 @@ import {clsx} from "clsx";
  * Given a delay, it pops in with the move hints, spreading outward from the piece in question.
  */
 interface Props {
+  readonly hintsStyle: HintsStyle;
   /** How long to wait before popping in, in milliseconds, or undefined to appear at once. */
   readonly delay?: number;
 }
 
-export function CoverHint({delay}: Props): React.JSX.Element {
+export function CoverHint({hintsStyle, delay}: Props): React.JSX.Element {
   return (
     <span
       className={clsx(
@@ -31,9 +34,9 @@ export function CoverHint({delay}: Props): React.JSX.Element {
       style={delay === undefined ? undefined : {animationDelay: `${delay}ms`}}
     >
       <svg viewBox="0 0 100 100" className="block h-[82%]" style={{aspectRatio: 1}} aria-hidden="true">
-        <circle {...DASHED_CIRCLE} className="stroke-black/50" strokeWidth={9} />
+        <circle {...DASHED_CIRCLE} style={{stroke: tintOf(hintsStyle.outline, 50)}} strokeWidth={9} />
 
-        <circle {...DASHED_CIRCLE} className="stroke-white/90" strokeWidth={5} />
+        <circle {...DASHED_CIRCLE} style={{stroke: tintOf(hintsStyle.colour, 90)}} strokeWidth={5} />
       </svg>
     </span>
   );
