@@ -12,8 +12,8 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player takes on the bot while its engine is slow to load", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.holdBackTheBotsEngine();
     await janggi.reload();
+    await janggi.holdBackTheBotsEngine();
     await janggi.settings.opponent.setTo("Bot");
     await janggi.settings.botStrength.setTo(800);
   });
@@ -60,8 +60,8 @@ given("a player takes on the bot while its engine is slow to load", () => {
 
 given("a player takes on the bot while its engine cannot be fetched", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.cutOffTheBotsEngine();
     await janggi.reload();
+    await janggi.cutOffTheBotsEngine();
     await janggi.settings.opponent.setTo("Bot");
     await janggi.settings.botStrength.setTo(800);
     await janggi.status.waitForTheBotToLoad();
