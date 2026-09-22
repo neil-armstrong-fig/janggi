@@ -34,7 +34,8 @@ export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
           onClick={() => onSelect(name)}
           className={clsx(
             "h-12 cursor-pointer rounded-lg text-sm font-semibold tracking-wide transition-colors duration-150 motion-reduce:transition-none",
-            name === selected ? "bg-wood/15 text-wood" : "text-white/50 hover:text-white/80",
+            name === selected && "bg-wood/15 text-wood",
+            name !== selected && "text-white/50 hover:text-white/80",
           )}
         >
           {name}

@@ -43,7 +43,9 @@ reintroduce it.
   `index.css` (`bg-ground`, `text-cho`, `border-danger`, …), never hex in JSX; motion keyframes live
   there too, and genuinely global rules go in its `@layer base` block. A class list that changes with
   state is built with `clsx` — fixed classes as one string, each conditional as `flag && "class"` —
-  never a template string.
+  never a template string. **Never a ternary inside `clsx`, even for a two-way choice** — a ternary
+  forces a reader to hold both branches to find the one that applies; pair `flag && "class-a"` with
+  `!flag && "class-b"` instead, so each line reads condition-then-value on its own.
 
 ## Testing
 

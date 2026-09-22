@@ -60,7 +60,8 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
         onClick={onClose}
         className={clsx(
           "fixed inset-0 z-10 bg-black/10 transition-opacity duration-300 motion-reduce:transition-none",
-          open ? "opacity-100" : "pointer-events-none opacity-0",
+          open && "opacity-100",
+          !open && "pointer-events-none opacity-0",
         )}
       />
 
@@ -73,7 +74,8 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
         style={{"--sheet-opacity": `${sheetOpacity}%`} as SheetPanelStyle}
         className={clsx(
           "settings-sheet-panel fixed inset-x-0 bottom-0 z-20 mx-auto flex h-[60dvh] w-full max-w-lg flex-col rounded-t-2xl backdrop-blur-[1px] transition-transform duration-300 ease-out select-none not-supports-[backdrop-filter:blur(1px)]:bg-ground-raised motion-reduce:transition-none",
-          open ? "translate-y-0 shadow-2xl shadow-black" : "translate-y-full",
+          open && "translate-y-0 shadow-2xl shadow-black",
+          !open && "translate-y-full",
         )}
       >
         <header className="flex shrink-0 items-center gap-1 border-b border-white/10 px-2 pt-3 pb-1">

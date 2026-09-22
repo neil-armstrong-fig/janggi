@@ -28,7 +28,8 @@ export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element 
         key={failed ? "failed" : "loading"}
         className={clsx(
           "rounded-2xl border border-wood/40 bg-ground/85 px-6 py-3 text-center shadow-2xl shadow-black backdrop-blur-sm",
-          failed ? "animate-[notice-in_250ms_ease-out_both]" : "animate-[notice-in_250ms_ease-out_400ms_both]",
+          failed && "animate-[notice-in_250ms_ease-out_both]",
+          !failed && "animate-[notice-in_250ms_ease-out_400ms_both]",
         )}
       >
         {!failed && (

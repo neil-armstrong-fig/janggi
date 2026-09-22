@@ -35,7 +35,8 @@ export function ExplanationToggle({testId, ariaLabel, expanded, controls, onTogg
         aria-hidden
         className={clsx(
           "flex h-5 w-5 items-center justify-center rounded-full border text-[11px] leading-none font-semibold transition-colors duration-150 motion-reduce:transition-none",
-          expanded ? "border-wood bg-wood text-ink" : "border-white/30 text-white/60",
+          expanded && "border-wood bg-wood text-ink",
+          !expanded && "border-white/30 text-white/60",
         )}
       >
         ?

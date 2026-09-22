@@ -47,7 +47,7 @@ export function VolumeSlider({id, label, volume, onChange}: Props): React.JSX.El
           {label}
         </label>
 
-        <span aria-hidden className={clsx("text-xs tabular-nums", muted ? "text-danger" : "text-white/40")}>
+        <span aria-hidden className={clsx("text-xs tabular-nums", muted && "text-danger", !muted && "text-white/40")}>
           {muted ? "Muted" : `${volume}%`}
         </span>
       </div>
@@ -61,7 +61,8 @@ export function VolumeSlider({id, label, volume, onChange}: Props): React.JSX.El
           onClick={toggleMute}
           className={clsx(
             "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors duration-150 hover:bg-white/10 motion-reduce:transition-none",
-            muted ? "text-danger" : "text-white/70",
+            muted && "text-danger",
+            !muted && "text-white/70",
           )}
         >
           <SpeakerIcon volume={volume} />

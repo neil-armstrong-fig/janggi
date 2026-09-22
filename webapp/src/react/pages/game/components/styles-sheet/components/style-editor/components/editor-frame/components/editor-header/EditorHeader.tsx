@@ -52,7 +52,11 @@ export function EditorHeader({name, onName, onSave, onBack, pasteResult}: Props)
           data-testid="style-editor-message"
           data-accepted={pasteResult.accepted}
           role="status"
-          className={clsx("text-xs break-words", pasteResult.accepted ? "text-cho" : "text-danger")}
+          className={clsx(
+            "text-xs break-words",
+            pasteResult.accepted && "text-cho",
+            !pasteResult.accepted && "text-danger",
+          )}
         >
           {pasteResult.message}
         </p>

@@ -35,7 +35,8 @@ export function ChoiceField<Option extends string>({
             onClick={() => onChange(option)}
             className={clsx(
               "h-8 min-w-0 flex-1 cursor-pointer rounded-md px-2 text-xs capitalize transition-colors duration-150 motion-reduce:transition-none",
-              value === option ? "bg-wood font-semibold text-ink" : "text-white/70 hover:bg-white/10",
+              value === option && "bg-wood font-semibold text-ink",
+              value !== option && "text-white/70 hover:bg-white/10",
             )}
           >
             {option}

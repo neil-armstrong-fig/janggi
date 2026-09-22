@@ -73,7 +73,7 @@ export function OptionPicker<Option extends WithName>({
 
   return (
     <nav data-testid={`${id}-picker`} aria-label={ariaLabel ?? label} className="flex flex-col gap-1.5">
-      <div className={clsx("flex gap-x-3 gap-y-1.5", stacked ? "flex-col" : "items-center")}>
+      <div className={clsx("flex gap-x-3 gap-y-1.5", stacked && "flex-col", !stacked && "items-center")}>
         <div className={clsx("flex items-center gap-1.5", !stacked && "w-24 shrink-0", hideLabel && "sr-only")}>
           <span className="text-xs font-medium text-white/60">{label}</span>
 
@@ -89,7 +89,13 @@ export function OptionPicker<Option extends WithName>({
         </div>
 
         {!asDropdown && (
-          <div className={clsx("flex gap-1 rounded-xl bg-black/25 p-1", stacked ? "flex-wrap" : "min-w-0 flex-1")}>
+          <div
+            className={clsx(
+              "flex gap-1 rounded-xl bg-black/25 p-1",
+              stacked && "flex-wrap",
+              !stacked && "min-w-0 flex-1",
+            )}
+          >
             {options.map(option => (
               <OptionButton
                 key={option.name}

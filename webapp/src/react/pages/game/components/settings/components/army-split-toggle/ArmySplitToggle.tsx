@@ -25,7 +25,8 @@ export function ArmySplitToggle({id, split, label, onToggle}: Props): React.JSX.
       onClick={onToggle}
       className={clsx(
         "flex h-9 cursor-pointer items-center gap-2 self-start rounded-lg px-2 text-xs transition-colors duration-150 motion-reduce:transition-none",
-        split ? "bg-wood/20 text-wood" : "text-white/60 hover:bg-white/10",
+        split && "bg-wood/20 text-wood",
+        !split && "text-white/60 hover:bg-white/10",
       )}
     >
       <span aria-hidden>{split ? "☑" : "☐"}</span>

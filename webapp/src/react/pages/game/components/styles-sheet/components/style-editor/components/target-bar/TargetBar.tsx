@@ -36,7 +36,8 @@ export function TargetBar({name, targetChoices, canReset, onReset}: Props): Reac
             onClick={targetChoice.onChoose}
             className={clsx(
               "h-7 cursor-pointer rounded-md px-2 text-xs",
-              targetChoice.chosen ? "bg-wood font-semibold text-ink" : "bg-black/25 text-white/70 hover:bg-white/10",
+              targetChoice.chosen && "bg-wood font-semibold text-ink",
+              !targetChoice.chosen && "bg-black/25 text-white/70 hover:bg-white/10",
             )}
           >
             {targetChoice.name}

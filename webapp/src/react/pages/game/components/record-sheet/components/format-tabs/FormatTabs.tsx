@@ -20,7 +20,8 @@ export function FormatTabs({selected, onSelect}: Props): React.JSX.Element {
           onClick={() => onSelect(format)}
           className={clsx(
             "h-9 flex-1 cursor-pointer rounded-lg text-sm font-semibold transition-colors duration-150 motion-reduce:transition-none",
-            format === selected ? "bg-wood/25 text-wood" : "text-white/60 hover:bg-white/5",
+            format === selected && "bg-wood/25 text-wood",
+            format !== selected && "text-white/60 hover:bg-white/5",
           )}
         >
           {format}

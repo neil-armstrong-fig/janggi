@@ -23,7 +23,8 @@ export function SwitchField({id, label, value, onChange}: Props): React.JSX.Elem
         onClick={() => onChange(!value)}
         className={clsx(
           "h-8 w-16 cursor-pointer rounded-lg text-xs font-semibold transition-colors duration-150 motion-reduce:transition-none",
-          value ? "bg-wood text-ink" : "bg-black/25 text-white/60 hover:bg-white/10",
+          value && "bg-wood text-ink",
+          !value && "bg-black/25 text-white/60 hover:bg-white/10",
         )}
       >
         {value ? "On" : "Off"}
