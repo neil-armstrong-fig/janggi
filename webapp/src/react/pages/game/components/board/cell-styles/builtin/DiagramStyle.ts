@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 import type {CellStyle} from "@src/styles/types/CellStyle";
 import {toPositionKey} from "@src/game/board/PositionKeys";
@@ -14,6 +15,7 @@ const RULE: CellStyle = {stroke: "#1a1a1a", strokeWidth: 0.9};
  */
 export const diagramStyle: BuiltInBoardStyle = {
   name: "Diagram",
+  ...DEFAULT_BOARD_MARKS,
   surface: "#fbfaf6",
   defaultCell: RULE,
   cells: {

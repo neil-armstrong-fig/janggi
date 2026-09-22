@@ -1,5 +1,11 @@
+import type {ArmyBoardStyles} from "@src/styles/board-halves/types/ArmyBoardStyles";
+import type {ArmyPieceSets} from "@src/styles/piece-sets/types/ArmyPieceSets";
 import {BIKJANG_HINTS} from "@src/react/pages/game/utils/BikjangHints";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
+import type {BoardStyle} from "@src/styles/types/BoardStyle";
+import {combinedBoardStyle} from "@src/styles/board-halves/CombinedBoardStyle";
+import {combinedPieceSet} from "@src/styles/piece-sets/CombinedPieceSet";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
 import {EFFECTS} from "@src/react/pages/game/utils/EffectsOptions";
@@ -24,20 +30,26 @@ export function preferencesFrom(
   customStyles: CustomStylesSliceState,
 ): Preferences {
   const defaults = defaultPreferences();
+  const boardStyles = [...BUILT_IN_STYLES, ...customStyles.boards];
+  const wornBoard = (name: string): BoardStyle =>
+    wornOf(boardStyles, name, defaults.boardStyle, candidate => xp >= boardStylePrice(candidate));
+  const armyBoardStyles: ArmyBoardStyles = {
+    cho: wornBoard(names.boardStyle),
+    han: wornBoard(names.hanBoardStyle ?? names.boardStyle),
+  };
+  const pieceSetStyles = [...BUILT_IN_PIECE_STYLES, ...customStyles.pieceSets];
+  const wornPieces = (name: string): PieceSetStyle =>
+    wornOf(pieceSetStyles, name, defaults.pieceSet, candidate => xp >= pieceSetPrice(candidate));
+  const armyPieceSets: ArmyPieceSets = {
+    cho: wornPieces(names.pieceSet),
+    han: wornPieces(names.hanPieceSet ?? names.pieceSet),
+  };
 
   return {
-    boardStyle: wornOf(
-      [...BUILT_IN_STYLES, ...customStyles.boards],
-      names.boardStyle,
-      defaults.boardStyle,
-      name => xp >= boardStylePrice(name),
-    ),
-    pieceStyle: wornOf(
-      [...BUILT_IN_PIECE_STYLES, ...customStyles.pieceSets],
-      names.pieceSet,
-      defaults.pieceSet,
-      name => xp >= pieceSetPrice(name),
-    ),
+    boardStyle: combinedBoardStyle(armyBoardStyles),
+    armyBoardStyles,
+    pieceStyle: combinedPieceSet(armyPieceSets),
+    armyPieceSets,
     movableHighlight: namedIn(MOVABLE_HIGHLIGHTS, names.movableHighlight),
     bikjangHint: namedIn(BIKJANG_HINTS, names.bikjangHint),
     effects: namedIn(EFFECTS, names.effects),

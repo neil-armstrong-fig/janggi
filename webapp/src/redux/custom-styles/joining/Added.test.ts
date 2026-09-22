@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {added} from "@src/redux/custom-styles/joining/Added";
 import {expect, it} from "vitest";
@@ -31,6 +32,7 @@ it("changes nothing about the style but its name", () => {
 function board(name: string, surface = "#ffffff"): BoardStyle {
   return {
     name,
+    ...DEFAULT_BOARD_MARKS,
     surface,
     defaultCell: {stroke: "#000000", strokeWidth: 1},
     lastMove: {wash: "rgba(0, 0, 0, 0.2)", brackets: "#000000"},

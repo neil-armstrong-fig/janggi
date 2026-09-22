@@ -22,12 +22,63 @@ it("finds a board style for every name the store can hold", () => {
   }
 });
 
+it("draws both halves on the one board, which is that board as it is, until the player chooses them apart", () => {
+  const preferences = preferencesFrom({...initial(), boardStyle: "Neon"}, EVERYTHING_UNLOCKED, noCustomStyles());
+
+  expect(preferences.armyBoardStyles.han.name).toBe("Neon");
+  expect(preferences.armyBoardStyles.cho.name).toBe("Neon");
+  expect(preferences.boardStyle.name).toBe("Neon");
+});
+
+it("draws each half on the board chosen for it, Han's from one and Cho's from the other", () => {
+  const names = {...initial(), boardStyle: "Neon", hanBoardStyle: "Dancheong"};
+  const preferences = preferencesFrom(names, EVERYTHING_UNLOCKED, noCustomStyles());
+
+  expect(preferences.armyBoardStyles.han.name).toBe("Dancheong");
+  expect(preferences.armyBoardStyles.cho.name).toBe("Neon");
+  expect(preferences.boardStyle.defaultCell).toBe(preferences.armyBoardStyles.cho.defaultCell);
+});
+
+it("draws the default board in place of one for an army whose XP has not unlocked it, without touching the other's", () => {
+  const names = {...initial(), boardStyle: "Neon", hanBoardStyle: "Dancheong"};
+  const preferences = preferencesFrom(names, UNLOCK_PRICES.boardStyles.Dancheong - 1, noCustomStyles());
+
+  expect(preferences.armyBoardStyles.han.name).toBe("Classic");
+  expect(preferences.armyBoardStyles.cho.name).toBe("Neon");
+});
+
 it("finds a piece set for every name the store can hold", () => {
   for (const name of PIECE_SET_NAMES) {
     expect(preferencesFrom({...initial(), pieceSet: name}, EVERYTHING_UNLOCKED, noCustomStyles()).pieceStyle.name).toBe(
       name,
     );
   }
+});
+
+it("draws both armies in the one set, which is that set as it is, until the player chooses them apart", () => {
+  const preferences = preferencesFrom({...initial(), pieceSet: "Hangul"}, EVERYTHING_UNLOCKED, noCustomStyles());
+
+  expect(preferences.armyPieceSets.han.name).toBe("Hangul");
+  expect(preferences.armyPieceSets.cho.name).toBe("Hangul");
+  expect(preferences.pieceStyle.name).toBe("Hangul");
+});
+
+it("draws each army in the set chosen for it, Han's from one and Cho's from the other", () => {
+  const names = {...initial(), pieceSet: "Hangul", hanPieceSet: "Hanja"};
+  const preferences = preferencesFrom(names, EVERYTHING_UNLOCKED, noCustomStyles());
+
+  expect(preferences.armyPieceSets.han.name).toBe("Hanja");
+  expect(preferences.armyPieceSets.cho.name).toBe("Hangul");
+  expect(preferences.pieceStyle.sides.han).toBe(preferences.armyPieceSets.han.sides.han);
+  expect(preferences.pieceStyle.sides.cho).toBe(preferences.armyPieceSets.cho.sides.cho);
+});
+
+it("draws the default in place of a piece set for an army whose XP has not unlocked it, without touching the other's", () => {
+  const names = {...initial(), pieceSet: "Hangul", hanPieceSet: "Hanja"};
+  const preferences = preferencesFrom(names, UNLOCK_PRICES.pieceSets.Hanja - 1, noCustomStyles());
+
+  expect(preferences.armyPieceSets.han.name).toBe("Modern");
+  expect(preferences.armyPieceSets.cho.name).toBe("Hangul");
 });
 
 it("draws the default board in place of one the player's XP has not unlocked", () => {

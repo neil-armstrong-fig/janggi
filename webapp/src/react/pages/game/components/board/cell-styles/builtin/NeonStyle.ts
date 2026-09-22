@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 import type {CellStyle} from "@src/styles/types/CellStyle";
 import {toPositionKey} from "@src/game/board/PositionKeys";
@@ -15,6 +16,7 @@ const NEON_CELL: CellStyle = {
  */
 export const neonStyle: BuiltInBoardStyle = {
   name: "Neon",
+  ...DEFAULT_BOARD_MARKS,
   surface: "linear-gradient(160deg, #0b1220, #131c2e)",
   defaultCell: NEON_CELL,
   cells: {

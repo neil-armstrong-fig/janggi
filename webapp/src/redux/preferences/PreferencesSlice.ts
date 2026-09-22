@@ -1,6 +1,8 @@
 import type {PayloadAction} from "@reduxjs/toolkit";
 import type {BikjangHintName} from "@janggi/shared/janggi/settings/BikjangHintName";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
+import type {ArmyBoardStyleChoice} from "@src/redux/preferences/types/ArmyBoardStyleChoice";
+import type {ArmyPieceSetChoice} from "@src/redux/preferences/types/ArmyPieceSetChoice";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {Opacity} from "@janggi/shared/janggi/settings/Opacity";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -22,15 +24,43 @@ export const preferencesSlice = createSlice({
   name: "preferences",
   initialState: defaultPreferences(),
   reducers: {
+    /** The board for both armies, which is also how the two are put back together after being chosen apart. */
     boardStyleChosen: (state, action: PayloadAction<string>): PreferencesSliceState => ({
       ...state,
       boardStyle: action.payload,
+      hanBoardStyle: undefined,
     }),
 
+    /** Han's board or Cho's, apart from the other's. Choosing for one army leaves the other on the board it wore. */
+    armyBoardStyleChosen: (state, action: PayloadAction<ArmyBoardStyleChoice>): PreferencesSliceState => {
+      const {side, name} = action.payload;
+
+      return side === "han"
+        ? {...state, hanBoardStyle: name}
+        : {...state, boardStyle: name, hanBoardStyle: state.hanBoardStyle ?? state.boardStyle};
+    },
+
+    /** The armies' boards chosen apart, each still on the board both wore. */
+    boardStyleSplit: (state): PreferencesSliceState => ({...state, hanBoardStyle: state.boardStyle}),
+
+    /** The pieces for both armies, which is also how the two are put back together after being chosen apart. */
     pieceSetChosen: (state, action: PayloadAction<string>): PreferencesSliceState => ({
       ...state,
       pieceSet: action.payload,
+      hanPieceSet: undefined,
     }),
+
+    /** Han's pieces or Cho's, apart from the other's. Choosing for one army leaves the other in the set it wore. */
+    armyPieceSetChosen: (state, action: PayloadAction<ArmyPieceSetChoice>): PreferencesSliceState => {
+      const {side, name} = action.payload;
+
+      return side === "han"
+        ? {...state, hanPieceSet: name}
+        : {...state, pieceSet: name, hanPieceSet: state.hanPieceSet ?? state.pieceSet};
+    },
+
+    /** The armies' pieces chosen apart, each still in the set both wore. */
+    pieceSetSplit: (state): PreferencesSliceState => ({...state, hanPieceSet: state.pieceSet}),
 
     movableHighlightChosen: (state, action: PayloadAction<MovableHighlightName>): PreferencesSliceState => ({
       ...state,
@@ -66,7 +96,11 @@ export const preferencesSlice = createSlice({
 
 export const {
   boardStyleChosen,
+  armyBoardStyleChosen,
+  boardStyleSplit,
   pieceSetChosen,
+  armyPieceSetChosen,
+  pieceSetSplit,
   movableHighlightChosen,
   bikjangHintChosen,
   effectsChosen,

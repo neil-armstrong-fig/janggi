@@ -24,8 +24,20 @@ import type {Volume} from "@janggi/shared/janggi/settings/Volume";
  * lookup falls back to the default rather than trusting it.
  */
 export interface PreferencesSliceState {
+  /** The board both armies are drawn on — or Cho's, where `hanBoardStyle` says Han's is another board. */
   readonly boardStyle: string;
+  /**
+   * The board Han is drawn on, where the player has chosen it apart from Cho's; undefined while both
+   * armies wear `boardStyle`, which is what nearly every player wants and what choosing a board does.
+   */
+  readonly hanBoardStyle: string | undefined;
+  /** The pieces both armies are drawn in — or Cho's, where `hanPieceSet` says Han's are another set. */
   readonly pieceSet: string;
+  /**
+   * The pieces Han is drawn in, where the player has chosen them apart from Cho's; undefined while both
+   * armies wear `pieceSet`, which is what nearly every player wants and what choosing a piece set does.
+   */
+  readonly hanPieceSet: string | undefined;
   readonly movableHighlight: MovableHighlightName;
   readonly bikjangHint: BikjangHintName;
   readonly effects: EffectsName;

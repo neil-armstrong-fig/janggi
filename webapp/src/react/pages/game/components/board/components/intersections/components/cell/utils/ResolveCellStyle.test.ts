@@ -1,9 +1,11 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {resolveCellStyle} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/ResolveCellStyle";
 import {expect, it} from "vitest";
 
 const style: BoardStyle = {
   name: "Test",
+  ...DEFAULT_BOARD_MARKS,
   surface: "black",
   defaultCell: {stroke: "grey", strokeWidth: 1},
   cells: {f5r2: {stroke: "red", strokeWidth: 2}},
@@ -19,7 +21,7 @@ it("prefers the override for a position that has one", () => {
 });
 
 it("falls back to the default when a style declares no overrides at all", () => {
-  const bare: BoardStyle = {name: "Bare", surface: "white", defaultCell: style.defaultCell, lastMove: style.lastMove};
+  const bareBoardStyle: BoardStyle = {...style, name: "Bare", surface: "white", cells: undefined};
 
-  expect(resolveCellStyle(bare, {file: 5, rank: 2})).toBe(bare.defaultCell);
+  expect(resolveCellStyle(bareBoardStyle, {file: 5, rank: 2})).toBe(bareBoardStyle.defaultCell);
 });

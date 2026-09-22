@@ -49,6 +49,13 @@ hooks. Add state as a slice via `createSlice`.
   player's own styles. `usePreferences` (`pages/game/hooks/use-preferences/`) is the one place a name
   becomes what it names — and where a locked or removed style falls back to the default — so read
   through it rather than selecting `state.preferences` directly.
+  **Han's pieces are a name of their own only where the player chose them apart** (`hanPieceSet`,
+  undefined otherwise): choosing a set dresses both armies, and `usePreferences` puts each army's set
+  together with `combinedPieceSet` (`src/styles/piece-sets/`) — so what the board draws is still one
+  `PieceSetStyle`, and `Piece` never learns there are two. **Han's board is the same** (`hanBoardStyle`,
+  `combinedBoardStyle`, `src/styles/board-halves/`) — a board has no `sides.han`/`sides.cho` to take a
+  whole half from at once the way a piece set's `sides` does, so `withHalfOf` writes Han's half out as
+  explicit per-point overrides on Cho's board rather than filtering existing ones.
 - **Progress is stored, not derived from the record.** `state.progress` is XP and the bot strengths
   each army has beaten, earned in `useRatedGame` alongside the rating. It is a number of its own
   because resetting the record must not take unlocks away, and because editing it by hand is a way to
@@ -79,7 +86,9 @@ hooks. Add state as a slice via `createSlice`.
   every field against the vocabulary it claims — `redux/untrusted/` — and falls back to a fresh start.
   The game is refused whole if any position fails (a crash in `applyMove` is what a half-trusted board
   buys); the ratings keep what they can. A new field on a slice needs its loader taught about it, and a
-  change to a slice's shape needs its storage key's version raised.
+  change to a slice's shape needs its storage key's version raised. A style key somebody shares is a
+  different matter — one from an older copy of the app still has to import — so `BoardStyleFrom` and
+  `PieceSetStyleFrom` fill a missing new group with its default rather than refuse it.
 
 ## Testing
 

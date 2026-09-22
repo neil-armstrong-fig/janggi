@@ -26,16 +26,21 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   board only while motion is shown, and only the effects specs look for them. `bot-go-ahead`,
   `repetition-notice`, `draw-offer` (carrying `data-offered-by`, with `draw-accept` and `draw-decline`
   inside it) and `draw-declined` (carrying `data-declined-by`) are drawn over the board too, each
-  shown only while its own condition holds.
+  shown only while its own condition holds. `board-bottom-surface` is Cho's half of the surface,
+  painted over the board's own; the style editor's preview has no half to draw, so it never renders one.
 - **`data-testid`, composed** — `cell-f<file>r<rank>`; `score-<side>`, `taken-<side>` and
   `plaque-<side>`, whose `plaque-player-<side>` carries `data-player` and `data-elo`, whose
   `plaque-xp-<side>` carries `data-xp` and whose `plaque-next-unlock-<side>` shows the army's next
   unlock (the player's own plaque only, and the words are shortened — read the attribute);
   `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
   `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
-  option. The eleven picker ids are `board-style`, `piece-style`, `movable-highlight`, `bikjang-hint`,
-  `match-format`, `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`. A
-  picker that explains itself — `match-format` and `bikjang-hint` — adds an `<id>-explain` toggle, never disabled, and
+  option. The picker ids are `board-style`, `piece-style`, `movable-highlight`, `bikjang-hint`,
+  `match-format`, `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`.
+  `board-style` and `piece-style` can each split apart into one picker per army —
+  `han-board-style`/`cho-board-style` and `han-piece-style`/`cho-piece-style` — behind an `<id>-split`
+  toggle (`aria-pressed` is whether it's split); split or not, the combined picker keeps its own id
+  and shows Cho's choice. A picker that explains itself — `match-format` and `bikjang-hint` — adds an
+  `<id>-explain` toggle, never disabled, and
   an `<id>-explanation` panel present only while unfolded. A picker of two options is a row of buttons, the chosen one carrying
   `aria-pressed`; one of more is a native `<id>-select`, whose `<option>`s carry the option ids and
   are chosen and read by their `value` — a locked option's text carries a padlock and a reason, its

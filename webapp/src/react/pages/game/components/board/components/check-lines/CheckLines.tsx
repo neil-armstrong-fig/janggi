@@ -1,4 +1,5 @@
 import {LinesOverlay} from "@src/react/pages/game/components/board/components/lines-overlay/LinesOverlay";
+import type {CheckStyle} from "@src/styles/types/board-marks/CheckStyle";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
 import {checkLinesOf} from "@src/react/pages/game/components/board/components/check-lines/utils/CheckLinesOf";
 
@@ -11,15 +12,27 @@ import {checkLinesOf} from "@src/react/pages/game/components/board/components/ch
  */
 interface Props {
   readonly threat: Threat | undefined;
+  /** How the board's style draws a check. */
+  readonly checkStyle: CheckStyle;
   /** The id of the most recent change to the game. */
   readonly momentId: number;
   readonly drawing: boolean;
 }
 
-export function CheckLines({threat, momentId, drawing}: Props): React.JSX.Element | null {
+export function CheckLines({threat, checkStyle, momentId, drawing}: Props): React.JSX.Element | null {
   if (!threat) return null;
 
   return (
-    <LinesOverlay key={momentId} testId="check-lines" lines={checkLinesOf(threat)} tone="danger" drawing={drawing} />
+    <LinesOverlay
+      key={momentId}
+      testId="check-lines"
+      lines={checkLinesOf(threat)}
+      colour={checkStyle.colour}
+      width={CHECK_LINE_WIDTH}
+      drawing={drawing}
+    />
   );
 }
+
+/** A check's line is as thick on every board: it is the colour that has to read, not the width. */
+const CHECK_LINE_WIDTH = 4;

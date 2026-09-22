@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {HACKER_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/hacker/marks/HackerCharacters";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
@@ -18,6 +19,7 @@ const PHOSPHOR: Record<Side, string> = {
  */
 export const hackerPieces: BuiltInPieceSetStyle = {
   name: "Hacker",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {
     han: terminal("han", 0.84),
     cho: terminal("cho", 0.84),

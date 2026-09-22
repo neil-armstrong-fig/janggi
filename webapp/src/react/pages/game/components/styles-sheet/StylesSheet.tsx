@@ -1,29 +1,23 @@
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
-import {CustomStyleRow} from "@src/react/pages/game/components/styles-sheet/components/custom-style-row/CustomStyleRow";
-import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
-import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
+import type {EditingStyle} from "@src/react/pages/game/components/styles-sheet/types/EditingStyle";
+import {OwnStyles} from "@src/react/pages/game/components/styles-sheet/components/own-styles/OwnStyles";
+import {SheetHeader} from "@src/react/pages/game/components/styles-sheet/components/sheet-header/SheetHeader";
 import {StyleEditor} from "@src/react/pages/game/components/styles-sheet/components/style-editor/StyleEditor";
+import {StyleImporter} from "@src/react/pages/game/components/styles-sheet/components/style-importer/StyleImporter";
+import {StyleStarter} from "@src/react/pages/game/components/styles-sheet/components/style-starter/StyleStarter";
 import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
-import {boardStyleChosen, pieceSetChosen} from "@src/redux/preferences/PreferencesSlice";
-import {
-  boardStyleDeleted,
-  boardStyleImported,
-  boardStyleSaved,
-  pieceSetDeleted,
-  pieceSetImported,
-  pieceSetSaved,
-} from "@src/redux/custom-styles/CustomStylesSlice";
 import {boardStylePrice} from "@src/redux/progress/unlocks/BoardStylePrice";
+import {boardStyleChosen, pieceSetChosen} from "@src/redux/preferences/PreferencesSlice";
+import {boardStyleSaved, pieceSetSaved} from "@src/redux/custom-styles/CustomStylesSlice";
 import {clsx} from "clsx";
-import {encodeKey} from "@janggi/shared/janggi/share-keys/EncodeKey";
 import {pieceSetPrice} from "@src/redux/progress/unlocks/PieceSetPrice";
-import {styleImportFrom} from "@src/react/pages/game/components/styles-sheet/style-import/StyleImportFrom";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {useState} from "react";
 
 /**
  * The player's own board styles and piece sets: each with a key to share it by, a box to import one
- * somebody else shared, and — once their XP unlocks it — an editor to make one.
+ * somebody else shared, and — once their XP unlocks it — an editor to make one on a board of its own.
  *
  * **Styles never leave the device except as a key the player copies.** There is no server to upload one
  * to, so there is nothing anybody has to moderate; a style is only ever seen by whoever was handed its
@@ -31,9 +25,9 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
  * anything from beyond the page is refused (`isCssValue`).
  *
  * **A sheet over the game, like `RecordSheet`**, opened from the settings, which it replaces on screen.
- * The board is still visible above it, so a style saved from the editor — which is worn the moment it
- * is saved — is seen straight away. An imported style is only added: the player chooses to wear it from
- * Appearance, like any other.
+ * While a style is being made it grows to nearly the whole screen — and on a desktop, wide enough to have
+ * the board beside its controls — and the editor draws a board of its own to show the style on. One that is
+ * saved is worn the moment it is, and seen straight away on the game when the sheet closes.
  */
 interface Props {
   readonly open: boolean;
@@ -44,23 +38,17 @@ export function StylesSheet({open, onClose}: Props): React.JSX.Element {
   const customStyles = useAppSelector(state => state.customStyles);
   const xp = useAppSelector(state => state.progress.xp);
   const dispatch = useAppDispatch();
+  const [editingStyle, setEditingStyle] = useState<EditingStyle | undefined>(undefined);
 
-  const hasNone = customStyles.boards.length === 0 && customStyles.pieceSets.length === 0;
-
-  const importStyle = (text: string): PasteResult => {
-    const outcome = styleImportFrom(text);
-
-    switch (outcome.kind) {
-      case "board":
-        dispatch(boardStyleImported(outcome.style));
-        return {accepted: true, message: `Added the board "${outcome.style.name}". Wear it from Appearance.`};
-      case "pieces":
-        dispatch(pieceSetImported(outcome.style));
-        return {accepted: true, message: `Added the pieces "${outcome.style.name}". Wear them from Appearance.`};
-      case "refused":
-        return {accepted: false, message: outcome.reason};
-    }
-  };
+  // What the player has: every built-in they have unlocked, and their own. What a style is started from, and shown with.
+  const boardStyles = [
+    ...BUILT_IN_STYLES.filter(builtInBoardStyle => xp >= boardStylePrice(builtInBoardStyle.name)),
+    ...customStyles.boards,
+  ];
+  const pieceSetStyles = [
+    ...BUILT_IN_PIECE_STYLES.filter(builtInPieceSetStyle => xp >= pieceSetPrice(builtInPieceSetStyle.name)),
+    ...customStyles.pieceSets,
+  ];
 
   return (
     <>
@@ -80,93 +68,50 @@ export function StylesSheet({open, onClose}: Props): React.JSX.Element {
         aria-modal={open}
         inert={!open}
         className={clsx(
-          "fixed inset-x-0 bottom-0 z-20 mx-auto flex max-h-[85dvh] select-none w-full max-w-lg flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
+          "fixed inset-x-0 bottom-0 z-20 mx-auto flex w-full max-w-lg select-none flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
+          editingStyle ? "h-[92dvh] lg:max-w-6xl" : "max-h-[85dvh]",
           open ? "translate-y-0 shadow-2xl shadow-black" : "translate-y-full",
         )}
       >
-        <header className="flex shrink-0 items-center justify-between px-4 pt-3 pb-1">
-          <h2 className="text-sm font-semibold tracking-wide text-wood uppercase">Your styles</h2>
+        <SheetHeader onClose={onClose} />
 
-          <button
-            type="button"
-            data-testid="styles-close"
-            aria-label="Close your styles"
-            onClick={onClose}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
-            </svg>
-          </button>
-        </header>
+        <div
+          className={clsx(
+            "flex flex-col gap-5 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]",
+            // Kept in the page while a style is made, so what it holds can still be read.
+            editingStyle && "hidden",
+          )}
+        >
+          <OwnStyles />
 
-        <div className="flex flex-col gap-5 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <section aria-label="Your own styles" className="flex flex-col gap-2">
-            <h3 className={HEADING}>Your own</h3>
+          <StyleImporter />
 
-            {hasNone && (
-              <p className="text-sm text-white/60">None yet. Import one somebody shared with you, or make your own.</p>
-            )}
-
-            {!hasNone && (
-              <ul className="flex flex-col gap-2">
-                {customStyles.boards.map(style => (
-                  <CustomStyleRow
-                    key={`board-${style.name}`}
-                    kind="Board"
-                    name={style.name}
-                    keyOf={() => encodeKey("board", style)}
-                    onDelete={() => dispatch(boardStyleDeleted(style.name))}
-                  />
-                ))}
-
-                {customStyles.pieceSets.map(set => (
-                  <CustomStyleRow
-                    key={`pieces-${set.name}`}
-                    kind="Pieces"
-                    name={set.name}
-                    keyOf={() => encodeKey("pieces", set)}
-                    onDelete={() => dispatch(pieceSetDeleted(set.name))}
-                  />
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section aria-label="Import a style" className="flex flex-col gap-2">
-            <h3 className={HEADING}>Import</h3>
-
-            <p className="text-xs text-white/60">Paste a key somebody shared. It is only ever kept on this device.</p>
-
-            <PasteKey
-              id="style-import"
-              label="Import style"
-              placeholder="Paste a board or piece set key"
-              onSubmit={importStyle}
-            />
-          </section>
-
-          <StyleEditor
+          <StyleStarter
             unlocked={xp >= UNLOCK_PRICES.styleEditor}
             price={UNLOCK_PRICES.styleEditor}
-            boards={[...BUILT_IN_STYLES.filter(style => xp >= boardStylePrice(style.name)), ...customStyles.boards]}
-            pieceSets={[
-              ...BUILT_IN_PIECE_STYLES.filter(set => xp >= pieceSetPrice(set.name)),
-              ...customStyles.pieceSets,
-            ]}
-            onSaveBoard={style => {
-              dispatch(boardStyleSaved(style));
-              dispatch(boardStyleChosen(style.name));
-            }}
-            onSavePieces={set => {
-              dispatch(pieceSetSaved(set));
-              dispatch(pieceSetChosen(set.name));
-            }}
+            boardStyles={boardStyles}
+            pieceSetStyles={pieceSetStyles}
+            onStart={setEditingStyle}
           />
         </div>
+
+        {editingStyle && (
+          <StyleEditor
+            editingStyle={editingStyle}
+            boardStyles={boardStyles}
+            pieceSetStyles={pieceSetStyles}
+            onBack={() => setEditingStyle(undefined)}
+            onSaveBoard={boardStyle => {
+              dispatch(boardStyleSaved(boardStyle));
+              dispatch(boardStyleChosen(boardStyle.name));
+            }}
+            onSavePieces={pieceSetStyle => {
+              dispatch(pieceSetSaved(pieceSetStyle));
+              dispatch(pieceSetChosen(pieceSetStyle.name));
+            }}
+          />
+        )}
       </section>
     </>
   );
 }
-
-const HEADING = "border-b border-white/10 pb-1 text-xs font-semibold tracking-wide text-white/40 uppercase";

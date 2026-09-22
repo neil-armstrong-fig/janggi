@@ -1,6 +1,5 @@
 import {FILE_COUNT, RANK_COUNT} from "@src/game/board/BoardDimensions";
 import type {BoardLine} from "@src/react/pages/game/components/board/types/BoardLine";
-import type {LineTone} from "@src/react/pages/game/components/board/components/lines-overlay/types/LineTone";
 import {clsx} from "clsx";
 import {toPositionKey} from "@src/game/board/PositionKeys";
 
@@ -20,11 +19,14 @@ import {toPositionKey} from "@src/game/board/PositionKeys";
 interface Props {
   readonly testId: string;
   readonly lines: readonly BoardLine[];
-  readonly tone: LineTone;
+  /** Any CSS colour, from the board's style. */
+  readonly colour: string;
+  /** In pixels, whatever size the board is drawn at. */
+  readonly width: number;
   readonly drawing: boolean;
 }
 
-export function LinesOverlay({testId, lines, tone, drawing}: Props): React.JSX.Element {
+export function LinesOverlay({testId, lines, colour, width, drawing}: Props): React.JSX.Element {
   return (
     <svg
       data-testid={testId}
@@ -40,8 +42,8 @@ export function LinesOverlay({testId, lines, tone, drawing}: Props): React.JSX.E
           y1={line.from.rank - 0.5}
           x2={line.to.file - 0.5}
           y2={line.to.rank - 0.5}
-          stroke={TONES[tone]}
-          strokeWidth={4}
+          stroke={colour}
+          strokeWidth={width}
           strokeLinecap="round"
           vectorEffect="non-scaling-stroke"
           pathLength={1}
@@ -55,5 +57,3 @@ export function LinesOverlay({testId, lines, tone, drawing}: Props): React.JSX.E
     </svg>
   );
 }
-
-const TONES: Record<LineTone, string> = {danger: "var(--color-danger)", gold: "var(--color-gold)"};

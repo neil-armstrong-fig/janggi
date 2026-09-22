@@ -10,7 +10,9 @@ function storageHolding(value: unknown): Pick<Storage, "getItem"> {
 
 const chosen: PreferencesSliceState = {
   boardStyle: "Neon",
+  hanBoardStyle: undefined,
   pieceSet: "Hangul",
+  hanPieceSet: undefined,
   movableHighlight: "Hidden",
   bikjangHint: "Hidden",
   effects: "Reduced",
@@ -79,4 +81,24 @@ it("puts back the default for a sheet opacity outside the slider's range", () =>
 
 it("starts from the defaults when what is kept is not an object at all", () => {
   expect(loadPreferences(storageHolding(["Neon"]))).toEqual(defaultPreferences());
+});
+
+it("reads back Han's board where it was chosen apart from Cho's", () => {
+  expect(loadPreferences(storageHolding({...chosen, hanBoardStyle: "Dancheong"})).hanBoardStyle).toBe("Dancheong");
+});
+
+it("takes Han's board to be Cho's where none was kept, or what was kept is not a name", () => {
+  expect(loadPreferences(storageHolding(chosen)).hanBoardStyle).toBeUndefined();
+  expect(loadPreferences(storageHolding({...chosen, hanBoardStyle: 3})).hanBoardStyle).toBeUndefined();
+  expect(loadPreferences(storageHolding({...chosen, hanBoardStyle: ""})).hanBoardStyle).toBeUndefined();
+});
+
+it("reads back Han's pieces where they were chosen apart from Cho's", () => {
+  expect(loadPreferences(storageHolding({...chosen, hanPieceSet: "Hanja"})).hanPieceSet).toBe("Hanja");
+});
+
+it("takes Han's pieces to be Cho's where none were kept, or what was kept is not a name", () => {
+  expect(loadPreferences(storageHolding(chosen)).hanPieceSet).toBeUndefined();
+  expect(loadPreferences(storageHolding({...chosen, hanPieceSet: 3})).hanPieceSet).toBeUndefined();
+  expect(loadPreferences(storageHolding({...chosen, hanPieceSet: ""})).hanPieceSet).toBeUndefined();
 });

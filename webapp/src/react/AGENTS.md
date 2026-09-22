@@ -76,7 +76,9 @@ painted, and say so.
   `ResultBanner`) — a `Cell`'s marks are worked out once from the whole board and handed down a point
   at a time. What is the same for every instance and held by the store, the player's preferences, a
   component repeated by only one parent reads itself (`Cell` wears the styles), rather than being
-  handed it 90 times. Do not make a generic leaf used in several places (`Piece`) know the application
+  handed it 90 times — with the one exception a second parent needs: `Cell` takes an optional
+  `boardStyle`/`pieceStyle` that wins over the store's, for a board that shows a style not yet worn (the
+  style editor's preview). The game passes neither. Do not make a generic leaf used in several places (`Piece`) know the application
   store just to save its callers a prop.
 - **Something a player does that touches no intersection is a control, not a gesture.** Resting a turn,
   calling a bikjang and offering a draw are the three, so `PassButton`, `BikjangButton` and `DrawButton`

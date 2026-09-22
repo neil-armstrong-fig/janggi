@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {CharacterGlyphStyle, PieceBodyStyle, PieceStyle} from "@src/styles/types/PieceStyle";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {HANJA_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HanjaCharacters";
@@ -59,6 +60,7 @@ const MINOR = 0.7;
  */
 export const traditionalPieces: BuiltInPieceSetStyle = {
   name: "Traditional",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {
     han: pieceOfSize("han", MAJOR),
     cho: pieceOfSize("cho", MAJOR),

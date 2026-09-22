@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 
 /**
@@ -10,6 +11,7 @@ import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cel
  */
 export const celadonStyle: BuiltInBoardStyle = {
   name: "Celadon",
+  ...DEFAULT_BOARD_MARKS,
   surface: [
     "repeating-linear-gradient(35deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 23px)",
     "repeating-linear-gradient(-55deg, rgba(40, 70, 60, 0.07) 0 1px, transparent 1px 31px)",

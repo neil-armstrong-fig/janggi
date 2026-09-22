@@ -28,12 +28,24 @@ export function loadPreferences(storage: Pick<Storage, "getItem"> | undefined): 
   const defaults = defaultPreferences();
   if (!isObject(stored)) return defaults;
 
-  const {boardStyle, pieceSet, movableHighlight, bikjangHint, effects, soundEffectsVolume, musicVolume, sheetOpacity} =
-    stored;
+  const {
+    boardStyle,
+    hanBoardStyle,
+    pieceSet,
+    hanPieceSet,
+    movableHighlight,
+    bikjangHint,
+    effects,
+    soundEffectsVolume,
+    musicVolume,
+    sheetOpacity,
+  } = stored;
 
   return {
     boardStyle: isStyleName(boardStyle) ? boardStyle : defaults.boardStyle,
+    hanBoardStyle: isStyleName(hanBoardStyle) ? hanBoardStyle : undefined,
     pieceSet: isStyleName(pieceSet) ? pieceSet : defaults.pieceSet,
+    hanPieceSet: isStyleName(hanPieceSet) ? hanPieceSet : undefined,
     movableHighlight: isAmong(MOVABLE_HIGHLIGHT_NAMES, movableHighlight) ? movableHighlight : defaults.movableHighlight,
     bikjangHint: isAmong(BIKJANG_HINT_NAMES, bikjangHint) ? bikjangHint : defaults.bikjangHint,
     effects: isAmong(EFFECTS_NAMES, effects) ? effects : defaults.effects,

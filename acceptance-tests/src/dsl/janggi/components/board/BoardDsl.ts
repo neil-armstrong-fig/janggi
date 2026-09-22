@@ -126,6 +126,87 @@ export class BoardDsl {
     }
   }
 
+  /** The colour the lines of an intersection are drawn in, as the browser resolves it — `rgb(…)`. */
+  async getLineColourAt(file: number, rank: number): Promise<string> {
+    try {
+      return await this.board.getLineColourAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to read the colour of the lines at file ${file}, rank ${rank}`, error);
+    }
+  }
+
+  /** The board's own background behind a rank, as the browser resolves it — Han's half, or Cho's. */
+  async getSurfaceAt(rank: number): Promise<string> {
+    try {
+      return await this.board.getSurfaceAt(rank);
+    } catch (error) {
+      throw new DslError(`Failed to read the board's background at rank ${rank}`, error);
+    }
+  }
+
+  /** The colour the line down the open file is drawn in, as the browser resolves it, or undefined with no bikjang called. */
+  async getBikjangLineColour(): Promise<string | undefined> {
+    try {
+      return await this.board.getBikjangLineColour();
+    } catch (error) {
+      throw new DslError("Failed to read the colour of the bikjang line", error);
+    }
+  }
+
+  /** How thick, in pixels, the line down the open file is drawn, or undefined with no bikjang called. */
+  async getBikjangLineWidth(): Promise<number | undefined> {
+    try {
+      return await this.board.getBikjangLineWidth();
+    } catch (error) {
+      throw new DslError("Failed to read the thickness of the bikjang line", error);
+    }
+  }
+
+  /** The colour the lines of a check are drawn in, as the browser resolves it, or undefined with no check. */
+  async getCheckLineColour(): Promise<string | undefined> {
+    try {
+      return await this.board.getCheckLineColour();
+    } catch (error) {
+      throw new DslError("Failed to read the colour of the check lines", error);
+    }
+  }
+
+  /** The colour of the dot marking a point the piece in hand may move to, as the browser resolves it. */
+  async getMoveHintColourAt(file: number, rank: number): Promise<string> {
+    try {
+      return await this.board.getMoveHintColourAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to read the colour of the move hint at file ${file}, rank ${rank}`, error);
+    }
+  }
+
+  /** The colour washed over the point of the piece in hand, as the browser resolves it. */
+  async getSelectionColourAt(file: number, rank: number): Promise<string> {
+    try {
+      return await this.board.getSelectionColourAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to read the colour of the piece in hand's wash at file ${file}, rank ${rank}`, error);
+    }
+  }
+
+  /** How thick the outline of a piece's body is drawn — thicker under the pointer. */
+  async getPieceOutlineWidthAt(file: number, rank: number): Promise<number> {
+    try {
+      return await this.board.getPieceOutlineWidthAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to measure the outline of the piece at file ${file}, rank ${rank}`, error);
+    }
+  }
+
+  /** The shadow cast under a piece drawn raised off the board, as the browser resolves it. */
+  async getHeldShadowAt(file: number, rank: number): Promise<string> {
+    try {
+      return await this.board.getHeldShadowAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to read the shadow of the piece at file ${file}, rank ${rank}`, error);
+    }
+  }
+
   /** Whether the intersection is marked as the point the last move left. */
   async isMarkedAsMovedFrom(file: number, rank: number): Promise<boolean> {
     try {

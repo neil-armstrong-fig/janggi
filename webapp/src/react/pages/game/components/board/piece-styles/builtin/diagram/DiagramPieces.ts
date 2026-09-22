@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {CharacterGlyphStyle, PieceStyle} from "@src/styles/types/PieceStyle";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import {HANJA_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HanjaCharacters";
@@ -30,6 +31,7 @@ const INK: Record<Side, PieceStyle> = {
  */
 export const diagramPieces: BuiltInPieceSetStyle = {
   name: "Diagram",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: INK,
   pieces: {
     [toPieceKey({side: "han", type: "general"})]: {...INK.han, size: 0.92},

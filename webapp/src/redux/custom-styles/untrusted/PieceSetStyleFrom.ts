@@ -9,11 +9,14 @@ import type {
 import type {CharacterSet, PieceCharacter} from "@src/styles/types/CharacterSet";
 import type {PieceOverrides, PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
-import {PIECE_BODY_SHAPES} from "@src/styles/types/PieceStyle";
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
+import {PIECE_BODY_SHAPES, PIECE_GLYPH_KINDS} from "@src/styles/types/PieceStyle";
+import type {PieceHandlingStyle} from "@src/styles/types/PieceHandlingStyle";
 import type {PictographSet} from "@src/styles/types/PictographSet";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import {Reading} from "@src/redux/custom-styles/untrusted/reading/Reading";
 import {RefusedReading} from "@src/redux/custom-styles/untrusted/reading/RefusedReading";
+import {STYLE_LIMITS} from "@src/styles/limits/StyleLimits";
 import {checkedBy} from "@src/redux/custom-styles/untrusted/reading/CheckedBy";
 import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
 import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
@@ -34,7 +37,19 @@ function pieceSetStyle(set: Reading): PieceSetStyle {
   return {
     name: set.name("name"),
     sides: {han: pieceStyle(sides.object("han")), cho: pieceStyle(sides.object("cho"))},
+    handling: pieceHandling(set),
     ...(pieces === undefined ? {} : {pieces: pieceOverrides(pieces)}),
+  };
+}
+
+/** How the set is handled as written, or as pieces were before a set could say — see `DEFAULT_PIECE_HANDLING`. */
+function pieceHandling(pieceSetStyleReading: Reading): PieceHandlingStyle {
+  const handling = pieceSetStyleReading.optionalObject("handling");
+  if (handling === undefined) return DEFAULT_PIECE_HANDLING;
+
+  return {
+    shadow: handling.css("shadow"),
+    hoverOutline: handling.number("hoverOutline", STYLE_LIMITS.hoverOutline),
   };
 }
 
@@ -55,7 +70,7 @@ function pieceStyle(piece: Reading): PieceStyle {
   return {
     body: pieceBody(piece.object("body")),
     glyph: pieceGlyph(piece.object("glyph")),
-    size: piece.number("size", SMALLEST_PIECE, 1),
+    size: piece.number("size", STYLE_LIMITS.pieceSize),
   };
 }
 
@@ -66,7 +81,7 @@ function pieceBody(body: Reading): PieceBodyStyle {
     shape: body.among("shape", PIECE_BODY_SHAPES),
     fill: body.css("fill"),
     stroke: body.css("stroke"),
-    strokeWidth: body.number("strokeWidth", 0, WIDEST_LINE),
+    strokeWidth: body.number("strokeWidth", STYLE_LIMITS.lineWidth),
     ...(inlay === undefined ? {} : {inlay: pieceInlay(inlay)}),
   };
 }
@@ -75,15 +90,15 @@ function pieceInlay(inlay: Reading): PieceInlayStyle {
   const fill = inlay.optionalCss("fill");
 
   return {
-    inset: inlay.number("inset", 0, 1),
+    inset: inlay.number("inset", STYLE_LIMITS.inlayInset),
     stroke: inlay.css("stroke"),
-    strokeWidth: inlay.number("strokeWidth", 0, WIDEST_LINE),
+    strokeWidth: inlay.number("strokeWidth", STYLE_LIMITS.lineWidth),
     ...(fill === undefined ? {} : {fill}),
   };
 }
 
 function pieceGlyph(glyph: Reading): PieceGlyphStyle {
-  switch (glyph.among("kind", GLYPH_KINDS)) {
+  switch (glyph.among("kind", PIECE_GLYPH_KINDS)) {
     case "character":
       return characterGlyph(glyph);
     case "pictograph":
@@ -92,15 +107,15 @@ function pieceGlyph(glyph: Reading): PieceGlyphStyle {
 }
 
 function characterGlyph(glyph: Reading): CharacterGlyphStyle {
-  const slant = glyph.optionalNumber("slant", -MOST_SLANT, MOST_SLANT);
+  const slant = glyph.optionalNumber("slant", STYLE_LIMITS.glyphSlant);
 
   return {
     kind: "character",
     characters: characterSet(glyph.object("characters")),
     colour: glyph.css("colour"),
-    scale: glyph.number("scale", 0, LARGEST_SCALE),
+    scale: glyph.number("scale", STYLE_LIMITS.glyphScale),
     fontFamily: glyph.css("fontFamily"),
-    fontWeight: glyph.number("fontWeight", 1, 1000),
+    fontWeight: glyph.number("fontWeight", STYLE_LIMITS.fontWeight),
     ...(slant === undefined ? {} : {slant}),
   };
 }
@@ -131,7 +146,7 @@ function pictographGlyph(glyph: Reading): PictographGlyphStyle {
     kind: "pictograph",
     pictographs: pictographSet(glyph.object("pictographs")),
     colour: glyph.css("colour"),
-    scale: glyph.number("scale", 0, LARGEST_SCALE),
+    scale: glyph.number("scale", STYLE_LIMITS.glyphScale),
   };
 }
 
@@ -146,9 +161,3 @@ function pictographSet(pictographs: Reading): PictographSet {
     soldier: pictographs.path("soldier"),
   };
 }
-
-const GLYPH_KINDS = ["character", "pictograph"] as const;
-const SMALLEST_PIECE = 0.1;
-const WIDEST_LINE = 10;
-const LARGEST_SCALE = 1.5;
-const MOST_SLANT = 45;

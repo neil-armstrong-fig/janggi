@@ -42,7 +42,7 @@ given("a player with no XP", () => {
 
   when("they look at making a style of their own", () => {
     then("it is locked", async ({janggi}) => {
-      expect(await janggi.stylesSheet.canMakeStyles()).toBe(false);
+      expect(await janggi.stylesSheet.styleStarter.canMakeStyles()).toBe(false);
     });
   });
 });

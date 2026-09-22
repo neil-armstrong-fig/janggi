@@ -9,7 +9,9 @@ import type {PreferencesSliceState} from "@src/redux/preferences/types/Preferenc
 export function defaultPreferences(): PreferencesSliceState {
   return {
     boardStyle: "Classic",
+    hanBoardStyle: undefined,
     pieceSet: "Modern",
+    hanPieceSet: undefined,
     movableHighlight: "Shown",
     bikjangHint: "Shown",
     effects: "Full",

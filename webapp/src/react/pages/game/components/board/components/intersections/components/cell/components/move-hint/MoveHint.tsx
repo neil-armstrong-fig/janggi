@@ -1,5 +1,7 @@
 import {BikjangLabel} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/move-hint/components/bikjang-label/BikjangLabel";
 import {clsx} from "clsx";
+import type {HintsStyle} from "@src/styles/types/board-marks/HintsStyle";
+import {tintOf} from "@src/react/pages/game/components/board/utils/TintOf";
 
 /**
  * The mark on a point the piece in hand may move to: a dot on an empty intersection, a ring around
@@ -27,11 +29,12 @@ interface Props {
   readonly overPiece: boolean;
   /** Whether the move would leave the opponent a bikjang to call. */
   readonly bikjangRisk: boolean;
+  readonly hintsStyle: HintsStyle;
   /** How long to wait before popping in, in milliseconds, or undefined to appear at once. */
   readonly delay?: number;
 }
 
-export function MoveHint({overPiece, bikjangRisk, delay}: Props): React.JSX.Element {
+export function MoveHint({overPiece, bikjangRisk, hintsStyle, delay}: Props): React.JSX.Element {
   return (
     <span
       className={clsx(
@@ -42,11 +45,12 @@ export function MoveHint({overPiece, bikjangRisk, delay}: Props): React.JSX.Elem
     >
       {!overPiece && (
         <span
+          data-testid="move-hint"
           className={clsx(
-            "flex items-center justify-center rounded-full bg-white/70 ring-1 ring-black/30",
-            bikjangRisk ? "h-[64%]" : "h-[30%]",
+            "rounded-full",
+            bikjangRisk ? "flex h-[64%] items-center justify-center" : "block h-[30%]",
           )}
-          style={{aspectRatio: 1}}
+          style={{aspectRatio: 1, background: tintOf(hintsStyle.colour, 70), boxShadow: edge(hintsStyle)}}
         >
           {bikjangRisk && <BikjangLabel />}
         </span>
@@ -54,8 +58,8 @@ export function MoveHint({overPiece, bikjangRisk, delay}: Props): React.JSX.Elem
 
       {overPiece && (
         <span
-          className="block h-[82%] rounded-full border-[3px] border-white/80 ring-1 ring-black/30"
-          style={{aspectRatio: 1}}
+          className="block h-[82%] rounded-full border-[3px]"
+          style={{aspectRatio: 1, borderColor: tintOf(hintsStyle.colour, 80), boxShadow: edge(hintsStyle)}}
         />
       )}
 
@@ -66,4 +70,9 @@ export function MoveHint({overPiece, bikjangRisk, delay}: Props): React.JSX.Elem
       )}
     </span>
   );
+}
+
+/** The dark hairline that keeps a light mark readable on a pale board. */
+function edge(hintsStyle: HintsStyle): string {
+  return `0 0 0 1px ${tintOf(hintsStyle.outline, 30)}`;
 }

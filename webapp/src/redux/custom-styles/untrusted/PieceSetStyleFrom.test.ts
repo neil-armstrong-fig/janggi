@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
 import {expect, it} from "vitest";
@@ -33,6 +34,7 @@ const piece: PieceStyle = {
 
 const set: PieceSetStyle = {
   name: "Mine",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {han: piece, cho: piece},
   pieces: {"han-general": {...piece, size: 0.94}},
 };
@@ -64,7 +66,33 @@ it("accepts drawn pieces as well as written ones", () => {
 
   expect(pieceSetStyleFrom({name: "Drawn", sides: {han: drawn, cho: drawn}})).toEqual({
     kind: "accepted",
-    value: {name: "Drawn", sides: {han: drawn, cho: drawn}},
+    value: {name: "Drawn", sides: {han: drawn, cho: drawn}, handling: DEFAULT_PIECE_HANDLING},
+  });
+});
+
+it("gives a set written before sets carried their handling the handling pieces always had", () => {
+  const {handling: _, ...before} = set;
+
+  expect(pieceSetStyleFrom(before)).toEqual({kind: "accepted", value: set});
+});
+
+it("reads how a set is handled, where it says", () => {
+  const handling = {shadow: "rgba(255, 0, 0, 0.6)", hoverOutline: 3};
+
+  expect(pieceSetStyleFrom({...set, handling})).toEqual({kind: "accepted", value: {...set, handling}});
+});
+
+it("refuses an outline that thickens under the pointer past what a piece can hold", () => {
+  expect(pieceSetStyleFrom({...set, handling: {shadow: "#000", hoverOutline: 9}})).toEqual({
+    kind: "refused",
+    reason: expect.stringContaining("style.handling.hoverOutline"),
+  });
+});
+
+it("refuses a shadow that would load from elsewhere", () => {
+  expect(pieceSetStyleFrom({...set, handling: {shadow: "url(https://example.com/a.png)", hoverOutline: 2}})).toEqual({
+    kind: "refused",
+    reason: expect.stringContaining("style.handling.shadow"),
   });
 });
 

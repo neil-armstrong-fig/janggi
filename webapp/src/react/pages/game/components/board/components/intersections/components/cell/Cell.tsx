@@ -1,6 +1,7 @@
 import {CellLines} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cell-lines/CellLines";
 import {CoverHint} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cover-hint/CoverHint";
 import {CELL_SVG_PROPS} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellViewBox";
+import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {Flourish} from "@src/react/pages/game/components/board/types/Flourish";
 import {LastMoveMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/last-move-mark/LastMoveMark";
 import {Marker} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/marker/Marker";
@@ -12,6 +13,7 @@ import type {LastMoveEnd} from "@src/react/pages/game/components/board/component
 import type {PieceLift} from "@src/react/pages/game/components/board/types/PieceLift";
 import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/intersections/types/MovableEmphasis";
 import type {Position} from "@src/game/board/types/Position";
+import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {ThreatMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/threat-mark/ThreatMark";
 import {cellShapeAt} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellShapes";
 import {resolveCellStyle} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/ResolveCellStyle";
@@ -31,6 +33,9 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * It is a `<button>` because it is tapped: a whole cell is a far bigger target than the piece drawn
  * on it, which is why `Piece` stays `pointer-events-none` and lets the tap fall through to here.
  * `aria-pressed` says which piece is in hand, matching what `OptionButton` already does.
+ *
+ * It wears the player's styles unless it is handed others — the styles editor draws a board in a style not
+ * yet saved, and a prop is how it says so. The game never passes any.
  *
  * A point the last move went between carries a wash under its piece and brackets in its corners over
  * it, both in the colours the board style gives in `lastMove`, and says which end it was in
@@ -66,6 +71,10 @@ interface Props {
   readonly hintDelay: number | undefined;
   readonly onTap: (position: Position) => void;
   readonly onHover: (position: Position | undefined) => void;
+  /** Worn instead of the player's board style, by a board that shows a style that is not the one in use. */
+  readonly boardStyle?: BoardStyle;
+  /** Worn instead of the player's piece set, likewise. */
+  readonly pieceSetStyle?: PieceSetStyle;
 }
 
 export function Cell({
@@ -86,10 +95,14 @@ export function Cell({
   hintDelay,
   onTap,
   onHover,
+  boardStyle,
+  pieceSetStyle: pieceStyleOverridePieceSetStyle,
 }: Props): React.JSX.Element {
-  const {boardStyle: style, pieceStyle, effects} = usePreferences();
-  const pulsing = effects.full;
-  const cellStyle = resolveCellStyle(style, position);
+  const preferences = usePreferences();
+  const styleBoardStyle = boardStyle ?? preferences.boardStyle;
+  const pieceSetStyle = pieceStyleOverridePieceSetStyle ?? preferences.pieceStyle;
+  const pulsing = preferences.effects.full;
+  const cellStyle = resolveCellStyle(styleBoardStyle, position);
 
   return (
     <button
@@ -116,20 +129,22 @@ export function Cell({
         {cellStyle.marker && <Marker marker={cellStyle.marker} />}
       </svg>
 
-      {lastMove && <span className="pointer-events-none absolute inset-0" style={{background: style.lastMove.wash}} />}
+      {lastMove && (
+        <span className="pointer-events-none absolute inset-0" style={{background: styleBoardStyle.lastMove.wash}} />
+      )}
 
-      {underAttack && <ThreatMark role="underAttack" pulsing={pulsing} />}
+      {underAttack && <ThreatMark role="underAttack" checkStyle={styleBoardStyle.check} pulsing={pulsing} />}
 
-      {attacking && <ThreatMark role="attacking" pulsing={pulsing} />}
+      {attacking && <ThreatMark role="attacking" checkStyle={styleBoardStyle.check} pulsing={pulsing} />}
 
-      {movable && <MovableMark emphasis={movable} />}
+      {movable && <MovableMark emphasis={movable} hintsStyle={styleBoardStyle.hints} />}
 
       {piece && (
         // Keyed by its flourish, so a new flourish is played from the start rather than picked up mid-way.
         <Piece
           key={flourish?.id ?? "still"}
           piece={piece}
-          style={pieceStyle}
+          style={pieceSetStyle}
           emphasised={hovered}
           concealed={concealed}
           lift={lift}
@@ -137,13 +152,26 @@ export function Cell({
         />
       )}
 
-      {lastMove && <LastMoveMark colour={style.lastMove.brackets} />}
+      {lastMove && <LastMoveMark colour={styleBoardStyle.lastMove.brackets} />}
 
-      {selected && <span className="pointer-events-none absolute inset-0 bg-white/20" />}
+      {selected && (
+        <span
+          data-testid="selected-wash"
+          className="pointer-events-none absolute inset-0"
+          style={{background: styleBoardStyle.hints.selection}}
+        />
+      )}
 
-      {canMoveTo && <MoveHint overPiece={piece !== undefined} bikjangRisk={bikjangRisk} delay={hintDelay} />}
+      {canMoveTo && (
+        <MoveHint
+          overPiece={piece !== undefined}
+          bikjangRisk={bikjangRisk}
+          hintsStyle={styleBoardStyle.hints}
+          delay={hintDelay}
+        />
+      )}
 
-      {covered && <CoverHint delay={hintDelay} />}
+      {covered && <CoverHint hintsStyle={styleBoardStyle.hints} delay={hintDelay} />}
     </button>
   );
 }

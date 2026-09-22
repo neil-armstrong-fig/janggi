@@ -1,9 +1,11 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
 import {expect, it} from "vitest";
 
 const style: BoardStyle = {
   name: "Mine",
+  ...DEFAULT_BOARD_MARKS,
   surface: "linear-gradient(160deg, #0b1220, #131c2e)",
   defaultCell: {stroke: "#2f6f8f", strokeWidth: 1, diagonalStroke: "#f472b6", diagonalStrokeWidth: 1.5},
   cells: {
@@ -83,4 +85,42 @@ it("refuses a style missing something every board must have", () => {
 
 it("refuses what is not an object at all", () => {
   expect(boardStyleFrom("Neon")).toEqual({kind: "refused", reason: expect.stringContaining("style")});
+});
+
+it("gives a style written before boards carried their marks the marks boards always drew", () => {
+  const {bikjang: _bikjang, check: _check, hints: _hints, ...before} = style;
+
+  expect(boardStyleFrom(before)).toEqual({kind: "accepted", value: style});
+});
+
+it("reads the marks a style picks for itself, each group on its own", () => {
+  const bikjang = {colour: "#ff00ff", width: 6};
+  const check = {colour: "#00ffff"};
+  const hints = {colour: "#ffff00", outline: "#101010", selection: "rgba(0, 0, 0, 0.3)"};
+
+  expect(boardStyleFrom({...style, bikjang, check, hints})).toEqual({
+    kind: "accepted",
+    value: {...style, bikjang, check, hints},
+  });
+  expect(boardStyleFrom({...style, check})).toEqual({kind: "accepted", value: {...style, check}});
+});
+
+it("refuses a bikjang line too thick, or too fine, to draw", () => {
+  for (const width of [0, 40]) {
+    expect(boardStyleFrom({...style, bikjang: {colour: "#fff", width}})).toEqual({
+      kind: "refused",
+      reason: expect.stringContaining("style.bikjang.width"),
+    });
+  }
+});
+
+it("refuses a mark's colour that would load from elsewhere, and says which", () => {
+  expect(boardStyleFrom({...style, check: {colour: "url(https://example.com/a.png)"}})).toEqual({
+    kind: "refused",
+    reason: expect.stringContaining("style.check.colour"),
+  });
+  expect(boardStyleFrom({...style, hints: {...style.hints, outline: "image-set(x)"}})).toEqual({
+    kind: "refused",
+    reason: expect.stringContaining("style.hints.outline"),
+  });
 });

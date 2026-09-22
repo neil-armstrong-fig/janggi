@@ -1,3 +1,4 @@
+import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import {expect, it} from "vitest";
 import {debugSaveIn} from "@src/redux/debug/DebugSaveIn";
 
@@ -23,7 +24,7 @@ it("carries styles too, as a save does", () => {
   };
 
   expect(debugSaveIn({janggi: "debug", progress: 0, customStyles: {boards: [board]}})?.customStyles.boards).toEqual([
-    board,
+    {...board, ...DEFAULT_BOARD_MARKS},
   ]);
 });
 

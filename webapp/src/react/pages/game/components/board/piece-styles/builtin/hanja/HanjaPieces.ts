@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import type {BuiltInPieceSetStyle} from "@src/react/pages/game/components/board/piece-styles/builtin/types/BuiltInPieceSetStyle";
 import type {CharacterGlyphStyle} from "@src/styles/types/PieceStyle";
 import {
@@ -29,6 +30,7 @@ const MARK: CharacterGlyphStyle = {
  */
 export const hanjaPieces: BuiltInPieceSetStyle = {
   name: "Hanja",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {
     han: {body: modernBody("han"), glyph: MARK, size: STANDARD_SIZE},
     cho: {body: modernBody("cho"), glyph: MARK, size: STANDARD_SIZE},

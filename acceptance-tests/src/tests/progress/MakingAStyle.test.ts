@@ -13,7 +13,7 @@ given("a player without the XP to make a style", () => {
 
   when("they look at making one", () => {
     then("it is locked", async ({janggi}) => {
-      expect(await janggi.stylesSheet.canMakeStyles()).toBe(false);
+      expect(await janggi.stylesSheet.styleStarter.canMakeStyles()).toBe(false);
     });
   });
 });
@@ -29,11 +29,11 @@ given("a player with the XP to make a style", () => {
     });
 
     then("it is saved", async ({janggi}) => {
-      expect(await janggi.stylesSheet.isEditorRefused()).toBe(false);
+      expect(await janggi.stylesSheet.styleEditor.isRefused()).toBe(false);
     });
 
     then("it is among their own boards", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Board")).toEqual(["My board"]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Board")).toEqual(["My board"]);
     });
 
     then("the board is wearing it", async ({janggi}) => {
@@ -61,11 +61,11 @@ given("a player with the XP to make a style", () => {
     });
 
     then("it is refused", async ({janggi}) => {
-      expect(await janggi.stylesSheet.isEditorRefused()).toBe(true);
+      expect(await janggi.stylesSheet.styleEditor.isRefused()).toBe(true);
     });
 
     then("nothing is added", async ({janggi}) => {
-      expect(await janggi.stylesSheet.getOwnStyleNames("Board")).toEqual([]);
+      expect(await janggi.stylesSheet.ownStyles.getNames("Board")).toEqual([]);
     });
   });
 
@@ -75,7 +75,7 @@ given("a player with the XP to make a style", () => {
     });
 
     then("it is refused", async ({janggi}) => {
-      expect(await janggi.stylesSheet.isEditorRefused()).toBe(true);
+      expect(await janggi.stylesSheet.styleEditor.isRefused()).toBe(true);
     });
   });
 });

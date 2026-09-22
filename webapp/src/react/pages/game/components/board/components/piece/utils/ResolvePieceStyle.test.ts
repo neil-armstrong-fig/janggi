@@ -1,3 +1,4 @@
+import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
 import {JANGGI_PICTOGRAPHS} from "@src/react/pages/game/components/board/piece-styles/builtin/modern/marks/JanggiPictographs";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
@@ -12,6 +13,7 @@ const anyPiece: PieceStyle = {
 
 const style: PieceSetStyle = {
   name: "Test",
+  handling: DEFAULT_PIECE_HANDLING,
   sides: {han: anyPiece, cho: {...anyPiece, size: 0.5}},
   pieces: {"han-general": {...anyPiece, size: 1}},
 };
@@ -29,7 +31,7 @@ it("does not let one side's override reach the other side's piece of the same ty
 });
 
 it("falls back to the side when a set declares no overrides at all", () => {
-  const bare: PieceSetStyle = {name: "Bare", sides: style.sides};
+  const barePieceSetStyle: PieceSetStyle = {...style, name: "Bare", pieces: undefined};
 
-  expect(resolvePieceStyle(bare, {side: "han", type: "general"})).toBe(bare.sides.han);
+  expect(resolvePieceStyle(barePieceSetStyle, {side: "han", type: "general"})).toBe(barePieceSetStyle.sides.han);
 });

@@ -1,3 +1,5 @@
+import type {ArmyBoardStyles} from "@src/styles/board-halves/types/ArmyBoardStyles";
+import type {ArmyPieceSets} from "@src/styles/piece-sets/types/ArmyPieceSets";
 import type {BikjangHint} from "@src/react/pages/game/types/BikjangHint";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {Effects} from "@src/react/pages/game/types/Effects";
@@ -14,8 +16,14 @@ import type {Volume} from "@janggi/shared/janggi/settings/Volume";
  * player's own.
  */
 export interface Preferences {
+  /** The one board the game is drawn on: each army's own half, put together. */
   readonly boardStyle: BoardStyle;
+  /** The board each army wears, which the settings show. */
+  readonly armyBoardStyles: ArmyBoardStyles;
+  /** The one set the board is drawn with: each army's own, put together. */
   readonly pieceStyle: PieceSetStyle;
+  /** The set each army wears, which the settings show. */
+  readonly armyPieceSets: ArmyPieceSets;
   readonly movableHighlight: MovableHighlight;
   readonly bikjangHint: BikjangHint;
   readonly effects: Effects;
