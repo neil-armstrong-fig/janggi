@@ -17,8 +17,9 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   (absent once everything is unlocked), `save-copy` and the `save-key` it shows,
   and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The styles
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
-  `-submit` and `-message` (`data-accepted`), and the editor's `style-editor-kind`, `-from`, `-name`,
-  `-json`, `-save` and `-message` (`data-accepted`), or `style-editor-locked` in their place. On the
+  `-submit` and `-message` (`data-accepted`), and starting one of their own: `style-editor-locked` where
+  XP has not unlocked it, or `style-editor-kind`, `-from` and `-start` where it has — the editor itself,
+  once started, has its own entry below ("Making a style"). On the
   result, `result-xp` carrying `data-xp`, `result-xp-bar` carrying `data-percent`, `result-unlocked` and,
   shown only when a bikjang or a repetition decided the game, `result-explanation` (carrying
   `data-called-by` for a bikjang). On `pass`, `bikjang`, `draw`, `undo` and `redo` the `disabled` attribute is part of
@@ -84,6 +85,22 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `data-guide-ready` once it has finished rendering, `guide-play` is its primary route into the game,
   and `guide-install` is shown only when a phone browser offers to save it. Its link in Settings is
   `guide-open`.
+- **Making a style** — `style-editor` wraps the whole editor, on a board of its own. At the top,
+  `style-editor-back`, `-name`, `-save` and `-message` (`data-accepted`); `style-editor-controls` and
+  `style-editor-raw` (`aria-pressed`) choose what is shown beneath — the controls, or
+  `style-editor-json` and `-raw-message` for the raw JSON. `style-editor-companion` picks what the
+  preview is shown against; `style-editor-target` names what the controls are changing, with
+  `style-editor-target-reset` once a single point or piece has a style of its own; and
+  `style-editor-tools` folds away `style-editor-reset`, `style-editor-copy-from`,
+  `style-editor-copy-scope`, `style-editor-copy`, and a key box of its own
+  (`style-editor-import-input`/`-submit`/`-message`). The board is `style-preview` — a `BoardGrid`
+  whose cells carry the same `cell-f<file>r<rank>` ids the real board's do — `style-preview-marked`
+  rings the point or piece in question, and `style-preview-scene-<name>` switches the position it is
+  shown in (`opening`, `hints`, `check` or `bikjang`). Every value inside the controls carries
+  `style-control-<id>`: a colour (plus `-alpha` where it may be translucent, or `-plain` to drop typed
+  CSS back to a plain one), a number (plus `-slider`), a choice (`style-control-<id>-<option>`), a
+  switch, typed text, or, for a piece's own drawing, `style-control-pictograph-<type>` with a
+  `-message` beside it for a file refused.
 
 The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`; nothing stores them.
 `BoardPlaywright` composes the cell id to find a piece.
