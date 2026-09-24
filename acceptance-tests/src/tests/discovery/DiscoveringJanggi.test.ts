@@ -19,6 +19,10 @@ given("someone searches for a way to play janggi", () => {
       expect(await janggi.isListedInSitemap()).toBe(true);
     });
 
+    then("crawlers are allowed in and told where the sitemap is", async ({janggi}) => {
+      expect(await janggi.isSitemapAdvertisedToCrawlers()).toBe(true);
+    });
+
     then("search engines that don't run scripts still read what the game is and find the guide", async ({janggi}) => {
       expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("Janggi — Korean Chess");
       expect(await janggi.getTextServedToSearchEngines()).toContain("eight AI levels");

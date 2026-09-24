@@ -201,6 +201,14 @@ export class JanggiDsl {
     }
   }
 
+  async isSitemapAdvertisedToCrawlers(): Promise<boolean> {
+    try {
+      return await this.janggi.isSitemapAdvertisedToCrawlers();
+    } catch (error) {
+      throw new DslError("Failed to check that robots.txt allows crawlers and names the sitemap", error);
+    }
+  }
+
   async isListedInSitemap(): Promise<boolean> {
     try {
       return await this.janggi.isListedInSitemap();

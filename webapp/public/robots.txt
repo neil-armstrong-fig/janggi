@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://janggi.neilarmstrong.dev/sitemap.xml
