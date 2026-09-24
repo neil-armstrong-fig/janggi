@@ -248,6 +248,19 @@ export class JanggiPlaywright extends BasePage {
     );
   }
 
+  async isSitemapAdvertisedToCrawlers(): Promise<boolean> {
+    const response = await this.page.request.get(new URL("robots.txt", this.page.url()).href);
+    if (!response.ok()) return false;
+
+    const robots = await response.text();
+
+    return (
+      /^User-agent: \*$/m.test(robots) &&
+      /^Allow: \/$/m.test(robots) &&
+      robots.includes("Sitemap: https://janggi.neilarmstrong.dev/sitemap.xml")
+    );
+  }
+
   async isListedInSitemap(): Promise<boolean> {
     const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
     const sitemap = await this.page.evaluate(async address => {
