@@ -207,6 +207,30 @@ export class JanggiPlaywright extends BasePage {
     return await this.page.locator("h1").innerText();
   }
 
+  /** The page as a crawler that runs no scripts receives it — inside `#root`, before React replaces it. */
+  async getMainHeadingServedToSearchEngines(): Promise<string> {
+    const root = await this.getRootServedToSearchEngines();
+
+    return /<h1[^>]*>([^<]*)<\/h1>/.exec(root)?.[1] ?? "";
+  }
+
+  async getTextServedToSearchEngines(): Promise<string> {
+    return (await this.getRootServedToSearchEngines()).replace(/<[^>]*>/g, " ");
+  }
+
+  async isGuideLinkedInPageServedToSearchEngines(): Promise<boolean> {
+    const root = await this.getRootServedToSearchEngines();
+
+    return /<a[^>]+href="learn\.html"/.test(root);
+  }
+
+  private async getRootServedToSearchEngines(): Promise<string> {
+    const response = await this.page.request.get(this.page.url());
+    const html = await response.text();
+
+    return /<div id="root">([\s\S]*?)<\/div>\s*<noscript>/.exec(html)?.[1] ?? "";
+  }
+
   async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
     const content = await this.page.locator("script[type='application/ld+json']").textContent();
     if (content === null) return false;
@@ -234,8 +258,8 @@ export class JanggiPlaywright extends BasePage {
     }, sitemapAddress);
 
     return (
-      sitemap.includes("https://neil-armstrong-fig.github.io/janggi/") &&
-      sitemap.includes("https://neil-armstrong-fig.github.io/janggi/learn.html")
+      sitemap.includes("https://janggi.neilarmstrong.dev/") &&
+      sitemap.includes("https://janggi.neilarmstrong.dev/learn.html")
     );
   }
 

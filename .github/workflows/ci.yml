@@ -116,12 +116,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Pages serves the site under the repository name, so the app is rebuilt with that base
-      # rather than reusing the "/" build the tests ran against.
+      # The custom domain (janggi.neilarmstrong.dev, set in the repository's Pages settings) serves
+      # the site from its root, so the base is "/" and matches the build the tests ran against.
       - name: Build for Pages
         run: pnpm --filter @janggi/webapp compile
         env:
-          BASE_PATH: /${{ github.event.repository.name }}/
+          BASE_PATH: /
 
       - uses: actions/configure-pages@v6
 

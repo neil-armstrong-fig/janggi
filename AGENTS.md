@@ -225,8 +225,10 @@ real engine means a failure isn't reproducible from the same commit. **If branch
 turned on, leave both out of required checks**, or they become a gate by the back door.
 
 `renovate.json` is committed but **inert until the Renovate GitHub App is installed**. Pages serves
-under the repo name, so `BASE_PATH=/<repo>/` feeds both Vite's `base` and the PWA manifest's
-`start_url`/`scope` — the DSL navigates with `goto("./")`, not `"/"`, for the same reason.
+the site from the root of its custom domain, `janggi.neilarmstrong.dev` (set in the repo's Pages
+settings, DNS at Cloudflare; there is no `CNAME` file because the deploy is an Actions artifact). If it
+were ever served under a path again, `BASE_PATH` feeds both Vite's `base` and the PWA manifest's
+`start_url`/`scope` — the DSL navigates with `goto("./")`, not `"/"`, for that reason.
 
 ## Tool configuration
 

@@ -2,16 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://neil-armstrong-fig.github.io/janggi/</loc>
+    <loc>https://janggi.neilarmstrong.dev/</loc>
     <image:image>
-      <image:loc>https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png</image:loc>
+      <image:loc>https://janggi.neilarmstrong.dev/janggi-korean-chess.png</image:loc>
       <image:title>Janggi (Korean chess) game</image:title>
     </image:image>
   </url>
   <url>
-    <loc>https://neil-armstrong-fig.github.io/janggi/learn.html</loc>
+    <loc>https://janggi.neilarmstrong.dev/learn.html</loc>
   </url>
   <url>
-    <loc>https://neil-armstrong-fig.github.io/janggi/references.html</loc>
+    <loc>https://janggi.neilarmstrong.dev/references.html</loc>
   </url>
 </urlset>

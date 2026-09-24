@@ -37,7 +37,7 @@ reintroduce it.
 
 ## Conventions
 
-- `BASE_PATH` sets where the app is served from (`/` locally, `/<repo>/` on GitHub Pages) and drives
+- `BASE_PATH` sets where the app is served from (`/` locally and on the custom domain) and drives
   the PWA manifest's `start_url`/`scope`. Do not hardcode absolute asset paths.
 - Tailwind v4 has no config file — use utilities in JSX. Colour tokens live in the `@theme` block in
   `index.css` (`bg-ground`, `text-cho`, `border-danger`, …), never hex in JSX; motion keyframes live
