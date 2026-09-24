@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://neil-armstrong-fig.github.io/janggi/"><strong>▶ Play now</strong></a>
+  <a href="https://janggi.neilarmstrong.dev/"><strong>▶ Play now</strong></a>
   ·
-  <a href="https://neil-armstrong-fig.github.io/janggi/learn.html"><strong>Learn how to play</strong></a>
+  <a href="https://janggi.neilarmstrong.dev/learn.html"><strong>Learn how to play</strong></a>
 </p>
 
 ---
@@ -39,9 +39,9 @@ If you know chess or xiangqi, janggi feels familiar for about three moves. Then 
 ### Learn before you play
 
 The illustrated [guide to playing
-janggi](https://neil-armstrong-fig.github.io/janggi/learn.html) introduces the board, every piece,
+janggi](https://janggi.neilarmstrong.dev/learn.html) introduces the board, every piece,
 the rules that make the game distinctive and both match formats. The app's sources and credits are
-collected on its [references page](https://neil-armstrong-fig.github.io/janggi/references.html).
+collected on its [references page](https://janggi.neilarmstrong.dev/references.html).
 
 ### Two ways to play
 

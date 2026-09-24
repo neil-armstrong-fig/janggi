@@ -17,7 +17,7 @@
     "acceptance-tests:bot-games": "playwright test --config playwright.bot-games.config.ts",
     "acceptance-tests:pwa": "playwright test --config playwright.pwa.config.ts",
     "acceptance-tests:local": "WEBAPP_URL=http://localhost:3000 playwright test",
-    "acceptance-tests:production": "WEBAPP_URL=https://neil-armstrong-fig.github.io/janggi/ playwright test",
+    "acceptance-tests:production": "WEBAPP_URL=https://janggi.neilarmstrong.dev/ playwright test",
     "acceptance-tests:headed": "playwright test --headed",
     "acceptance-tests:ui": "playwright test --ui",
     "acceptance-tests:report": "playwright show-report"

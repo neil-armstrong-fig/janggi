@@ -169,6 +169,30 @@ export class JanggiDsl {
     }
   }
 
+  async getMainHeadingServedToSearchEngines(): Promise<string> {
+    try {
+      return await this.janggi.getMainHeadingServedToSearchEngines();
+    } catch (error) {
+      throw new DslError("Failed to read the main heading in the page as served, before scripts run", error);
+    }
+  }
+
+  async getTextServedToSearchEngines(): Promise<string> {
+    try {
+      return await this.janggi.getTextServedToSearchEngines();
+    } catch (error) {
+      throw new DslError("Failed to read the text in the page as served, before scripts run", error);
+    }
+  }
+
+  async isGuideLinkedInPageServedToSearchEngines(): Promise<boolean> {
+    try {
+      return await this.janggi.isGuideLinkedInPageServedToSearchEngines();
+    } catch (error) {
+      throw new DslError("Failed to check for the guide link in the page as served, before scripts run", error);
+    }
+  }
+
   async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
     try {
       return await this.janggi.isIdentifiedAsAFreeWebGame();

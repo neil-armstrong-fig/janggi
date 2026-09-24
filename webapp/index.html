@@ -19,8 +19,8 @@
 
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%icon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="%BASE_URL%apple-touch-icon.png" />
-    <link rel="canonical" href="https://neil-armstrong-fig.github.io/janggi/" />
-    <link rel="sitemap" type="application/xml" href="https://neil-armstrong-fig.github.io/janggi/sitemap.xml" />
+    <link rel="canonical" href="https://janggi.neilarmstrong.dev/" />
+    <link rel="sitemap" type="application/xml" href="https://janggi.neilarmstrong.dev/sitemap.xml" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Janggi (Korean chess)" />
@@ -30,8 +30,8 @@
       property="og:description"
       content="Play Janggi (Korean chess) for free against a friend or eight AI levels. Save it to your device and play offline."
     />
-    <meta property="og:url" content="https://neil-armstrong-fig.github.io/janggi/" />
-    <meta property="og:image" content="https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png" />
+    <meta property="og:url" content="https://janggi.neilarmstrong.dev/" />
+    <meta property="og:image" content="https://janggi.neilarmstrong.dev/janggi-korean-chess.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="A Janggi (Korean chess) game with Cho and Han pieces on the board" />
@@ -42,7 +42,7 @@
       name="twitter:description"
       content="Play Janggi (Korean chess) for free against a friend or eight AI levels, online or offline."
     />
-    <meta name="twitter:image" content="https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png" />
+    <meta name="twitter:image" content="https://janggi.neilarmstrong.dev/janggi-korean-chess.png" />
 
     <script type="application/ld+json">
       {
@@ -50,8 +50,8 @@
         "@type": ["VideoGame", "WebApplication"],
         "name": "Janggi",
         "alternateName": ["Korean Chess", "장기"],
-        "url": "https://neil-armstrong-fig.github.io/janggi/",
-        "image": "https://neil-armstrong-fig.github.io/janggi/janggi-korean-chess.png",
+        "url": "https://janggi.neilarmstrong.dev/",
+        "image": "https://janggi.neilarmstrong.dev/janggi-korean-chess.png",
         "description": "A free Janggi (Korean chess) web game for playing a local friend or a Fairy-Stockfish AI, online or offline.",
         "applicationCategory": "GameApplication",
         "genre": ["Board game", "Strategy game", "Korean chess"],
@@ -77,14 +77,22 @@
   </head>
 
   <body>
-    <div id="root"></div>
-
-    <noscript>
+    <div id="root">
+      <!-- What a crawler that runs no scripts reads. React replaces it as soon as the app mounts. -->
       <main>
         <h1>Janggi — Korean Chess</h1>
-        <p>This game needs JavaScript to play.</p>
-        <p><a href="learn.html">Learn how to play Janggi</a> while you enable it.</p>
+        <p>
+          Play Janggi (장기), the Korean chess game, for free against a friend or eight AI levels. No account needed;
+          save it to your device and play offline.
+        </p>
+        <p>
+          <a href="learn.html">Learn how to play Janggi</a> · <a href="references.html">References &amp; credits</a>
+        </p>
       </main>
+    </div>
+
+    <noscript>
+      <p>This game needs JavaScript to play.</p>
     </noscript>
 
     <script type="module" src="/src/main.tsx"></script>

@@ -11,12 +11,18 @@ given("someone searches for a way to play janggi", () => {
     });
 
     then("search engines are given one address and understand that the web game is free", async ({janggi}) => {
-      expect(await janggi.getCanonicalAddress()).toBe("https://neil-armstrong-fig.github.io/janggi/");
+      expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/");
       expect(await janggi.isIdentifiedAsAFreeWebGame()).toBe(true);
     });
 
     then("the game and guide are listed for search engines to discover", async ({janggi}) => {
       expect(await janggi.isListedInSitemap()).toBe(true);
+    });
+
+    then("search engines that don't run scripts still read what the game is and find the guide", async ({janggi}) => {
+      expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("Janggi — Korean Chess");
+      expect(await janggi.getTextServedToSearchEngines()).toContain("eight AI levels");
+      expect(await janggi.isGuideLinkedInPageServedToSearchEngines()).toBe(true);
     });
 
     then("the in-depth Janggi guide is linked from the game", async ({janggi}) => {
@@ -31,7 +37,7 @@ given("someone searches for a way to play janggi", () => {
 
     then("it gives janggi a descriptive search result of its own", async ({janggi}) => {
       expect(await janggi.guide.getPageTitle()).toBe("How to Play Janggi (Korean Chess) — Rules & Free Game");
-      expect(await janggi.guide.getCanonicalAddress()).toBe("https://neil-armstrong-fig.github.io/janggi/learn.html");
+      expect(await janggi.guide.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/learn.html");
       expect(await janggi.guide.getMainHeading()).toBe("How to play Janggi (Korean chess)");
     });
 
