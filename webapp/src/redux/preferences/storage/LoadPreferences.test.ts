@@ -15,6 +15,7 @@ const chosen: PreferencesSliceState = {
   hanPieceSet: undefined,
   movableHighlight: "Hidden",
   bikjangHint: "Hidden",
+  flipBoardForHan: true,
   effects: "Reduced",
   soundEffectsVolume: 40,
   musicVolume: 0,
@@ -58,6 +59,17 @@ it("puts back the default for a bikjang hint that was never kept, and keeps the 
 it("puts back the default for a bikjang hint the app does not offer", () => {
   expect(loadPreferences(storageHolding({...chosen, bikjangHint: "Loud"})).bikjangHint).toBe(
     defaultPreferences().bikjangHint,
+  );
+});
+
+it("puts back the default for a flip that was never kept or is not a yes or no", () => {
+  const {flipBoardForHan: _never, ...savedBeforeTheFlip} = chosen;
+
+  expect(loadPreferences(storageHolding(savedBeforeTheFlip)).flipBoardForHan).toBe(
+    defaultPreferences().flipBoardForHan,
+  );
+  expect(loadPreferences(storageHolding({...chosen, flipBoardForHan: "yes"})).flipBoardForHan).toBe(
+    defaultPreferences().flipBoardForHan,
   );
 });
 

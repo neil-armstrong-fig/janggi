@@ -40,6 +40,11 @@ export interface PreferencesSliceState {
   readonly hanPieceSet: string | undefined;
   readonly movableHighlight: MovableHighlightName;
   readonly bikjangHint: BikjangHintName;
+  /**
+   * Whether the play area is turned round for Han's player, sat across the device — but only against a
+   * person. Against the bot there is no one across the table, so it is not asked there.
+   */
+  readonly flipBoardForHan: boolean;
   readonly effects: EffectsName;
   readonly soundEffectsVolume: Volume;
   readonly musicVolume: Volume;

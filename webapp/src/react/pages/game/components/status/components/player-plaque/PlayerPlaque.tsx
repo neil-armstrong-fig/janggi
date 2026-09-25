@@ -66,7 +66,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
       data-state={state}
       aria-label={sideName(side)}
       className={clsx(
-        "flex h-11 shrink-0 items-center gap-2 rounded-xl border px-3 transition-[background-color,border-color,opacity] duration-300 motion-reduce:transition-none",
+        "flex h-11 shrink-0 items-center gap-2 rounded-xl border px-3 group-data-[flipped=true]/flip:rotate-180 transition-[background-color,border-color,opacity] duration-300 motion-reduce:transition-none",
         FRAMES[state],
       )}
     >

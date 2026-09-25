@@ -1,5 +1,6 @@
 import {BotSettings} from "@src/react/pages/game/components/settings/tabs/game-pane/components/bot-settings/BotSettings";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/tabs/game-pane/components/elephant-pairing-line/ElephantPairingLine";
+import {FlipBoardSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/flip-board-setting/FlipBoardSetting";
 import {MatchFormatSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/match-format-setting/MatchFormatSetting";
 import {NewGameButton} from "@src/react/pages/game/components/settings/tabs/game-pane/components/new-game-button/NewGameButton";
 import {OpponentSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/opponent-setting/OpponentSetting";
@@ -9,7 +10,7 @@ import {SetupSettings} from "@src/react/pages/game/components/settings/tabs/game
 
 /**
  * The Game tab: what a player opens the sheet for before a game — the format, who the opponent is,
- * how strongly the bot plays and which army the player takes against it, and each army's opening
+ * whether the board turns for Han's player when that is a person, how strongly the bot plays and which army the player takes against it, and each army's opening
  * setup, with the 맞상/엇상 line those two choices come to.
  *
  * **New game and Your record sit in the pane's footer**, outside the scrolling settings, so they are
@@ -43,6 +44,8 @@ export function GamePane({selected, onStarted, onOpenRecord}: Props): React.JSX.
       <MatchFormatSetting />
 
       <OpponentSetting />
+
+      <FlipBoardSetting />
 
       <BotSettings />
 

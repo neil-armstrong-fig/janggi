@@ -14,6 +14,7 @@ export function defaultPreferences(): PreferencesSliceState {
     hanPieceSet: undefined,
     movableHighlight: "Shown",
     bikjangHint: "Shown",
+    flipBoardForHan: false,
     effects: "Full",
     soundEffectsVolume: FULL_VOLUME,
     musicVolume: FULL_VOLUME,

@@ -2,6 +2,7 @@ import {
   armyBoardStyleChosen,
   armyPieceSetChosen,
   bikjangHintChosen,
+  flipBoardForHanChosen,
   boardStyleChosen,
   boardStyleSplit,
   effectsChosen,
@@ -24,6 +25,7 @@ it("starts on the classic board and the modern set, with every mark, motion and 
     hanPieceSet: undefined,
     movableHighlight: "Shown",
     bikjangHint: "Shown",
+    flipBoardForHan: false,
     effects: "Full",
     soundEffectsVolume: 100,
     musicVolume: 100,
@@ -90,6 +92,13 @@ it("shows or hides the bikjang hint as chosen", () => {
     ...initial(),
     bikjangHint: "Hidden",
   });
+});
+
+it("flips the board for Han, or puts it back, as chosen", () => {
+  const flipped = preferencesReducer(initial(), flipBoardForHanChosen(true));
+
+  expect(flipped).toEqual({...initial(), flipBoardForHan: true});
+  expect(preferencesReducer(flipped, flipBoardForHanChosen(false))).toEqual(initial());
 });
 
 it("moves the board as much as chosen", () => {

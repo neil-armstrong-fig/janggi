@@ -61,7 +61,7 @@ export function TurnIndicator(): React.JSX.Element {
       data-winner={winner}
       aria-live="polite"
       className={clsx(
-        "h-6 shrink-0 self-center rounded-full px-3 text-center text-xs leading-6 font-semibold tracking-wide uppercase transition-colors duration-300 motion-reduce:transition-none",
+        "h-6 shrink-0 self-center rounded-full px-3 group-data-[flipped=true]/flip:rotate-180 text-center text-xs leading-6 font-semibold tracking-wide uppercase transition-colors duration-300 motion-reduce:transition-none",
         engineFailed && "bg-danger/20 text-danger",
         !engineFailed && toneOf(status),
       )}

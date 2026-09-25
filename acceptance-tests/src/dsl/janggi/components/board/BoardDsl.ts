@@ -38,6 +38,15 @@ export class BoardDsl {
     }
   }
 
+  /** Whether the pieces are turned to face Han's player, sat across the device, with the board itself left where it is. */
+  async isFlippedForHan(): Promise<boolean> {
+    try {
+      return await this.board.isFlippedForHan();
+    } catch (error) {
+      throw new DslError("Failed to check whether the board is flipped for Han", error);
+    }
+  }
+
   async getPieceCount(): Promise<number> {
     try {
       return await this.board.getPieceCount();

@@ -187,6 +187,24 @@ export class StatusDsl {
     }
   }
 
+  /** Whether the row of controls sits above the board rather than below it. */
+  async areControlsAboveTheBoard(): Promise<boolean> {
+    try {
+      return await this.status.areControlsAboveTheBoard();
+    } catch (error) {
+      throw new DslError("Failed to read whether the controls are above the board", error);
+    }
+  }
+
+  /** Whether the row of controls is turned upside down, for a player sat across the device. */
+  async areControlsUpsideDown(): Promise<boolean> {
+    try {
+      return await this.status.areControlsUpsideDown();
+    } catch (error) {
+      throw new DslError("Failed to read whether the controls are upside down", error);
+    }
+  }
+
   /** Plays again the turn that was most recently taken back. */
   async redo(): Promise<void> {
     try {

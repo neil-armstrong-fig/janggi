@@ -26,6 +26,7 @@ export interface Preferences {
   readonly armyPieceSets: ArmyPieceSets;
   readonly movableHighlight: MovableHighlight;
   readonly bikjangHint: BikjangHint;
+  readonly flipBoardForHan: boolean;
   readonly effects: Effects;
   readonly soundEffectsVolume: Volume;
   readonly musicVolume: Volume;
