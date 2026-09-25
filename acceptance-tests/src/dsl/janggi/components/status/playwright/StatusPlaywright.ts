@@ -439,6 +439,24 @@ export class StatusPlaywright extends BaseComponent {
     return await this.takeBack.isEnabled();
   }
 
+  /** Whether the row of controls sits above the board rather than below it — read off the screen. */
+  async areControlsAboveTheBoard(): Promise<boolean> {
+    await this.takeBack.waitFor({state: "visible"});
+
+    const controls = await this.takeBack.boundingBox();
+    const board = await this.page.getByTestId("board").boundingBox();
+    if (!controls || !board) throw new Error("Expected the controls and the board to be on screen");
+
+    return controls.y < board.y;
+  }
+
+  /** Whether the row of controls is turned upside down, its buttons included. */
+  async areControlsUpsideDown(): Promise<boolean> {
+    await this.takeBack.waitFor({state: "visible"});
+
+    return (await this.takeBack.locator("..").evaluate(row => getComputedStyle(row).rotate)) === "180deg";
+  }
+
   async redo(): Promise<void> {
     await this.playAgain.click();
   }

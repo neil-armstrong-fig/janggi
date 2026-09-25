@@ -61,7 +61,7 @@ export function Controls({onControlPressed, onOpenSettings}: Props): React.JSX.E
   }
 
   return (
-    <div className="flex shrink-0 gap-1.5">
+    <div className="flex shrink-0 gap-1.5 group-data-[flipped=true]/flip:order-first group-data-[flipped=true]/flip:rotate-180">
       <UndoButton enabled={!againstBot && canUndo(played)} onUndo={() => pressed(takenBack())} />
 
       <RedoButton enabled={!againstBot && canRedo(played)} onRedo={() => pressed(playedAgain())} />

@@ -77,6 +77,14 @@ export class BoardPlaywright extends BaseComponent {
     );
   }
 
+  /** Whether the pieces are turned upside down, to face a player sat across the device — read off the screen. */
+  async isFlippedForHan(): Promise<boolean> {
+    const piece = this.pieceLocator(1, 1);
+    await piece.waitFor({state: "visible"});
+
+    return (await piece.evaluate(element => getComputedStyle(element).rotate)) === "180deg";
+  }
+
   async getPieceCount(): Promise<number> {
     await this.container.waitFor({state: "visible"});
 

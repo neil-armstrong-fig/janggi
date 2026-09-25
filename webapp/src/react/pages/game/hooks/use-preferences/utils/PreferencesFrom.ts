@@ -52,6 +52,7 @@ export function preferencesFrom(
     armyPieceSets,
     movableHighlight: namedIn(MOVABLE_HIGHLIGHTS, names.movableHighlight),
     bikjangHint: namedIn(BIKJANG_HINTS, names.bikjangHint),
+    flipBoardForHan: names.flipBoardForHan,
     effects: namedIn(EFFECTS, names.effects),
     soundEffectsVolume: names.soundEffectsVolume,
     musicVolume: names.musicVolume,

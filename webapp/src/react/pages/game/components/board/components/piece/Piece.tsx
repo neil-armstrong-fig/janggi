@@ -72,6 +72,7 @@ export function Piece({
             data-testid="piece"
             data-piece={toPieceKey(piece)}
             role="img"
+            className="group-data-[flipped=true]/flip:rotate-180"
             aria-label={pieceName(piece)}
             style={{height: `${pieceStyle.size * 100}%`, aspectRatio: 1}}
           >
