@@ -62,3 +62,26 @@ given("a scored game in which han has laid out and cho has not", () => {
     });
   });
 });
+
+given("a game was under way and the player started a new one from the settings", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.board.tap(1, 7);
+    await janggi.board.tap(1, 6);
+    await janggi.settings.startNewGame();
+  });
+
+  when("the page is closed and opened again without another move", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.reload();
+    });
+
+    then("the soldier is back where it started, the new game having been kept", async ({janggi}) => {
+      expect(await janggi.board.getPieceAt(1, 7)).toEqual({side: "cho", type: "soldier"});
+      expect(await janggi.board.getPieceAt(1, 6)).toBeUndefined();
+    });
+
+    then("there is no move to take back", async ({janggi}) => {
+      expect(await janggi.status.canUndo()).toBe(false);
+    });
+  });
+});
