@@ -70,7 +70,7 @@ behind every contested one is written up with sources in [`docs/rules.md`](docs/
 
 - **Nine built-in piece sets and seven boards**, from traditional characters and classic wood to
   matched themes. You can also create, import and share your own styles.
-- **A soundtrack played on synthesised Korean instruments** — gayageum, daegeum, piri, janggu and gong —
+- **A soundtrack played on synthesised Korean instruments** — gayageum, daegeum, janggu and gong —
   in traditional modes and rhythms, and it changes with the game: tension builds as pieces come off the
   board, a theme cuts in when a general is in check, and the ending is marked.
 - **Pieces fly, captures land, the board shakes**, and on a phone you'll feel it buzz. Every bit of it
