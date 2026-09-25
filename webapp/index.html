@@ -73,13 +73,26 @@
       }
     </script>
 
+    <style>
+      /* The crawler copy below stays in the DOM but is never painted, so players do not see it flash before React mounts. */
+      main[data-crawler-copy] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    </style>
+
     <title>Play Janggi (Korean Chess) Online — Free vs AI</title>
   </head>
 
   <body>
     <div id="root">
       <!-- What a crawler that runs no scripts reads. React replaces it as soon as the app mounts. -->
-      <main>
+      <main data-crawler-copy>
         <h1>Janggi — Korean Chess</h1>
         <p>
           Play Janggi (장기), the Korean chess game, for free against a friend or eight AI levels. No account needed;

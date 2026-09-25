@@ -56,7 +56,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    learnGuide(),
+    prerenderedPages(),
     fairyStockfish(),
     VitePWA({
       injectRegister: false,
@@ -128,53 +128,74 @@ export default defineConfig({
   ],
 });
 
-/** The guide stays crawlable without maintaining a second, non-React copy of its content. */
-function learnGuide(): Plugin {
+/** The reading pages stay crawlable without maintaining a second, non-React copy of their content. */
+function prerenderedPages(): Plugin {
   return {
-    name: "learn-guide",
+    name: "prerendered-pages",
     transformIndexHtml: {
       order: "pre",
       async handler(html, context) {
-        if (!context.filename.endsWith("learn.html")) return;
+        const page = PRERENDERED_PAGES.find(candidate => context.filename.endsWith(candidate.file));
+        if (!page) return;
 
         const markup = context.server
-          ? markupFor((await context.server.ssrLoadModule(LEARN_PAGE_MODULE)) as LearnPageModule)
-          : await renderLearnGuide();
+          ? markupFor(page, await context.server.ssrLoadModule(page.module))
+          : await renderPrerenderedPage(page);
 
-        return html.replace(GUIDE_MARKER, markup);
+        return html.replace(PAGE_MARKER, markup);
       },
     },
   };
 }
 
-const GUIDE_MARKER = "<!--guide-content-->";
-const LEARN_PAGE_MODULE = "/src/react/pages/learn/LearnPage.tsx";
+const PAGE_MARKER = "<!--page-content-->";
 
-interface LearnPageModule {
-  readonly LearnPage: ComponentType;
+interface PrerenderedPage {
+  readonly file: string;
+  readonly module: string;
+  readonly component: string;
 }
 
-async function renderLearnGuide(): Promise<string> {
+const PRERENDERED_PAGES: readonly PrerenderedPage[] = [
+  {file: "learn.html", module: "/src/react/pages/learn/LearnPage.tsx", component: "LearnPage"},
+  {file: "references.html", module: "/src/react/pages/references/ReferencesPage.tsx", component: "ReferencesPage"},
+];
+
+async function renderPrerenderedPage(page: PrerenderedPage): Promise<string> {
   const renderingServer = await createServer({
     appType: "custom",
     configFile: false,
     root: import.meta.dirname,
     server: {hmr: false, middlewareMode: true, ws: false},
     resolve: {tsconfigPaths: true},
-    plugins: [react()],
+    plugins: [react(), serviceWorkerRegistrationStub()],
   });
 
   try {
-    const learnPageModule = (await renderingServer.ssrLoadModule(LEARN_PAGE_MODULE)) as LearnPageModule;
-
-    return markupFor(learnPageModule);
+    return markupFor(page, await renderingServer.ssrLoadModule(page.module));
   } finally {
     await renderingServer.close();
   }
 }
 
-function markupFor(learnPageModule: LearnPageModule): string {
-  return renderToString(createElement(StrictMode, undefined, createElement(learnPageModule.LearnPage)));
+/** The PWA plugin's virtual module only exists in the real build; a render for markup never registers a worker. */
+function serviceWorkerRegistrationStub(): Plugin {
+  const id = "virtual:pwa-register/react";
+
+  return {
+    name: "service-worker-registration-stub",
+    resolveId: source => (source === id ? `\0${id}` : undefined),
+    load: resolved =>
+      resolved === `\0${id}`
+        ? "export function useRegisterSW() { return {needRefresh: [false, () => {}], updateServiceWorker: () => {}}; }"
+        : undefined,
+  };
+}
+
+function markupFor(page: PrerenderedPage, pageModule: Record<string, unknown>): string {
+  const component = pageModule[page.component] as ComponentType;
+
+  return renderToString(createElement(StrictMode, undefined, createElement(component)));
 }
 
 /**
