@@ -36,12 +36,12 @@ export function gayageum({context, destination}: SoundOutput, when: number, gaya
   shimmer.detune.value = 4;
 
   const shimmerLevel = context.createGain();
-  shimmerLevel.gain.value = 0.3;
+  shimmerLevel.gain.value = 0.22;
 
   const mellow = context.createBiquadFilter();
   mellow.type = "lowpass";
   mellow.Q.value = 0.7;
-  mellow.frequency.setValueAtTime(Math.min(BRIGHTEST, frequency * 10), when);
+  mellow.frequency.setValueAtTime(Math.min(BRIGHTEST, frequency * 6), when);
   mellow.frequency.exponentialRampToValueAtTime(frequency * 1.8, when + length * 0.6);
 
   const level = context.createGain();
@@ -61,4 +61,4 @@ export function gayageum({context, destination}: SoundOutput, when: number, gaya
 const BEND = 0.985;
 
 /** The filter never opens above this, however high the note. */
-const BRIGHTEST = 12_000;
+const BRIGHTEST = 5_000;
