@@ -1,6 +1,6 @@
 import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
 import {botEngineRetried} from "@src/redux/bot-engine/BotEngineSlice";
-import {botLetOpen, drawAccepted, drawDeclined, restarted} from "@src/redux/game/GameSlice";
+import {botLetOpen, botStrengthChosen, drawAccepted, drawDeclined, restarted} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {BotEngineNotice} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-engine-notice/BotEngineNotice";
 import {BotGoAhead} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-go-ahead/BotGoAhead";
@@ -10,6 +10,7 @@ import {RepetitionNotice} from "@src/react/pages/game/components/status/componen
 import {ResultBanner} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/ResultBanner";
 import type {UnknownAction} from "@reduxjs/toolkit";
 import {endsAGameByRepetition} from "@src/game/repetition/EndsAGameByRepetition";
+import {newlyUnlockedBotElo} from "@src/react/pages/game/components/status/components/board-overlay/rewards/NewlyUnlockedBotElo";
 import {opponentOf} from "@src/game/utils/OpponentOf";
 import {repetitionHoldsBackAMove} from "@src/game/repetition/RepetitionHoldsBackAMove";
 import {rewardFor} from "@src/react/pages/game/components/status/components/board-overlay/rewards/RewardFor";
@@ -46,7 +47,7 @@ interface Props {
 
 export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
-  const xp = useAppSelector(state => state.progress.xp);
+  const {xp, beaten} = useAppSelector(state => state.progress);
   const {effects} = usePreferences();
   const {status, botsTurn, awaitingGoAhead, engineHoldsPlay, botEngine} = useGameStatus();
   const dispatch = useAppDispatch();
@@ -71,6 +72,8 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   // itself, so there is nobody here to ask — only a refusal to report.
   const offerAwaitsAnAnswer = drawOffer !== undefined && !drawOffer.declined && botSide === undefined;
   const offerRefused = drawOffer?.declined ? opponentOf(drawOffer.by) : undefined;
+
+  const nextBotElo = newlyUnlockedBotElo({status, opponent, format: phase.format, beaten});
 
   function pressed(action: UnknownAction): void {
     onControlPressed();
@@ -106,7 +109,9 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
         reward={rewardFor(status, opponent, phase.format, xp)}
         xp={xp}
         animated={effects.full}
+        nextBotElo={nextBotElo}
         onStartNewGame={() => pressed(restarted())}
+        onStartNewGameAtBotElo={elo => pressed(botStrengthChosen(elo))}
       />
     </>
   );

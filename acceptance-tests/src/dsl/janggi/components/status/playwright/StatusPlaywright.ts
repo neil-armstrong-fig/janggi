@@ -44,6 +44,7 @@ export class StatusPlaywright extends BaseComponent {
   private readonly resultExplanation: Locator;
   private readonly resultXpBar: Locator;
   private readonly newGame: Locator;
+  private readonly newGameAtNextStrength: Locator;
   private readonly players: Record<Side, Locator>;
   private readonly botGoAhead: Locator;
   private readonly botEngineRetry: Locator;
@@ -68,6 +69,7 @@ export class StatusPlaywright extends BaseComponent {
     this.resultExplanation = page.getByTestId("result-explanation");
     this.resultXpBar = page.getByTestId("result-xp-bar");
     this.newGame = page.getByTestId("result-new-game");
+    this.newGameAtNextStrength = page.getByTestId("result-new-game-harder");
     this.players = {cho: page.getByTestId("plaque-player-cho"), han: page.getByTestId("plaque-player-han")};
     this.botGoAhead = page.getByTestId("bot-go-ahead");
     this.botEngineRetry = page.getByTestId("bot-engine-retry");
@@ -243,6 +245,16 @@ export class StatusPlaywright extends BaseComponent {
   /** Presses New game on the announcement of a result. */
   async startNewGame(): Promise<void> {
     await this.newGame.click();
+  }
+
+  /** Presses New game at the strength of bot the win opened, on the announcement of a result. */
+  async startNewGameAtNextStrength(): Promise<void> {
+    await this.newGameAtNextStrength.click();
+  }
+
+  /** Whether the announcement offers a game against the strength of bot the win opened. Counted, as an absence is its answer. */
+  async isNewGameAtNextStrengthOffered(): Promise<boolean> {
+    return (await this.newGameAtNextStrength.count()) > 0;
   }
 
   /**

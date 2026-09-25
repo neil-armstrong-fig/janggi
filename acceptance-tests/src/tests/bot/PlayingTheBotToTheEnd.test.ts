@@ -42,6 +42,12 @@ given("a player with no XP takes on the weakest bot, playing what the strongest 
       expect(shown).toBeDefined();
       expect(shown).toBe(await janggi.settings.progress.getXpBarPercent());
     });
+
+    then("a game against the next strength up is offered only if the player won, which opened it", async ({janggi}) => {
+      const won = (await janggi.status.getWinner()) === "cho";
+
+      expect(await janggi.status.isNewGameAtNextStrengthOffered()).toBe(won);
+    });
   });
 });
 

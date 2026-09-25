@@ -1,6 +1,7 @@
 import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {Reward} from "@src/react/pages/game/components/status/components/board-overlay/types/Reward";
+import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
@@ -29,6 +30,9 @@ import type {Wording} from "@src/react/pages/game/components/status/components/b
  * gold badge rather than another grey line, and with effects in full it lands a beat after the result
  * itself: the game is announced, and then what the game won you.
  *
+ * **A win that opens the next strength of bot offers a game against it** beside New game, since the reason to
+ * climb is to face the bot above; New game itself still replays the same one.
+ *
  * With effects in full it slams in, over a single soft flash of the board. Otherwise it is simply there.
  */
 interface Props {
@@ -45,7 +49,10 @@ interface Props {
   /** The XP the player holds now, this game's included — what the bar under the reward is filled to. */
   readonly xp: number;
   readonly animated: boolean;
+  /** The strength of bot this win has just opened, or undefined where it opened none. */
+  readonly nextBotElo: BotElo | undefined;
   readonly onStartNewGame: () => void;
+  readonly onStartNewGameAtBotElo: (elo: BotElo) => void;
 }
 
 export function ResultBanner({
@@ -57,7 +64,9 @@ export function ResultBanner({
   reward,
   xp,
   animated,
+  nextBotElo,
   onStartNewGame,
+  onStartNewGameAtBotElo,
 }: Props): React.JSX.Element | null {
   const wording = wordingOf(status);
   if (!wording) return null;
@@ -132,6 +141,17 @@ export function ResultBanner({
         >
           New game
         </button>
+
+        {nextBotElo !== undefined && (
+          <button
+            type="button"
+            data-testid="result-new-game-harder"
+            onClick={() => onStartNewGameAtBotElo(nextBotElo)}
+            className="pointer-events-auto mt-2 h-10 w-full cursor-pointer rounded-xl bg-gold px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-gold/90 active:scale-[0.97] motion-reduce:transition-none"
+          >
+            New game at {nextBotElo}
+          </button>
+        )}
       </div>
     </div>
   );
