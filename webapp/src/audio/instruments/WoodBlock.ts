@@ -58,16 +58,18 @@ function body({context, destination}: SoundOutput, when: number, {weight, pitch}
 }
 
 function thud({context, destination}: SoundOutput, when: number, weight: number): void {
+  const struck = when + 0.008;
+
   const tone = context.createOscillator();
   tone.type = "sine";
   tone.frequency.setValueAtTime(110, when);
   tone.frequency.exponentialRampToValueAtTime(48, when + 0.14);
 
   const level = context.createGain();
-  strike(level.gain, {when: when + 0.008, peak: (weight - THUD_FROM) * 1.6, attack: 0.004, decay: 0.2});
+  strike(level.gain, {when: struck, peak: (weight - THUD_FROM) * 1.6, attack: 0.004, decay: 0.2});
 
   tone.connect(level).connect(destination);
-  tone.start(when);
+  tone.start(struck);
   tone.stop(when + 0.35);
 }
 

@@ -69,8 +69,18 @@ function turnTakenBack(soundOutput: SoundOutput, when: number): void {
 function check(soundOutput: SoundOutput, when: number): void {
   janggu(soundOutput, when, {head: "chae", weight: 0.7});
   janggu(soundOutput, when + 0.09, {head: "gung", weight: 0.9});
-  gayageum(soundOutput, when + 0.02, {frequency: pitchOf(ROOT, GYEMYEONJO, 3), weight: 0.8, length: 0.5});
-  gayageum(soundOutput, when + 0.18, {frequency: pitchOf(ROOT, GYEMYEONJO, 5), weight: 0.9, length: 0.9});
+  gayageum(soundOutput, when + 0.02, {
+    frequency: pitchOf(ROOT, GYEMYEONJO, 3),
+    weight: 0.8,
+    length: 0.5,
+    edge: CHECK_EDGE,
+  });
+  gayageum(soundOutput, when + 0.18, {
+    frequency: pitchOf(ROOT, GYEMYEONJO, 5),
+    weight: 0.9,
+    length: 0.9,
+    edge: CHECK_EDGE,
+  });
 }
 
 /** The gong, and the dark mode falling away beneath it. */
@@ -124,6 +134,9 @@ function varied(pitch: number): number {
 
 /** The note everything tuned in this file is counted from, in hertz — A below middle C. */
 const ROOT = 220;
+
+/** How sharp the check's plucked notes are: they are there to alert, so they cut where others mellow. */
+const CHECK_EDGE = 0.8;
 
 /** From this weight a capture is heavy enough to bring the drum in under it. */
 const HEAVY_CAPTURE = 0.8;
