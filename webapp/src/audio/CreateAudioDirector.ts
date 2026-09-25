@@ -176,6 +176,8 @@ async function wake(context: AudioContext): Promise<boolean> {
 function buildGraph(context: AudioContext): Graph {
   const softClip = context.createWaveShaper();
   softClip.curve = softClipCurve();
+  // Without oversampling the clip's new harmonics fold back as aliasing, which is heard as harshness.
+  softClip.oversample = "2x";
 
   const effects = context.createGain();
   effects.gain.value = EFFECTS_LEVEL;

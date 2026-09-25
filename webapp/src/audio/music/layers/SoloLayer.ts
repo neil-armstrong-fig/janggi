@@ -15,6 +15,12 @@ export function soloLayer(context: BaseAudioContext): Layer {
   const output = context.createGain();
   output.gain.value = 0;
 
+  const trebleSoftener = context.createBiquadFilter();
+  trebleSoftener.type = "lowpass";
+  trebleSoftener.frequency.value = TREBLE_CUTOFF_HZ;
+  trebleSoftener.Q.value = 0.7;
+  trebleSoftener.connect(output);
+
   let plan = phrasePlanFor(Math.random(), Math.random());
 
   return {
@@ -23,14 +29,17 @@ export function soloLayer(context: BaseAudioContext): Layer {
       if (step.index % STEPS_PER_PHRASE === 0) plan = phrasePlanFor(Math.random(), Math.random());
 
       for (const note of soloNotesAt(step.index, step.rhythm, plan)) {
-        gayageum({context, destination: output}, step.time + note.offset * step.seconds, {
+        gayageum({context, destination: trebleSoftener}, step.time + note.offset * step.seconds, {
           frequency: pitchOf(ROOT, PYEONGJO, note.degree),
           weight: note.weight * WEIGHT,
           length: step.seconds * note.steps * RINGS_ON,
         });
       }
     },
-    stop: () => output.disconnect(),
+    stop: () => {
+      trebleSoftener.disconnect();
+      output.disconnect();
+    },
   };
 }
 
@@ -41,3 +50,6 @@ const WEIGHT = 0.75;
 
 /** How far past its written length a plucked note is left to ring. */
 const RINGS_ON = 1.3;
+
+/** Keeps the soloist's upper edge gentle without dulling the pluck, as the waiting theme's is. */
+const TREBLE_CUTOFF_HZ = 3_200;
