@@ -241,6 +241,24 @@ export class StatusDsl {
     }
   }
 
+  /** Deals a fresh game against the strength of bot the last one's win opened, from the announcement. */
+  async startNewGameAtNextStrength(): Promise<void> {
+    try {
+      await this.status.startNewGameAtNextStrength();
+    } catch (error) {
+      throw new DslError("Failed to start a new game at the next strength from the result", error);
+    }
+  }
+
+  /** Whether the announcement offers a game against the strength of bot the win opened. */
+  async isNewGameAtNextStrengthOffered(): Promise<boolean> {
+    try {
+      return await this.status.isNewGameAtNextStrengthOffered();
+    } catch (error) {
+      throw new DslError("Failed to check whether a new game at the next strength is offered", error);
+    }
+  }
+
   /** Whether the end of the game is announced over the board. */
   async isResultAnnounced(): Promise<boolean> {
     try {
