@@ -109,3 +109,19 @@ The turn line's attributes are written by `TurnIndicator` from `gameStatusOf()`;
 `data-pairing` off a missing element gets "no pairing", which is indistinguishable from a blank row
 being drawn — which is exactly how a mutation that always rendered the pairing line failed to fell
 anything. Where that matters, add an `is…Shown()` question beside the value one.
+
+- **On the welcome and the tour** — `welcome` is the welcome dialog, drawn only while a player has not been through it;
+  in it `welcome-next`, `welcome-skip`, `welcome-start-tour` and one button per answer, spelled
+  `welcome-<choice>-<answer>`: `welcome-music-on|off`, `welcome-sound-effects-on|off`,
+  `welcome-animations-full|reduced` and `welcome-movable-highlight-shown|hidden` (the pressed one carries
+  `aria-pressed`). `tour` is the card, with `tour-step` carrying `data-step` (from one) and `data-step-count`,
+  `tour-title`, `tour-body`, `tour-back` (disabled on the first step), `tour-next`, `tour-skip`, and on the last
+  step `tour-finish` and `tour-open-guide` (a link to `learn.html`, in a new tab). `tour-spotlight` is the ring,
+  carrying `data-target`, and is there only while the step has something on screen to ring. What it rings wears
+  `data-tour-target` — the one attribute the app reads to find it, so it is not `data-testid`; the names are
+  `TOUR_TARGET_NAMES` in `@janggi/shared`, and the board point wears it on its `cell-f<file>r<rank>`.
+  `tour-replay` is "Replay the tour" on the Progress tab.
+
+  Every spec but those under `tests/onboarding/` starts as a returning player: the fixture keeps
+  `ONBOARDING_DONE_JSON` under `ONBOARDING_STORAGE_KEY` (from `@janggi/shared`) before the page loads, unless a
+  spec calls `useFreshPlayer()` — so none of the above is on their page.

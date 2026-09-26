@@ -3,7 +3,10 @@ import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSli
 import {CUSTOM_STYLES_STORAGE_KEY} from "@src/redux/custom-styles/storage/CustomStylesStorageKey";
 import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
 import {GAME_STORAGE_KEY} from "@src/redux/game/storage/GameStorageKey";
+import {ONBOARDING_STORAGE_KEY} from "@janggi/shared/janggi/onboarding/OnboardingStorage";
 import {PROGRESS_STORAGE_KEY} from "@src/redux/progress/storage/ProgressStorageKey";
+import type {OnboardingSliceState} from "@src/redux/onboarding/types/OnboardingSliceState";
+import type {SettingsSliceState} from "@src/redux/settings/types/SettingsSliceState";
 import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceState";
 import {botEngineReducer} from "@src/redux/bot-engine/BotEngineSlice";
 import {botKeptWithinReach} from "@src/redux/game/GameSlice";
@@ -19,8 +22,11 @@ import {RATINGS_STORAGE_KEY} from "@src/redux/ratings/storage/RatingsStorageKey"
 import type {RatingsSliceState} from "@src/redux/ratings/types/RatingsSliceState";
 import {gameReducer} from "@src/redux/game/GameSlice";
 import {loadGame} from "@src/redux/game/storage/LoadGame";
+import {loadOnboarding} from "@src/redux/onboarding/storage/LoadOnboarding";
 import {loadPreferences} from "@src/redux/preferences/storage/LoadPreferences";
 import {loadRatings} from "@src/redux/ratings/storage/LoadRatings";
+import {settingsReducer} from "@src/redux/settings/SettingsSlice";
+import {onboardingReducer} from "@src/redux/onboarding/OnboardingSlice";
 import {preferencesReducer} from "@src/redux/preferences/PreferencesSlice";
 import {ratingsReducer} from "@src/redux/ratings/RatingsSlice";
 import {restoredRatings} from "@src/redux/restored-ratings/RestoredRatings";
@@ -42,10 +48,15 @@ export interface RootState {
   readonly progress: ProgressSliceState;
   readonly customStyles: CustomStylesSliceState;
   readonly botEngine: BotEngineSliceState;
+  readonly onboarding: OnboardingSliceState;
+  readonly settings: SettingsSliceState;
 }
 
-/** The slices that are written to the device. The engine's is not: it is what this page has started. */
-type KeptSlice = Exclude<keyof RootState, "botEngine">;
+/**
+ * The slices that are written to the device. The engine's is not, being what this page has started, and nor
+ * are the sheets': a page opens with none up.
+ */
+type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings">;
 
 export type AppStore = ReturnType<typeof configureStore<RootState>>;
 export type AppDispatch = AppStore["dispatch"];
@@ -83,6 +94,8 @@ export function createStore(storage?: Storage): AppStore {
       progress: progressReducer,
       customStyles: customStylesReducer,
       botEngine: botEngineReducer,
+      onboarding: onboardingReducer,
+      settings: settingsReducer,
     },
     preloadedState: {
       game,
@@ -90,6 +103,7 @@ export function createStore(storage?: Storage): AppStore {
       ratings: restoredRatings(ratings, game, new Date().toISOString()),
       progress,
       customStyles: loadCustomStyles(storage),
+      onboarding: loadOnboarding(storage),
     },
   });
 
@@ -106,13 +120,14 @@ export function createStore(storage?: Storage): AppStore {
 function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   // Local rather than module constants: `store` is made at the top of this module, before anything
   // declared below it with `const` exists.
-  const slices: readonly KeptSlice[] = ["game", "preferences", "ratings", "progress", "customStyles"];
+  const slices: readonly KeptSlice[] = ["game", "preferences", "ratings", "progress", "customStyles", "onboarding"];
   const keys: Record<KeptSlice, string> = {
     game: GAME_STORAGE_KEY,
     preferences: PREFERENCES_STORAGE_KEY,
     ratings: RATINGS_STORAGE_KEY,
     progress: PROGRESS_STORAGE_KEY,
     customStyles: CUSTOM_STYLES_STORAGE_KEY,
+    onboarding: ONBOARDING_STORAGE_KEY,
   };
 
   let saved = kept.getState();

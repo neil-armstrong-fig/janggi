@@ -34,13 +34,12 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * settings sheet, whose open state is the page's too.
  */
 interface Props {
-  readonly onOpenSettings: () => void;
   readonly onControlPressed: () => void;
   /** The board, which goes between the two plaques. */
   readonly children: React.ReactNode;
 }
 
-export function Status({onOpenSettings, onControlPressed, children}: Props): React.JSX.Element {
+export function Status({onControlPressed, children}: Props): React.JSX.Element {
   const {flipBoardForHan} = usePreferences();
   const opponent = useAppSelector(state => state.game.opponent);
   const sideToMove = useAppSelector(state => state.game.played.present.sideToMove);
@@ -60,7 +59,7 @@ export function Status({onOpenSettings, onControlPressed, children}: Props): Rea
 
       <PlayerPlaque side="cho" />
 
-      <Controls onControlPressed={onControlPressed} onOpenSettings={onOpenSettings} />
+      <Controls onControlPressed={onControlPressed} />
     </div>
   );
 }

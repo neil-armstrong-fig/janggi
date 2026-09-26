@@ -21,10 +21,9 @@ import {StylesButton} from "@src/react/pages/game/components/settings/tabs/look-
  */
 interface Props {
   readonly selected: boolean;
-  readonly onOpenStyles: () => void;
 }
 
-export function LookPane({selected, onOpenStyles}: Props): React.JSX.Element {
+export function LookPane({selected}: Props): React.JSX.Element {
   return (
     <SettingsPane name="Look" selected={selected}>
       <BoardSetting />
@@ -39,7 +38,7 @@ export function LookPane({selected, onOpenStyles}: Props): React.JSX.Element {
 
       <OpacitySetting />
 
-      <StylesButton onOpen={onOpenStyles} />
+      <StylesButton />
     </SettingsPane>
   );
 }

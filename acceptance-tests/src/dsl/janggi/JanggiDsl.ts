@@ -3,6 +3,7 @@ import {DebugDsl} from "@src/dsl/janggi/components/debug/DebugDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {GuideDsl} from "@src/dsl/janggi/components/guide/GuideDsl";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
+import {OnboardingDsl} from "@src/dsl/janggi/components/onboarding/OnboardingDsl";
 import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
@@ -39,6 +40,7 @@ export class JanggiDsl {
 
   readonly board: BoardDsl;
   readonly guide: GuideDsl;
+  readonly onboarding: OnboardingDsl;
   readonly settings: SettingsDsl;
   readonly status: StatusDsl;
   readonly recordSheet: RecordSheetDsl;
@@ -52,6 +54,7 @@ export class JanggiDsl {
 
     this.board = new BoardDsl(page);
     this.guide = new GuideDsl(page);
+    this.onboarding = new OnboardingDsl(page);
     this.settings = new SettingsDsl(page);
     this.status = new StatusDsl(page);
     this.recordSheet = new RecordSheetDsl(page);

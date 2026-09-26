@@ -96,6 +96,11 @@ export function useShippedOpponent(): void {
   test.use({keepShippedOpponent: true});
 }
 
+/** Opens the app as a first visit finds it, welcome and all, for a spec that is itself about being new. */
+export function useFreshPlayer(): void {
+  test.use({freshPlayer: true});
+}
+
 export {expect} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 
 function suite(prefix: string): Suite {

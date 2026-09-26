@@ -1,3 +1,4 @@
+import {sheetClosed} from "@src/redux/settings/SettingsSlice";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {EditingStyle} from "@src/react/pages/game/components/styles-sheet/types/EditingStyle";
@@ -29,15 +30,14 @@ import {useState} from "react";
  * the board beside its controls — and the editor draws a board of its own to show the style on. One that is
  * saved is worn the moment it is, and seen straight away on the game when the sheet closes.
  */
-interface Props {
-  readonly open: boolean;
-  readonly onClose: () => void;
-}
-
-export function StylesSheet({open, onClose}: Props): React.JSX.Element {
+export function StylesSheet(): React.JSX.Element {
+  const open = useAppSelector(state => state.settings.openSheet === "styles");
   const customStyles = useAppSelector(state => state.customStyles);
   const xp = useAppSelector(state => state.progress.xp);
   const dispatch = useAppDispatch();
+  const onClose = (): void => {
+    dispatch(sheetClosed());
+  };
   const [editingStyle, setEditingStyle] = useState<EditingStyle | undefined>(undefined);
 
   // What the player has: every built-in they have unlocked, and their own. What a style is started from, and shown with.

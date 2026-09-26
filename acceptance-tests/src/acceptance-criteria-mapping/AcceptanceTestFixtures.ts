@@ -2,6 +2,7 @@ import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {Page} from "@playwright/test";
 import {test as base} from "@playwright/test";
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
+import {ONBOARDING_DONE_JSON, ONBOARDING_STORAGE_KEY} from "@janggi/shared/janggi/onboarding/OnboardingStorage";
 import {JanggiDsl} from "@src/dsl/janggi/JanggiDsl";
 
 /**
@@ -46,18 +47,24 @@ export interface AnotherDeviceFixtures {
  * The shipped opponent is the bot, which would answer moves and owns its own setup picker. Ordinary
  * specs explicitly start against a person at the same device so unrelated criteria remain in control of
  * both armies. The one spec about the shipped opponent keeps it through `keepShippedOpponent`.
+ *
+ * Every spec also starts as a returning player, who is not welcomed or shown around. The specs about
+ * the welcome and the tour ask for a first visit through `freshPlayer`, and are then responsible for
+ * everything they would otherwise have been handed: the opponent, the effects and the progress.
  */
 export interface AcceptanceTestOptions {
   effects: EffectsName;
   keepShippedOpponent: boolean;
+  freshPlayer: boolean;
 }
 
 export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures & AcceptanceTestOptions>({
   effects: ["Full", {option: true}],
   keepShippedOpponent: [false, {option: true}],
+  freshPlayer: [false, {option: true}],
 
-  janggi: async ({page, effects, keepShippedOpponent}, use) => {
-    await use(await openedOn(page, effects, keepShippedOpponent));
+  janggi: async ({page, effects, keepShippedOpponent, freshPlayer}, use) => {
+    await use(await openedOn(page, {effects, keepShippedOpponent, freshPlayer}));
   },
 
   anotherDevice: async (
@@ -72,6 +79,7 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
       reducedMotion,
       effects,
       keepShippedOpponent,
+      freshPlayer,
     },
     use,
     testInfo,
@@ -90,7 +98,7 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
       reducedMotion,
     });
 
-    await use(await openedOn(await context.newPage(), effects, keepShippedOpponent));
+    await use(await openedOn(await context.newPage(), {effects, keepShippedOpponent, freshPlayer}));
 
     await context.close();
   },
@@ -106,16 +114,47 @@ export {expect} from "@playwright/test";
  * rest is far deeper than a spec can tap. So every spec starts with a million XP and every bot beaten,
  * set through the app's debug door (`janggi.debug`) — and a spec about the locks themselves puts the
  * player back wherever it is about first. `src/tests/progress/` is where those are.
+ *
+ * A spec that asks for a `freshPlayer` is handed the app as a first visit finds it and nothing more: the
+ * welcome is in the way of Settings, so the arrangement above is left to the spec.
  */
-async function openedOn(page: Page, effects: EffectsName, keepShippedOpponent: boolean): Promise<JanggiDsl> {
+async function openedOn(page: Page, options: OpeningOptions): Promise<JanggiDsl> {
+  const {effects, keepShippedOpponent, freshPlayer} = options;
+
+  if (!freshPlayer) await page.context().addInitScript(keepOnboardingDone, ONBOARDING_KEPT);
+
   const janggi = new JanggiDsl(page);
   await janggi.navigateToPage();
+  if (freshPlayer) return janggi;
 
   if (!keepShippedOpponent) await janggi.settings.opponent.setTo("Human");
   if (effects !== "Full") await janggi.settings.effects.setTo(effects);
   await janggi.debug.setProgress(EVERYTHING_UNLOCKED);
 
   return janggi;
+}
+
+type OpeningOptions = Pick<AcceptanceTestOptions, "effects" | "keepShippedOpponent" | "freshPlayer">;
+
+interface OnboardingKept {
+  key: string;
+  json: string;
+}
+
+/**
+ * What the page is told before its own scripts run, so a returning player has been shown around by the
+ * time the app reads its storage. Only where nothing is kept yet: a reload keeps whatever the app has
+ * since written, and never sets the welcome back over a player who had skipped it.
+ */
+const ONBOARDING_KEPT: OnboardingKept = {key: ONBOARDING_STORAGE_KEY, json: ONBOARDING_DONE_JSON};
+
+/** Runs in the page, so it can reach nothing of this module. */
+function keepOnboardingDone(kept: OnboardingKept): void {
+  try {
+    if (localStorage.getItem(kept.key) === null) localStorage.setItem(kept.key, kept.json);
+  } catch {
+    // Storage blocked: the app falls back to a first visit, and the specs fail loudly on the welcome.
+  }
 }
 
 /** A million XP, and every bot beaten with both armies in both formats. */

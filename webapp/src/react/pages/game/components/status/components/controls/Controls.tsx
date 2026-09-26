@@ -1,9 +1,11 @@
+import {sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {bikjangCalled, drawOffered, passed, playedAgain, takenBack} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {BikjangButton} from "@src/react/pages/game/components/status/components/controls/components/bikjang-button/BikjangButton";
 import {DrawButton} from "@src/react/pages/game/components/status/components/controls/components/draw-button/DrawButton";
 import {PassButton} from "@src/react/pages/game/components/status/components/controls/components/pass-button/PassButton";
 import {RedoButton} from "@src/react/pages/game/components/status/components/controls/components/redo-button/RedoButton";
+import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {SettingsButton} from "@src/react/pages/game/components/status/components/controls/components/settings-button/SettingsButton";
 import {UndoButton} from "@src/react/pages/game/components/status/components/controls/components/undo-button/UndoButton";
 import type {UnknownAction} from "@reduxjs/toolkit";
@@ -40,10 +42,9 @@ import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-g
  */
 interface Props {
   readonly onControlPressed: () => void;
-  readonly onOpenSettings: () => void;
 }
 
-export function Controls({onControlPressed, onOpenSettings}: Props): React.JSX.Element {
+export function Controls({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
   const {botsTurn, engineHoldsPlay} = useGameStatus();
   const dispatch = useAppDispatch();
@@ -61,7 +62,10 @@ export function Controls({onControlPressed, onOpenSettings}: Props): React.JSX.E
   }
 
   return (
-    <div className="flex shrink-0 gap-1.5 group-data-[flipped=true]/flip:order-first group-data-[flipped=true]/flip:rotate-180">
+    <div
+      {...tourTarget("controls")}
+      className="flex shrink-0 gap-1.5 group-data-[flipped=true]/flip:order-first group-data-[flipped=true]/flip:rotate-180"
+    >
       <UndoButton enabled={!againstBot && canUndo(played)} onUndo={() => pressed(takenBack())} />
 
       <RedoButton enabled={!againstBot && canRedo(played)} onRedo={() => pressed(playedAgain())} />
@@ -78,7 +82,7 @@ export function Controls({onControlPressed, onOpenSettings}: Props): React.JSX.E
       <SettingsButton
         onOpen={() => {
           onControlPressed();
-          onOpenSettings();
+          dispatch(sheetOpened("settings"));
         }}
       />
     </div>

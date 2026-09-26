@@ -1,4 +1,5 @@
 import {Board} from "@src/react/pages/game/components/board/Board";
+import {Onboarding} from "@src/react/pages/game/components/onboarding/Onboarding";
 import {RecordSheet} from "@src/react/pages/game/components/record-sheet/RecordSheet";
 import {Settings} from "@src/react/pages/game/components/settings/Settings";
 import {createFairyStockfish} from "@src/bot/engine/CreateFairyStockfish";
@@ -25,10 +26,10 @@ import {useState} from "react";
  * pixel the frame does not need.
  *
  * `Settings` is a sheet that slides up over the lower part of the screen when it is asked for, and
- * is out of the way otherwise. Whether it is open is the one piece of state here that belongs to the
- * page itself: the control that opens it lives in the status row and the sheet lives in `Settings`,
- * so the nearest place that can hold it is here. It stays out of the store because nothing else
- * wants to know, and it is gone the moment the page is.
+ * is out of the way otherwise. Which sheet is up, and which tab the settings sheet is turned to, are in
+ * the store's `settings` slice rather than here: the control that opens it lives in the status row, the
+ * sheets close and replace one another, and the tour opens and turns them, so no one section owns it.
+ * It is not kept on the device — a page opens with no sheet up.
  *
  * `RecordSheet` slides up the same way, opened from inside `Settings`, which it replaces on screen.
  * **It is a sheet over the game rather than a page of its own** so the game underneath carries on: the
@@ -48,9 +49,6 @@ import {useState} from "react";
  * opponent — it downloads nothing before then, and `useBotEngine` starts it the moment the bot is chosen.
  */
 export function GamePage(): React.JSX.Element {
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [recordOpen, setRecordOpen] = useState(false);
-  const [stylesOpen, setStylesOpen] = useState(false);
   const [engine] = useState(() => createFairyStockfish(`${import.meta.env.BASE_URL}engine/`));
   const played = useAppSelector(state => state.game.played);
   const {effects, soundEffectsVolume, musicVolume} = usePreferences();
@@ -66,26 +64,17 @@ export function GamePage(): React.JSX.Element {
     <main className="flex h-full w-full flex-col bg-ground p-2">
       <h1 className="sr-only">Janggi — Korean Chess</h1>
 
-      <Status onOpenSettings={() => setSettingsOpen(true)} onControlPressed={() => sound("controlPressed")}>
+      <Status onControlPressed={() => sound("controlPressed")}>
         <Board moment={moment} onPickUp={() => sound("pieceLifted")} />
       </Status>
 
-      <Settings
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        onOpenRecord={() => {
-          setSettingsOpen(false);
-          setRecordOpen(true);
-        }}
-        onOpenStyles={() => {
-          setSettingsOpen(false);
-          setStylesOpen(true);
-        }}
-      />
+      <Settings />
 
-      <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} />
+      <RecordSheet />
 
-      <StylesSheet open={stylesOpen} onClose={() => setStylesOpen(false)} />
+      <StylesSheet />
+
+      <Onboarding />
     </main>
   );
 }

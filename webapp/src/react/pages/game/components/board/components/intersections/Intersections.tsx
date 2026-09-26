@@ -12,6 +12,8 @@ import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsP
 import {cellMarksAt} from "@src/react/pages/game/components/board/components/intersections/cell-marks/CellMarksAt";
 import {flourishesOf} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/FlourishesOf";
 import {hintDelay} from "@src/react/pages/game/components/board/components/intersections/motion/HintDelay";
+import {tourPointOf} from "@src/react/pages/game/components/board/components/intersections/tour-point/TourPointOf";
+import {tourStepNameOf} from "@src/redux/onboarding/touring/TourStepNameOf";
 import {isArranged} from "@src/game/setups/IsArranged";
 import {lastMoveOf} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveOf";
 import {liftAt} from "@src/react/pages/game/components/board/components/intersections/motion/LiftAt";
@@ -75,6 +77,8 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
     move => dispatch(moved(move)),
     playable,
   );
+  const tourStep = useAppSelector(state => tourStepNameOf(state.onboarding));
+  const tourPointKey = tourPointOf({step: tourStep, game, playable, selected, destinations});
   const placedPieces = useMemo(() => piecesByPosition(game.pieces), [game.pieces]);
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
   const coveredKeys = useMemo(() => new Set(covered.map(toPositionKey)), [covered]);
@@ -131,6 +135,7 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
             {...cellMarks}
             hovered={hoveredKey === key}
             concealed={concealed === key}
+            tourTarget={tourPointKey === key ? "point" : undefined}
             lift={liftAt(key, {heldKey, hoveredKey, animated})}
             flourish={flourishes.get(key)}
             hintDelay={

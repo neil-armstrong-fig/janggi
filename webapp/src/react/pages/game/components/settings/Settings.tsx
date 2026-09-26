@@ -1,12 +1,12 @@
 import {GamePane} from "@src/react/pages/game/components/settings/tabs/game-pane/GamePane";
 import {LookPane} from "@src/react/pages/game/components/settings/tabs/look-pane/LookPane";
 import {ProgressPane} from "@src/react/pages/game/components/settings/tabs/progress-pane/ProgressPane";
-import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
+import {settingsTabSelected, sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {SettingsTabs} from "@src/react/pages/game/components/settings/components/settings-tabs/SettingsTabs";
 import {SoundPane} from "@src/react/pages/game/components/settings/tabs/sound-pane/SoundPane";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {clsx} from "clsx";
-import {useState} from "react";
 
 /** Lets `Settings.tsx` set `--sheet-opacity` inline without an unnamed cast at the call site. */
 interface SheetPanelStyle extends React.CSSProperties {
@@ -39,18 +39,17 @@ interface SheetPanelStyle extends React.CSSProperties {
  *
  * **It is layout, and only layout.** Each pane decides the grouping and order of its settings, and each
  * concrete setting reads the value it draws from the store and dispatches its own choice. This sheet
- * keeps only the state the store cannot own: whether the sheet is open, which tab is showing, and which
- * sibling sheet should replace it.
+ * keeps only what draws it: whether it is open and which tab is showing, both in the store's `settings`
+ * slice, since the button under the board and the tour open and turn it too.
  */
-interface Props {
-  readonly open: boolean;
-  readonly onClose: () => void;
-  readonly onOpenRecord: () => void;
-  readonly onOpenStyles: () => void;
-}
 
-export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): React.JSX.Element {
-  const [tab, setTab] = useState<SettingsTabName>("Game");
+export function Settings(): React.JSX.Element {
+  const open = useAppSelector(state => state.settings.openSheet === "settings");
+  const tab = useAppSelector(state => state.settings.tab);
+  const dispatch = useAppDispatch();
+  const onClose = (): void => {
+    dispatch(sheetClosed());
+  };
   const {sheetOpacity} = usePreferences();
 
   return (
@@ -79,7 +78,7 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
         )}
       >
         <header className="flex shrink-0 items-center gap-1 border-b border-white/10 px-2 pt-3 pb-1">
-          <SettingsTabs selected={tab} onSelect={setTab} />
+          <SettingsTabs selected={tab} onSelect={selected => dispatch(settingsTabSelected(selected))} />
 
           <button
             type="button"
@@ -94,9 +93,9 @@ export function Settings({open, onClose, onOpenRecord, onOpenStyles}: Props): Re
           </button>
         </header>
 
-        <GamePane selected={tab === "Game"} onStarted={onClose} onOpenRecord={onOpenRecord} />
+        <GamePane selected={tab === "Game"} />
 
-        <LookPane selected={tab === "Look"} onOpenStyles={onOpenStyles} />
+        <LookPane selected={tab === "Look"} />
 
         <SoundPane selected={tab === "Sound"} />
 

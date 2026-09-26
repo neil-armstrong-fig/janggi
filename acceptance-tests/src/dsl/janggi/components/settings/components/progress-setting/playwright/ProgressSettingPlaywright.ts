@@ -18,6 +18,7 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
   private readonly input: Locator;
   private readonly load: Locator;
   private readonly message: Locator;
+  private readonly replay: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -30,6 +31,7 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
     this.input = page.getByTestId("save-load-input");
     this.load = page.getByTestId("save-load-submit");
     this.message = page.getByTestId("save-load-message");
+    this.replay = page.getByTestId("tour-replay");
   }
 
   async loadSave(key: string): Promise<void> {
@@ -38,6 +40,16 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
       await this.load.click();
       await this.message.waitFor({state: "attached"});
     });
+  }
+
+  /**
+   * Presses "Replay the tour" on the Progress tab, and leaves the sheet as the tour puts it: the tour's
+   * first step wants the board, so it puts the sheet away itself, and there is nothing left to close.
+   */
+  async replayTheTour(): Promise<void> {
+    await this.openIfClosed();
+    await this.tabNamed("Progress").click();
+    await this.replay.click();
   }
 
   async getXp(): Promise<number> {

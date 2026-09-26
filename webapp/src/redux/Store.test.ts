@@ -20,7 +20,7 @@ it("writes every kept slice again when the page is hidden, for a browser that de
   Object.defineProperty(document, "visibilityState", {value: "hidden", configurable: true});
   document.dispatchEvent(new Event("visibilitychange"));
 
-  expect(written).toHaveLength(5);
+  expect(written).toHaveLength(6);
 });
 
 it("writes every kept slice again when the page is hidden by leaving it", () => {
@@ -36,5 +36,5 @@ it("writes every kept slice again when the page is hidden by leaving it", () => 
 
   window.dispatchEvent(new Event("pagehide"));
 
-  expect(written).toHaveLength(5);
+  expect(written).toHaveLength(6);
 });

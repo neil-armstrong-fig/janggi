@@ -1,3 +1,4 @@
+import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {ExplanationToggle} from "@src/react/pages/game/components/settings/components/explanation-toggle/ExplanationToggle";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
@@ -36,7 +37,12 @@ export function Progress(): React.JSX.Element {
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2.5">
-          <p data-testid="progress-xp" data-xp={progress.xp} className="text-2xl font-bold text-gold tabular-nums">
+          <p
+            data-testid="progress-xp"
+            data-xp={progress.xp}
+            {...tourTarget("xp")}
+            className="text-2xl font-bold text-gold tabular-nums"
+          >
             {progress.xp.toLocaleString("en")} XP
           </p>
 

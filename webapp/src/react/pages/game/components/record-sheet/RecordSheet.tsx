@@ -1,3 +1,4 @@
+import {sheetClosed} from "@src/redux/settings/SettingsSlice";
 import {DEFAULT_MATCH_FORMAT} from "@janggi/shared/janggi/settings/MatchFormat";
 import {FormatTabs} from "@src/react/pages/game/components/record-sheet/components/format-tabs/FormatTabs";
 import {GameHistory} from "@src/react/pages/game/components/record-sheet/components/game-history/GameHistory";
@@ -27,15 +28,14 @@ import {useState} from "react";
  * The bot is Fairy-Stockfish, which is GPL-3.0 licensed; the credit at the foot of the sheet links its
  * licence as shipped and its source, each in a tab of its own so the game is not navigated away from.
  */
-interface Props {
-  readonly open: boolean;
-  readonly onClose: () => void;
-}
-
-export function RecordSheet({open, onClose}: Props): React.JSX.Element {
+export function RecordSheet(): React.JSX.Element {
+  const open = useAppSelector(state => state.settings.openSheet === "record");
+  const dispatch = useAppDispatch();
+  const onClose = (): void => {
+    dispatch(sheetClosed());
+  };
   const [format, setFormat] = useState<MatchFormat>(DEFAULT_MATCH_FORMAT);
   const rating = useAppSelector(state => state.ratings.byFormat[format]);
-  const dispatch = useAppDispatch();
 
   return (
     <>

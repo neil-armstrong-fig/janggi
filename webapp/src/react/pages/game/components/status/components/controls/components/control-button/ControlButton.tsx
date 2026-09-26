@@ -1,3 +1,5 @@
+import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
+
 /**
  * One control in the row under the board: an icon over a short label, the whole cell a target.
  *
@@ -16,13 +18,16 @@ interface Props {
   readonly icon: React.ReactNode;
   readonly enabled?: boolean;
   readonly onPress: () => void;
+  /** What the tour points at this control as, where it points at it. */
+  readonly tourTarget?: TourTargetName;
 }
 
-export function ControlButton({testId, label, icon, enabled = true, onPress}: Props): React.JSX.Element {
+export function ControlButton({testId, label, icon, enabled = true, onPress, tourTarget}: Props): React.JSX.Element {
   return (
     <button
       type="button"
       data-testid={testId}
+      data-tour-target={tourTarget}
       disabled={!enabled}
       onClick={onPress}
       className="flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl bg-white/5 text-white/80 transition-[transform,background-color] duration-150 enabled:cursor-pointer enabled:hover:bg-white/10 enabled:active:scale-95 disabled:opacity-30 motion-reduce:transition-none"

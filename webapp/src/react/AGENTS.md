@@ -29,14 +29,21 @@ page grows a region that is genuinely its own, not to file loose components.
 `Status` **frames** the board rather than sitting above it: handed the board as `children`, it puts
 Han's plaque above and Cho's below, the herald under Han's and the controls under Cho's. The frame is
 layout only — each part reads and dispatches for itself, and their shared question about what the
-game is doing goes through `useGameStatus`. `Settings` is the same shape; whether the sheet is open is
-`GamePage`'s state, since the button that opens it is drawn by `Status`.
+game is doing goes through `useGameStatus`. `Settings` is the same shape; which sheet is up, and
+which tab the settings sheet shows, are the store's `settings` slice, since the button that opens it is
+drawn by `Status` and the tour turns it too.
 
 `Settings` is divided into tabs, and `settings/tabs/<tab>-pane/` holds each one: its root
 (`GamePane.tsx`) and whatever only that tab uses, in the same `components/`, `locks/` and `utils/`
 folders as anywhere else. What two tabs share (`option-picker/`, `settings-pane/`, `explanation-toggle/`)
 sits in `settings/components/`, and what a tab shares with a sibling sheet rises to `pages/game/components/`
 (`paste-key/`, which the Progress tab and the styles sheet both use).
+
+`Onboarding` is a section of its own, drawn over the page: the welcome, then the tour. What the tour
+points at wears `data-tour-target` (`tourTarget()` in `components/tour-target/`, the names in
+`@janggi/shared`), a dedicated attribute rather than the `data-testid` the acceptance tests own; the board
+asks `tourPointOf` for the one point it should wear it on. The tour turns the settings sheet to the tab a
+step is about through the `settings` slice, like anything else that opens it.
 
 Naming a folder for its subject rather than its shape bites here in one particular way: Tailwind means
 presentation lives in the JSX, so a folder called `styles/` reads as CSS and is almost always wrong —
