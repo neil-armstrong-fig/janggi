@@ -2,6 +2,7 @@ import {CellLines} from "@src/react/pages/game/components/board/components/inter
 import {CoverHint} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cover-hint/CoverHint";
 import {CELL_SVG_PROPS} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellViewBox";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
+import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 import type {Flourish} from "@src/react/pages/game/components/board/types/Flourish";
 import {LastMoveMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/last-move-mark/LastMoveMark";
 import {Marker} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/marker/Marker";
@@ -69,6 +70,8 @@ interface Props {
   readonly flourish: Flourish | undefined;
   /** How long the move hint here waits before popping in, or undefined for it to appear at once. */
   readonly hintDelay: number | undefined;
+  /** What the tour is pointing at this point as, where it points at it. */
+  readonly tourTarget?: TourTargetName;
   readonly onTap: (position: Position) => void;
   readonly onHover: (position: Position | undefined) => void;
   /** Worn instead of the player's board style, by a board that shows a style that is not the one in use. */
@@ -93,6 +96,7 @@ export function Cell({
   lift,
   flourish,
   hintDelay,
+  tourTarget,
   onTap,
   onHover,
   boardStyle,
@@ -115,6 +119,7 @@ export function Cell({
       data-last-move={lastMove}
       data-under-attack={underAttack || undefined}
       data-attacking={attacking || undefined}
+      data-tour-target={tourTarget}
       onClick={() => onTap(position)}
       onPointerEnter={() => onHover(position)}
       onPointerLeave={() => onHover(undefined)}

@@ -16,6 +16,8 @@ src/janggi/settings/    BoardStyleName, PieceSetName, SetupName, MovableHighligh
 src/janggi/results/     DrawnBy — the three ways a casual game is drawn, named by the turn line and the specs
 src/janggi/share-keys/  the share key codec: `janggi-<kind>:` and base64url JSON
 src/janggi/progress/    the four ladders a player climbs, and the JSON a save key carries
+src/janggi/onboarding/  the welcome's and tour's stages and targets, and the storage key and "done" record
+                        the acceptance tests keep for a returning player
 ```
 
 **A wire contract is shared on purpose — a tool, not a rule.** Two copies of a format (the share-key

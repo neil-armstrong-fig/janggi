@@ -63,7 +63,7 @@ at every depth: a thing owns its `playwright/` counterpart, and everything insid
 its `components/` folder — no matter how deep, a folder tells you what it is by the same two names.
 
 **This tree and the app's are deliberately the same shape.** `janggi/components/` is `board/`,
-`record-sheet/`, `settings/` and `status/`, matching the four sections
+`onboarding/`, `record-sheet/`, `settings/` and `status/`, matching the sections
 `webapp/src/react/pages/game/components/` is divided into. The specs had the better vocabulary first
 — split or rename a section on one side and do the same on the other, or the two drift apart.
 

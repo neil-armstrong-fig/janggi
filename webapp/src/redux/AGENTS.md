@@ -11,7 +11,9 @@ hooks. Add state as a slice via `createSlice`.
   private to a slice file can only be reached by dispatching, which makes the case it covers hard to
   name and its edges hard to reach; the same function one folder down is testable directly. **State
   more than one section reads belongs in a slice, not in `useState` on the page** — `useState` is for
-  what one component owns, like the piece in hand or whether the settings sheet is open.
+  what one component owns, like the piece in hand. Which sheet is up over the game, and the settings tab, are
+  the `settings` slice — the button under the board, the sheets and the tour all open, close and turn them —
+  and it is not kept on the device, a page opening with none up.
 - **A fact the engine can work out is derived where it is shown, never stored.** Check, the winner and
   each army's score are not fields on `GameState` and not slices — `GameStatusOf.ts` asks the engine
   on every render and returns one discriminated union, and it relays the engine's own `outcomeOf`
@@ -80,6 +82,13 @@ hooks. Add state as a slice via `createSlice`.
   over the board saying why — until it is `ready`, so no rated game can begin against a bot that never
   came. Retrying is the status going back to `idle`. It is left out of `keptOnTheDevice`'s list, being what
   this page has managed to start rather than part of a game.
+- **Onboarding is kept, and a device that has been played on is never welcomed.** `state.onboarding` is the
+  stage (`welcome`, `tour`, `done`) and the tour's step, so a reload comes back to where the player was and a
+  skip is not undone. `loadOnboarding` treats a device with any other kept key but no onboarding one as
+  `done`: people who played before there was a welcome are not greeted as strangers. The key and the "done"
+  record are in `@janggi/shared` because the acceptance fixture keeps the same bytes to start every spec as
+  a returning player. The steps are named (`TOUR_STEP_NAMES`), so the page's card for each is a record over
+  them and the board can ask which is up.
 - **The rest of the store is kept on the device.** `Store.ts` loads every other slice from `localStorage`
   and writes each back when it changes, so a closed page reopens on the same game, preferences and record.
   **What is read back is untrusted**: each slice has a loader under its own `storage/` that checks

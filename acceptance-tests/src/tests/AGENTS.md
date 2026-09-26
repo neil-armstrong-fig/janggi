@@ -101,6 +101,19 @@ deploy, but need the production service worker that the Vite development server 
 The default projects ignore `PWA_SPECS`; `playwright.pwa.config.ts` (`pnpm acceptance-tests:pwa`) runs
 them against a compiled build in CI and against GitHub Pages after deployment.
 
+## Returning players, and the onboarding specs
+
+**Every spec starts as a returning player.** A first visit is greeted by a welcome that stands over the
+board and the settings button, so the fixture keeps the app's own "done" onboarding record
+(`ONBOARDING_DONE_JSON` under `ONBOARDING_STORAGE_KEY`, both from `@janggi/shared`) before the page loads —
+only where nothing is kept yet, so a reload never puts the welcome back over a player who had skipped it, and
+with no branch in the app for it. The specs under `src/tests/onboarding/` call `useFreshPlayer()` at the top
+of their `given` and are then handed the app as a first visit finds it: no Human opponent, no effects
+setting, no progress door. Say what you need in a `beforeEach` — and note the tour's card and ring sit over
+the page, so a spec that goes on to use Settings skips the tour first (`ChoosingFromTheWelcome.test.ts`).
+The default path costing every other spec nothing is the point: if the key or its version ever changes
+without `@janggi/shared` following, the welcome shows and every spec fails on its first tap.
+
 ## Motion reduced, and the effects specs
 
 **Every ordinary spec runs with the effects turned down.** The app starts with them in full, so the

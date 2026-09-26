@@ -12,7 +12,9 @@ interface Props {
 }
 
 export function SettingsButton({onOpen}: Props): React.JSX.Element {
-  return <ControlButton testId="settings-open" label="Settings" icon={SLIDERS} onPress={onOpen} />;
+  return (
+    <ControlButton testId="settings-open" label="Settings" icon={SLIDERS} tourTarget="settings" onPress={onOpen} />
+  );
 }
 
 const SLIDERS = (

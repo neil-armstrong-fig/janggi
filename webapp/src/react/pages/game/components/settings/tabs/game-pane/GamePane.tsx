@@ -1,3 +1,5 @@
+import {sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {useAppDispatch} from "@src/redux/Hooks";
 import {BotSettings} from "@src/react/pages/game/components/settings/tabs/game-pane/components/bot-settings/BotSettings";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/tabs/game-pane/components/elephant-pairing-line/ElephantPairingLine";
 import {FlipBoardSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/flip-board-setting/FlipBoardSetting";
@@ -23,21 +25,21 @@ import {SetupSettings} from "@src/react/pages/game/components/settings/tabs/game
  */
 interface Props {
   readonly selected: boolean;
-  /** Called once a new game has been dealt, so the sheet that held the control can close. */
-  readonly onStarted: () => void;
-  readonly onOpenRecord: () => void;
 }
 
-export function GamePane({selected, onStarted, onOpenRecord}: Props): React.JSX.Element {
+export function GamePane({selected}: Props): React.JSX.Element {
+  const dispatch = useAppDispatch();
+
   return (
     <SettingsPane
       name="Game"
       selected={selected}
       footer={
         <div className="flex items-start gap-2">
-          <NewGameButton onStarted={onStarted} />
+          {/* Once a new game has been dealt, the sheet that held the control closes. */}
+          <NewGameButton onStarted={() => dispatch(sheetClosed())} />
 
-          <RecordButton onOpen={onOpenRecord} />
+          <RecordButton />
         </div>
       }
     >

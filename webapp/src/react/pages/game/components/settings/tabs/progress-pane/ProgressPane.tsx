@@ -2,11 +2,12 @@ import {GuideLink} from "@src/react/pages/game/components/settings/tabs/progress
 import {InstallButton} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/install-button/InstallButton";
 import {Progress} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/progress/Progress";
 import {ReferencesLink} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/references-link/ReferencesLink";
+import {ReplayTourButton} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/replay-tour-button/ReplayTourButton";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
 
 /**
  * The Progress tab: the XP, what it opens next, and the save key that carries it to another device —
- * then the links out of the game: installing it, how to play, and the credits.
+ * then the links out of the game: installing it, how to play, the tour again, and the credits.
  *
  * The links sit here, at the foot of the scroll, because they belong to no other tab and are the least
  * often wanted; installing is only offered where the browser offers it, on a phone. Handed only whether
@@ -25,6 +26,8 @@ export function ProgressPane({selected}: Props): React.JSX.Element {
         <InstallButton />
 
         <GuideLink />
+
+        <ReplayTourButton />
 
         <ReferencesLink />
       </div>

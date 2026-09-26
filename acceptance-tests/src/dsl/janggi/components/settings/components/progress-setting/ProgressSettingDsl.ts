@@ -19,6 +19,15 @@ export class ProgressSettingDsl {
     }
   }
 
+  /** Starts the tour again from its first step, from where the Progress tab offers it. */
+  async replayTheTour(): Promise<void> {
+    try {
+      await this.progress.replayTheTour();
+    } catch (error) {
+      throw new DslError("Failed to replay the tour from the Progress tab", error);
+    }
+  }
+
   async getXp(): Promise<number> {
     try {
       return await this.progress.getXp();
