@@ -203,14 +203,14 @@ const CALM: Mood = {tension: 0, inCheck: false, ending: "none", underWay: false}
 const LATENCY_HINT: AudioContextLatencyCategory = "playback";
 
 /**
- * Each channel at full volume: sound effects over the music, which is well underneath them — it is
- * there to be felt, not listened to.
+ * Each channel at full volume: sound effects over the music, with the music still clearly present.
  *
- * The effects are set so the hardest strike, a heavy piece slammed down, peaks a little under full scale
- * on its own (about 0.85, measured); at 0.9 it went past it, and only a compressor kept it from clipping.
+ * The effects already own the peak budget: a heavy capture followed by check reached about 0.91 before
+ * the soft clip in an offline render. Music at 0.5 lifts the score by 3.1 dB while tense music remains
+ * around 0.28 on its own, and the combined render stays short of full scale.
  */
 const EFFECTS_LEVEL = 0.55;
-const MUSIC_LEVEL = 0.35;
+const MUSIC_LEVEL = 0.5;
 
 /** How quickly a channel fades to a new volume, as a time constant in seconds. */
 const CHANNEL_FADE_S = 0.4;

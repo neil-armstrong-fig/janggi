@@ -80,9 +80,15 @@ envelope starts** (`tone.start(struck)`), or start the envelope at the source.
 The node graph has no unit tests (Node has no `AudioContext`), and ear is the test that matters.
 What can be measured is **loudness and headroom**: render a voice in an `OfflineAudioContext` in
 headless Chromium and compare RMS and peak with the old voice. That is how the gayageum and janggu
-were level-matched, and how the leak above was found (a peak of 2.0 where 0.7 was expected). The soft
-clip starts at 0.75, effects sit at 0.55, and music shares the bus, so keep a heavy hit's peak under
-about 0.65 before the soft clip.
+were level-matched, and how the leak above was found (a peak of 2.0 where 0.7 was expected).
+
+The soft clip starts at 0.75, effects sit at 0.55, and music at 0.5. In a
+deterministic 48 kHz render, tense music peaked around 0.28 on its own.
+Repeating the loudest ordinary overlap — a heavy capture followed by check —
+across the music peaked around 0.91 before the soft clip, with no samples past
+full scale; the final output peaked around 0.86 (−1.3 dBFS). Recheck both the
+music alone and that overlap when a channel level or voicing changes: a safe
+voice alone can still overload the sum.
 
 ## Sources
 
