@@ -50,9 +50,6 @@ export interface AnotherDeviceFixtures {
  * specs explicitly start against a person at the same device so unrelated criteria remain in control of
  * both armies. The one spec about the shipped opponent keeps it through `keepShippedOpponent`.
  *
- * The account section is behind `?account` in the address for now, so the specs about it ask for it through
- * `accountFeature`, and every other spec meets the app as a player who has never heard of it.
- *
  * Every spec also starts as a returning player, who is not welcomed or shown around. The specs about
  * the welcome and the tour ask for a first visit through `freshPlayer`, and are then responsible for
  * everything they would otherwise have been handed: the opponent, the effects and the progress.
@@ -61,17 +58,15 @@ export interface AcceptanceTestOptions {
   effects: EffectsName;
   keepShippedOpponent: boolean;
   freshPlayer: boolean;
-  accountFeature: boolean;
 }
 
 export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures & AcceptanceTestOptions>({
   effects: ["Full", {option: true}],
   keepShippedOpponent: [false, {option: true}],
   freshPlayer: [false, {option: true}],
-  accountFeature: [false, {option: true}],
 
-  janggi: async ({page, effects, keepShippedOpponent, freshPlayer, accountFeature}, use) => {
-    await use(await openedOn(page, {effects, keepShippedOpponent, freshPlayer, accountFeature}));
+  janggi: async ({page, effects, keepShippedOpponent, freshPlayer}, use) => {
+    await use(await openedOn(page, {effects, keepShippedOpponent, freshPlayer}));
   },
 
   anotherDevice: async (
@@ -88,7 +83,6 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
       effects,
       keepShippedOpponent,
       freshPlayer,
-      accountFeature,
     },
     use,
     testInfo,
@@ -107,9 +101,7 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
       reducedMotion,
     });
 
-    await use(
-      await openedOn(await context.newPage(), {effects, keepShippedOpponent, freshPlayer, accountFeature}, janggi),
-    );
+    await use(await openedOn(await context.newPage(), {effects, keepShippedOpponent, freshPlayer}, janggi));
 
     await context.close();
   },
@@ -133,13 +125,13 @@ export {expect} from "@playwright/test";
  * welcome is in the way of Settings, so the arrangement above is left to the spec.
  */
 async function openedOn(page: Page, options: OpeningOptions, sharingTheApiWith?: JanggiDsl): Promise<JanggiDsl> {
-  const {effects, keepShippedOpponent, freshPlayer, accountFeature} = options;
+  const {effects, keepShippedOpponent, freshPlayer} = options;
 
   if (!freshPlayer) await page.context().addInitScript(keepOnboardingDone, ONBOARDING_KEPT);
 
   const janggi = new JanggiDsl(page);
   await janggi.settings.account.standInForTheApi(sharingTheApiWith?.settings.account);
-  await janggi.navigateToPage(accountFeature);
+  await janggi.navigateToPage();
   if (freshPlayer) return janggi;
 
   if (!keepShippedOpponent) await janggi.settings.opponent.setTo("Human");
@@ -149,7 +141,7 @@ async function openedOn(page: Page, options: OpeningOptions, sharingTheApiWith?:
   return janggi;
 }
 
-type OpeningOptions = Pick<AcceptanceTestOptions, "effects" | "keepShippedOpponent" | "freshPlayer" | "accountFeature">;
+type OpeningOptions = Pick<AcceptanceTestOptions, "effects" | "keepShippedOpponent" | "freshPlayer">;
 
 interface OnboardingKept {
   key: string;

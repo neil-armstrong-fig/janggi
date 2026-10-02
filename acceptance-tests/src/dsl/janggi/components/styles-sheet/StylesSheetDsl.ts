@@ -7,7 +7,7 @@ import {StyleStarterDsl} from "@src/dsl/janggi/components/styles-sheet/component
 
 /**
  * The player's own styles, reached as `janggi.stylesSheet` — a sheet that slides up over the game,
- * opened from the Appearance section of the settings sheet, which it replaces on screen.
+ * opened from the Progress section of the settings sheet, which it replaces on screen.
  *
  * One member per part of the sheet, so a spec says which one it means before it says what to do with
  * it: `ownStyles` lists what the player has, `styleImporter` adds one from a shared key, `styleStarter`

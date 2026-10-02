@@ -48,7 +48,7 @@ export const TOUR_STEPS: Readonly<Record<TourStepName, TourStep>> = {
     title: "Make it your own",
     body: `At ${UNLOCK_PRICES.styleEditor} XP you can design your own board and pieces. Styles other players share are free to import.`,
     target: "styles",
-    sheet: "Look",
+    sheet: "Progress",
   },
   guide: {
     title: "New to Janggi?",

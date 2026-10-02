@@ -78,6 +78,33 @@ export class SettingsPlaywright extends SettingsSheetComponent {
     return (await this.tabNamed(name).getAttribute("aria-selected")) === "true";
   }
 
+  /** Every label is visible in one row, within the viewport, with a fingertip-sized target. */
+  async canTabsFitInOneRow(): Promise<boolean> {
+    return await this.sheet.getByTestId("settings-tab").evaluateAll(tabs => {
+      const bounds = tabs.map(tab => tab.getBoundingClientRect());
+      const first = bounds[0];
+
+      return (
+        tabs.length === 5 &&
+        first !== undefined &&
+        tabs.every((tab, index) => {
+          const box = bounds[index];
+
+          return (
+            box !== undefined &&
+            Math.abs(box.top - first.top) < 1 &&
+            box.left >= 0 &&
+            box.right <= window.innerWidth &&
+            box.width >= 44 &&
+            box.height >= 44 &&
+            tab.scrollWidth <= tab.clientWidth
+          );
+        }) &&
+        document.documentElement.scrollWidth <= window.innerWidth
+      );
+    });
+  }
+
   /** Presses the tab, so a tab already showing is left as it is. It stays chosen when the sheet closes. */
   async selectTab(name: SettingsTabName): Promise<void> {
     const tab = this.tabNamed(name);

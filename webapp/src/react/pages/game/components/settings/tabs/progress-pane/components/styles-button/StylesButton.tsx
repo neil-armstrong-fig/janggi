@@ -1,8 +1,8 @@
 import {sheetOpened} from "@src/redux/settings/SettingsSlice";
-import {useAppDispatch} from "@src/redux/Hooks";
 import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
+import {useAppDispatch} from "@src/redux/Hooks";
 
-/** Opens the player's own styles — to import one somebody shared, share one, or make one. */
+/** Opens the player's XP-linked styles — to import, share or make one. */
 export function StylesButton(): React.JSX.Element {
   const dispatch = useAppDispatch();
 

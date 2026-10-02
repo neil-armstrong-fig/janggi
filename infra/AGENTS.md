@@ -51,36 +51,14 @@ over rather than failing — which is also what lets CI run it with no state kep
 `.alchemy/` (git-ignored); a second person deploying the same stage from another machine would want a shared state store
 (`CloudflareStateStore`), which is not set up here.
 
-## Standing it up, in order
+## Standing it up
 
-`<account-id>` is the hex id in the dashboard's address, `dash.cloudflare.com/<account-id>/home`.
-
-1. **A contact address for the Google and Cloudflare accounts**, forwarded to your own inbox, so neither needs your personal address. Email Routing
-   is already on for the zone (the personal site's contact form uses it), so this is one more rule:
-   `https://dash.cloudflare.com/<account-id>/home`, the `neilarmstrong.dev` domain, _Compute_, _Email Service_, _Email Routing_, _Routing Rules_,
-   _Create routing rule_: pattern `janggi`, action _Send to an email_, destination your verified inbox. Send it a test message before using it.
-2. **Google OAuth client** (the one thing no tool creates).
-   - Project: `https://console.cloud.google.com/projectcreate`
-   - Branding (app name; **user support email** is a dropdown of the signed-in Google account and any Google Group it manages, so it cannot be a free-text address. To keep a personal address off the consent screen, do this whole step signed in to a Google account created with `janggi@neilarmstrong.dev` as its address (`https://accounts.google.com/signup`, _Use my existing email_; the verification code arrives through step 1's forwarding), and add your own account as an _Owner_ at `https://console.cloud.google.com/iam-admin/iam`; or use a Google Group you own. **Developer contact email** is free text: `janggi@neilarmstrong.dev`): `https://console.cloud.google.com/auth/branding`
-   - Audience: _External_, left in **Testing**, with your own Google account under _Test users_: `https://console.cloud.google.com/auth/audience`
-   - Client: type _Web application_, with **Authorised redirect URIs** `https://janggi-api.neilarmstrong.dev/api/auth/google/callback` and `http://localhost:8787/api/auth/google/callback`: `https://console.cloud.google.com/auth/clients/create`
-   - Copy the client id and secret. (Older console: `https://console.cloud.google.com/apis/credentials`.)
-   - Only the `openid` scope is ever asked for, which needs no Google verification, so _Publish app_ on the Audience page is all it takes to let anyone sign in, later.
-3. **Try it on localhost first** (`api/AGENTS.md`, "Trying it with real Google, on localhost"), which needs only step 2.
-4. **Cloudflare API token**: `https://dash.cloudflare.com/<account-id>/api-tokens`, _Create Token_, _Create Custom Token_, with
-   _Account · Workers Scripts · Edit_, _Account · D1 · Edit_ and _Account · Account Settings · Read_ on this account. If the first deploy
-   names a permission it lacks, add it. The account id is `CLOUDFLARE_ACCOUNT_ID`.
-5. **First deploy, from your machine**, with every variable in the table above set (`ALCHEMY_PASSWORD`: `openssl rand -base64 32`):
-   `pnpm --filter @janggi/infra provision`. It makes the database (`https://dash.cloudflare.com/<account-id>/workers/d1`) and the
-   Worker (`https://dash.cloudflare.com/<account-id>/workers-and-pages`), and prints the Worker's `workers.dev` address.
-6. **Attach the domain, by hand**: the Worker, _Settings_, _Domains & Routes_, _Add_, _Custom domain_, `janggi-api.neilarmstrong.dev`
-   (`https://dash.cloudflare.com/<account-id>/workers/services/view/janggi-api/production/settings`). The zone must be on this account.
-   It must be the custom domain, not `workers.dev`: the session cookie only works between a site and an API under one domain.
-7. **Check the free plan took it**: the Worker's _Settings_, _Bindings_ lists `LOGIN_LIMITER` and `DATA_LIMITER`; if the deploy refused
-   the rate limits, remove them from `infra/` and `api/wrangler.jsonc`. The plan: `https://dash.cloudflare.com/<account-id>/billing`.
-8. **Try it live**: `https://janggi.neilarmstrong.dev/?account`, signing in with the Google account from step 2.
-9. **CI**: repository secrets (`https://github.com/neil-armstrong-fig/janggi/settings/secrets/actions`): `CLOUDFLARE_API_TOKEN`,
-   `CLOUDFLARE_ACCOUNT_ID`, `ALCHEMY_PASSWORD`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. From then on every green `main` redeploys.
+Every manual step, in order, with the links, is in `/MANUAL-SETUP-STEPS.md`: the
+contact address, the Google OAuth client, the API token, the first
+`pnpm --filter @janggi/infra provision`, the Worker's custom domain (by hand,
+and one label below the domain: a deeper name has no free certificate), and the
+CI secrets. The script is `provision` because `pnpm deploy` is a built-in pnpm
+command that refuses with "requires one parameter".
 
 ## Moving to Alchemy 2
 

@@ -6,10 +6,7 @@ import {useState} from "react";
 
 /**
  * A box to type a new display name into, and a button to save it, with a line under them saying what came of it.
- *
- * No `maxLength` on the box: a name too long is refused with the reason, which is what the player needs to hear,
- * where a box that quietly stopped taking letters would only look broken. The text is 16px because iOS zooms the
- * page into any form field smaller than that when it is focused.
+ * The text is 16px because iOS zooms the page into any form field smaller than that when it is focused.
  */
 export function NameForm(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -25,6 +22,8 @@ export function NameForm(): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-white/60">Display name</span>
+
       <div className="flex gap-2">
         <input
           type="text"

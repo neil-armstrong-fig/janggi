@@ -3,7 +3,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 
 /**
  * A part of the screen that lives in the styles sheet — the list of a player's own styles, or the editor
- * that makes one — reached from the settings sheet's Appearance section, which it slides up over and
+ * that makes one — reached from the settings sheet's Progress section, which it slides up over and
  * replaces on screen. Every `*Playwright` under `styles-sheet/` extends this rather than holding one,
  * for the reason `SettingsSheetComponent` gives for its own children.
  *

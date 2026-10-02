@@ -1,11 +1,4 @@
-import {
-  beforeEach,
-  expect,
-  given,
-  then,
-  useTheAccount,
-  when,
-} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
+import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
 
 /**
@@ -13,8 +6,6 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  * The device stays the source of truth: the game plays the same signed out, and nothing is lost by signing out.
  */
 given("a player who has earned some progress", () => {
-  useTheAccount();
-
   beforeEach(async ({janggi}) => {
     await janggi.settings.progress.loadSave(saveKeyWith({xp: 640, beaten: {Casual: {cho: [800, 1000]}}}));
   });

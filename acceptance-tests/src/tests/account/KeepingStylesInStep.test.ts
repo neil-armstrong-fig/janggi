@@ -1,11 +1,4 @@
-import {
-  beforeEach,
-  expect,
-  given,
-  then,
-  useTheAccount,
-  when,
-} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
+import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
 
 /**
@@ -14,8 +7,6 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  * holds is theirs alone, and nobody else's styles can reach them except a key they paste by hand.
  */
 given("a player with a board of their own, signed in with Google on two devices", () => {
-  useTheAccount();
-
   beforeEach.withAnotherDevice(async ({janggi, anotherDevice}) => {
     await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
     await janggi.stylesSheet.makeStyle("Board", "Classic", "My board");

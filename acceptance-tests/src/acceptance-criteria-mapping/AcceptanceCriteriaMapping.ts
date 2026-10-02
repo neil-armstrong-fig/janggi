@@ -101,14 +101,6 @@ export function useFreshPlayer(): void {
   test.use({freshPlayer: true});
 }
 
-/**
- * Opens the app with `?account` on its address, the flag the account section is behind for now — for the specs under
- * `src/tests/account/`, which are about it. Every other spec meets the app without.
- */
-export function useTheAccount(): void {
-  test.use({accountFeature: true});
-}
-
 export {expect} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 
 function suite(prefix: string): Suite {
