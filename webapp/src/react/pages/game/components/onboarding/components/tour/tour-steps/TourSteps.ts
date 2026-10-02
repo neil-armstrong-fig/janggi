@@ -50,6 +50,12 @@ export const TOUR_STEPS: Readonly<Record<TourStepName, TourStep>> = {
     target: "styles",
     sheet: "Progress",
   },
+  account: {
+    title: "Keep it in sync",
+    body: "Signing in with Google is optional. It keeps your XP, unlocks and styles in step across your devices, and Janggi plays the same without it.",
+    target: "account",
+    sheet: "Account",
+  },
   guide: {
     title: "New to Janggi?",
     body: "The guide teaches every piece and the rules in about five minutes. It is well worth it before your first real game.",

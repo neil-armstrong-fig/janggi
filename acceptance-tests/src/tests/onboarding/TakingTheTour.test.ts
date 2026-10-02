@@ -7,7 +7,7 @@ import {
   when,
 } from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
-const STEPS_IN_THE_TOUR = 7;
+const STEPS_IN_THE_TOUR = 8;
 
 /**
  * The tour that follows the welcome, over the real page. What each step points at and teaches has a spec
