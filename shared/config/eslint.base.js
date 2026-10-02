@@ -3,7 +3,14 @@ import prettierConfig from "eslint-config-prettier";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export const ignores = ["**/build/**", "**/dist/**", "**/dev-dist/**", "**/coverage/**", "**/screenshots/**"];
+export const ignores = [
+  "**/build/**",
+  "**/.wrangler/**",
+  "**/dist/**",
+  "**/dev-dist/**",
+  "**/coverage/**",
+  "**/screenshots/**",
+];
 
 const workspaceScope = "@janggi";
 

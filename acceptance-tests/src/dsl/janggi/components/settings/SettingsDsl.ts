@@ -1,4 +1,5 @@
 import {FlipBoardSettingDsl} from "@src/dsl/janggi/components/settings/components/flip-board-setting/FlipBoardSettingDsl";
+import {AccountSettingDsl} from "@src/dsl/janggi/components/settings/components/account-setting/AccountSettingDsl";
 import {BikjangHintSettingDsl} from "@src/dsl/janggi/components/settings/components/bikjang-hint-setting/BikjangHintSettingDsl";
 import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
 import {BotStrengthSettingDsl} from "@src/dsl/janggi/components/settings/components/bot-strength-setting/BotStrengthSettingDsl";
@@ -60,6 +61,7 @@ export class SettingsDsl {
   readonly music: MusicSettingDsl;
   readonly progress: ProgressSettingDsl;
   readonly install: InstallButtonDsl;
+  readonly account: AccountSettingDsl;
 
   constructor(page: Page) {
     this.settings = new SettingsPlaywright(page);
@@ -81,6 +83,7 @@ export class SettingsDsl {
     this.music = new MusicSettingDsl(page);
     this.progress = new ProgressSettingDsl(page);
     this.install = new InstallButtonDsl(page);
+    this.account = new AccountSettingDsl(page);
   }
 
   /** Both armies at once, for a spec that only cares that they match. */

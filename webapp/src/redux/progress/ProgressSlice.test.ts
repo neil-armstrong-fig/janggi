@@ -3,7 +3,7 @@ import {progressReducer, xpEarned} from "@src/redux/progress/ProgressSlice";
 import type {RewardedGame} from "@src/redux/progress/types/RewardedGame";
 import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
 import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 
 const won: RewardedGame = {format: "Casual", botElo: 800, playerSide: "cho", result: "won"};
 

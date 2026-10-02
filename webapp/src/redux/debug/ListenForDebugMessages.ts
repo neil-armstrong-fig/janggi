@@ -1,6 +1,6 @@
 import type {AppStore} from "@src/redux/Store";
 import {debugSaveIn} from "@src/redux/debug/DebugSaveIn";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 
 /**
  * Lets a message posted to the page set the player's progress:

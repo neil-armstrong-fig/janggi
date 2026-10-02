@@ -1,17 +1,19 @@
 # AGENTS.md
 
-Janggi (Korean Chess) as an installable PWA. pnpm workspace, three packages:
+Janggi (Korean Chess) as an installable PWA. pnpm workspace, five packages:
 
 | Package             | Contains                                                           |
 | ------------------- | --------------------------------------------------------------------- |
 | `webapp/`           | The React app. Vite, React 19, Redux Toolkit, Tailwind v4.         |
 | `acceptance-tests/` | The acceptance-test DSL and specs, run by Playwright.              |
 | `shared/`           | The janggi vocabulary, code shared by both, and base tool config.  |
+| `api/`              | The Cloudflare Worker for opt-in Google sign-in and sync.          |
+| `infra/`            | The Cloudflare infrastructure for it, as code (Alchemy).            |
 
 Each has its own `AGENTS.md`, and webapp has one per subfolder besides.
 
 `docs/` holds research a decision in the code rests on, linked from the code it justifies:
-`docs/opening-setups.md`, `docs/rules.md`, `docs/bot.md`, `docs/sound.md`. Add a document here only when
+`docs/opening-setups.md`, `docs/rules.md`, `docs/bot.md`, `docs/sound.md`, `docs/online-capability/`. Add a document here only when
 losing the reasoning would mean someone re-deriving it.
 
 ## Before changing code
@@ -38,6 +40,7 @@ pnpm start:preview       # compile, then serve the build on http://localhost:300
 pnpm acceptance-tests    # needs one of the two running in another terminal; preview for the whole suite
 pnpm acceptance-tests:pwa # release updates; needs `pnpm start:preview` running
 pnpm install-browsers    # one-time Playwright chromium download
+pnpm api:dev             # the API Worker locally (`wrangler dev`, port 8787); see `api/AGENTS.md`
 pnpm test:properties     # the property tests, which `pnpm checks` leaves out
 pnpm test:bot-games      # whole games on the real engine under Node, also left out
 pnpm acceptance-tests:bot-games  # a whole game in the browser, left out of `pnpm acceptance-tests`
@@ -118,6 +121,8 @@ Enforced by ESLint (`no-restricted-imports`, in `shared/config/eslint.base.js`) 
 | `shared/`           | nothing else in the workspace — it is the bottom of the graph |
 | `webapp/`           | itself and `@janggi/shared`                                   |
 | `acceptance-tests/` | itself and `@janggi/shared`                                   |
+| `api/`              | itself and `@janggi/shared`; nothing imports it               |
+| `infra/`            | itself only; nothing imports it                               |
 
 A workspace package added later is **denied by default**; add it to `allowedPackages` in that
 package's `eslint.config.js` to permit it. Packages enforce their own internal layering too — see the
@@ -194,8 +199,11 @@ and again, not once.
 
 ## Ask before
 
-- **Adding or upgrading any dependency.** Versions are exact-pinned, several deliberately (see
-  Gotchas), and a `minimumReleaseAge` supply-chain policy rejects packages published in the last day.
+- **Adding or upgrading any dependency.** Versions are exact-pinned in the `catalog:` of `pnpm-workspace.yaml`, several
+  deliberately (see Gotchas), and a supply-chain policy there rejects packages published in the last seven days.
+  Nothing updates them automatically, so **when there has been a gap since the last commit** — a few days or more
+  between it and the work now starting — check the catalog's versions (`pnpm outdated -r`) before beginning, and
+  say which are behind and which of those are held on purpose (Gotchas). Propose the bumps; do not apply them unasked.
 - **Deleting or rebuilding `pnpm-lock.yaml`.** It re-resolves every transitive dependency.
 - **Any git commit, branch or push.** The one standing exception: the worktree-merge flow above,
   agreed in advance. Pushing never is.
@@ -219,12 +227,13 @@ and again, not once.
 ## CI and deployment
 
 `ci.yml` runs `checks`, then `acceptance-tests` against a production build (`vite preview`), then
-deploys `main` to GitHub Pages, gated on both. `property-tests.yml` and `bot-games.yml` run on every
+deploys `main` to GitHub Pages, gated on both. It also deploys the API with Alchemy (`deploy-api`: the database, its migrations and the Worker, from `infra/`), gated
+on the same two, and does nothing until the `CLOUDFLARE_API_TOKEN` secret exists. `property-tests.yml` and `bot-games.yml` run on every
 push/PR and on demand, and go **red on failure but gate nothing** — a fresh seed / a non-deterministic
 real engine means a failure isn't reproducible from the same commit. **If branch protection is ever
 turned on, leave both out of required checks**, or they become a gate by the back door.
 
-`renovate.json` is committed but **inert until the Renovate GitHub App is installed**. Pages serves
+Pages serves
 the site from the root of its custom domain, `janggi.neilarmstrong.dev` (set in the repo's Pages
 settings, DNS at Cloudflare; there is no `CNAME` file because the deploy is an Actions artifact). If it
 were ever served under a path again, `BASE_PATH` feeds both Vite's `base` and the PWA manifest's

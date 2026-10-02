@@ -1,0 +1,10 @@
+{
+  "extends": "../shared/config/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types", "vitest/globals"],
+    "paths": {
+      "@src/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "drizzle.config.ts", "vitest.config.ts", "eslint.config.js", "prettier.config.js"]
+}

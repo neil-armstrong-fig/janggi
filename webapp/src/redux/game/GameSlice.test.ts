@@ -27,7 +27,7 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
 import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
 import {outcomeOf} from "@src/game/OutcomeOf";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 
 /**
  * The reducers are one line each into the engine, which is where the rules are tested. What is

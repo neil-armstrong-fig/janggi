@@ -1,0 +1,63 @@
+import {BIKJANG_HINT_NAMES} from "@janggi/shared/janggi/settings/BikjangHintName";
+import {EFFECTS_NAMES} from "@janggi/shared/janggi/settings/EffectsName";
+import {FULL_VOLUME, MUTED_VOLUME} from "@janggi/shared/janggi/settings/Volume";
+import {FULL_OPACITY, MINIMUM_OPACITY} from "@janggi/shared/janggi/settings/Opacity";
+import {MOVABLE_HIGHLIGHT_NAMES} from "@janggi/shared/janggi/settings/MovableHighlightName";
+import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
+import type {Volume} from "@janggi/shared/janggi/settings/Volume";
+import {defaultPreferences} from "@src/redux/preferences/default-preferences/DefaultPreferences";
+import {isAmong} from "@src/redux/untrusted/IsAmong";
+import {isFiniteNumber} from "@src/redux/untrusted/IsFiniteNumber";
+import {isNumberBetween} from "@src/redux/untrusted/IsNumberBetween";
+import {isObject} from "@src/redux/untrusted/IsObject";
+
+/**
+ * Preferences read from outside — the device's storage, or what the server holds — each one checked on its own: a movable-piece mark the app does not
+ * offer, or a volume off the slider, falls back to its default and leaves every other choice as the
+ * player made it. Preferences are stored by name (webapp `AGENTS.md`), which is what makes each one
+ * checkable against the list it comes from.
+ *
+ * The two styles are the exception, and only a name is asked of them: either may name one of the
+ * player's own styles, which this layer has no list of. Whether a name has a style behind it to wear is
+ * asked where it is worn, `preferencesFrom`, and a name that does not falls back to the default there.
+ */
+export function storedPreferencesFrom(stored: unknown): PreferencesSliceState {
+  const defaults = defaultPreferences();
+  if (!isObject(stored)) return defaults;
+
+  const {
+    boardStyle,
+    hanBoardStyle,
+    pieceSet,
+    hanPieceSet,
+    movableHighlight,
+    bikjangHint,
+    flipBoardForHan,
+    effects,
+    soundEffectsVolume,
+    musicVolume,
+    sheetOpacity,
+  } = stored;
+
+  return {
+    boardStyle: isStyleName(boardStyle) ? boardStyle : defaults.boardStyle,
+    hanBoardStyle: isStyleName(hanBoardStyle) ? hanBoardStyle : undefined,
+    pieceSet: isStyleName(pieceSet) ? pieceSet : defaults.pieceSet,
+    hanPieceSet: isStyleName(hanPieceSet) ? hanPieceSet : undefined,
+    movableHighlight: isAmong(MOVABLE_HIGHLIGHT_NAMES, movableHighlight) ? movableHighlight : defaults.movableHighlight,
+    bikjangHint: isAmong(BIKJANG_HINT_NAMES, bikjangHint) ? bikjangHint : defaults.bikjangHint,
+    flipBoardForHan: typeof flipBoardForHan === "boolean" ? flipBoardForHan : defaults.flipBoardForHan,
+    effects: isAmong(EFFECTS_NAMES, effects) ? effects : defaults.effects,
+    soundEffectsVolume: isVolume(soundEffectsVolume) ? soundEffectsVolume : defaults.soundEffectsVolume,
+    musicVolume: isVolume(musicVolume) ? musicVolume : defaults.musicVolume,
+    sheetOpacity: isNumberBetween(sheetOpacity, MINIMUM_OPACITY, FULL_OPACITY) ? sheetOpacity : defaults.sheetOpacity,
+  };
+}
+
+function isStyleName(value: unknown): value is string {
+  return typeof value === "string" && value !== "";
+}
+
+function isVolume(value: unknown): value is Volume {
+  return isFiniteNumber(value) && value >= MUTED_VOLUME && value <= FULL_VOLUME;
+}

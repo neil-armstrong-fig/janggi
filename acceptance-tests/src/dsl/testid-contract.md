@@ -15,7 +15,10 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
   `progress-xp` and `progress-next-unlock` carrying `data-xp`, `progress-xp-bar` carrying `data-percent`
   (absent once everything is unlocked), `save-copy` and the `save-key` it shows,
-  and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The styles
+  and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The account section of
+  the Progress tab — `account` on the whole of it, which is there only with `?account` on the address, or once signed in: `account-sign-in` where nobody is signed in; `account-signed-in`, `account-sign-out`,
+  `account-name` carrying `data-name`, `account-name-input`, `account-name-save` and `account-name-message` carrying
+  `data-accepted`, `account-delete` (then `account-delete-confirm`) and `account-sync-state` carrying `data-state` (`synced` or `paused`) where somebody is. The styles
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
   `-submit` and `-message` (`data-accepted`), and starting one of their own: `style-editor-locked` where
   XP has not unlocked it, or `style-editor-kind`, `-from` and `-start` where it has — the editor itself,

@@ -3,7 +3,8 @@ import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceSt
 import type {RewardedGame} from "@src/redux/progress/types/RewardedGame";
 import {createSlice} from "@reduxjs/toolkit";
 import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
+import {syncMerged} from "@src/redux/account/actions/SyncMerged";
 import {withBeaten} from "@src/redux/progress/climbing/WithBeaten";
 import {xpFor} from "@src/redux/progress/xp/XpFor";
 
@@ -32,6 +33,7 @@ export const progressSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(saveLoaded, (_state, action): ProgressSliceState => action.payload.progress);
+    builder.addCase(syncMerged, (_state, action): ProgressSliceState => action.payload.progress);
   },
 });
 

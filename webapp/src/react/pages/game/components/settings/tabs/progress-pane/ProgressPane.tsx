@@ -1,3 +1,6 @@
+import {isAccountOffered} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/account/utils/IsAccountOffered";
+import {useAppSelector} from "@src/redux/Hooks";
+import {Account} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/account/Account";
 import {GuideLink} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/guide-link/GuideLink";
 import {InstallButton} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/install-button/InstallButton";
 import {Progress} from "@src/react/pages/game/components/settings/tabs/progress-pane/components/progress/Progress";
@@ -9,6 +12,8 @@ import {SettingsPane} from "@src/react/pages/game/components/settings/components
  * The Progress tab: the XP, what it opens next, and the save key that carries it to another device —
  * then the links out of the game: installing it, how to play, the tour again, and the credits.
  *
+ * The account section is only there for somebody who adds `?account` to the address, for now (`isAccountOffered`).
+ *
  * The links sit here, at the foot of the scroll, because they belong to no other tab and are the least
  * often wanted; installing is only offered where the browser offers it, on a phone. Handed only whether
  * its tab is showing.
@@ -18,9 +23,13 @@ interface Props {
 }
 
 export function ProgressPane({selected}: Props): React.JSX.Element {
+  const status = useAppSelector(state => state.account.status);
+
   return (
     <SettingsPane name="Progress" selected={selected}>
       <Progress />
+
+      {isAccountOffered(globalThis.location.search, status) && <Account />}
 
       <div className="flex flex-col gap-2">
         <InstallButton />

@@ -8,6 +8,7 @@ import type {Opacity} from "@janggi/shared/janggi/settings/Opacity";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 import {createSlice} from "@reduxjs/toolkit";
+import {syncMerged} from "@src/redux/account/actions/SyncMerged";
 import {defaultPreferences} from "@src/redux/preferences/default-preferences/DefaultPreferences";
 
 /**
@@ -96,6 +97,12 @@ export const preferencesSlice = createSlice({
       ...state,
       sheetOpacity: action.payload,
     }),
+  },
+  extraReducers: builder => {
+    builder.addCase(syncMerged, (state, action): PreferencesSliceState => ({
+      ...state,
+      ...action.payload.preferences.value,
+    }));
   },
 });
 

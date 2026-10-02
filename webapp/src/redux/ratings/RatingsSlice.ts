@@ -5,6 +5,7 @@ import type {RatingsSliceState} from "@src/redux/ratings/types/RatingsSliceState
 import {createSlice} from "@reduxjs/toolkit";
 import {freshRatings} from "@src/redux/ratings/fresh-ratings/FreshRatings";
 import {rated} from "@src/redux/ratings/recording/Rated";
+import {syncMerged} from "@src/redux/account/actions/SyncMerged";
 
 /**
  * The player's ratings against the bot, and the one game that may be under way.
@@ -37,6 +38,12 @@ export const ratingsSlice = createSlice({
      * and is rated into the fresh one when it ends — resetting is not a way out of a game going badly.
      */
     recordReset: (state): RatingsSliceState => ({byFormat: freshRatings().byFormat, inProgress: state.inProgress}),
+  },
+  extraReducers: builder => {
+    builder.addCase(syncMerged, (state, action): RatingsSliceState => ({
+      byFormat: action.payload.ratings.byFormat,
+      inProgress: state.inProgress,
+    }));
   },
 });
 

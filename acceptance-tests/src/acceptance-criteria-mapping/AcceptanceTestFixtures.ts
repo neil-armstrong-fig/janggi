@@ -25,8 +25,10 @@ export interface AcceptanceTestFixtures {
 }
 
 /**
- * The app open on a second device, for a spec that plays a game between two copies of it —
- * `PlayingTheBotToTheEnd.test.ts`, where the player's moves are chosen by a bot on the other one.
+ * The app open on a second device, for a spec about two copies of it: a game played between them
+ * (`PlayingTheBotToTheEnd.test.ts`, where the player's moves are chosen by a bot on the other one), or one account
+ * signed in on both (`src/tests/account/KeepingStylesInStep.test.ts`, which shares the stand-in API between them so
+ * each device sees what the other changed).
  *
  * Kept apart from `AcceptanceTestFixtures` because Playwright builds a fixture for a test only where
  * something names it, and only `beforeEach.withAnotherDevice` names this one — so no other spec pays
@@ -48,6 +50,9 @@ export interface AnotherDeviceFixtures {
  * specs explicitly start against a person at the same device so unrelated criteria remain in control of
  * both armies. The one spec about the shipped opponent keeps it through `keepShippedOpponent`.
  *
+ * The account section is behind `?account` in the address for now, so the specs about it ask for it through
+ * `accountFeature`, and every other spec meets the app as a player who has never heard of it.
+ *
  * Every spec also starts as a returning player, who is not welcomed or shown around. The specs about
  * the welcome and the tour ask for a first visit through `freshPlayer`, and are then responsible for
  * everything they would otherwise have been handed: the opponent, the effects and the progress.
@@ -56,19 +61,22 @@ export interface AcceptanceTestOptions {
   effects: EffectsName;
   keepShippedOpponent: boolean;
   freshPlayer: boolean;
+  accountFeature: boolean;
 }
 
 export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures & AcceptanceTestOptions>({
   effects: ["Full", {option: true}],
   keepShippedOpponent: [false, {option: true}],
   freshPlayer: [false, {option: true}],
+  accountFeature: [false, {option: true}],
 
-  janggi: async ({page, effects, keepShippedOpponent, freshPlayer}, use) => {
-    await use(await openedOn(page, {effects, keepShippedOpponent, freshPlayer}));
+  janggi: async ({page, effects, keepShippedOpponent, freshPlayer, accountFeature}, use) => {
+    await use(await openedOn(page, {effects, keepShippedOpponent, freshPlayer, accountFeature}));
   },
 
   anotherDevice: async (
     {
+      janggi,
       browser,
       baseURL,
       viewport,
@@ -80,11 +88,12 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
       effects,
       keepShippedOpponent,
       freshPlayer,
+      accountFeature,
     },
     use,
     testInfo,
   ) => {
-    // The one reason to bring in a second device is to play a game out, which is minutes of bots
+    // The usual reason to bring in a second device is to play a game out, which is minutes of bots
     // thinking where the config's timeout suits a spec of a few taps.
     testInfo.setTimeout(A_GAME_PLAYED_OUT_MS);
 
@@ -98,7 +107,9 @@ export const test = base.extend<AcceptanceTestFixtures & AnotherDeviceFixtures &
       reducedMotion,
     });
 
-    await use(await openedOn(await context.newPage(), {effects, keepShippedOpponent, freshPlayer}));
+    await use(
+      await openedOn(await context.newPage(), {effects, keepShippedOpponent, freshPlayer, accountFeature}, janggi),
+    );
 
     await context.close();
   },
@@ -115,16 +126,20 @@ export {expect} from "@playwright/test";
  * set through the app's debug door (`janggi.debug`) — and a spec about the locks themselves puts the
  * player back wherever it is about first. `src/tests/progress/` is where those are.
  *
+ * The API is stood in for before the app opens, so no spec reaches a real one and every call the app makes to it
+ * is counted — `src/tests/account/` asserts a player who never signs in makes none.
+ *
  * A spec that asks for a `freshPlayer` is handed the app as a first visit finds it and nothing more: the
  * welcome is in the way of Settings, so the arrangement above is left to the spec.
  */
-async function openedOn(page: Page, options: OpeningOptions): Promise<JanggiDsl> {
-  const {effects, keepShippedOpponent, freshPlayer} = options;
+async function openedOn(page: Page, options: OpeningOptions, sharingTheApiWith?: JanggiDsl): Promise<JanggiDsl> {
+  const {effects, keepShippedOpponent, freshPlayer, accountFeature} = options;
 
   if (!freshPlayer) await page.context().addInitScript(keepOnboardingDone, ONBOARDING_KEPT);
 
   const janggi = new JanggiDsl(page);
-  await janggi.navigateToPage();
+  await janggi.settings.account.standInForTheApi(sharingTheApiWith?.settings.account);
+  await janggi.navigateToPage(accountFeature);
   if (freshPlayer) return janggi;
 
   if (!keepShippedOpponent) await janggi.settings.opponent.setTo("Human");
@@ -134,7 +149,7 @@ async function openedOn(page: Page, options: OpeningOptions): Promise<JanggiDsl>
   return janggi;
 }
 
-type OpeningOptions = Pick<AcceptanceTestOptions, "effects" | "keepShippedOpponent" | "freshPlayer">;
+type OpeningOptions = Pick<AcceptanceTestOptions, "effects" | "keepShippedOpponent" | "freshPlayer" | "accountFeature">;
 
 interface OnboardingKept {
   key: string;

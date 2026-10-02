@@ -87,11 +87,12 @@ criterion; it carries a scoped `eslint-disable` saying so.
 ## Fixtures and spec organisation
 
 **A second device is the one other fixture.** `anotherDevice` is the app open in a second browser
-context, for a spec that plays a game between two copies of it: `PlayingTheBotToTheEnd.test.ts` has
-the strongest bot choose the player's moves on one, and relays every turn to the other by hand. Only
+context, for a spec about two copies of it. `PlayingTheBotToTheEnd.test.ts` has the strongest bot choose
+the player's moves on one, and relays every turn to the other by hand; `account/KeepingStylesInStep.test.ts`
+signs one Google account in on both, the two sharing a stand-in API the way two phones share a server. Only
 `beforeEach.withAnotherDevice` names it — named in `withDslOnly`, it would open a second context for
 every spec in the suite. A test that opens one is given ten minutes, since a game played out is
-minutes of bots thinking, and a spec's own helper is handed a device typed as `Janggi`, from the
+minutes of bots thinking (the account spec does not need it, and is not slowed by having it), and a spec's own helper is handed a device typed as `Janggi`, from the
 mapping. That spec is left out of `pnpm acceptance-tests`: the default projects ignore
 `BOT_GAME_SPECS`, and `playwright.bot-games.config.ts` (`pnpm acceptance-tests:bot-games`) runs it
 alone, in `.github/workflows/bot-games.yml`, which gates no deploy.

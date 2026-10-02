@@ -56,9 +56,11 @@ export class JanggiPlaywright extends BasePage {
    * after load and the page reloads under it (`webapp/src/main.tsx`). A spec that started tapping
    * before then would lose its taps to the reload. Locally the server sends the headers and this
    * returns at once.
+   *
+   * The account section is behind a flag in the address for now, so a spec about it opens the app with `?account`.
    */
-  async open(): Promise<void> {
-    await this.page.goto("./");
+  async open(withTheAccount: boolean): Promise<void> {
+    await this.page.goto(withTheAccount ? "./?account" : "./");
     await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
   }
 

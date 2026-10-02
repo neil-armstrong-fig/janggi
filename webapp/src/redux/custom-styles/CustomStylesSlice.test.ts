@@ -13,7 +13,7 @@ import {
 import {expect, it} from "vitest";
 import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
 import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 
 it("adds an imported board style under its own name", () => {
   expect(customStylesReducer(noCustomStyles(), boardStyleImported(board("Mine"))).boards).toEqual([board("Mine")]);

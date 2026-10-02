@@ -36,3 +36,10 @@ pnpm-debug.log*
 
 # Local scratch notes, not for the repo
 todo.txt
+
+# Worker secrets for local dev
+.dev.vars
+.wrangler/
+
+# Alchemy local state and generated files
+.alchemy/
