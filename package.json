@@ -28,6 +28,7 @@
     "acceptance-tests:production": "pnpm --filter @janggi/acceptance-tests acceptance-tests:production",
     "acceptance-tests:headed": "pnpm --filter @janggi/acceptance-tests acceptance-tests:headed",
     "acceptance-tests:ui": "pnpm --filter @janggi/acceptance-tests acceptance-tests:ui",
-    "acceptance-tests:report": "pnpm --filter @janggi/acceptance-tests acceptance-tests:report"
+    "acceptance-tests:report": "pnpm --filter @janggi/acceptance-tests acceptance-tests:report",
+    "api:dev": "pnpm --filter @janggi/api start"
   }
 }

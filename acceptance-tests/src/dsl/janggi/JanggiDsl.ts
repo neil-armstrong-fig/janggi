@@ -64,9 +64,10 @@ export class JanggiDsl {
     this.debug = new DebugDsl(page);
   }
 
-  async navigateToPage(): Promise<void> {
+  /** Opens the app. With the account, as somebody who has added `?account` to the address would, to see the section behind it. */
+  async navigateToPage(withTheAccount = false): Promise<void> {
     try {
-      await this.janggi.open();
+      await this.janggi.open(withTheAccount);
     } catch (error) {
       throw new DslError("Failed to navigate to the game", error);
     }

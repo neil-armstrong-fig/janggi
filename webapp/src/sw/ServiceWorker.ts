@@ -1,5 +1,6 @@
 import {addPlugins, cleanupOutdatedCaches, precacheAndRoute} from "workbox-precaching";
 import type {PrecacheEntry} from "workbox-precaching";
+import {serverOrigin} from "@src/redux/account/server/ServerOrigin";
 import {setDefaultHandler} from "workbox-routing";
 
 /** An activate event, which can hold the worker in that phase until a promise settles. */
@@ -15,6 +16,12 @@ interface WorkerMessageEvent extends Event {
 /** The one page message this worker understands. */
 interface SkipWaitingMessage {
   readonly type: "SKIP_WAITING";
+}
+
+/** A request a page has made, which the worker may answer or leave to the network. */
+interface FetchRequestEvent extends Event {
+  readonly request: Request;
+  readonly stopImmediatePropagation: () => void;
 }
 
 /** The pages this worker serves. */
@@ -34,6 +41,7 @@ interface WorkerScope {
   readonly addEventListener: {
     (type: "activate", listener: (event: LifecycleEvent) => void): void;
     (type: "message", listener: (event: WorkerMessageEvent) => void): void;
+    (type: "fetch", listener: (event: FetchRequestEvent) => void): void;
   };
 }
 
@@ -49,7 +57,18 @@ declare const self: WorkerScope;
  * The very first visit is served before the worker exists; `main.tsx` reloads once it takes control.
  * A later worker waits until the page's release notice asks it to take over, keeping one coherent
  * release in use until the player is ready. `docs/bot.md` has the isolation reasoning.
+ *
+ * **It never touches a call to the sign-in and sync API.** Those are cross-origin requests that answer under CORS and
+ * need none of the isolation headers, so the worker has no business in them — and one that handled them would put a
+ * worker between the app and its server, making sync depend on it and hiding the calls from the acceptance tests'
+ * stand-in for the API, which can only see what the browser sends itself.
  */
+// First, and before anything of Workbox's is registered: a listener that stops the event reaching the others and does not
+// answer it leaves the request to the browser, which is the only way to decline one the default handler would take.
+self.addEventListener("fetch", event => {
+  if (new URL(event.request.url).origin === serverOrigin()) event.stopImmediatePropagation();
+});
+
 self.addEventListener("message", event => {
   if (isSkipWaitingMessage(event.data)) void self.skipWaiting();
 });

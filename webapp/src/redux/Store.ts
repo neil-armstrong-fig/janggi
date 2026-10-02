@@ -1,4 +1,18 @@
 import {configureStore} from "@reduxjs/toolkit";
+import {ACCOUNT_STORAGE_KEY} from "@src/redux/account/storage/AccountStorageKey";
+import type {AccountSliceState} from "@src/redux/account/types/AccountSliceState";
+import type {AppStartListening} from "@src/redux/account/listening/AppStartListening";
+import {accountReducer} from "@src/redux/account/AccountSlice";
+import {SYNC_LEDGER_STORAGE_KEY} from "@src/redux/account/ledger/storage/SyncLedgerStorageKey";
+import type {SyncLedgerSliceState} from "@src/redux/account/ledger/types/SyncLedgerSliceState";
+import {caughtUpLedger} from "@src/redux/account/stamping/CaughtUpLedger";
+import {createListenerMiddleware} from "@reduxjs/toolkit";
+import {keepInStep} from "@src/redux/account/syncing/KeepInStep";
+import {loadSyncLedger} from "@src/redux/account/ledger/storage/LoadSyncLedger";
+import {stampChanges} from "@src/redux/account/stamping/StampChanges";
+import {syncLedgerReducer} from "@src/redux/account/ledger/SyncLedgerSlice";
+import {loadAccount} from "@src/redux/account/storage/LoadAccount";
+import {restoreSession} from "@src/redux/account/actions/RestoreSession";
 import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSliceState";
 import {CUSTOM_STYLES_STORAGE_KEY} from "@src/redux/custom-styles/storage/CustomStylesStorageKey";
 import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
@@ -50,6 +64,8 @@ export interface RootState {
   readonly botEngine: BotEngineSliceState;
   readonly onboarding: OnboardingSliceState;
   readonly settings: SettingsSliceState;
+  readonly account: AccountSliceState;
+  readonly syncLedger: SyncLedgerSliceState;
 }
 
 /**
@@ -86,7 +102,9 @@ export function createStore(storage?: Storage): AppStore {
   const progress = progressFromDebug(import.meta.env.VITE_DEBUG_XP) ?? loadProgress(storage, ratings);
   const game = gameReducer(loadGame(storage), botKeptWithinReach(progress.beaten));
 
+  const listening = createListenerMiddleware();
   const created = configureStore({
+    middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(listening.middleware),
     reducer: {
       game: gameReducer,
       preferences: preferencesReducer,
@@ -96,6 +114,8 @@ export function createStore(storage?: Storage): AppStore {
       botEngine: botEngineReducer,
       onboarding: onboardingReducer,
       settings: settingsReducer,
+      account: accountReducer,
+      syncLedger: syncLedgerReducer,
     },
     preloadedState: {
       game,
@@ -104,10 +124,16 @@ export function createStore(storage?: Storage): AppStore {
       progress,
       customStyles: loadCustomStyles(storage),
       onboarding: loadOnboarding(storage),
+      account: loadAccount(storage),
+      syncLedger: loadSyncLedger(storage),
     },
   });
 
   keptOnTheDevice(created, storage);
+  stampChanges(listening.startListening as AppStartListening);
+  keepInStep(listening.startListening as AppStartListening);
+  caughtUpLedger(created);
+  if (created.getState().account.status !== "signed-out") void created.dispatch(restoreSession());
 
   return created;
 }
@@ -120,7 +146,16 @@ export function createStore(storage?: Storage): AppStore {
 function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   // Local rather than module constants: `store` is made at the top of this module, before anything
   // declared below it with `const` exists.
-  const slices: readonly KeptSlice[] = ["game", "preferences", "ratings", "progress", "customStyles", "onboarding"];
+  const slices: readonly KeptSlice[] = [
+    "game",
+    "preferences",
+    "ratings",
+    "progress",
+    "customStyles",
+    "onboarding",
+    "syncLedger",
+    "account",
+  ];
   const keys: Record<KeptSlice, string> = {
     game: GAME_STORAGE_KEY,
     preferences: PREFERENCES_STORAGE_KEY,
@@ -128,6 +163,8 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
     progress: PROGRESS_STORAGE_KEY,
     customStyles: CUSTOM_STYLES_STORAGE_KEY,
     onboarding: ONBOARDING_STORAGE_KEY,
+    account: ACCOUNT_STORAGE_KEY,
+    syncLedger: SYNC_LEDGER_STORAGE_KEY,
   };
 
   let saved = kept.getState();

@@ -14,6 +14,11 @@ hooks. Add state as a slice via `createSlice`.
   what one component owns, like the piece in hand. Which sheet is up over the game, and the settings tab, are
   the `settings` slice — the button under the board, the sheets and the tour all open, close and turn them —
   and it is not kept on the device, a page opening with none up.
+- **An action that is not one of a slice's own goes in an `actions/` folder.** A slice's own actions come
+  from `createSlice` and stay in the slice file. A `createAction` several slices answer (`saves/actions/SaveLoaded`,
+  `account/actions/SyncMerged`) and a thunk (`account/actions/SyncNow`, `SignIn`, `RestoreSession`) each get a file
+  there, beside the feature they belong to, so a reader looking for what can happen finds it in one place rather
+  than among the reducers and selectors.
 - **A fact the engine can work out is derived where it is shown, never stored.** Check, the winner and
   each army's score are not fields on `GameState` and not slices — `GameStatusOf.ts` asks the engine
   on every render and returns one discriminated union, and it relays the engine's own `outcomeOf`

@@ -9,7 +9,8 @@ import {createSlice} from "@reduxjs/toolkit";
 import {mergedAll} from "@src/redux/custom-styles/joining/MergedAll";
 import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
 import {saved} from "@src/redux/custom-styles/joining/Saved";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
+import {syncMerged} from "@src/redux/account/actions/SyncMerged";
 
 /**
  * The player's own board styles and piece sets: imported from a key somebody shared, made in the
@@ -62,6 +63,10 @@ export const customStylesSlice = createSlice({
     builder.addCase(saveLoaded, (state, action): CustomStylesSliceState => ({
       boards: mergedAll(state.boards, action.payload.customStyles.boards, BOARD_STYLE_NAMES),
       pieceSets: mergedAll(state.pieceSets, action.payload.customStyles.pieceSets, PIECE_SET_NAMES),
+    }));
+    builder.addCase(syncMerged, (_state, action): CustomStylesSliceState => ({
+      boards: action.payload.styles.boards.map(entry => entry.style),
+      pieceSets: action.payload.styles.pieceSets.map(entry => entry.style),
     }));
   },
 });

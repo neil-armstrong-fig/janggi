@@ -132,6 +132,43 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v5
 
+  deploy-api:
+    name: Deploy the API to Cloudflare
+    needs: [checks, acceptance-tests]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Inert until the owner has added the secrets (infra/AGENTS.md): a secret cannot be tested in an `if`, so the step looks
+      # for itself. Once the token is there, an API that cannot be deployed fails the build rather than being skipped.
+      # Alchemy creates or adopts the D1 database by name, applies its migrations, and deploys the Worker — the same run
+      # on a fresh account as on this one. It keeps no state between CI runs, which adopting by name makes safe.
+      - name: Deploy the API with Alchemy
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "No CLOUDFLARE_API_TOKEN: the API is not deployed."
+            exit 0
+          fi
+          pnpm --filter @janggi/infra provision
+        env:
+          ALCHEMY_TELEMETRY_DISABLED: 1
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ALCHEMY_PASSWORD: ${{ secrets.ALCHEMY_PASSWORD }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
   acceptance-tests-production:
     name: Acceptance tests (production)
     needs: deploy

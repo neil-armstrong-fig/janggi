@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "janggi-api",
+  "main": "src/ApiWorker.ts",
+  "compatibility_date": "2026-09-01",
+  // For `wrangler dev` and the local database only. Production is declared in `infra/` and deployed by Alchemy, which
+  // keeps the same names, bindings and rate limits: change them there too.
+  // Create it once with `wrangler d1 create janggi`, then paste the id it prints.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "janggi",
+      "database_id": "REPLACE_WITH_ID_FROM_wrangler_d1_create",
+      "migrations_dir": "migrations",
+    },
+  ],
+  // Counters shared across the places the Worker runs. A period is 10 or 60 seconds. Names and numbers, not secrets.
+  "ratelimits": [
+    {"name": "LOGIN_LIMITER", "namespace_id": "1001", "simple": {"limit": 10, "period": 60}},
+    {"name": "DATA_LIMITER", "namespace_id": "1002", "simple": {"limit": 30, "period": 60}},
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://janggi.neilarmstrong.dev,http://localhost:3000",
+  },
+  // Secrets, set with `wrangler secret put` (or in .dev.vars locally): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET.
+}

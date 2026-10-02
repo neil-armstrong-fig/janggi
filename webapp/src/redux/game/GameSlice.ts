@@ -25,7 +25,8 @@ import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
 import {dealtAgainst} from "@src/redux/game/dealing/DealtAgainst";
 import {randomSide} from "@src/redux/game/sides/RandomSide";
 import {restartedFrom} from "@src/redux/game/restarting/RestartedFrom";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
+import {syncMerged} from "@src/redux/account/actions/SyncMerged";
 import {settledSide} from "@src/redux/game/sides/SettledSide";
 import {withinReach} from "@src/redux/game/within-reach/WithinReach";
 
@@ -140,6 +141,7 @@ export const gameSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(saveLoaded, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
+    builder.addCase(syncMerged, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
   },
 });
 

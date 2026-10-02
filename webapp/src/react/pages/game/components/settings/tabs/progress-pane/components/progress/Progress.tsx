@@ -5,7 +5,7 @@ import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
 import {ShareKey} from "@src/react/pages/game/components/share-key/ShareKey";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import type {AppDispatch} from "@src/redux/Store";
-import {saveLoaded} from "@src/redux/saves/SaveLoaded";
+import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 import {SaveBuilder} from "@src/redux/saves/SaveBuilder";
 import {saveFrom} from "@src/redux/saves/SaveFrom";
 import {unlockLadder} from "@src/redux/progress/unlocks/UnlockLadder";
@@ -16,8 +16,8 @@ import {useId, useState} from "react";
  * How far the player has come, and how to take it with them: their XP, a bar of how close it is to what
  * it opens next, the save key to copy, and a box to load one.
  *
- * **Nothing is kept anywhere but this device**, which is what a save key is for — clearing site data, or
- * a new phone, loses everything a copied key does not carry. Loading a save replaces the XP and unlocks,
+ * **Nothing is kept anywhere but this device** unless the player signs in (the Account section beneath), which is
+ * what a save key is for otherwise — clearing site data, or a new phone, loses everything a copied key does not carry. Loading a save replaces the XP and unlocks,
  * so the line under the box says what it did.
  *
  * What earns XP and what a save holds are each a sentence or two, and the tab is short without them:

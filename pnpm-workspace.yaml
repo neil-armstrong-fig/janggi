@@ -2,3 +2,132 @@ packages:
   - shared
   - webapp
   - acceptance-tests
+  - api
+  - infra
+
+# Refuse `pnpm add` commands that would bypass an existing catalog version.
+catalogMode: strict
+
+# Supply chain. The API holds people's sign-ins now, so nothing installs that has not had time to be noticed if it is
+# malicious. Nothing updates dependencies automatically: a version is changed by hand, in the catalog below.
+# Refuse every release, direct or transitive, less than seven days old, and fail rather than quietly pick an older one.
+minimumReleaseAge: 10080
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+
+# Refuse a package whose publisher is less trusted than the one that published its earlier releases (a trusted publisher,
+# then a stolen token), and one that pulls code from a git repository or a tarball URL instead of the registry.
+trustPolicy: no-downgrade
+# Reviewed and let through, each by exact version: both are old releases whose publisher evidence is thinner than a later
+# release's, which the policy reads as a downgrade, and neither is a new or a changed package. semver is the long-standing
+# npm-maintained one; the other is the maintained fork of rollup-plugin-off-main-thread that workbox-build depends on.
+trustPolicyExclude:
+  - semver@6.3.1
+  - "@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1"
+blockExoticSubdeps: true
+
+# Revalidate the registry's metadata behind the lockfile rather than taking it on trust, and fail an install that meets an
+# install script nobody has reviewed (the `allowBuilds` list below is the review).
+trustLockfile: false
+strictDepBuilds: true
+
+# esbuild's and workerd's install scripts are needed for `wrangler dev` and Alchemy's local runtime; sharp's (an image
+# library reached through miniflare) is not.
+allowBuilds:
+  esbuild: true
+  sharp: false
+  workerd: true
+
+# Alchemy loads `undici` itself, if it can find one, and hands its Agent to Node's built-in `fetch`. It declares no dependency
+# on it, so it finds whichever copy pnpm hoisted — currently jsdom's undici 8, whose Agent the built-in fetch (undici 7) refuses
+# with "invalid onRequestStart method", so no request to Cloudflare is ever made. Giving Alchemy its own, same-major copy fixes it.
+packageExtensions:
+  alchemy@0.94.0:
+    dependencies:
+      undici: 7.29.0
+
+# Every external dependency is declared here once, exact-pinned, and each package says `catalog:`. A version changes in one place
+# for every package that uses it.
+catalog:
+  # TypeScript infrastructure as code for Cloudflare; the 0.x line, since `latest` is the 2.0 beta rewrite.
+  alchemy: 0.94.0
+  # Type declarations for the Workers runtime; the API's Worker is checked against them. Held at the version wrangler needs.
+  "@cloudflare/workers-types": 5.20260921.1
+  # Builds conditional class lists in JSX.
+  clsx: 2.1.1
+  # Writes the SQL migrations from the schema; Wrangler applies them.
+  drizzle-kit: 0.31.11
+  # Typed queries over D1, and the schema the migrations are generated from.
+  drizzle-orm: 0.45.3
+  # The linter, in every package.
+  eslint: 10.10.0
+  # Switches off the ESLint rules Prettier owns.
+  eslint-config-prettier: 10.1.8
+  # Rules of hooks, for the webapp.
+  eslint-plugin-react-hooks: 7.1.1
+  # React 19 aware lint rules for the webapp; the legacy eslint-plugin-react is deliberately not used.
+  "@eslint-react/eslint-plugin": 5.18.10
+  # ESLint's recommended JavaScript rules, in every package's base config.
+  "@eslint/js": 10.0.1
+  # The bot's engine, run in the browser.
+  "fairy-stockfish-nnue.wasm": 1.1.12
+  # Property tests that play random games against the rules engine.
+  fast-check: 4.9.0
+  # Browser and Node global definitions for ESLint.
+  globals: 17.12.0
+  # The DOM for the few hook tests that need one; the rest run on node.
+  jsdom: 30.0.1
+  # Runs the acceptance specs against the real app.
+  "@playwright/test": 1.63.0
+  # Google OAuth 2.0 and OpenID Connect for the API: PKCE, the code exchange, and the ID token's claims. Certified, maintained, no dependencies.
+  oauth4webapi: 3.8.8
+  # Formats every package.
+  prettier: 3.9.6
+  # The UI.
+  react: 19.2.8
+  # React's DOM renderer.
+  react-dom: 19.2.8
+  # Binds the store to React.
+  react-redux: 9.3.0
+  # The store, slices, thunks and the listener middleware the account sync runs on.
+  "@reduxjs/toolkit": 2.12.0
+  # Runs TypeScript on Node with the tsconfig `paths` aliases, which Alchemy needs to run `infra/` with `@src`; esbuild-based.
+  tsx: 4.23.15
+  # Tailwind CSS v4, the utility styles.
+  tailwindcss: 4.3.3
+  # Tailwind CSS's first-party Vite integration.
+  "@tailwindcss/vite": 4.3.3
+  # Peer of Testing Library's React hooks helper.
+  "@testing-library/dom": 10.4.1
+  # DOM matchers for the few hook tests that opt in to jsdom.
+  "@testing-library/jest-dom": 7.0.1
+  # `renderHook`, for testing hooks alone; components are covered by the acceptance specs.
+  "@testing-library/react": 16.3.3
+  # Node.js declarations; held to the supported Node 24 line rather than the latest major.
+  "@types/node": 24.13.3
+  # React 19 type declarations.
+  "@types/react": 19.2.18
+  # React DOM type declarations.
+  "@types/react-dom": 19.2.7
+  # Compiler; held at 6.0.3 because typescript-eslint cannot read the AST of TypeScript 7.
+  typescript: 6.0.3
+  # TypeScript-aware ESLint parser and rules.
+  typescript-eslint: 8.69.0
+  # Dev server and bundler for the webapp.
+  vite: 8.2.2
+  # Builds the service worker and manifest.
+  vite-plugin-pwa: 1.3.0
+  # Vite's React plugin.
+  "@vitejs/plugin-react": 6.1.1
+  # Unit test runner, on node unless a test opts in to jsdom.
+  vitest: 5.0.0
+  # Precache manifest generation for the service worker.
+  workbox-build: 7.4.1
+  # The service worker's precache.
+  workbox-precaching: 7.4.1
+  # The service worker's routing; the default handler adds the isolation headers.
+  workbox-routing: 7.4.1
+  # The page side of the service worker's release updates.
+  workbox-window: 7.4.1
+  # Cloudflare Workers CLI: local dev, D1 migrations. Held at a release older than the 7-day window.
+  wrangler: 4.136.3
