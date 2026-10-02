@@ -126,6 +126,22 @@ given("a player who is on the tour's fourth step, which is about Settings", () =
       then("it says what it costs to make their own, from the price the game charges", async ({janggi}) => {
         expect(await janggi.onboarding.getTourText()).toContain("300 XP");
       });
+
+      when("they go on again", () => {
+        beforeEach(async ({janggi}) => {
+          await janggi.onboarding.nextTourStep();
+        });
+
+        then("the settings move to the tab that holds the sign-in, which it points at", async ({janggi}) => {
+          expect(await janggi.onboarding.getTourStep()).toBe(7);
+          expect(await janggi.settings.isTabSelected("Account")).toBe(true);
+          expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("account");
+        });
+
+        then("it says signing in is optional", async ({janggi}) => {
+          expect(await janggi.onboarding.getTourText()).toContain("optional");
+        });
+      });
     });
 
     when("the game is closed and opened again", () => {
@@ -165,11 +181,12 @@ given("a player who is on the tour's last step", () => {
     await janggi.settings.openTheSettings();
     await janggi.onboarding.nextTourStep();
     await janggi.onboarding.nextTourStep();
+    await janggi.onboarding.nextTourStep();
   });
 
   when("the step is shown", () => {
     then("the settings have been put away", async ({janggi}) => {
-      expect(await janggi.onboarding.getTourStep()).toBe(7);
+      expect(await janggi.onboarding.getTourStep()).toBe(8);
       expect(await janggi.settings.isOpen()).toBe(false);
     });
 
@@ -182,9 +199,9 @@ given("a player who is on the tour's last step", () => {
         await janggi.onboarding.previousTourStep();
       });
 
-      then("the settings are opened again, on the tab that holds their styles", async ({janggi}) => {
+      then("the settings are opened again, on the tab that holds the sign-in", async ({janggi}) => {
         expect(await janggi.settings.isOpen()).toBe(true);
-        expect(await janggi.settings.isTabSelected("Progress")).toBe(true);
+        expect(await janggi.settings.isTabSelected("Account")).toBe(true);
       });
     });
   });

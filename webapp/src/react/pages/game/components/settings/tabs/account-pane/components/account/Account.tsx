@@ -1,3 +1,4 @@
+import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {LegalLinks} from "@src/react/pages/game/components/settings/tabs/account-pane/components/account/components/legal-links/LegalLinks";
 import {NameForm} from "@src/react/pages/game/components/settings/tabs/account-pane/components/account/components/name-form/NameForm";
 import type {SyncState} from "@src/redux/account/types/SyncState";
@@ -28,7 +29,10 @@ export function Account(): React.JSX.Element {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-black/20 p-3 sm:p-4">
+    <div
+      {...tourTarget("account")}
+      className="flex flex-col gap-3 rounded-xl border border-white/10 bg-black/20 p-3 sm:p-4"
+    >
       <div className="flex flex-col gap-1">
         <span className="text-xs font-medium text-white/60">Account</span>
 
