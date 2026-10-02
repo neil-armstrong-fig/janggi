@@ -83,4 +83,19 @@ export class LegalPlaywright extends BasePage {
   async isFullyOnScreen(): Promise<boolean> {
     return await this.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
   }
+
+  async canScrollToTheEnd(): Promise<boolean> {
+    await this.page.setViewportSize({width: 390, height: 500});
+    await this.page.mouse.move(195, 250);
+    await this.page.mouse.wheel(0, 100_000);
+
+    const footerLinks = this.page.getByRole("navigation", {name: "Legal navigation"});
+    await footerLinks.waitFor({state: "visible"});
+
+    return await footerLinks.evaluate(element => {
+      const {bottom} = element.getBoundingClientRect();
+
+      return bottom > 0 && bottom <= window.innerHeight;
+    });
+  }
 }

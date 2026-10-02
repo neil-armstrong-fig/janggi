@@ -8,7 +8,7 @@ interface Props {
 /** The shared reading frame for Janggi's two public legal documents. */
 export function LegalPage({kind, title, summary, children}: Props): React.JSX.Element {
   return (
-    <div className="min-h-dvh bg-ground text-wood">
+    <div className="h-dvh overflow-y-auto bg-ground text-wood">
       <main data-testid="legal" data-kind={kind} className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8 sm:py-12">
         <header className="border-b border-wood/20 pb-8">
           <a className="inline-flex items-center gap-3 no-underline" href="./" aria-label="Janggi game">
