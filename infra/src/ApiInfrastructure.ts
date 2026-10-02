@@ -9,7 +9,7 @@ import {secrets} from "@src/secrets/Secrets";
  * reasoned about alone.
  *
  * **Not here, on purpose:** the domain. The Worker is given its `workers.dev` address and the custom domain
- * (`api.janggi.neilarmstrong.dev`) is attached by hand in the dashboard, since which domain, and where its DNS lives, is
+ * (`janggi-api.neilarmstrong.dev`) is attached by hand in the dashboard, since which domain, and where its DNS lives, is
  * the owner's. Nor is the Google OAuth client, which Google lets nobody create from code.
  *
  * `pnpm --filter @janggi/infra provision` runs it against the account `CLOUDFLARE_API_TOKEN` is for; see `infra/AGENTS.md`

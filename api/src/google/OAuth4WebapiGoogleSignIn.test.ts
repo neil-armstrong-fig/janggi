@@ -1,7 +1,7 @@
 import {OAuth4WebapiGoogleSignIn} from "@src/google/OAuth4WebapiGoogleSignIn";
 
 const CLIENT_ID = "client-id.apps.googleusercontent.com";
-const REDIRECT_URI = "https://api.janggi.neilarmstrong.dev/api/auth/google/callback";
+const REDIRECT_URI = "https://janggi-api.neilarmstrong.dev/api/auth/google/callback";
 
 interface TokenRequest {
   readonly url: string;
