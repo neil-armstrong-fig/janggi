@@ -70,7 +70,7 @@ export class Reading {
     const value = this.fields[key];
     if (!isCssValue(value)) {
       throw new RefusedReading(
-        `${this.at(key)} should be a CSS value that loads nothing from anywhere else — url(#…) is fine, url(https://…) is not`,
+        `${this.at(key)} should be a CSS value that loads nothing from anywhere else. url(#…) is fine, url(https://…) is not`,
       );
     }
 

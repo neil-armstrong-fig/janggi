@@ -47,8 +47,8 @@ export function Account(): React.JSX.Element {
           </p>
 
           <p className="text-xs leading-relaxed text-white/55">
-            Janggi keeps an anonymous Google account ID, your display name and your save — never your Google name or
-            email.
+            Janggi keeps an anonymous Google account ID, your display name and your save. It never sees your Google name
+            or email.
           </p>
 
           <button

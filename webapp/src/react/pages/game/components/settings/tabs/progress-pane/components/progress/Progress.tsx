@@ -38,8 +38,8 @@ export function Progress(): React.JSX.Element {
 
       {xpExplained && (
         <p id={xpExplanationId} className="rounded-xl bg-black/25 p-3 text-sm text-white/85">
-          Finish a game against the bot for XP — more for a win, more for a scored game. Beat a bot to open the one
-          above it, with each army apart.
+          Finish a game against the bot to earn XP. A win earns more, and so does a scored game. Beat a bot to open the
+          one above it, with each army kept apart.
         </p>
       )}
 

@@ -3,11 +3,11 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("someone searches for a way to play janggi", () => {
   when("they open the game", () => {
     then("the page describes a free Janggi game against AI", async ({janggi}) => {
-      expect(await janggi.getPageTitle()).toBe("Play Janggi (Korean Chess) Online — Free vs AI");
+      expect(await janggi.getPageTitle()).toBe("Play Janggi (Korean Chess) Online: Free vs AI");
       expect(await janggi.getPageDescription()).toBe(
-        "Play Janggi (Korean chess) for free against a friend or eight AI levels. No account needed; save it to your device and play offline.",
+        "Play Janggi (Korean chess) for free against a friend or eight AI levels. No account needed. Save it to your device and play offline.",
       );
-      expect(await janggi.getMainHeading()).toBe("Janggi — Korean Chess");
+      expect(await janggi.getMainHeading()).toBe("Janggi: Korean Chess");
     });
 
     then("search engines are given one address and understand that the web game is free", async ({janggi}) => {
@@ -24,7 +24,7 @@ given("someone searches for a way to play janggi", () => {
     });
 
     then("search engines that don't run scripts still read what the game is and find the guide", async ({janggi}) => {
-      expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("Janggi — Korean Chess");
+      expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("Janggi: Korean Chess");
       expect(await janggi.getTextServedToSearchEngines()).toContain("eight AI levels");
       expect(await janggi.isGuideLinkedInPageServedToSearchEngines()).toBe(true);
     });
@@ -40,7 +40,7 @@ given("someone searches for a way to play janggi", () => {
     });
 
     then("it gives janggi a descriptive search result of its own", async ({janggi}) => {
-      expect(await janggi.guide.getPageTitle()).toBe("How to Play Janggi (Korean Chess) — Rules & Free Game");
+      expect(await janggi.guide.getPageTitle()).toBe("Korean Chess (Janggi): How to Play, Rules & Free Game");
       expect(await janggi.guide.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/learn.html");
       expect(await janggi.guide.getMainHeading()).toBe("How to play Janggi (Korean chess)");
     });

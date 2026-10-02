@@ -46,7 +46,7 @@ const rightElephant: Setup = {
 const centralChariot: Setup = {
   name: "Central Chariot",
   korean: "귀차차림",
-  description: "Chariots drawn in beside the guards. Casual play only — not a tournament setup.",
+  description: "Chariots drawn in beside the guards. Casual play only. It is not a tournament setup.",
   backRank: ["elephant", "horse", "chariot", "guard", undefined, "guard", "chariot", "horse", "elephant"],
 };
 

@@ -19,7 +19,7 @@ export function Hero(): React.JSX.Element {
         </h1>
 
         <p className="max-w-2xl text-lg leading-relaxed text-wood/80 sm:text-xl">
-          Learn the board, all seven pieces and the rules that make it distinctive. Then play against a friend or the
+          Learn the board, all seven pieces and the rules that set it apart from chess. Then play a friend or the
           computer.
         </p>
 

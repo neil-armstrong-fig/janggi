@@ -52,8 +52,8 @@ export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onSt
       {unlocked && (
         <>
           <p className="text-xs text-white/60">
-            Start from a style you have, then change it on a board of its own — colours, lines, marks and pieces, all
-            shown as you go — and save it under a name of your own.
+            Start from a style you have, then change it on a board of its own. Colours, lines, marks and pieces all show
+            as you go. Save it under a name of your own.
           </p>
 
           <div className="flex gap-2">

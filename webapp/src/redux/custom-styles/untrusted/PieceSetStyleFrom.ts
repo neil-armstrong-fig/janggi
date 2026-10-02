@@ -58,7 +58,7 @@ function pieceOverrides(pieces: Reading): PieceOverrides {
     pieces.keys().map(key => {
       const piece = parsePieceKey(key);
       if (!piece || toPieceKey(piece) !== key) {
-        throw new RefusedReading(`${pieces.where(key)} is not a piece — name one <side>-<type>, like han-general`);
+        throw new RefusedReading(`${pieces.where(key)} is not a piece. Name one <side>-<type>, like han-general`);
       }
 
       return [key, pieceStyle(pieces.object(key))];

@@ -16,7 +16,7 @@ export function MatchFormats(): React.JSX.Element {
           <p className="text-sm leading-relaxed text-wood/70">
             The armies begin in the common arrangement and can be rearranged before the first move. A called bikjang
             ends the game as a draw, and so does an agreed draw or, once both sides are under 30 points, the same
-            position standing a third time. This is the simplest format for learning and local play.
+            position standing a third time. It's the easiest format to learn on, and the one to use for local play.
           </p>
         </article>
 

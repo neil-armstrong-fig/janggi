@@ -197,7 +197,7 @@ function bikjangExplanationOf(status: GameStatus, calledBy: Side, botSide: Side 
   const facing = "the two generals stood facing each other down an open file, with nothing between them.";
 
   if (status.kind === "drawn") {
-    return `${caller} called bikjang: ${facing} Unlike chess, janggi lets the player to move call that a draw — so leaving the generals facing hands the other player the call.`;
+    return `${caller} called bikjang: ${facing} Unlike chess, janggi lets the player to move call that a draw, so leaving the generals facing hands the other player the call.`;
   }
 
   return `${caller} called bikjang: ${facing} In a scored game that call ends the game, and it is settled on points.`;

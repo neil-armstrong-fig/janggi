@@ -62,7 +62,7 @@ export function GamePage(): React.JSX.Element {
 
   return (
     <main className="flex h-full w-full flex-col bg-ground p-2">
-      <h1 className="sr-only">Janggi — Korean Chess</h1>
+      <h1 className="sr-only">Janggi: Korean Chess</h1>
 
       <Status onControlPressed={() => sound("controlPressed")}>
         <Board moment={moment} onPickUp={() => sound("pieceLifted")} />

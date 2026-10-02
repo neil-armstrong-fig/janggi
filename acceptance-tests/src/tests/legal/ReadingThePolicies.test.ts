@@ -21,7 +21,7 @@ given("someone visits the privacy policy", () => {
 
   when("they read how Janggi handles their data", () => {
     then("the page identifies itself at its permanent public address", async ({janggi}) => {
-      expect(await janggi.legal.getPageTitle()).toBe("Privacy Policy — Janggi");
+      expect(await janggi.legal.getPageTitle()).toBe("Privacy Policy | Janggi");
       expect(await janggi.legal.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/privacy.html");
       expect(await janggi.legal.isFullyOnScreen()).toBe(true);
     });
@@ -63,7 +63,7 @@ given("someone visits the terms of service", () => {
 
   when("they read the conditions for using Janggi", () => {
     then("the page identifies itself at its permanent public address", async ({janggi}) => {
-      expect(await janggi.legal.getPageTitle()).toBe("Terms of Service — Janggi");
+      expect(await janggi.legal.getPageTitle()).toBe("Terms of Service | Janggi");
       expect(await janggi.legal.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/terms.html");
       expect(await janggi.legal.isFullyOnScreen()).toBe(true);
     });

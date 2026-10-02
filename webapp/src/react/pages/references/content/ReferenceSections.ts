@@ -10,7 +10,7 @@ export const REFERENCE_SECTIONS: readonly ReferenceSection[] = [
     id: "rules",
     title: "Rules & match formats",
     introduction:
-      "Janggi has more than one tradition of play. In this app, Casual allows a called bikjang to end in a draw; Scored applies additional conditions and settles it on points. These formats are our reading of the sources below, whose accounts of bikjang, repetition and passing do not always agree.",
+      "Janggi has more than one tradition of play. In this app, Casual lets a called bikjang end in a draw. Scored adds conditions and settles it on points. These formats are our reading of the sources below, whose accounts of bikjang, repetition and passing do not always agree.",
     references: [
       {
         id: "kja",
@@ -41,7 +41,7 @@ export const REFERENCE_SECTIONS: readonly ReferenceSection[] = [
         name: "대한장기연맹 · Korean Janggi Federation",
         url: "https://kojf.net/bbs/board.php?bo_table=board_notice&wr_id=478",
         description:
-          "A separate federation. Its 2020 revision abolished draws in its tournaments and supplied the points-based reading; the 2022 revision clarifies passing and settlement after two consecutive passes. In Korean.",
+          "A separate federation. Its 2020 revision abolished draws in its tournaments and supplied the points-based reading. Its 2022 revision clarifies passing and settlement after two consecutive passes. In Korean.",
         related: [
           {
             id: "kojf-passing",
@@ -63,7 +63,7 @@ export const REFERENCE_SECTIONS: readonly ReferenceSection[] = [
         name: "PyChess Variants contributors",
         url: "https://www.pychess.org/variants/janggi",
         description:
-          "A working janggi implementation and an accessible explanation of the game. Consulted for cannon movement along palace diagonals, adjudication and opening choices; its setup names require care when comparing board orientation.",
+          "A working janggi implementation and an accessible explanation of the game. Consulted for cannon movement along palace diagonals, adjudication and opening choices. Its setup names need care when comparing board orientation.",
         related: [
           {
             id: "pychess-source",
@@ -154,7 +154,7 @@ export const REFERENCE_SECTIONS: readonly ReferenceSection[] = [
         name: "Supporting community sources · Namu Wiki",
         url: "https://namu.wiki/w/귀마%20포진",
         description:
-          "Namu Wiki and the janggi discussion board helped compare everyday usage of 맞상 and 엇상. These were available only through search summaries during the research, so they support the comparison rather than settle a rule.",
+          "Namu Wiki and the janggi discussion board helped compare everyday usage of 맞상 and 엇상. These were available only through search summaries during the research, so they back up the comparison but don't settle a rule.",
         related: [
           {id: "namu-terms", name: "Namu Wiki terminology", url: "https://namu.wiki/w/장기/용어"},
           {
@@ -196,7 +196,7 @@ export const REFERENCE_SECTIONS: readonly ReferenceSection[] = [
     id: "opponent",
     title: "The computer opponent",
     introduction:
-      "Thank you to Fabian Fichter and the Fairy-Stockfish and Stockfish contributors for the engine behind the bot. This app checks every move against its own rules before playing it. The displayed bot strengths are nominal Elo, calibrated on chess rather than janggi.",
+      "Thank you to Fabian Fichter and the Fairy-Stockfish and Stockfish contributors for the engine behind the bot. This app checks every move against its own rules before playing it. The displayed bot strengths are nominal Elo, calibrated on chess, not janggi.",
     references: [
       {
         id: "fairy-stockfish",
@@ -232,7 +232,7 @@ export const REFERENCE_SECTIONS: readonly ReferenceSection[] = [
         name: "Guido Zuidhof & coi-serviceworker contributors",
         url: "https://github.com/gzuidhof/coi-serviceworker",
         description:
-          "Credit for the service-worker technique that makes threaded WebAssembly possible on hosts such as GitHub Pages. This app implements that approach in its own service worker; it does not install this library.",
+          "Credit for the service-worker technique that makes threaded WebAssembly possible on hosts such as GitHub Pages. This app implements that approach in its own service worker and does not install this library.",
         licence: "MIT",
       },
       {
@@ -400,7 +400,7 @@ export const REFERENCE_SECTIONS: readonly ReferenceSection[] = [
         name: "Prettier",
         url: "https://github.com/prettier/prettier",
         description:
-          "Formats the code consistently; eslint-config-prettier keeps formatting and lint rules from conflicting.",
+          "Formats the code consistently. eslint-config-prettier stops formatting and lint rules from conflicting.",
         licence: "MIT",
         related: [
           {
