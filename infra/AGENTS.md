@@ -7,7 +7,7 @@ someone standing the game up on their own Cloudflare account runs, and what CI r
 
 ## What it does not do, on purpose
 
-- **The domain.** The Worker gets its `workers.dev` address. Attaching `api.janggi.neilarmstrong.dev` (or any name) is a
+- **The domain.** The Worker gets its `workers.dev` address. Attaching `janggi-api.neilarmstrong.dev` (or any name) is a
   step in the dashboard, since whose domain it is, and where its DNS lives, is the owner's. The webapp finds the API at
   `API_ORIGIN` in `@janggi/shared`, or `VITE_API_ORIGIN`, so a different address is one setting.
 - **The Google OAuth client**, which Google lets nobody create from code. Create one (`api/AGENTS.md` has how) and give
@@ -63,7 +63,7 @@ over rather than failing — which is also what lets CI run it with no state kep
    - Project: `https://console.cloud.google.com/projectcreate`
    - Branding (app name; **user support email** is a dropdown of the signed-in Google account and any Google Group it manages, so it cannot be a free-text address. To keep a personal address off the consent screen, do this whole step signed in to a Google account created with `janggi@neilarmstrong.dev` as its address (`https://accounts.google.com/signup`, _Use my existing email_; the verification code arrives through step 1's forwarding), and add your own account as an _Owner_ at `https://console.cloud.google.com/iam-admin/iam`; or use a Google Group you own. **Developer contact email** is free text: `janggi@neilarmstrong.dev`): `https://console.cloud.google.com/auth/branding`
    - Audience: _External_, left in **Testing**, with your own Google account under _Test users_: `https://console.cloud.google.com/auth/audience`
-   - Client: type _Web application_, with **Authorised redirect URIs** `https://api.janggi.neilarmstrong.dev/api/auth/google/callback` and `http://localhost:8787/api/auth/google/callback`: `https://console.cloud.google.com/auth/clients/create`
+   - Client: type _Web application_, with **Authorised redirect URIs** `https://janggi-api.neilarmstrong.dev/api/auth/google/callback` and `http://localhost:8787/api/auth/google/callback`: `https://console.cloud.google.com/auth/clients/create`
    - Copy the client id and secret. (Older console: `https://console.cloud.google.com/apis/credentials`.)
    - Only the `openid` scope is ever asked for, which needs no Google verification, so _Publish app_ on the Audience page is all it takes to let anyone sign in, later.
 3. **Try it on localhost first** (`api/AGENTS.md`, "Trying it with real Google, on localhost"), which needs only step 2.
@@ -73,7 +73,7 @@ over rather than failing — which is also what lets CI run it with no state kep
 5. **First deploy, from your machine**, with every variable in the table above set (`ALCHEMY_PASSWORD`: `openssl rand -base64 32`):
    `pnpm --filter @janggi/infra provision`. It makes the database (`https://dash.cloudflare.com/<account-id>/workers/d1`) and the
    Worker (`https://dash.cloudflare.com/<account-id>/workers-and-pages`), and prints the Worker's `workers.dev` address.
-6. **Attach the domain, by hand**: the Worker, _Settings_, _Domains & Routes_, _Add_, _Custom domain_, `api.janggi.neilarmstrong.dev`
+6. **Attach the domain, by hand**: the Worker, _Settings_, _Domains & Routes_, _Add_, _Custom domain_, `janggi-api.neilarmstrong.dev`
    (`https://dash.cloudflare.com/<account-id>/workers/services/view/janggi-api/production/settings`). The zone must be on this account.
    It must be the custom domain, not `workers.dev`: the session cookie only works between a site and an API under one domain.
 7. **Check the free plan took it**: the Worker's _Settings_, _Bindings_ lists `LOGIN_LIMITER` and `DATA_LIMITER`; if the deploy refused

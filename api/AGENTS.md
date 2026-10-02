@@ -1,7 +1,7 @@
 # AGENTS.md — api
 
 The Cloudflare Worker behind opt-in Google sign-in and cloud sync. It lives on its own host
-(`api.janggi.neilarmstrong.dev`), apart from the GitHub Pages site, so every answer carries CORS headers
+(`janggi-api.neilarmstrong.dev`), apart from the GitHub Pages site, so every answer carries CORS headers
 and the session cookie is `HttpOnly; Secure; SameSite=Lax` — `api.` and the site share a registrable domain, so
 they are same-site and Lax cookies ride along on a credentialed `fetch` (`SameSite=None` is not needed, and Safari's
 tracking prevention leaves a same-site cookie alone). The plan and the reasons are in

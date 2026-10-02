@@ -6,6 +6,7 @@ import tseslint from "typescript-eslint";
 export const ignores = [
   "**/build/**",
   "**/.wrangler/**",
+  "**/.alchemy/**",
   "**/dist/**",
   "**/dev-dist/**",
   "**/coverage/**",
