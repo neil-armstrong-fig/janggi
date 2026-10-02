@@ -87,7 +87,7 @@ Nothing here needs Cloudflare, only a Google OAuth client. Sign-in works over `h
 treat it as secure, so the `Secure` session cookie is accepted; Safari does not) because the app on `:3000` and the
 Worker on `:8787` are same-site, ports being ignored, so the `SameSite=Lax` cookie rides along.
 
-1. **Google Cloud console:** the OAuth client from `infra/AGENTS.md`, step 2, with `http://localhost:8787/api/auth/google/callback`
+1. **Google Cloud console:** the OAuth client from `/MANUAL-SETUP-STEPS.md`, step 3, with `http://localhost:8787/api/auth/google/callback`
    among its authorised redirect URIs.
 2. **`api/.dev.vars`** (git-ignored): `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and
    `GOOGLE_REDIRECT_URI=http://localhost:8787/api/auth/google/callback` (`wrangler dev` reports the custom domain as the
@@ -95,5 +95,5 @@ Worker on `:8787` are same-site, ports being ignored, so the `SameSite=Lax` cook
 3. **Local database:** `pnpm --filter @janggi/api exec wrangler d1 migrations apply janggi --local`.
 4. **Run both:** `pnpm api:dev` (port 8787 is pinned: Wrangler would otherwise quietly use 8788 when something else holds it, and the
    app and Google would then be pointing at the wrong place — a stale `wrangler dev` is the usual culprit, so it fails loudly instead), and in another terminal `VITE_API_ORIGIN=http://localhost:8787 pnpm start`.
-5. Open **`http://localhost:3000/?account`**, then Settings, Progress, _Sign in with Google_. Sign in on a second browser
+5. Open **`http://localhost:3000`**, then Settings, Progress, _Sign in with Google_. Sign in on a second browser
    profile to watch progress follow, and check `api/.wrangler/state` is where the data went.

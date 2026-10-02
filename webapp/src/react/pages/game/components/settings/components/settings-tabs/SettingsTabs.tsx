@@ -4,7 +4,7 @@ import {clsx} from "clsx";
 
 /**
  * The row along the top of the settings sheet that chooses which pane is showing — Game, Look,
- * Sound, Progress — so the sheet is one short pane at a time instead of one long scroll.
+ * Sound, Progress, Account — so the sheet is one short pane at a time instead of one long scroll.
  *
  * **In the sheet's head, beside Close, and no heading of its own.** A phone's sheet has little height
  * to spare and every row of chrome comes out of the room the settings have, so the tabs are the
@@ -22,7 +22,7 @@ interface Props {
 
 export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
   return (
-    <div role="tablist" aria-label="Kinds of setting" className="grid min-w-0 flex-1 grid-cols-4 gap-1">
+    <div role="tablist" aria-label="Kinds of setting" className="grid min-w-0 flex-1 grid-cols-5 gap-0.5">
       {SETTINGS_TAB_NAMES.map(name => (
         <button
           key={name}
@@ -33,7 +33,7 @@ export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
           aria-selected={name === selected}
           onClick={() => onSelect(name)}
           className={clsx(
-            "h-12 cursor-pointer rounded-lg text-sm font-semibold tracking-wide transition-colors duration-150 motion-reduce:transition-none",
+            "h-12 min-w-0 cursor-pointer rounded-lg text-[0.6875rem] font-semibold tracking-normal transition-colors duration-150 min-[360px]:text-xs min-[400px]:tracking-wide sm:text-sm motion-reduce:transition-none",
             name === selected && "bg-wood/15 text-wood",
             name !== selected && "text-white/50 hover:text-white/80",
           )}

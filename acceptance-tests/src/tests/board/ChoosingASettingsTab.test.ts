@@ -4,7 +4,7 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  * The settings sheet grew long enough that finding the piece set meant scrolling past the whole of a
  * game's setup, and a sheet that long hid the board it was changing. It is divided into tabs, one
  * pane showing at a time. The game's own settings show first, being what a player opens the sheet for
- * before a game; how it looks, how it sounds and how far along they are wait a tab away.
+ * before a game; how it looks, how it sounds, how far along they are and their account wait a tab away.
  */
 given("a player opens the settings", () => {
   when("nothing has been chosen yet", () => {
@@ -12,10 +12,11 @@ given("a player opens the settings", () => {
       expect(await janggi.settings.isTabShowing("Game")).toBe(true);
     });
 
-    then("the look, the sound and the progress are a tab away", async ({janggi}) => {
+    then("the look, the sound, the progress and the account are a tab away", async ({janggi}) => {
       expect(await janggi.settings.isTabShowing("Look")).toBe(false);
       expect(await janggi.settings.isTabShowing("Sound")).toBe(false);
       expect(await janggi.settings.isTabShowing("Progress")).toBe(false);
+      expect(await janggi.settings.isTabShowing("Account")).toBe(false);
     });
   });
 
@@ -56,6 +57,17 @@ given("a player opens the settings", () => {
 
     then("the tab they were on is still the one showing, put back as they left it", async ({janggi}) => {
       expect(await janggi.settings.isTabShowing("Game")).toBe(true);
+    });
+  });
+
+  when("they open the settings on a narrow phone", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.resizeWindowTo(320, 640);
+      await janggi.settings.openTheSettings();
+    });
+
+    then("all five tabs fit in one row without scrolling or clipping", async ({janggi}) => {
+      expect(await janggi.settings.canTabsFitInOneRow()).toBe(true);
     });
   });
 });

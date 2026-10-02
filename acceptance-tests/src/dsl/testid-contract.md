@@ -11,14 +11,15 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   carrying `data-elo`; and the
   controls `new-game`, `result-new-game`, `pass`, `bikjang`, `draw`, `undo`, `redo`, `settings-open`,
   `settings-close`, `settings-install`, `record-open`, `record-close`, `record-reset`, `guide-open`,
-  `references-open`,
+  `references-open`, `privacy-open`, `terms-open`,
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
   `progress-xp` and `progress-next-unlock` carrying `data-xp`, `progress-xp-bar` carrying `data-percent`
   (absent once everything is unlocked), `save-copy` and the `save-key` it shows,
   and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The account section of
-  the Progress tab — `account` on the whole of it, which is there only with `?account` on the address, or once signed in: `account-sign-in` where nobody is signed in; `account-signed-in`, `account-sign-out`,
+  the Account tab: `account-sign-in` where nobody is signed in; `account-signed-in`, `account-sign-out`,
   `account-name` carrying `data-name`, `account-name-input`, `account-name-save` and `account-name-message` carrying
-  `data-accepted`, `account-delete` (then `account-delete-confirm`) and `account-sync-state` carrying `data-state` (`synced` or `paused`) where somebody is. The styles
+  `data-accepted`, `account-delete` (then `account-delete-confirm`) and `account-sync-state` carrying `data-state`
+  (`idle`, `synced`, `paused` or `too-large`) where somebody is. The styles
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
   `-submit` and `-message` (`data-accepted`), and starting one of their own: `style-editor-locked` where
   XP has not unlocked it, or `style-editor-kind`, `-from` and `-start` where it has — the editor itself,
@@ -77,6 +78,8 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
 - **On the references page** — `references`, `references-repository`,
   `references-<section>-jump`, `references-<section>-heading`, and `reference-<source>`. Its link in
   Settings is `references-open`.
+- **On the legal pages** — `legal` carries `data-kind` (`privacy` or `terms`). Their links beside Google sign-in are
+  `privacy-open` and `terms-open`.
 - **On the release notice** — `release-update`, `release-update-refresh` and `release-update-later`.
 - **On a settings tab** — the sheet is divided into tabs, each a `settings-tab` carrying `data-tab`
   with its label and `aria-selected`, and each pane is a `settings-pane` carrying `data-pane` with the
@@ -123,7 +126,7 @@ anything. Where that matters, add an `is…Shown()` question beside the value on
   carrying `data-target`, and is there only while the step has something on screen to ring. What it rings wears
   `data-tour-target` — the one attribute the app reads to find it, so it is not `data-testid`; the names are
   `TOUR_TARGET_NAMES` in `@janggi/shared`, and the board point wears it on its `cell-f<file>r<rank>`.
-  `tour-replay` is "Replay the tour" on the Progress tab.
+  `tour-replay` is "Replay the tour" on the Account tab.
 
   Every spec but those under `tests/onboarding/` starts as a returning player: the fixture keeps
   `ONBOARDING_DONE_JSON` under `ONBOARDING_STORAGE_KEY` (from `@janggi/shared`) before the page loads, unless a

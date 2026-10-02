@@ -3,6 +3,7 @@ import {DebugDsl} from "@src/dsl/janggi/components/debug/DebugDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {GuideDsl} from "@src/dsl/janggi/components/guide/GuideDsl";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
+import {LegalDsl} from "@src/dsl/janggi/components/legal/LegalDsl";
 import {OnboardingDsl} from "@src/dsl/janggi/components/onboarding/OnboardingDsl";
 import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
@@ -40,6 +41,7 @@ export class JanggiDsl {
 
   readonly board: BoardDsl;
   readonly guide: GuideDsl;
+  readonly legal: LegalDsl;
   readonly onboarding: OnboardingDsl;
   readonly settings: SettingsDsl;
   readonly status: StatusDsl;
@@ -54,6 +56,7 @@ export class JanggiDsl {
 
     this.board = new BoardDsl(page);
     this.guide = new GuideDsl(page);
+    this.legal = new LegalDsl(page);
     this.onboarding = new OnboardingDsl(page);
     this.settings = new SettingsDsl(page);
     this.status = new StatusDsl(page);
@@ -64,10 +67,9 @@ export class JanggiDsl {
     this.debug = new DebugDsl(page);
   }
 
-  /** Opens the app. With the account, as somebody who has added `?account` to the address would, to see the section behind it. */
-  async navigateToPage(withTheAccount = false): Promise<void> {
+  async navigateToPage(): Promise<void> {
     try {
-      await this.janggi.open(withTheAccount);
+      await this.janggi.open();
     } catch (error) {
       throw new DslError("Failed to navigate to the game", error);
     }
@@ -197,6 +199,14 @@ export class JanggiDsl {
     }
   }
 
+  async isEachPolicyLinkedInPageServedToSearchEngines(): Promise<boolean> {
+    try {
+      return await this.janggi.isEachPolicyLinkedInPageServedToSearchEngines();
+    } catch (error) {
+      throw new DslError("Failed to check for the legal links in the page as served, before scripts run", error);
+    }
+  }
+
   async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
     try {
       return await this.janggi.isIdentifiedAsAFreeWebGame();
@@ -218,6 +228,14 @@ export class JanggiDsl {
       return await this.janggi.isListedInSitemap();
     } catch (error) {
       throw new DslError("Failed to check whether the game and guide are listed in the sitemap", error);
+    }
+  }
+
+  async isEachPolicyListedInSitemap(): Promise<boolean> {
+    try {
+      return await this.janggi.isEachPolicyListedInSitemap();
+    } catch (error) {
+      throw new DslError("Failed to check whether the legal pages are listed in the sitemap", error);
     }
   }
 

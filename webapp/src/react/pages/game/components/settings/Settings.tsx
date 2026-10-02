@@ -1,3 +1,4 @@
+import {AccountPane} from "@src/react/pages/game/components/settings/tabs/account-pane/AccountPane";
 import {GamePane} from "@src/react/pages/game/components/settings/tabs/game-pane/GamePane";
 import {LookPane} from "@src/react/pages/game/components/settings/tabs/look-pane/LookPane";
 import {ProgressPane} from "@src/react/pages/game/components/settings/tabs/progress-pane/ProgressPane";
@@ -25,12 +26,11 @@ interface SheetPanelStyle extends React.CSSProperties {
  * is behind is a suggestion and never something to read past. How much is the player's own choice, in
  * the Look tab, since the same blur reads differently from one screen to another.
  *
- * **Four tabs, one pane at a time**, so the sheet is never one long scroll — `GamePane`, `LookPane`,
- * `SoundPane` and `ProgressPane`, each of which lays out its own settings. **Game** is what a player
- * opens the sheet for before a game; **Look** and **Sound** hold preferences worn immediately;
- * **Progress** holds the XP, the save key that carries it to another device, and the links out of the
- * game. The tabs that choose among them are the sheet's head, beside Close, and take the place of a
- * heading.
+ * **Five tabs, one pane at a time**, so the sheet is never one long scroll — `GamePane`, `LookPane`,
+ * `SoundPane`, `ProgressPane` and `AccountPane`, each of which lays out its own settings. **Game** is
+ * what a player opens the sheet for before a game; **Look** and **Sound** hold preferences worn
+ * immediately; **Progress** holds XP, earned styles and save keys; **Account** holds optional sync and
+ * the links out of the game. The tabs are the sheet's head, beside Close, and take the place of a heading.
  *
  * **It is always in the page, only moved out of sight.** Closed, it sits below the bottom edge and is
  * `inert`, so nothing in it can be tapped or focused — but every picker's pressed and disabled state
@@ -100,6 +100,8 @@ export function Settings(): React.JSX.Element {
         <SoundPane selected={tab === "Sound"} />
 
         <ProgressPane selected={tab === "Progress"} />
+
+        <AccountPane selected={tab === "Account"} />
       </section>
     </>
   );

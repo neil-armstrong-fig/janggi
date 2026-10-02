@@ -1,11 +1,4 @@
-import {
-  beforeEach,
-  expect,
-  given,
-  then,
-  useTheAccount,
-  when,
-} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
+import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
 /**
  * A signed-in player is known by a display name, never by their real one: the account is given one when it is made,
@@ -13,8 +6,6 @@ import {
  * they give is only ever as real as they choose to make it.
  */
 given("a player who has just signed in with Google for the first time", () => {
-  useTheAccount();
-
   beforeEach(async ({janggi}) => {
     await janggi.settings.account.signInWithGoogle();
     await expect.poll(() => janggi.settings.account.getSyncState()).toBe("synced");

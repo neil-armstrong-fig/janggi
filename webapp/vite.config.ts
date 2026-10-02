@@ -46,7 +46,9 @@ export default defineConfig({
       input: {
         game: join(import.meta.dirname, "index.html"),
         guide: join(import.meta.dirname, "learn.html"),
+        privacy: join(import.meta.dirname, "privacy.html"),
         references: join(import.meta.dirname, "references.html"),
+        terms: join(import.meta.dirname, "terms.html"),
       },
     },
   },
@@ -158,7 +160,17 @@ interface PrerenderedPage {
 
 const PRERENDERED_PAGES: readonly PrerenderedPage[] = [
   {file: "learn.html", module: "/src/react/pages/learn/LearnPage.tsx", component: "LearnPage"},
+  {
+    file: "privacy.html",
+    module: "/src/react/pages/legal/privacy/PrivacyPolicy.tsx",
+    component: "PrivacyPolicy",
+  },
   {file: "references.html", module: "/src/react/pages/references/ReferencesPage.tsx", component: "ReferencesPage"},
+  {
+    file: "terms.html",
+    module: "/src/react/pages/legal/terms/TermsOfService.tsx",
+    component: "TermsOfService",
+  },
 ];
 
 async function renderPrerenderedPage(page: PrerenderedPage): Promise<string> {

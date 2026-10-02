@@ -1,14 +1,14 @@
 import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
 /**
- * A player who skipped the tour, or has forgotten it, can have it again from their progress. The welcome is
+ * A player who skipped the tour, or has forgotten it, can have it again from their account settings. The welcome is
  * not repeated — it asked for choices they have made — only the tour is. A player who has been through it
  * is a returning one, which is what every spec starts as, so nothing here asks for a first visit.
  */
 given("a player who has already been through the tour", () => {
-  when("they replay it from their progress", () => {
+  when("they replay it from their account settings", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.progress.replayTheTour();
+      await janggi.settings.account.replayTheTour();
     });
 
     then("the tour starts again from its first step", async ({janggi}) => {

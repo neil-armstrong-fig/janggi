@@ -13,8 +13,9 @@ Janggi (Korean Chess) as an installable PWA. pnpm workspace, five packages:
 Each has its own `AGENTS.md`, and webapp has one per subfolder besides.
 
 `docs/` holds research a decision in the code rests on, linked from the code it justifies:
-`docs/opening-setups.md`, `docs/rules.md`, `docs/bot.md`, `docs/sound.md`, `docs/online-capability/`. Add a document here only when
-losing the reasoning would mean someone re-deriving it.
+`docs/opening-setups.md`, `docs/rules.md`, `docs/bot.md`, `docs/sound.md`,
+`docs/alchemy-state.md`, `docs/online-capability/`. Add a document here only
+when losing the reasoning would mean someone re-deriving it.
 
 ## Before changing code
 
@@ -238,6 +239,15 @@ the site from the root of its custom domain, `janggi.neilarmstrong.dev` (set in 
 settings, DNS at Cloudflare; there is no `CNAME` file because the deploy is an Actions artifact). If it
 were ever served under a path again, `BASE_PATH` feeds both Vite's `base` and the PWA manifest's
 `start_url`/`scope` — the DSL navigates with `goto("./")`, not `"/"`, for that reason.
+
+## Manual setup
+
+Some of this project lives outside the repository: the Google OAuth client, the
+Cloudflare API token and Worker domain, the email routing rule, the GitHub
+secrets. `MANUAL-SETUP-STEPS.md` lists every such step, and why. **Update it in
+the same pass as any change that creates, renames or removes one** (a new
+secret, console setting, DNS record or workflow permission), and never put an
+account id, token, secret or personal address in it.
 
 ## Tool configuration
 

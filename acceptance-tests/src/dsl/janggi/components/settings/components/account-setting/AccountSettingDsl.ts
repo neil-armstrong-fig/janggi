@@ -53,6 +53,15 @@ export class AccountSettingDsl {
     }
   }
 
+  /** Starts the tour again from its first step, from where the Account tab offers it. */
+  async replayTheTour(): Promise<void> {
+    try {
+      await this.account.replayTheTour();
+    } catch (error) {
+      throw new DslError("Failed to replay the tour from the Account tab", error);
+    }
+  }
+
   /** Clears everything the device keeps, and the Google session, and loads the app again, as a phone never used here. */
   async moveToANewDevice(): Promise<void> {
     try {
@@ -94,15 +103,6 @@ export class AccountSettingDsl {
       return this.account.getRequestsMadeToTheApi();
     } catch (error) {
       throw new DslError("Failed to count the calls made to the API", error);
-    }
-  }
-
-  /** Whether the settings have an account section at all. */
-  async isAccountOffered(): Promise<boolean> {
-    try {
-      return await this.account.isAccountOffered();
-    } catch (error) {
-      throw new DslError("Failed to read whether the settings have an account section", error);
     }
   }
 

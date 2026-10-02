@@ -56,11 +56,9 @@ export class JanggiPlaywright extends BasePage {
    * after load and the page reloads under it (`webapp/src/main.tsx`). A spec that started tapping
    * before then would lose its taps to the reload. Locally the server sends the headers and this
    * returns at once.
-   *
-   * The account section is behind a flag in the address for now, so a spec about it opens the app with `?account`.
    */
-  async open(withTheAccount: boolean): Promise<void> {
-    await this.page.goto(withTheAccount ? "./?account" : "./");
+  async open(): Promise<void> {
+    await this.page.goto("./");
     await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
   }
 
@@ -226,6 +224,12 @@ export class JanggiPlaywright extends BasePage {
     return /<a[^>]+href="learn\.html"/.test(root);
   }
 
+  async isEachPolicyLinkedInPageServedToSearchEngines(): Promise<boolean> {
+    const root = await this.getRootServedToSearchEngines();
+
+    return /<a[^>]+href="privacy\.html"/.test(root) && /<a[^>]+href="terms\.html"/.test(root);
+  }
+
   private async getRootServedToSearchEngines(): Promise<string> {
     const response = await this.page.request.get(this.page.url());
     const html = await response.text();
@@ -275,6 +279,21 @@ export class JanggiPlaywright extends BasePage {
     return (
       sitemap.includes("https://janggi.neilarmstrong.dev/") &&
       sitemap.includes("https://janggi.neilarmstrong.dev/learn.html")
+    );
+  }
+
+  async isEachPolicyListedInSitemap(): Promise<boolean> {
+    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
+    const sitemap = await this.page.evaluate(async address => {
+      const response = await fetch(address);
+      if (!response.ok) return "";
+
+      return await response.text();
+    }, sitemapAddress);
+
+    return (
+      sitemap.includes("https://janggi.neilarmstrong.dev/privacy.html") &&
+      sitemap.includes("https://janggi.neilarmstrong.dev/terms.html")
     );
   }
 

@@ -119,7 +119,7 @@ given("a player who is on the tour's fourth step, which is about Settings", () =
 
       then("the settings stay open on the tab that holds their styles", async ({janggi}) => {
         expect(await janggi.settings.isOpen()).toBe(true);
-        expect(await janggi.settings.isTabSelected("Look")).toBe(true);
+        expect(await janggi.settings.isTabSelected("Progress")).toBe(true);
         expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("styles");
       });
 
@@ -184,7 +184,7 @@ given("a player who is on the tour's last step", () => {
 
       then("the settings are opened again, on the tab that holds their styles", async ({janggi}) => {
         expect(await janggi.settings.isOpen()).toBe(true);
-        expect(await janggi.settings.isTabSelected("Look")).toBe(true);
+        expect(await janggi.settings.isTabSelected("Progress")).toBe(true);
       });
     });
   });

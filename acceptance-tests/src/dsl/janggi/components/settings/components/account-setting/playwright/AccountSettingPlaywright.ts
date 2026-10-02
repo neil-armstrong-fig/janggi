@@ -26,6 +26,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   private readonly nameSave: Locator;
   private readonly nameMessage: Locator;
   private readonly syncState: Locator;
+  private readonly replay: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -40,6 +41,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
     this.nameSave = page.getByTestId("account-name-save");
     this.nameMessage = page.getByTestId("account-name-message");
     this.syncState = page.getByTestId("account-sync-state");
+    this.replay = page.getByTestId("tour-replay");
   }
 
   /**
@@ -71,6 +73,13 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
       await this.confirmDelete.click();
       await this.signIn.waitFor({state: "visible"});
     });
+  }
+
+  /** The tour closes Settings itself because its first step points at the board. */
+  async replayTheTour(): Promise<void> {
+    await this.openIfClosed();
+    await this.tabNamed("Account").click();
+    await this.replay.click();
   }
 
   /**
@@ -110,11 +119,6 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
 
   getRequestsMadeToTheApi(): number {
     return this.api.getRequests().length;
-  }
-
-  /** Whether the settings have an account section at all, signed in or not. */
-  async isAccountOffered(): Promise<boolean> {
-    return (await this.page.getByTestId("account").count()) > 0;
   }
 
   async isSignInOffered(): Promise<boolean> {

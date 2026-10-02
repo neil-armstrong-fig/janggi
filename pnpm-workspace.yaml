@@ -39,7 +39,7 @@ allowBuilds:
   workerd: true
 
 # Alchemy loads `undici` itself, if it can find one, and hands its Agent to Node's built-in `fetch`. It declares no dependency
-# on it, so it finds whichever copy pnpm hoisted — currently jsdom's undici 8, whose Agent the built-in fetch (undici 7) refuses
+# on it, so it finds whichever copy pnpm hoisted. Currently jsdom's undici 8, whose Agent the built-in fetch (undici 7) refuses
 # with "invalid onRequestStart method", so no request to Cloudflare is ever made. Giving Alchemy its own, same-major copy fixes it.
 packageExtensions:
   alchemy@0.94.0:

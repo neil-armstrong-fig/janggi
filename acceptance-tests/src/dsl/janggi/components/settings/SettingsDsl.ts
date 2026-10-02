@@ -170,6 +170,15 @@ export class SettingsDsl {
     }
   }
 
+  /** Whether all five tab labels fit beside Close on one touch-sized row. */
+  async canTabsFitInOneRow(): Promise<boolean> {
+    try {
+      return await this.settings.canTabsFitInOneRow();
+    } catch (error) {
+      throw new DslError("Failed to check that the settings tabs fit in one row", error);
+    }
+  }
+
   /** Shows a tab's pane, putting the others away. */
   async selectTab(name: SettingsTabName): Promise<void> {
     try {
