@@ -88,7 +88,7 @@ export function PrivacyPolicy(): React.JSX.Element {
         <p>
           Browser data remains on your device until you clear it. Account and synced data remain until you choose
           <strong> Delete my account</strong> in Settings or ask for deletion. That action deletes the live account,
-          synced data and its sessions; it does not erase the copies already held on your own devices.
+          synced data and its sessions. It does not erase the copies already held on your own devices.
         </p>
 
         <p>

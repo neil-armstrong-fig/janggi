@@ -189,5 +189,6 @@ Choices made here that a fork may make differently:
   on the custom address could not be made (the phone number was over Google's
   limit).
 - The Cloudflare token holds Workers (Admin) and D1 (Edit) only.
-- The Google OAuth client is left in *Testing*, with only the owner's account
-  as a test user, until the app is published.
+- The Google OAuth app is published (*In production*), so any Google account
+  can sign in. It was held in *Testing*, with only the owner's account as a
+  test user, until then.

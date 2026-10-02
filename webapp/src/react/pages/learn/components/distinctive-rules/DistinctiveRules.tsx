@@ -12,8 +12,8 @@ export function DistinctiveRules(): React.JSX.Element {
           <h3 className="mb-2 text-base font-bold">There is no river</h3>
 
           <p className="text-sm leading-relaxed text-wood/70">
-            The full board is open from the start. Soldiers can move sideways immediately, and elephants may cross
-            freely into the opposing half.
+            The full board is open from the start. Soldiers can move sideways straight away, and elephants can cross
+            into the opposing half.
           </p>
         </article>
 
@@ -48,8 +48,7 @@ export function DistinctiveRules(): React.JSX.Element {
           <h3 className="mb-2 text-base font-bold">You may pass</h3>
 
           <p className="text-sm leading-relaxed text-wood/70">
-            Skipping a turn is a normal part of Janggi, except while your general is in check. This is why the game has
-            no stalemate ending.
+            You can skip a turn unless your general is in check. That is why the game has no stalemate.
           </p>
         </article>
 

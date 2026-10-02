@@ -20,7 +20,7 @@ export function Introduction(): React.JSX.Element {
 
         <p>
           Pieces stand on the intersections of nine vertical files and ten horizontal ranks. Cho’s blue-green army
-          begins at the bottom and moves first; Han’s red army begins at the top and starts scored games with an extra
+          begins at the bottom and moves first. Han’s red army begins at the top and starts scored games with an extra
           1.5 points. Each general remains inside a three-by-three palace marked with diagonal lines.
         </p>
       </div>

@@ -29,12 +29,12 @@ export function pictographFromSvg(text: string): Checked<string> {
   }
 
   const size = sizeOf(root);
-  if (!size) return refused("This SVG does not say how big it is — it needs a viewBox, or a width and a height.");
+  if (!size) return refused("This SVG does not say how big it is. It needs a viewBox, or a width and a height.");
 
   const shapes = [...document.querySelectorAll(SHAPES)].filter(shape => !shape.closest(NOT_DRAWN));
   const drawn = shapes.map(shapePathOf).filter(path => path !== undefined);
   if (drawn.length === 0) {
-    return refused("This SVG has no filled shapes — paths, rectangles, circles, ellipses and polygons can be used.");
+    return refused("This SVG has no filled shapes. Paths, rectangles, circles, ellipses and polygons can be used.");
   }
 
   const placement = fitted(size);

@@ -59,9 +59,7 @@ function cellOverrides(cells: Reading): CellOverrides {
   return Object.fromEntries(
     cells.keys().map(key => {
       if (!isPositionKey(key)) {
-        throw new RefusedReading(
-          `${cells.where(key)} is not a point on the board — name one f<file>r<rank>, like f5r2`,
-        );
+        throw new RefusedReading(`${cells.where(key)} is not a point on the board. Name one f<file>r<rank>, like f5r2`);
       }
 
       return [key, cellStyle(cells.object(key))];

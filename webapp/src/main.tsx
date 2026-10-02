@@ -59,7 +59,7 @@ function reloadOnceIsolatedByTheServiceWorker(): void {
 function hintAtTheHackerTheme(): void {
   // eslint-disable-next-line no-console -- the one message written for whoever opens the console, on purpose
   console.info(
-    `%c> curious? your XP is in localStorage["${PROGRESS_STORAGE_KEY}"], and a save key is base64url JSON — decode it, change it, paste it back`,
+    `%c> curious? your XP is in localStorage["${PROGRESS_STORAGE_KEY}"], and a save key is base64url JSON, so decode it, change it, paste it back`,
     "color: #00ff66; background: #050805; font-family: monospace; padding: 2px 6px",
   );
 }

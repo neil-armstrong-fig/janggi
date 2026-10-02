@@ -27,7 +27,7 @@ export const TOUR_STEPS: Readonly<Record<TourStepName, TourStep>> = {
   },
   controls: {
     title: "The controls",
-    body: "Under the board, Pass rests your turn, Bikjang calls the generals' face-off, and Draw offers a draw. Undo and Redo take a move back, but they are switched off against the bot — they are for games between two people.",
+    body: "Under the board, Pass rests your turn, Bikjang calls the generals' face-off, and Draw offers a draw. Undo and Redo take a move back. They are switched off against the bot and are for games between two people.",
     target: "controls",
     sheet: "closed",
   },
@@ -58,7 +58,7 @@ export const TOUR_STEPS: Readonly<Record<TourStepName, TourStep>> = {
   },
   guide: {
     title: "New to Janggi?",
-    body: "The guide teaches every piece and the rules in about five minutes. It is well worth it before your first real game.",
+    body: "The guide teaches every piece and the rules in about five minutes. Read it before your first real game.",
     sheet: "closed",
     offersTheGuide: true,
   },
