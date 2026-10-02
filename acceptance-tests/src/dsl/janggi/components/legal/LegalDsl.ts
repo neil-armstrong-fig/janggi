@@ -81,4 +81,12 @@ export class LegalDsl {
       throw new DslError("Failed to check that the legal page fits the window", error);
     }
   }
+
+  async canScrollToTheEnd(): Promise<boolean> {
+    try {
+      return await this.legal.canScrollToTheEnd();
+    } catch (error) {
+      throw new DslError("Failed to scroll to the end of the legal page", error);
+    }
+  }
 }

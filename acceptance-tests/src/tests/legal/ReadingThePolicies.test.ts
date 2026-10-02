@@ -26,6 +26,10 @@ given("someone visits the privacy policy", () => {
       expect(await janggi.legal.isFullyOnScreen()).toBe(true);
     });
 
+    then("a reader can scroll down to the end of it", async ({janggi}) => {
+      expect(await janggi.legal.canScrollToTheEnd()).toBe(true);
+    });
+
     then("it explains Google sign-in, storage, deletion, providers and privacy rights", async ({janggi}) => {
       const headings = await janggi.legal.getHeadings();
       const content = await janggi.legal.getContent();
@@ -62,6 +66,10 @@ given("someone visits the terms of service", () => {
       expect(await janggi.legal.getPageTitle()).toBe("Terms of Service — Janggi");
       expect(await janggi.legal.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/terms.html");
       expect(await janggi.legal.isFullyOnScreen()).toBe(true);
+    });
+
+    then("a reader can scroll down to the end of it", async ({janggi}) => {
+      expect(await janggi.legal.canScrollToTheEnd()).toBe(true);
     });
 
     then("it explains accounts, acceptable use, availability and the governing law", async ({janggi}) => {
