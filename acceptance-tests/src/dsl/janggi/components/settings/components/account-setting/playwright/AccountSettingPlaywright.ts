@@ -16,6 +16,7 @@ import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 export class AccountSettingPlaywright extends SettingsSheetComponent {
   private api = new FakeApi();
 
+  private readonly accountCard: Locator;
   private readonly signIn: Locator;
   private readonly signInFromPrompt: Locator;
   private readonly signedIn: Locator;
@@ -32,6 +33,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   constructor(page: Page) {
     super(page);
 
+    this.accountCard = page.getByTestId("account");
     this.signIn = page.getByTestId("account-sign-in");
     this.signInFromPrompt = page.getByTestId("friend-sign-in-confirm");
     this.signedIn = page.getByTestId("account-signed-in");
@@ -156,6 +158,11 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
 
   getRequestsMadeToTheApi(): number {
     return this.api.getRequests().length;
+  }
+
+  /** Whether the account card is picked out, as it is for a signed-out player sent to it by choosing Online. */
+  async isAccountHighlighted(): Promise<boolean> {
+    return (await this.accountCard.getAttribute("data-highlighted")) === "true";
   }
 
   async isSignInOffered(): Promise<boolean> {

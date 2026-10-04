@@ -347,7 +347,7 @@ snapshot, and tells the opponent `opponent-back` where appropriate.
 | Event                                                  | Server action                                                                                                      | Client consequence                                                             |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
 | One player disconnects from an unfinished, joined room | Record their first `goneSince`; tell the opponent. No expiry alarm while somebody remains connected.               | Retry; the connected player may continue waiting or may act when allowed.      |
-| Both seated players are away                           | Set an alarm for the later `goneSince` plus the host's chosen 1–90 days. A return cancels it.                      | Nobody forfeits or wins by absence.                                            |
+| Both seated players are away                           | Set an alarm for the later `goneSince` plus the room's 1–90 days (a month unless the host asks otherwise; the app sends the default). A return cancels it.                      | Nobody forfeits or wins by absence.                                            |
 | No guest joins                                         | At `createdAt + 1 day`, delete the room even if the host kept its socket open.                                     | Any remaining socket receives close code `4404`.                               |
 | Game finishes                                          | Delete the D1 host index immediately; keep the room for two minutes.                                               | The host may create a new room while both players can still read the result.   |
 | Player presses Leave or signs out                      | Close that client's socket. The seat remains; another account cannot replace it.                                   | Forget the code and restore the parked local game.                             |
@@ -441,7 +441,7 @@ its peer requirements target Vitest 4 while this workspace uses Vitest 5.
   account (`infra/AGENTS.md`).
 - Cloudflare dashboard usage after a few real games, against the limits above.
 - A game by hand between two real devices; it has been automated so far.
-- The room alarm after days; a day is the shortest choice, and only the pure
+- The room alarm after days; a day is the shortest the API accepts, and only the pure
   alarm decision is covered automatically.
 - Deleting an account while it is in a room leaves that Durable Object to
   expire through its normal lifecycle.

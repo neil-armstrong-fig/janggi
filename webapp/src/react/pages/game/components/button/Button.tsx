@@ -15,7 +15,7 @@ interface Props extends Omit<React.ComponentProps<"button">, "type"> {
 type ButtonVariant = "primary" | "secondary" | "outline";
 
 const ACTION =
-  "h-11 cursor-pointer rounded-xl px-4 text-sm font-semibold tracking-wide uppercase transition-[transform,background-color] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none";
+  "h-11 shrink-0 cursor-pointer rounded-xl px-4 text-sm font-semibold tracking-wide uppercase transition-[transform,background-color] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none";
 
 export function Button({variant, type = "button", className, ...rest}: Props): React.JSX.Element {
   return (

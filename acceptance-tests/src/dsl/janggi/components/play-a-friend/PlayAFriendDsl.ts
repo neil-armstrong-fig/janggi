@@ -1,5 +1,4 @@
 import type {FriendConnectionStatus} from "@janggi/shared/janggi/online/FriendConnectionStatus";
-import type {RoomAwayDays} from "@janggi/shared/janggi/online/RoomAway";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {FriendCode} from "@janggi/shared/janggi/online/friend-code/FriendCode";
 import type {FriendGameState} from "@janggi/shared/janggi/online/FriendGameState";
@@ -20,15 +19,6 @@ export class PlayAFriendDsl {
     this.friend = new PlayAFriendPlaywright(page);
   }
 
-  /** Whether the settings' Play tab offers to play a friend. */
-  async isOffered(): Promise<boolean> {
-    try {
-      return await this.friend.isOffered();
-    } catch (error) {
-      throw new DslError("Failed to read whether playing a friend is offered in the settings", error);
-    }
-  }
-
   /** Whether playing a friend is offered anywhere but the settings — over the game, say. */
   async isOfferedOutsideTheSettings(): Promise<boolean> {
     try {
@@ -47,21 +37,21 @@ export class PlayAFriendDsl {
     }
   }
 
-  /** Chooses how many days the room is kept once both players are away. */
-  async chooseHowLongToKeepTheRoom(days: RoomAwayDays): Promise<void> {
+  /** Whether the sheet to play a friend is up. */
+  async isTheSheetOpen(): Promise<boolean> {
     try {
-      await this.friend.chooseHowLongToKeepTheRoom(days);
+      return await this.friend.isTheSheetOpen();
     } catch (error) {
-      throw new DslError(`Failed to choose to keep the room ${days} days`, error);
+      throw new DslError("Failed to read whether the sheet to play a friend is open", error);
     }
   }
 
-  /** How many days the sheet is set to keep the room for. */
-  async getHowLongToKeepTheRoom(): Promise<RoomAwayDays | undefined> {
+  /** Goes back from the sheet to the Settings that opened it. */
+  async goBackToSettings(): Promise<void> {
     try {
-      return await this.friend.getHowLongToKeepTheRoom();
+      await this.friend.goBackToSettings();
     } catch (error) {
-      throw new DslError("Failed to read how long the room is to be kept", error);
+      throw new DslError("Failed to go back from playing a friend to Settings", error);
     }
   }
 

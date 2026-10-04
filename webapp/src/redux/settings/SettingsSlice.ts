@@ -10,22 +10,35 @@ import {createSlice} from "@reduxjs/toolkit";
  */
 export const settingsSlice = createSlice({
   name: "settings",
-  initialState: {openSheet: undefined, tab: "Play"} as SettingsSliceState,
+  initialState: {openSheet: undefined, tab: "Play", accountHighlighted: false, showings: 0} as SettingsSliceState,
   reducers: {
     sheetOpened: (state, action: PayloadAction<SheetName>): SettingsSliceState => ({
       ...state,
       openSheet: action.payload,
+      accountHighlighted: false,
+      showings: state.showings + 1,
     }),
 
-    sheetClosed: (state): SettingsSliceState => ({...state, openSheet: undefined}),
+    sheetClosed: (state): SettingsSliceState => ({...state, openSheet: undefined, accountHighlighted: false}),
+
+    /** Sends a signed-out player to the account card, which is picked out until they do something else. */
+    signInPrompted: (state): SettingsSliceState => ({
+      ...state,
+      openSheet: "settings",
+      tab: "You",
+      accountHighlighted: true,
+      showings: state.showings + 1,
+    }),
 
     settingsTabSelected: (state, action: PayloadAction<SettingsTabName>): SettingsSliceState => ({
       ...state,
       tab: action.payload,
+      accountHighlighted: false,
+      showings: state.showings + 1,
     }),
   },
 });
 
-export const {sheetOpened, sheetClosed, settingsTabSelected} = settingsSlice.actions;
+export const {sheetOpened, sheetClosed, settingsTabSelected, signInPrompted} = settingsSlice.actions;
 
 export const settingsReducer = settingsSlice.reducer;

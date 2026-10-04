@@ -22,10 +22,14 @@ export class GamesSettingPlaywright extends SettingsSheetComponent {
     await this.inSheet(this.picker, () => this.options[game].click());
   }
 
-  /** The game on the board; "local" where there is no game with a friend to choose from. */
-  async getShown(): Promise<GameShown> {
-    if ((await this.picker.count()) === 0) return "local";
+  /** Taps Online with the settings open on the Play tab, and leaves them to whatever the tap led to. */
+  async chooseOnline(): Promise<void> {
+    await this.openSheet(this.options.friend);
+    await this.options.friend.click();
+  }
 
+  /** The game on the board. */
+  async getShown(): Promise<GameShown> {
     const pressed = this.picker.locator("[aria-pressed='true']");
     const shown = await pressed.getAttribute("data-game");
 

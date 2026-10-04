@@ -7,6 +7,8 @@ import {SoundPane} from "@src/react/pages/game/components/settings/tabs/sound-pa
 import {YouPane} from "@src/react/pages/game/components/settings/tabs/you-pane/YouPane";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {clsx} from "clsx";
+import {useRef} from "react";
+import {useScrolledToTop} from "@src/react/pages/game/hooks/use-scrolled-to-top/UseScrolledToTop";
 
 /** Lets `Settings.tsx` set `--sheet-opacity` inline without an unnamed cast at the call site. */
 interface SheetPanelStyle extends React.CSSProperties {
@@ -45,11 +47,14 @@ interface SheetPanelStyle extends React.CSSProperties {
 export function Settings(): React.JSX.Element {
   const open = useAppSelector(state => state.settings.openSheet === "settings");
   const tab = useAppSelector(state => state.settings.tab);
+  const showings = useAppSelector(state => state.settings.showings);
+  const panelRef = useRef<HTMLElement>(null);
   const dispatch = useAppDispatch();
   const onClose = (): void => {
     dispatch(sheetClosed());
   };
   const {sheetOpacity} = usePreferences();
+  useScrolledToTop(panelRef, open, showings);
 
   return (
     <>
@@ -64,6 +69,7 @@ export function Settings(): React.JSX.Element {
       />
 
       <section
+        ref={panelRef}
         data-testid="settings"
         role="dialog"
         aria-label="Settings"

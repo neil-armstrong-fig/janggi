@@ -13,6 +13,7 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
   private readonly xp: Locator;
   private readonly xpBar: Locator;
   private readonly nextUnlock: Locator;
+  private readonly transferToggle: Locator;
   private readonly copy: Locator;
   private readonly key: Locator;
   private readonly input: Locator;
@@ -25,6 +26,7 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
     this.xp = page.getByTestId("progress-xp");
     this.xpBar = page.getByTestId("progress-xp-bar");
     this.nextUnlock = page.getByTestId("progress-next-unlock");
+    this.transferToggle = page.getByTestId("save-transfer-toggle");
     this.copy = page.getByTestId("save-copy");
     this.key = page.getByTestId("save-key");
     this.input = page.getByTestId("save-load-input");
@@ -33,7 +35,8 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
   }
 
   async loadSave(key: string): Promise<void> {
-    await this.inSheet(this.input, async () => {
+    await this.inSheet(this.transferToggle, async () => {
+      await this.unfoldTransfer();
       await this.input.fill(key);
       await this.load.click();
       await this.message.waitFor({state: "attached"});
@@ -65,12 +68,22 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
   async getSaveKey(): Promise<string> {
     let key = "";
 
-    await this.inSheet(this.copy, async () => {
+    await this.inSheet(this.transferToggle, async () => {
+      await this.unfoldTransfer();
       await this.copy.click();
       key = await this.key.inputValue();
     });
 
     return key;
+  }
+
+  async isSaveTransferOpen(): Promise<boolean> {
+    return (await this.transferToggle.getAttribute("aria-expanded")) === "true";
+  }
+
+  /** Unfolds the copy and load of a save key, where they are folded away. */
+  private async unfoldTransfer(): Promise<void> {
+    if (!(await this.isSaveTransferOpen())) await this.transferToggle.click();
   }
 
   async isSaveRefused(): Promise<boolean> {

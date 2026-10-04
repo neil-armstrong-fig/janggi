@@ -2,13 +2,16 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 
 given("someone searches for a way to play janggi", () => {
   when("they open the game", () => {
-    then("the page describes a free Janggi game against AI", async ({janggi}) => {
-      expect(await janggi.getPageTitle()).toBe("Play Janggi (Korean Chess) Online: Free vs AI");
-      expect(await janggi.getPageDescription()).toBe(
-        "Play Janggi (Korean chess) for free against a friend or eight AI levels. No account needed. Save it to your device and play offline.",
-      );
-      expect(await janggi.getMainHeading()).toBe("Janggi: Korean Chess");
-    });
+    then(
+      "the page describes a free Janggi game to play online with a friend or against AI, and offline",
+      async ({janggi}) => {
+        expect(await janggi.getPageTitle()).toBe("Play Janggi (Korean Chess) Online with Friends or vs AI");
+        expect(await janggi.getPageDescription()).toBe(
+          "Play Janggi (Korean chess) online with a friend using a private code, or against eight AI levels. Install it and play offline. Free, and no account needed to play the AI.",
+        );
+        expect(await janggi.getMainHeading()).toBe("Janggi: Korean Chess");
+      },
+    );
 
     then("search engines are given one address and understand that the web game is free", async ({janggi}) => {
       expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/");
@@ -25,7 +28,7 @@ given("someone searches for a way to play janggi", () => {
 
     then("search engines that don't run scripts still read what the game is and find the guide", async ({janggi}) => {
       expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("Janggi: Korean Chess");
-      expect(await janggi.getTextServedToSearchEngines()).toContain("eight AI levels");
+      expect(await janggi.getTextServedToSearchEngines()).toContain("private code");
       expect(await janggi.isGuideLinkedInPageServedToSearchEngines()).toBe(true);
     });
 

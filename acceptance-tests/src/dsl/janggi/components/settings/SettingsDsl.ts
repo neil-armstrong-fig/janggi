@@ -218,6 +218,24 @@ export class SettingsDsl {
     }
   }
 
+  /** Reads a tab's settings down to their end, and puts the sheet away. */
+  async scrollTabToTheEnd(name: SettingsTabName): Promise<void> {
+    try {
+      await this.settings.scrollTabToTheEnd(name);
+    } catch (error) {
+      throw new DslError(`Failed to scroll the ${name} settings to their end`, error);
+    }
+  }
+
+  /** How far a tab's settings are scrolled, in pixels. */
+  async getTabScroll(name: SettingsTabName): Promise<number> {
+    try {
+      return await this.settings.getTabScroll(name);
+    } catch (error) {
+      throw new DslError(`Failed to read how far the ${name} settings are scrolled`, error);
+    }
+  }
+
   /** Shows a tab's pane, putting the others away. */
   async selectTab(name: SettingsTabName): Promise<void> {
     try {

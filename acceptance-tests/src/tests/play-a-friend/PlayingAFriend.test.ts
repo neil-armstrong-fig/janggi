@@ -24,28 +24,13 @@ given("two players, each signed in with Google as themselves", () => {
     await friend.playAFriend.openPlayAFriend();
   });
 
-  then("the sheet is set to keep a room the longest, which is the most a friend is given", async ({janggi}) => {
-    expect(await janggi.playAFriend.getHowLongToKeepTheRoom()).toBe(90);
-  });
-
-  when("the first makes a code without choosing how long to keep the room", () => {
+  when("the first makes a code, and so does not choose how long to keep the room", () => {
     beforeEach(async ({janggi}) => {
       await janggi.playAFriend.createACode("han");
     });
 
-    then("the server is asked to keep it three months", async ({janggi}) => {
-      expect(await janggi.settings.account.getRoomsAsked()).toEqual([{side: "han", awayDays: 90}]);
-    });
-  });
-
-  when("the first chooses to keep the room 3 days, and makes a code", () => {
-    beforeEach(async ({janggi}) => {
-      await janggi.playAFriend.chooseHowLongToKeepTheRoom(3);
-      await janggi.playAFriend.createACode("cho");
-    });
-
-    then("the server is asked to keep it 3 days, for the army they chose", async ({janggi}) => {
-      expect(await janggi.settings.account.getRoomsAsked()).toEqual([{side: "cho", awayDays: 3}]);
+    then("the server is asked to keep it a month", async ({janggi}) => {
+      expect(await janggi.settings.account.getRoomsAsked()).toEqual([{side: "han", awayDays: 30}]);
     });
   });
 

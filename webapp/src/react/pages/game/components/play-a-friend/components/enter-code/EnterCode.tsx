@@ -19,7 +19,7 @@ export function EnterCode(): React.JSX.Element {
         dispatch(joinFriendRoom(typed, introduction));
       }}
     >
-      <p className="text-xs font-medium text-white/60">Enter a code</p>
+      <p className="text-xs font-medium text-white/60">Enter code to join a room</p>
 
       <div className="flex gap-2">
         <input

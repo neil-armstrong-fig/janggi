@@ -22,6 +22,8 @@ import {PROGRESS_STORAGE_KEY} from "@src/redux/progress/storage/ProgressStorageK
 import type {OnboardingSliceState} from "@src/redux/onboarding/types/OnboardingSliceState";
 import type {SettingsSliceState} from "@src/redux/settings/types/SettingsSliceState";
 import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceState";
+import {toastReducer} from "@src/redux/toast/ToastSlice";
+import type {ToastSliceState} from "@src/redux/toast/types/ToastSliceState";
 import {botEngineReducer} from "@src/redux/bot-engine/BotEngineSlice";
 import {botKeptWithinReach} from "@src/redux/game/GameSlice";
 import {customStylesReducer} from "@src/redux/custom-styles/CustomStylesSlice";
@@ -71,13 +73,14 @@ export interface RootState {
   readonly account: AccountSliceState;
   readonly syncLedger: SyncLedgerSliceState;
   readonly friend: FriendSliceState;
+  readonly toast: ToastSliceState;
 }
 
 /**
  * The slices that are written to the device. The engine's is not, being what this page has started, and nor
- * are the sheets': a page opens with none up.
+ * are the sheets' or the toast's: a page opens with none up.
  */
-type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings">;
+type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast">;
 
 /** What is compared, to know a slice has changed, and then written: a slice itself, except where what is kept is less than the slice (`keptValue`). */
 type KeptValue = RootState[KeptSlice] | string | undefined;
@@ -125,6 +128,7 @@ export function createStore(storage?: Storage): AppStore {
       account: accountReducer,
       syncLedger: syncLedgerReducer,
       friend: friendReducer,
+      toast: toastReducer,
     },
     preloadedState: {
       game,

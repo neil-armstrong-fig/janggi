@@ -7,7 +7,6 @@ import {GamesSetting} from "@src/react/pages/game/components/settings/tabs/play-
 import {MatchFormatSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/match-format-setting/MatchFormatSetting";
 import {NewGameButton} from "@src/react/pages/game/components/settings/tabs/play-pane/components/new-game-button/NewGameButton";
 import {OpponentSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-setting/OpponentSetting";
-import {PlayAFriendEntry} from "@src/react/pages/game/components/settings/tabs/play-pane/components/play-a-friend-entry/PlayAFriendEntry";
 import {RecordButton} from "@src/react/pages/game/components/settings/tabs/play-pane/components/record-button/RecordButton";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
 import {SetupSettings} from "@src/react/pages/game/components/settings/tabs/play-pane/components/setup-settings/SetupSettings";
@@ -50,8 +49,6 @@ export function PlayPane({selected}: Props): React.JSX.Element {
       <MatchFormatSetting />
 
       <OpponentSetting />
-
-      <PlayAFriendEntry />
 
       <FlipBoardSetting />
 

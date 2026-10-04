@@ -16,7 +16,8 @@ import type {Wording} from "@src/react/pages/game/components/status/components/b
  * needs to take in at once. **New game is offered here** because the end of a game is exactly when a
  * player reaches for one, and the settings sheet is a long way to go looking for it; with the game
  * already over there is nothing a stray tap could abandon. Nothing else on the announcement takes a
- * tap, so the board beneath stays as it was left, and Undo is still there to step back out of the
+ * tap, so the board beneath stays as it was left — **Show board** puts the announcement aside to look at it, and
+ * `BoardPeek` brings it back — and Undo is still there to step back out of the
  * ending — which takes the announcement away with it.
  *
  * **A game ended by a called bikjang says what one is.** Chess has nothing like it, so to a player who
@@ -51,6 +52,8 @@ interface Props {
   readonly animated: boolean;
   /** The strength of bot this win has just opened, or undefined where it opened none. */
   readonly nextBotElo: BotElo | undefined;
+  /** Puts the announcement aside to look at the board beneath it. */
+  readonly onShowBoard: () => void;
   readonly onStartNewGame: () => void;
   readonly onStartNewGameAtBotElo: (elo: BotElo) => void;
 }
@@ -65,6 +68,7 @@ export function ResultBanner({
   xp,
   animated,
   nextBotElo,
+  onShowBoard,
   onStartNewGame,
   onStartNewGameAtBotElo,
 }: Props): React.JSX.Element | null {
@@ -140,6 +144,15 @@ export function ResultBanner({
           className="pointer-events-auto mt-3 h-10 w-full cursor-pointer rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
         >
           New game
+        </button>
+
+        <button
+          type="button"
+          data-testid="result-show-board"
+          onClick={onShowBoard}
+          className="pointer-events-auto mt-2 h-10 w-full cursor-pointer rounded-xl bg-black/25 px-5 text-sm font-semibold tracking-wide text-white/80 uppercase transition-[transform,background-color] duration-150 hover:bg-black/35 active:scale-[0.97] motion-reduce:transition-none"
+        >
+          Show board
         </button>
 
         {nextBotElo !== undefined && (

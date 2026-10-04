@@ -6,8 +6,8 @@
   <g font-family="'DejaVu Sans','Noto Sans',sans-serif" fill="#f3e6c8">
     <text x="70" y="230" font-size="128" font-weight="700">Janggi</text>
     <text x="74" y="316" font-size="60" fill="#d9b26a">Korean chess</text>
-    <text x="74" y="398" font-size="34">Play free against a friend</text>
-    <text x="74" y="442" font-size="34">or eight AI levels.</text>
+    <text x="74" y="398" font-size="34">Play a friend online,</text>
+    <text x="74" y="442" font-size="34">or take on eight AI levels.</text>
     <rect x="74" y="490" width="440" height="56" rx="28" fill="#0f7a5a"/>
     <text x="294" y="528" font-size="26" font-weight="700" text-anchor="middle" fill="#fff">Free · Works offline</text>
     <text x="74" y="590" font-size="24" fill="#a8946b">janggi.neilarmstrong.dev</text>

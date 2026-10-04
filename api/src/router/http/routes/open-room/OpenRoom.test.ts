@@ -46,7 +46,7 @@ it("opening a room gives the host a friend code, and makes the room on the side 
   expect(response.status).toBe(201);
   expect(parseFriendCode(code)).toBe(code);
   expect(roomsMade()).toEqual({
-    [code]: {input: "https://game-room/open", body: {code, hostSide: "han", awayDays: 90}},
+    [code]: {input: "https://game-room/open", body: {code, hostSide: "han", awayDays: 30}},
   });
 });
 

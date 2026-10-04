@@ -1,10 +1,9 @@
-import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
 
 /**
- * Han | Cho: which army's opening setup is showing beneath it.
+ * Cho | Han, in the order they move: which army's opening setup is showing beneath it.
  *
  * The two armies choose separately, but they share one place in the sheet, because two grids of setups
  * would not fit a phone's sheet. Pressing an army only turns that army's grid up — it chooses nothing
@@ -25,7 +24,7 @@ export function ArmySwitch({showing, onShow}: Props): React.JSX.Element {
         aria-label="Which army's setup to show"
         className="flex min-w-0 flex-1 gap-1 rounded-xl bg-black/25 p-1"
       >
-        {SIDES.map(side => (
+        {SIDES_IN_PLAY_ORDER.map(side => (
           <button
             key={side}
             type="button"
@@ -45,3 +44,6 @@ export function ArmySwitch({showing, onShow}: Props): React.JSX.Element {
     </div>
   );
 }
+
+/** Cho moves first, so it is listed first, as the Play a friend sheet does. */
+const SIDES_IN_PLAY_ORDER: readonly Side[] = ["cho", "han"];

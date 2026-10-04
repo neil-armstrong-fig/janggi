@@ -248,7 +248,6 @@ given("a player who is on the tour's account step", () => {
       expect(await janggi.onboarding.getTourStep()).toBe(8);
       expect(await janggi.settings.isTabSelected("Play")).toBe(true);
       expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("friend");
-      expect(await janggi.playAFriend.isOffered()).toBe(true);
     });
 
     then("the Play highlight fills the whole tab", async ({janggi}) => {

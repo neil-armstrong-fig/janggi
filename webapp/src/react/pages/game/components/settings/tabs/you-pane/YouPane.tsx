@@ -11,8 +11,8 @@ import {SettingsPane} from "@src/react/pages/game/components/settings/components
 
 /**
  * The You tab: the player rather than a game — their XP and next unlock, optional Google sign-in, the
- * save key that carries progress to another device without an account, then the app, help and reading
- * links. The pane scrolls as one column on a phone.
+ * app, help and reading links, then — folded away, being rarely wanted — the save key that carries progress to another
+ * device without an account. The pane scrolls as one column on a phone.
  *
  * Playing a friend is in Play and the player's own styles in Look, since each is about a game or how
  * one is drawn, not about who is playing.
@@ -27,8 +27,6 @@ export function YouPane({selected}: Props): React.JSX.Element {
       <Progress />
 
       <Account />
-
-      <SaveTransfer />
 
       <div className="flex flex-col gap-2">
         <p className="text-xs font-medium text-white/60">App &amp; help</p>
@@ -45,6 +43,8 @@ export function YouPane({selected}: Props): React.JSX.Element {
 
         <RepositoryLink />
       </div>
+
+      <SaveTransfer />
     </SettingsPane>
   );
 }

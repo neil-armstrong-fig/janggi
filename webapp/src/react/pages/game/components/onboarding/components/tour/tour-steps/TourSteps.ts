@@ -58,7 +58,7 @@ export const TOUR_STEPS: Readonly<Record<TourStepName, TourStep>> = {
   },
   friend: {
     title: "Play a friend",
-    body: "Make a code and send it to a friend, or enter theirs, to play each other live. You both need to be signed in.",
+    body: "Tap Online to make a code and send it to a friend, or to enter theirs, and play each other live. You both need to be signed in.",
     target: "friend",
     sheet: "Play",
     needsSignIn: true,

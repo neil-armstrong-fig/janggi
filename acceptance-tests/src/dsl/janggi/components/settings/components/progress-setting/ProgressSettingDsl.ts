@@ -44,6 +44,15 @@ export class ProgressSettingDsl {
     }
   }
 
+  /** Whether the copy and load of a save key are unfolded, as they are not until the player asks for them. */
+  async isSaveTransferOpen(): Promise<boolean> {
+    try {
+      return await this.progress.isSaveTransferOpen();
+    } catch (error) {
+      throw new DslError("Failed to read whether the save key is unfolded", error);
+    }
+  }
+
   /** The save key the player would copy, pressing Copy to see it. */
   async getSaveKey(): Promise<string> {
     try {

@@ -41,6 +41,8 @@ export class StatusPlaywright extends BaseComponent {
   private readonly scores: Record<Side, Locator>;
   private readonly taken: Record<Side, Locator>;
   private readonly result: Locator;
+  private readonly showBoardButton: Locator;
+  private readonly boardPeek: Locator;
   private readonly resultExplanation: Locator;
   private readonly resultXpBar: Locator;
   private readonly newGame: Locator;
@@ -66,6 +68,8 @@ export class StatusPlaywright extends BaseComponent {
     this.scores = {cho: page.getByTestId("score-cho"), han: page.getByTestId("score-han")};
     this.taken = {cho: page.getByTestId("taken-cho"), han: page.getByTestId("taken-han")};
     this.result = page.getByTestId("result");
+    this.showBoardButton = page.getByTestId("result-show-board");
+    this.boardPeek = page.getByTestId("result-peek");
     this.resultExplanation = page.getByTestId("result-explanation");
     this.resultXpBar = page.getByTestId("result-xp-bar");
     this.newGame = page.getByTestId("result-new-game");
@@ -245,6 +249,21 @@ export class StatusPlaywright extends BaseComponent {
   /** Presses New game on the announcement of a result. */
   async startNewGame(): Promise<void> {
     await this.newGame.click();
+  }
+
+  /** Presses Show board on the announcement of a result, to look at the board it was announced over. */
+  async showBoard(): Promise<void> {
+    await this.showBoardButton.click();
+  }
+
+  /** Taps the board while the result is put aside, which brings the announcement back. */
+  async tapTheBoardToSeeTheResult(): Promise<void> {
+    await this.boardPeek.click({position: {x: 5, y: 5}});
+  }
+
+  /** Whether the board is being looked at with the result put aside, which the note over it says. */
+  async isBoardShown(): Promise<boolean> {
+    return (await this.boardPeek.count()) > 0;
   }
 
   /** Presses New game at the strength of bot the win opened, on the announcement of a result. */

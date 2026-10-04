@@ -11,6 +11,7 @@ import {PlayAFriendDsl} from "@src/dsl/janggi/components/play-a-friend/PlayAFrie
 import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
+import {ToastDsl} from "@src/dsl/janggi/components/toast/ToastDsl";
 import {ReleaseUpdateDsl} from "@src/dsl/janggi/components/release-update/ReleaseUpdateDsl";
 import {ReferencesDsl} from "@src/dsl/janggi/components/references/ReferencesDsl";
 import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
@@ -53,6 +54,7 @@ export class JanggiDsl {
   readonly recordSheet: RecordSheetDsl;
   readonly references: ReferencesDsl;
   readonly releaseUpdate: ReleaseUpdateDsl;
+  readonly toast: ToastDsl;
   readonly stylesSheet: StylesSheetDsl;
   readonly debug: DebugDsl;
 
@@ -72,6 +74,7 @@ export class JanggiDsl {
     this.recordSheet = new RecordSheetDsl(page);
     this.references = new ReferencesDsl(page);
     this.releaseUpdate = new ReleaseUpdateDsl(page);
+    this.toast = new ToastDsl(page);
     this.stylesSheet = new StylesSheetDsl(page);
     this.debug = new DebugDsl(page);
   }

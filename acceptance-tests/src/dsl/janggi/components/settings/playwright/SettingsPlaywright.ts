@@ -148,6 +148,25 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   }
 
   /** Presses the tab, so a tab already showing is left as it is. It stays chosen when the sheet closes. */
+  /** Scrolls a tab's settings to their end, with the sheet shut again afterwards, as a player who read down it and left would. */
+  async scrollTabToTheEnd(name: SettingsTabName): Promise<void> {
+    await this.withSheetOpen(async () => {
+      await this.tabNamed(name).click();
+      await this.scrollOf(name).evaluate(column => {
+        column.scrollTop = column.scrollHeight;
+      });
+    });
+  }
+
+  /** How far a tab's settings are scrolled, in pixels. */
+  async getTabScroll(name: SettingsTabName): Promise<number> {
+    return await this.scrollOf(name).evaluate(column => column.scrollTop);
+  }
+
+  private scrollOf(name: SettingsTabName): Locator {
+    return this.page.locator(`[data-testid='settings-pane'][data-pane='${name}']`).getByTestId("settings-scroll");
+  }
+
   async selectTab(name: SettingsTabName): Promise<void> {
     const tab = this.tabNamed(name);
 

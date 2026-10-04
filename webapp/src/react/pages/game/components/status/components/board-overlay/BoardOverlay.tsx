@@ -5,6 +5,7 @@ import type {ArmyScores} from "@src/react/pages/game/components/status/component
 import {botEngineRetried} from "@src/redux/bot-engine/BotEngineSlice";
 import {botLetOpen, botStrengthChosen, drawAccepted, drawDeclined} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {BoardPeek} from "@src/react/pages/game/components/status/components/board-overlay/components/board-peek/BoardPeek";
 import {BotEngineNotice} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-engine-notice/BotEngineNotice";
 import {BotGoAhead} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-go-ahead/BotGoAhead";
 import {DrawDeclinedNote} from "@src/react/pages/game/components/status/components/board-overlay/components/draw-declined-note/DrawDeclinedNote";
@@ -21,6 +22,7 @@ import {rewardFor} from "@src/react/pages/game/components/status/components/boar
 import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
+import {useState} from "react";
 
 /**
  * What is said over the board rather than around it. Everything here is laid absolutely over the box
@@ -37,6 +39,10 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * And while the repetition rule holds a move back, a note over the board says so —
  * `repetitionHoldsBackAMove` — since a move that is simply not offered looks like a bug to someone
  * expecting chess's draw.
+ *
+ * The announcement can be put aside with Show board, to look at the board it covers, and a tap on the board brings it back
+ * (`BoardPeek` says so). That is kept here as the game it was put aside for, so a move taken back ends it, and it is the
+ * only thing here that is not derived.
  *
  * A draw on offer is a conversation, and it is held here: the question with its two buttons between two
  * people, and a note where the offer was refused.
@@ -56,8 +62,11 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   const {effects} = usePreferences();
   const {status, botsTurn, awaitingGoAhead, engineHoldsPlay, botEngine} = useGameStatus();
   const dispatch = useAppDispatch();
+  const [gamePutAside, setGamePutAside] = useState<typeof played.present>();
 
   const game = played.present;
+  const gameIsOver = status.kind === "won" || status.kind === "wonOnPoints" || status.kind === "drawn";
+  const resultPutAside = gameIsOver && gamePutAside === game;
   const botSide = opponent.name === "Bot" ? opponentOf(opponent.playerSide) : undefined;
   const scores: ArmyScores = {cho: scoreFor(game, "cho"), han: scoreFor(game, "han")};
 
@@ -121,19 +130,24 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
         <BotGoAhead botSide={botSide} onGoAhead={() => pressed(botLetOpen())} />
       )}
 
-      <ResultBanner
-        status={status}
-        scores={scores}
-        bikjangCalledBy={game.bikjangCalled ? game.sideToMove : undefined}
-        repetitionEndedIt={repetitionEndedIt}
-        botSide={botSide}
-        reward={rewardFor(status, opponent, phase.format, xp)}
-        xp={xp}
-        animated={effects.full}
-        nextBotElo={nextBotElo}
-        onStartNewGame={pressedStartAnotherGame}
-        onStartNewGameAtBotElo={elo => pressed(botStrengthChosen(elo))}
-      />
+      {resultPutAside && <BoardPeek onTap={() => setGamePutAside(undefined)} />}
+
+      {!resultPutAside && (
+        <ResultBanner
+          status={status}
+          scores={scores}
+          bikjangCalledBy={game.bikjangCalled ? game.sideToMove : undefined}
+          repetitionEndedIt={repetitionEndedIt}
+          botSide={botSide}
+          reward={rewardFor(status, opponent, phase.format, xp)}
+          xp={xp}
+          animated={effects.full}
+          nextBotElo={nextBotElo}
+          onShowBoard={() => setGamePutAside(game)}
+          onStartNewGame={pressedStartAnotherGame}
+          onStartNewGameAtBotElo={elo => pressed(botStrengthChosen(elo))}
+        />
+      )}
     </>
   );
 }

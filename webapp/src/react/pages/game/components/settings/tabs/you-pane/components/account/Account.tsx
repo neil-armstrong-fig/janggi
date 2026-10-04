@@ -26,13 +26,20 @@ export function Account(): React.JSX.Element {
   const status = useAppSelector(state => state.account.status);
   const sync = useAppSelector(state => state.account.sync);
   const displayName = useAppSelector(state => state.account.displayName);
+  const highlighted = useAppSelector(state => state.settings.accountHighlighted);
   const dispatch = useAppDispatch();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   return (
     <div
+      data-testid="account"
       {...tourTarget("account")}
-      className="flex flex-col gap-3 rounded-xl border border-white/10 bg-black/20 p-3 sm:p-4"
+      data-highlighted={highlighted}
+      className={clsx(
+        "flex flex-col gap-3 rounded-xl border bg-black/20 p-3 transition-colors duration-300 sm:p-4 motion-reduce:transition-none",
+        highlighted && "border-gold/70 ring-2 ring-gold/40",
+        !highlighted && "border-white/10",
+      )}
     >
       <div className="flex flex-col gap-1">
         <span className="text-xs font-medium text-white/60">Account</span>

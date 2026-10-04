@@ -51,7 +51,9 @@ export function Hero(): React.JSX.Element {
           </a>
         </div>
 
-        <p className="mt-3 text-xs text-wood/55">No account needed</p>
+        <p className="mt-3 text-xs text-wood/55">
+          Play a friend online with a Google sign-in. The AI and offline play need no account.
+        </p>
       </div>
 
       <aside

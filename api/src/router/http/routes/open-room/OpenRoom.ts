@@ -22,7 +22,7 @@ const MAX_BODY_LENGTH = 1_000;
 const DRAWS = 5;
 
 /**
- * `POST /api/rooms` — the host asks for a room on a side, and for how many days both may be away before it is let go (90, the longest, where they do not say), and is given its friend code (201 `{code}`). A player has one room
+ * `POST /api/rooms` — the host asks for a room on a side, and for how many days both may be away before it is let go (30, a month, where they do not say), and is given its friend code (201 `{code}`). A player has one room
  * open at a time (409), there is a ceiling on rooms overall (503), and it is rate-limited by account (429). The code is
  * recorded before the room is made, and forgotten if the room cannot be.
  */

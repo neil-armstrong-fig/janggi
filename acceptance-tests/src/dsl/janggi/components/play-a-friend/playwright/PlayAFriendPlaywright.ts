@@ -6,8 +6,6 @@ import type {FriendGameState} from "@janggi/shared/janggi/online/FriendGameState
 import {JOIN_QUERY_PARAMETER} from "@janggi/shared/janggi/online/friend-code/JoinLink";
 import type {Locator, Page} from "@playwright/test";
 import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
-import {ROOM_AWAY_DAYS} from "@janggi/shared/janggi/online/RoomAway";
-import type {RoomAwayDays} from "@janggi/shared/janggi/online/RoomAway";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
@@ -15,7 +13,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
 /**
- * Playing a friend: the entry in the settings' Play tab, the sheet that makes or takes a code and has the two
+ * Playing a friend: the Online choice in the settings' Play tab that leads to it, the sheet that makes or takes a code and has the two
  * choose their arrangements, and the strip over the board that says who the opponent is and how the game stands.
  *
  * The strip is in the page whenever a room is, even while the sheet covers it, so what it says is read the way a
@@ -24,8 +22,8 @@ import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 export class PlayAFriendPlaywright extends SettingsSheetComponent {
   private readonly open: Locator;
   private readonly friendSheet: Locator;
+  private readonly back: Locator;
   private readonly sides: Record<Side, Locator>;
-  private readonly awayChoices: Record<RoomAwayDays, Locator>;
   private readonly create: Locator;
   private readonly code: Locator;
   private readonly codeInput: Locator;
@@ -46,12 +44,10 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
   constructor(page: Page) {
     super(page);
 
-    this.open = page.getByTestId("play-a-friend-open");
+    this.open = page.getByTestId("games-option-friend");
     this.friendSheet = page.getByTestId("play-a-friend");
+    this.back = page.getByTestId("friend-back");
     this.sides = {han: page.getByTestId("friend-side-han"), cho: page.getByTestId("friend-side-cho")};
-    this.awayChoices = Object.fromEntries(
-      ROOM_AWAY_DAYS.map(days => [days, page.getByTestId(`friend-away-${days}`)]),
-    ) as Record<RoomAwayDays, Locator>;
     this.create = page.getByTestId("friend-create");
     this.code = page.getByTestId("friend-code");
     this.codeInput = page.getByTestId("friend-code-input");
@@ -76,50 +72,28 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
     this.closeButton = page.getByTestId("friend-close");
   }
 
-  /**
-   * Whether the settings' Play tab offers it. The tab is chosen by name rather than found by the control, because
-   * where nobody is signed in the control is not there to be found.
-   */
-  async isOffered(): Promise<boolean> {
-    let offered = false;
-
-    await this.withSheetOpen(async () => {
-      await this.tabNamed("Play").click();
-      offered = await this.open.isVisible();
-    });
-
-    return offered;
-  }
-
   /** Whether an entry to it is drawn anywhere but in the settings. */
   async isOfferedOutsideTheSettings(): Promise<boolean> {
-    const everywhere = await this.page.getByTestId("play-a-friend-open").count();
-    const inTheSettings = await this.page.getByTestId("settings").getByTestId("play-a-friend-open").count();
+    const everywhere = await this.page.getByTestId("games-option-friend").count();
+    const inTheSettings = await this.page.getByTestId("settings").getByTestId("games-option-friend").count();
 
     return everywhere > inTheSettings;
   }
 
-  /** Opens the sheet from the Play tab, which closes the settings behind it. */
+  /** Opens the sheet by choosing Online in the Play tab, which closes the settings behind it. */
   async openTheSheet(): Promise<void> {
     await this.openSheet(this.open);
     await this.open.click();
     await this.friendSheet.waitFor({state: "visible"});
   }
 
-  /** Chooses how many days the room is kept once both are away. */
-  async chooseHowLongToKeepTheRoom(days: RoomAwayDays): Promise<void> {
-    await this.awayChoices[days].click();
+  /** Whether the sheet is up, read off `aria-modal`, which it sets to whether it is open. */
+  async isTheSheetOpen(): Promise<boolean> {
+    return (await this.friendSheet.getAttribute("aria-modal")) === "true";
   }
 
-  /** How many days the sheet has chosen to keep the room for, before it is made. */
-  async getHowLongToKeepTheRoom(): Promise<RoomAwayDays | undefined> {
-    for (const days of ROOM_AWAY_DAYS) {
-      if ((await this.awayChoices[days].getAttribute("aria-pressed")) === "true") {
-        return days;
-      }
-    }
-
-    return undefined;
+  async goBackToSettings(): Promise<void> {
+    await this.back.click();
   }
 
   async createACode(side: Side): Promise<void> {

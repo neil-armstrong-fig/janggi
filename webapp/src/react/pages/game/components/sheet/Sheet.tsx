@@ -1,4 +1,6 @@
 import {clsx} from "clsx";
+import {useRef} from "react";
+import {useScrolledToTop} from "@src/react/pages/game/hooks/use-scrolled-to-top/UseScrolledToTop";
 
 /**
  * The bottom sheet the Record, Play a friend and Styles sheets share: a backdrop, a panel that slides up,
@@ -31,6 +33,9 @@ export function Sheet({
   className,
   children,
 }: Props): React.JSX.Element {
+  const panelRef = useRef<HTMLElement>(null);
+  useScrolledToTop(panelRef, open);
+
   return (
     <>
       <div
@@ -44,6 +49,7 @@ export function Sheet({
       />
 
       <section
+        ref={panelRef}
         data-testid={testId}
         role="dialog"
         aria-label={title}

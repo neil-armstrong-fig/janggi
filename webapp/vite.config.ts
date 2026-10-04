@@ -77,7 +77,7 @@ export default defineConfig({
         id: base,
         name: "Janggi",
         short_name: "Janggi",
-        description: "Play Janggi (Korean chess) free against a friend or AI, online or offline.",
+        description: "Play Janggi (Korean chess) online with a friend, or against the AI. Installs and works offline.",
         lang: "en",
         dir: "ltr",
         start_url: base,

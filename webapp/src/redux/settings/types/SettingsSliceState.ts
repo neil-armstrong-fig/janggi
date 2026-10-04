@@ -10,4 +10,8 @@ import type {SheetName} from "@src/redux/settings/types/SheetName";
 export interface SettingsSliceState {
   readonly openSheet: SheetName | undefined;
   readonly tab: SettingsTabName;
+  /** The account card is picked out for a moment, because tapping Online sent a signed-out player to it. */
+  readonly accountHighlighted: boolean;
+  /** How many times a sheet or a tab has been asked for, so a sheet already open is still shown from its top again (`useScrolledToTop`). */
+  readonly showings: number;
 }

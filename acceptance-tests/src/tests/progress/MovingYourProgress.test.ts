@@ -6,6 +6,12 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  * it out, and load it where they want it. A new device is a fresh page, which is what loading a save
  * with nothing in it stands in for.
  */
+given("a player who has not asked for their save key", () => {
+  then("copying and loading a save are folded away, being rarely wanted", async ({janggi}) => {
+    expect(await janggi.settings.progress.isSaveTransferOpen()).toBe(false);
+  });
+});
+
 given("a player who has earned some progress", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.progress.loadSave(saveKeyWith({xp: 640, beaten: {Casual: {cho: [800, 1000]}}}));

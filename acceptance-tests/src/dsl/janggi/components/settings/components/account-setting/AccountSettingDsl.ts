@@ -163,6 +163,15 @@ export class AccountSettingDsl {
     }
   }
 
+  /** Whether the account card is picked out, which is how a signed-out player who chose Online is shown where to sign in. */
+  async isAccountHighlighted(): Promise<boolean> {
+    try {
+      return await this.account.isAccountHighlighted();
+    } catch (error) {
+      throw new DslError("Failed to read whether the account card is picked out", error);
+    }
+  }
+
   /** Whether the settings offer to sign in. */
   async isSignInOffered(): Promise<boolean> {
     try {

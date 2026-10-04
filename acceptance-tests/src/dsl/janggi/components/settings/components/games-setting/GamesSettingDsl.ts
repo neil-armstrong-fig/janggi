@@ -22,6 +22,15 @@ export class GamesSettingDsl {
     }
   }
 
+  /** Taps Online, which leads to the sign-in or to playing a friend where there is no game with one yet. */
+  async chooseOnline(): Promise<void> {
+    try {
+      await this.games.chooseOnline();
+    } catch (error) {
+      throw new DslError("Failed to choose Online", error);
+    }
+  }
+
   async getShown(): Promise<GameShown> {
     try {
       return await this.games.getShown();

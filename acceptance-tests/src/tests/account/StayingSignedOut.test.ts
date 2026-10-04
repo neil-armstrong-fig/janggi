@@ -32,10 +32,6 @@ given("a player who never signs in", () => {
       expect(await janggi.settings.account.isSignInOffered()).toBe(true);
     });
 
-    then("playing a friend is not offered there, since it needs an account", async ({janggi}) => {
-      expect(await janggi.playAFriend.isOffered()).toBe(false);
-    });
-
     then("the game has still made no call to the API", async ({janggi}) => {
       expect(await janggi.settings.account.getRequestsMadeToTheApi()).toBe(0);
     });

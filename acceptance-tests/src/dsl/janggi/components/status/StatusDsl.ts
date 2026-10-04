@@ -259,6 +259,33 @@ export class StatusDsl {
     }
   }
 
+  /** Puts the announcement aside to look at the board beneath it. */
+  async showBoard(): Promise<void> {
+    try {
+      await this.status.showBoard();
+    } catch (error) {
+      throw new DslError("Failed to put the result aside and show the board", error);
+    }
+  }
+
+  /** Taps the board while the result is put aside. */
+  async tapTheBoardToSeeTheResult(): Promise<void> {
+    try {
+      await this.status.tapTheBoardToSeeTheResult();
+    } catch (error) {
+      throw new DslError("Failed to tap the board to see the result again", error);
+    }
+  }
+
+  /** Whether the result is put aside, and the board being looked at. */
+  async isBoardShown(): Promise<boolean> {
+    try {
+      return await this.status.isBoardShown();
+    } catch (error) {
+      throw new DslError("Failed to check whether the board is shown", error);
+    }
+  }
+
   /** Deals a fresh game against the strength of bot the last one's win opened, from the announcement. */
   async startNewGameAtNextStrength(): Promise<void> {
     try {

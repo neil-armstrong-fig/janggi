@@ -4,7 +4,7 @@ import {CodeGiven} from "@src/react/pages/game/components/play-a-friend/componen
 import {EnterCode} from "@src/react/pages/game/components/play-a-friend/components/enter-code/EnterCode";
 import {MakeCode} from "@src/react/pages/game/components/play-a-friend/components/make-code/MakeCode";
 import {leaveFriendRoom} from "@src/redux/online/actions/LeaveFriendRoom";
-import {sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 
 /**
@@ -25,6 +25,9 @@ export function PlayAFriend(): React.JSX.Element {
   const onClose = (): void => {
     dispatch(sheetClosed());
   };
+  const onBack = (): void => {
+    dispatch(sheetOpened("settings"));
+  };
 
   const reaching = state === "idle" && code !== undefined;
   const hasRoom = state !== "idle" || reaching;
@@ -36,6 +39,8 @@ export function PlayAFriend(): React.JSX.Element {
       title="Play a friend"
       open={open}
       onClose={onClose}
+      backTestId="friend-back"
+      onBack={onBack}
       className="max-h-[85dvh]"
     >
       <div className="flex flex-col gap-5 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
