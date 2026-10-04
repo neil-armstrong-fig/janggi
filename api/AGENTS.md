@@ -168,7 +168,11 @@ database, and a session token is a password, so never write one into a file in t
    the new page loads. Write it, then stop further writes for that one unload, in the console:
 
    ```js
-   Storage.prototype.setItem.call(localStorage, "janggi.account.v1", JSON.stringify({status: "signed-in", sync: "idle"}));
+   Storage.prototype.setItem.call(
+     localStorage,
+     "janggi.account.v1",
+     JSON.stringify({status: "signed-in", sync: "idle"}),
+   );
    Storage.prototype.setItem = () => {};
    location.reload();
    ```
