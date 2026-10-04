@@ -106,7 +106,11 @@ function heldAt(game: GameState, position: Position | undefined): Position | und
   if (!position) return undefined;
 
   const piece = pieceAt(piecesByPosition(game.pieces), position);
-  return piece?.side === game.sideToMove ? position : undefined;
+  if (piece?.side === game.sideToMove) {
+    return position;
+  }
+
+  return undefined;
 }
 
 function isAmong(positions: readonly Position[], position: Position): boolean {

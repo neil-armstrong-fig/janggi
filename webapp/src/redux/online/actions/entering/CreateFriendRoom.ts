@@ -40,6 +40,9 @@ export function createFriendRoom(room: NewFriendRoom, introduction: Introduction
 
 function codeIn(body: unknown): string | undefined {
   const code = typeof body === "object" && body !== null ? (body as Record<string, unknown>)["code"] : undefined;
+  if (typeof code === "string") {
+    return code;
+  }
 
-  return typeof code === "string" ? code : undefined;
+  return undefined;
 }

@@ -12,7 +12,9 @@ export function withoutCellOverride(boardStyle: BoardStyle, position: Position):
   );
   const {cells: _, ...withoutCells} = boardStyle;
 
-  return Object.keys(remainingCellOverrides).length === 0
-    ? withoutCells
-    : {...boardStyle, cells: remainingCellOverrides};
+  if (Object.keys(remainingCellOverrides).length === 0) {
+    return withoutCells;
+  }
+
+  return {...boardStyle, cells: remainingCellOverrides};
 }

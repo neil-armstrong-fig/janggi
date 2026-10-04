@@ -60,9 +60,9 @@ export function CellControls({cellStyle, onChange}: Props): React.JSX.Element {
               numberRange={STYLE_LIMITS.lineWidth}
               step={0.05}
               value={cellStyle.diagonalStrokeWidth ?? cellStyle.strokeWidth}
-              onChange={diagonalStrokeWidth =>
-                onChange(currentCellStyle => ({...currentCellStyle, diagonalStrokeWidth}))
-              }
+              onChange={diagonalStrokeWidth => {
+                return onChange(currentCellStyle => ({...currentCellStyle, diagonalStrokeWidth}));
+              }}
             />
           </>
         )}
@@ -73,9 +73,9 @@ export function CellControls({cellStyle, onChange}: Props): React.JSX.Element {
           id="cell-surface-own"
           label="Own background"
           value={cellStyle.surface !== undefined}
-          onChange={own =>
-            onChange(currentCellStyle => withCellSurface(currentCellStyle, own ? OWN_BACKGROUND : undefined))
-          }
+          onChange={own => {
+            return onChange(currentCellStyle => withCellSurface(currentCellStyle, own ? OWN_BACKGROUND : undefined));
+          }}
         />
 
         {cellStyle.surface !== undefined && (

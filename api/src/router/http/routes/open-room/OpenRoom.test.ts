@@ -30,10 +30,9 @@ afterEach(() => {
 /** What the Worker asked rooms to be made as, by the room it asked. */
 function roomsMade(): Record<string, unknown> {
   return Object.fromEntries(
-    rooms.roomCalled.mock.calls.map(([code, input, init]) => [
-      code,
-      {input: String(input), body: JSON.parse(String(init?.body))},
-    ]),
+    rooms.roomCalled.mock.calls.map(([code, input, init]) => {
+      return [code, {input: String(input), body: JSON.parse(String(init?.body))}];
+    }),
   );
 }
 

@@ -12,7 +12,9 @@ export function withoutPieceOverride(pieceSetStyle: PieceSetStyle, piece: Piece)
   );
   const {pieces: _, ...withoutPieces} = pieceSetStyle;
 
-  return Object.keys(remainingPieceOverrides).length === 0
-    ? withoutPieces
-    : {...pieceSetStyle, pieces: remainingPieceOverrides};
+  if (Object.keys(remainingPieceOverrides).length === 0) {
+    return withoutPieces;
+  }
+
+  return {...pieceSetStyle, pieces: remainingPieceOverrides};
 }

@@ -35,9 +35,9 @@ export function PieceControls({pieceSetStyle, pieceTarget, onChange}: Props): Re
 
       <HandlingControls
         pieceHandlingStyle={pieceSetStyle.handling}
-        onChange={pieceHandlingStyle =>
-          onChange(currentPieceSetStyle => ({...currentPieceSetStyle, handling: pieceHandlingStyle}))
-        }
+        onChange={pieceHandlingStyle => {
+          return onChange(currentPieceSetStyle => ({...currentPieceSetStyle, handling: pieceHandlingStyle}));
+        }}
       />
     </div>
   );

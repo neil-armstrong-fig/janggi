@@ -36,7 +36,11 @@ export function useRolledNumber(value: number, rolling: boolean): number {
     return cancelRoll.bind(undefined, roll);
   }, [value, rolling]);
 
-  return rolling ? shown : value;
+  if (rolling) {
+    return shown;
+  }
+
+  return value;
 }
 
 function tick(roll: Roll, now: number): void {

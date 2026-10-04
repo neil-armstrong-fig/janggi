@@ -75,9 +75,12 @@ it("says the bot could not be started when the engine fails to answer, with why"
 
   renderOn(engine);
 
-  await waitFor(() =>
-    expect(store.getState().botEngine).toEqual({status: "failed", reason: "The engine did not answer the search"}),
-  );
+  await waitFor(() => {
+    return expect(store.getState().botEngine).toEqual({
+      status: "failed",
+      reason: "The engine did not answer the search",
+    });
+  });
 });
 
 function renderOn(engine: Engine): void {

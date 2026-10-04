@@ -32,21 +32,21 @@ export function GlyphControls({pieceStyle, side, onChange}: Props): React.JSX.El
         label="Kind"
         options={PIECE_GLYPH_KINDS}
         value={glyph.kind}
-        onChange={pieceGlyphKind =>
-          onChange(currentPieceStyle => ({
+        onChange={pieceGlyphKind => {
+          return onChange(currentPieceStyle => ({
             ...currentPieceStyle,
             glyph: withGlyphKind(currentPieceStyle.glyph, pieceGlyphKind),
-          }))
-        }
+          }));
+        }}
       />
 
       <ColourField
         id="glyph-colour"
         label="Colour"
         value={glyph.colour}
-        onChange={colour =>
-          onChange(currentPieceStyle => ({...currentPieceStyle, glyph: {...currentPieceStyle.glyph, colour}}))
-        }
+        onChange={colour => {
+          return onChange(currentPieceStyle => ({...currentPieceStyle, glyph: {...currentPieceStyle.glyph, colour}}));
+        }}
       />
 
       <SliderField
@@ -55,21 +55,23 @@ export function GlyphControls({pieceStyle, side, onChange}: Props): React.JSX.El
         numberRange={STYLE_LIMITS.glyphScale}
         step={0.01}
         value={glyph.scale}
-        onChange={scale =>
-          onChange(currentPieceStyle => ({...currentPieceStyle, glyph: {...currentPieceStyle.glyph, scale}}))
-        }
+        onChange={scale => {
+          return onChange(currentPieceStyle => ({...currentPieceStyle, glyph: {...currentPieceStyle.glyph, scale}}));
+        }}
       />
 
       {glyph.kind === "pictograph" && (
         <PictographControls
           pictographGlyphStyle={glyph}
-          onChange={update =>
-            onChange(currentPieceStyle =>
-              currentPieceStyle.glyph.kind === "pictograph"
-                ? {...currentPieceStyle, glyph: update(currentPieceStyle.glyph)}
-                : currentPieceStyle,
-            )
-          }
+          onChange={update => {
+            return onChange(currentPieceStyle => {
+              if (currentPieceStyle.glyph.kind === "pictograph") {
+                return {...currentPieceStyle, glyph: update(currentPieceStyle.glyph)};
+              }
+
+              return currentPieceStyle;
+            });
+          }}
         />
       )}
 
@@ -77,9 +79,9 @@ export function GlyphControls({pieceStyle, side, onChange}: Props): React.JSX.El
         <CharacterControls
           characterGlyphStyle={glyph}
           side={side}
-          onChange={characterGlyphStyle =>
-            onChange(currentPieceStyle => ({...currentPieceStyle, glyph: characterGlyphStyle}))
-          }
+          onChange={characterGlyphStyle => {
+            return onChange(currentPieceStyle => ({...currentPieceStyle, glyph: characterGlyphStyle}));
+          }}
         />
       )}
     </ControlGroup>

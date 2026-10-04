@@ -63,5 +63,9 @@ export function RecordTable({records}: Props): React.JSX.Element {
 
 /** A win rate as a whole percentage, or a dash where there is nothing to divide by. */
 function winRate(won: number, played: number): string {
-  return played === 0 ? "—" : `${Math.round((won / played) * 100)}%`;
+  if (played === 0) {
+    return "—";
+  }
+
+  return `${Math.round((won / played) * 100)}%`;
 }

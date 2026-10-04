@@ -29,7 +29,11 @@ export function elephantPairingOf(hanSetup: Setup, choSetup: Setup): ElephantPai
   const cho = elephantFilesOf(choSetup);
   if (isMirrored(han) || isMirrored(cho)) return undefined;
 
-  return sameFiles(han, cho) ? "eotsang" : "matsang";
+  if (sameFiles(han, cho)) {
+    return "eotsang";
+  }
+
+  return "matsang";
 }
 
 /** Which files this arrangement stands its elephants on, read straight off the back rank. */

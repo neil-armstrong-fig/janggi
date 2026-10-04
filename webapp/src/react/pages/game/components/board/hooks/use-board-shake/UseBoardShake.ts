@@ -35,12 +35,11 @@ export function useBoardShake(): BoardShake {
   const frameRef = useRef<number | undefined>(undefined);
   const lastFrameAtRef = useRef(0);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    return () => {
       if (frameRef.current !== undefined) cancelAnimationFrame(frameRef.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   const shake = useCallback((impulse: Vector): void => {
     const {position, velocity} = springRef.current;

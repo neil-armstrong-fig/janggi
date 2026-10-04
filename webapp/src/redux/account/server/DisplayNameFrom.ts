@@ -7,7 +7,9 @@ import {isObject} from "@src/redux/untrusted/IsObject";
  * app is never trusted to be what it claims.
  */
 export function displayNameFrom(body: unknown): string | undefined {
-  return isObject(body) && typeof body["displayName"] === "string"
-    ? cleanedDisplayName(body["displayName"])
-    : undefined;
+  if (isObject(body) && typeof body["displayName"] === "string") {
+    return cleanedDisplayName(body["displayName"]);
+  }
+
+  return undefined;
 }

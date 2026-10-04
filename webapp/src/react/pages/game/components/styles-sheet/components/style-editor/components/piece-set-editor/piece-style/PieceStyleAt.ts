@@ -5,7 +5,9 @@ import {resolvePieceStyle} from "@src/react/pages/game/components/board/componen
 
 /** The style the controls show for what they are changing: a piece's own, or what it wears without one. */
 export function pieceStyleAt(pieceSetStyle: PieceSetStyle, pieceTarget: PieceTarget): PieceStyle {
-  return pieceTarget.kind === "side"
-    ? pieceSetStyle.sides[pieceTarget.side]
-    : resolvePieceStyle(pieceSetStyle, pieceTarget.piece);
+  if (pieceTarget.kind === "side") {
+    return pieceSetStyle.sides[pieceTarget.side];
+  }
+
+  return resolvePieceStyle(pieceSetStyle, pieceTarget.piece);
 }

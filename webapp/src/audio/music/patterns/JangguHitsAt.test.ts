@@ -19,19 +19,23 @@ it("opens every cycle of every 장단 with both heads together", () => {
 
 /** So a change of 장단 is heard in the drum first. */
 it("drums each 장단 in a figure of its own", () => {
-  const figureOf = (rhythm: typeof JUNGMORI): string =>
-    JSON.stringify(ROUND.map(step => jangguHitsAt({step, rhythm, tension: rhythm.tension.from, turning: false})));
+  const figureOf = (rhythm: typeof JUNGMORI): string => {
+    return JSON.stringify(
+      ROUND.map(step => jangguHitsAt({step, rhythm, tension: rhythm.tension.from, turning: false})),
+    );
+  };
 
   expect(new Set([JUNGMORI, JUNGJUNGMORI, JAJINMORI].map(figureOf)).size).toBe(3);
 });
 
 it("lands strokes off the beat in every 장단, which is where the groove comes from", () => {
   for (const rhythm of RHYTHMS) {
-    const offBeat = ROUND.filter(
-      step =>
+    const offBeat = ROUND.filter(step => {
+      return (
         !beatIn(rhythm, step).onset &&
-        jangguHitsAt({step, rhythm, tension: rhythm.tension.from, turning: false}).length > 0,
-    );
+        jangguHitsAt({step, rhythm, tension: rhythm.tension.from, turning: false}).length > 0
+      );
+    });
 
     expect({rhythm: rhythm.name, offBeat: offBeat.length > 0}).toEqual({rhythm: rhythm.name, offBeat: true});
   }
@@ -39,8 +43,9 @@ it("lands strokes off the beat in every 장단, which is where the groove comes 
 
 it("fills the gaps with ghost strokes only once a 장단 has grown tense", () => {
   for (const rhythm of RHYTHMS) {
-    const struck = (tension: number): number =>
-      ROUND.flatMap(step => jangguHitsAt({step, rhythm, tension, turning: false})).length;
+    const struck = (tension: number): number => {
+      return ROUND.flatMap(step => jangguHitsAt({step, rhythm, tension, turning: false})).length;
+    };
 
     expect(struck(rhythm.tension.to)).toBeGreaterThan(struck(rhythm.tension.from));
   }

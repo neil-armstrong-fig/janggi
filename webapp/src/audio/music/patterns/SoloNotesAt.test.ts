@@ -60,9 +60,9 @@ it("plays quick runs part way through a step", () => {
 it("leans on its notes where the 장단's beats begin", () => {
   for (const rhythm of [JUNGMORI, JAJINMORI]) {
     for (const plan of PLANS) {
-      const leansOn = PHRASES.filter(step =>
-        soloNotesAt(step, rhythm, plan).some(played => played.leaning && played.offset === 0),
-      );
+      const leansOn = PHRASES.filter(step => {
+        return soloNotesAt(step, rhythm, plan).some(played => played.leaning && played.offset === 0);
+      });
 
       for (const step of leansOn) {
         expect({rhythm: rhythm.name, step, onset: beatIn(rhythm, step).onset}).toEqual({
@@ -77,7 +77,7 @@ it("leans on its notes where the 장단's beats begin", () => {
 
 /** When each note of one chord's worth of solo falls, and how long it rings — its rhythm, without its pitches. */
 function shapeOver(rhythm: Rhythm, plan: SoloPlan, chord: number): readonly string[] {
-  return PHRASES.slice(chord * 12, chord * 12 + 12).flatMap(step =>
-    soloNotesAt(step, rhythm, plan).map(note => `${(step % 12) + note.offset}:${note.steps}`),
-  );
+  return PHRASES.slice(chord * 12, chord * 12 + 12).flatMap(step => {
+    return soloNotesAt(step, rhythm, plan).map(note => `${(step % 12) + note.offset}:${note.steps}`);
+  });
 }

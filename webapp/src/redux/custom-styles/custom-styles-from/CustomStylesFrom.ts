@@ -24,7 +24,10 @@ function acceptedIn<Style>(value: unknown, check: (style: unknown) => Checked<St
 
   return value.flatMap((style: unknown) => {
     const checked = check(style);
+    if (checked.kind === "accepted") {
+      return [checked.value];
+    }
 
-    return checked.kind === "accepted" ? [checked.value] : [];
+    return [];
   });
 }

@@ -18,7 +18,11 @@ import {canPlace} from "@janggi/engine/setups/CanPlace";
 export function place(phase: SetupPhase, side: Side, setup: Setup): SetupPhase {
   if (!canPlace(phase, side)) throw new Error(refusalFor(side));
 
-  return side === "han" ? {...phase, hanSetup: setup} : {...phase, choSetup: setup};
+  if (side === "han") {
+    return {...phase, hanSetup: setup};
+  }
+
+  return {...phase, choSetup: setup};
 }
 
 /** Only ever reached in a scored game, `canPlace` refusing nobody in a casual one. */

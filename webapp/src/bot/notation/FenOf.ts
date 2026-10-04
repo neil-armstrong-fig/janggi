@@ -43,13 +43,21 @@ function rowOf(pieces: PieceLookup, rank: Rank): string {
     row += letterOf(piece);
   }
 
-  return empty > 0 ? `${row}${empty}` : row;
+  if (empty > 0) {
+    return `${row}${empty}`;
+  }
+
+  return row;
 }
 
 function letterOf(piece: Piece): string {
   const letter = PIECE_LETTERS[piece.type];
 
-  return piece.side === "cho" ? letter.toUpperCase() : letter;
+  if (piece.side === "cho") {
+    return letter.toUpperCase();
+  }
+
+  return letter;
 }
 
 /** Fairy-Stockfish's own letters for its janggi pieces: the guard is its wazir, the elephant its `b`. */

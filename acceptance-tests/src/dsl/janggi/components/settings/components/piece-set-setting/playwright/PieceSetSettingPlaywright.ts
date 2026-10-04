@@ -89,8 +89,11 @@ export class PieceSetSettingPlaywright extends SettingsSheetComponent {
 
     return names.flatMap(name => {
       const builtIn = PIECE_SET_NAMES.find(candidate => candidate === name);
+      if (builtIn) {
+        return [builtIn];
+      }
 
-      return builtIn ? [builtIn] : [];
+      return [];
     });
   }
 

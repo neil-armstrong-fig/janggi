@@ -14,5 +14,9 @@ import {wouldAcceptADraw} from "@src/bot/choice/would-accept-a-draw/WouldAcceptA
  * bot's army while it is asked — the player has just offered, and it is still their turn.
  */
 export function drawAnswerFor(game: GameState, evaluation: number | undefined): UnknownAction {
-  return wouldAcceptADraw(game, evaluation) ? drawAccepted() : drawDeclined();
+  if (wouldAcceptADraw(game, evaluation)) {
+    return drawAccepted();
+  }
+
+  return drawDeclined();
 }

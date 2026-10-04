@@ -35,7 +35,11 @@ export async function botReplyFor(
 }
 
 function setupChosenFor(side: Side, setup: Setup): UnknownAction {
-  return side === "han" ? hanSetupChosen(setup) : choSetupChosen(setup);
+  if (side === "han") {
+    return hanSetupChosen(setup);
+  }
+
+  return choSetupChosen(setup);
 }
 
 function actionFor(turn: BotTurn): UnknownAction {

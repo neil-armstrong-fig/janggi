@@ -9,8 +9,11 @@ import {objectFromText} from "@src/react/pages/game/components/styles-sheet/comp
  */
 export function boardFromText(text: string): Checked<BoardStyle> {
   const written = objectFromText(text);
+  if (written.kind === "accepted") {
+    return boardStyleFrom({...written.value, name: STAND_IN});
+  }
 
-  return written.kind === "accepted" ? boardStyleFrom({...written.value, name: STAND_IN}) : written;
+  return written;
 }
 
 const STAND_IN = "Draft";

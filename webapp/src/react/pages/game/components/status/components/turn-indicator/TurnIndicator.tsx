@@ -83,11 +83,19 @@ function announcementFor({status, botToMove, engineFailed, engineLoading}: Annou
   if (engineFailed) return "Bot unavailable";
   if (engineLoading) return "Bot is loading";
 
-  return botToMove ? botAnnouncementOf(status) : announcementOf(status);
+  if (botToMove) {
+    return botAnnouncementOf(status);
+  }
+
+  return announcementOf(status);
 }
 
 function botAnnouncementOf(status: GameStatus): string {
-  return status.kind === "layingOut" ? "Bot is laying out" : "Bot is thinking";
+  if (status.kind === "layingOut") {
+    return "Bot is laying out";
+  }
+
+  return "Bot is thinking";
 }
 
 function announcementOf(status: GameStatus): string {

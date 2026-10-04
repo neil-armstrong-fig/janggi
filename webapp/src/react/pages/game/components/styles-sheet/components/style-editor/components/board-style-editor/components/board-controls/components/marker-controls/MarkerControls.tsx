@@ -17,9 +17,13 @@ interface Props {
 export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element {
   const cellMarker = cellStyle.marker;
   const changeMarker = (update: (currentCellMarker: CellMarker) => CellMarker): void => {
-    onChange(currentCellStyle =>
-      currentCellStyle.marker ? withMarker(currentCellStyle, update(currentCellStyle.marker)) : currentCellStyle,
-    );
+    onChange(currentCellStyle => {
+      if (currentCellStyle.marker) {
+        return withMarker(currentCellStyle, update(currentCellStyle.marker));
+      }
+
+      return currentCellStyle;
+    });
   };
 
   return (
@@ -28,9 +32,9 @@ export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element 
         id="marker-on"
         label="Marker"
         value={cellMarker !== undefined}
-        onChange={on =>
-          onChange(currentCellStyle =>
-            withMarker(
+        onChange={on => {
+          return onChange(currentCellStyle => {
+            return withMarker(
               currentCellStyle,
               on
                 ? (currentCellStyle.marker ?? {
@@ -40,9 +44,9 @@ export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element 
                     strokeWidth: 2,
                   })
                 : undefined,
-            ),
-          )
-        }
+            );
+          });
+        }}
       />
 
       {cellMarker && (

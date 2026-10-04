@@ -39,14 +39,21 @@ export function useTargetRect(name: TourTargetName | undefined): TargetRect | un
     return () => cancelAnimationFrame(frame);
   }, [name]);
 
-  return measured !== undefined && measured.name === name ? measured.rect : undefined;
+  if (measured !== undefined && measured.name === name) {
+    return measured.rect;
+  }
+
+  return undefined;
 }
 
 function rectOf(name: TourTargetName): TargetRect | undefined {
   const element = document.querySelector(`[data-tour-target="${name}"]`);
   const {top, left, width, height} = element?.getBoundingClientRect() ?? {top: 0, left: 0, width: 0, height: 0};
+  if (width > 0 && height > 0) {
+    return {top, left, width, height};
+  }
 
-  return width > 0 && height > 0 ? {top, left, width, height} : undefined;
+  return undefined;
 }
 
 function sameRect(a: TargetRect | undefined, b: TargetRect | undefined): boolean {

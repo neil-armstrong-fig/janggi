@@ -147,12 +147,14 @@ function taegeuk() {
  * wrong — only which bars are whole and which are split.
  */
 function trigrams() {
-  return TRIGRAMS.flatMap(({name, angle, bars}) => [
-    `  <g transform="translate(${CENTER} ${CENTER}) rotate(${angle}) translate(0 ${TRIGRAM_DISTANCE})" fill="${BLACK}">`,
-    `    <title>${name}</title>`,
-    ...bars.flatMap((whole, index) => bar(whole, (index - 1) * BAR_PITCH)),
-    `  </g>`,
-  ]);
+  return TRIGRAMS.flatMap(({name, angle, bars}) => {
+    return [
+      `  <g transform="translate(${CENTER} ${CENTER}) rotate(${angle}) translate(0 ${TRIGRAM_DISTANCE})" fill="${BLACK}">`,
+      `    <title>${name}</title>`,
+      ...bars.flatMap((whole, index) => bar(whole, (index - 1) * BAR_PITCH)),
+      `  </g>`,
+    ];
+  });
 }
 
 /** One bar of a trigram, centred on the group's origin and offset along it by `y`. */
@@ -162,9 +164,11 @@ function bar(whole, y) {
 
   const rect = (x, width) => `    <rect x="${x}" y="${top}" width="${width}" height="${BAR_THICKNESS}" rx="3" />`;
 
-  return whole
-    ? [rect(-BAR_LENGTH / 2, BAR_LENGTH)]
-    : [rect(-BAR_LENGTH / 2, half), rect(BAR_BREAK / 2, half)];
+  if (whole) {
+    return [rect(-BAR_LENGTH / 2, BAR_LENGTH)];
+  }
+
+  return [rect(-BAR_LENGTH / 2, half), rect(BAR_BREAK / 2, half)];
 }
 
 /** 장 — ㅈ over ㅇ down the left, ㅏ standing full height beside them. */
@@ -238,16 +242,16 @@ function letteringTransformFor(strokes) {
 /** The extent of the drawn ink, which is the geometry grown by half the pen on every side. */
 function bounds(strokes) {
   const nib = PEN / 2;
-  const spread = stroke =>
-    stroke.kind === "circle"
-      ? [
+  const spread = stroke => {
+    if (stroke.kind === "circle") {
+return [
           [stroke.cx - stroke.r - nib, stroke.cx + stroke.r + nib],
           [stroke.cy - stroke.r - nib, stroke.cy + stroke.r + nib],
-        ]
-      : [
-          stroke.points.flatMap(([x]) => [x - nib, x + nib]),
-          stroke.points.flatMap(([, y]) => [y - nib, y + nib]),
         ];
+}
+
+return [stroke.points.flatMap(([x]) => [x - nib, x + nib]), stroke.points.flatMap(([, y]) => [y - nib, y + nib])];
+  };
 
   const xs = strokes.flatMap(stroke => spread(stroke)[0]);
   const ys = strokes.flatMap(stroke => spread(stroke)[1]);
@@ -265,11 +269,13 @@ function ring(cx, cy, r) {
 
 /** Shifts a syllable's strokes into its slot on the line. */
 function translate(strokes, dx, dy) {
-  return strokes.map(stroke =>
-    stroke.kind === "circle"
-      ? ring(stroke.cx + dx, stroke.cy + dy, stroke.r)
-      : polyline(stroke.points.map(([x, y]) => [x + dx, y + dy])),
-  );
+  return strokes.map(stroke => {
+    if (stroke.kind === "circle") {
+return ring(stroke.cx + dx, stroke.cy + dy, stroke.r);
+}
+
+return polyline(stroke.points.map(([x, y]) => [x + dx, y + dy]));
+  });
 }
 
 function element(stroke) {

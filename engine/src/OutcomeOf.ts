@@ -37,7 +37,11 @@ export function outcomeOf(state: GameState): Outcome {
  * counts the points. See `docs/rules.md` §6.4.
  */
 function stoppedByRepetition(state: GameState): Outcome {
-  return state.format === "Casual" ? {kind: "repetition"} : decidedOnPoints(state);
+  if (state.format === "Casual") {
+    return {kind: "repetition"};
+  }
+
+  return decidedOnPoints(state);
 }
 
 /**
@@ -47,7 +51,11 @@ function stoppedByRepetition(state: GameState): Outcome {
  * settles on points. See `docs/rules.md` §6.2.
  */
 function calledBikjang(state: GameState): Outcome {
-  return state.format === "Casual" ? {kind: "bikjang"} : decidedOnPoints(state);
+  if (state.format === "Casual") {
+    return {kind: "bikjang"};
+  }
+
+  return decidedOnPoints(state);
 }
 
 /**

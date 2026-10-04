@@ -70,8 +70,11 @@ function stampedIn<Style extends CustomStyle>(
     if (!isObject(entry) || typeof entry["id"] !== "string" || !isFiniteNumber(entry["at"])) return [];
 
     const checked = check(entry["style"]);
+    if (checked.kind === "accepted") {
+      return [{id: entry["id"], at: entry["at"], style: checked.value}];
+    }
 
-    return checked.kind === "accepted" ? [{id: entry["id"], at: entry["at"], style: checked.value}] : [];
+    return [];
   });
 }
 
@@ -82,7 +85,10 @@ function deletedIn(value: unknown): readonly DeletedStyle[] {
     if (!isObject(entry)) return [];
 
     const {kind, id, at} = entry;
+    if (isAmong(STYLE_KINDS, kind) && typeof id === "string" && isFiniteNumber(at)) {
+      return [{kind, id, at}];
+    }
 
-    return isAmong(STYLE_KINDS, kind) && typeof id === "string" && isFiniteNumber(at) ? [{kind, id, at}] : [];
+    return [];
   });
 }

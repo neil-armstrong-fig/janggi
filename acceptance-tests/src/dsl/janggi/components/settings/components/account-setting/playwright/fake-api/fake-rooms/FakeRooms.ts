@@ -196,6 +196,10 @@ export class FakeRooms {
   }
 
   private opposite(side: Side): Side {
-    return side === "han" ? "cho" : "han";
+    if (side === "han") {
+      return "cho";
+    }
+
+    return "han";
   }
 }

@@ -50,7 +50,11 @@ export function transformedPath(data: string, placement: Placement): string | un
     if (groups === 0) return undefined;
   }
 
-  return written.length === 0 ? undefined : written.join(" ");
+  if (written.length === 0) {
+    return undefined;
+  }
+
+  return written.join(" ");
 }
 
 function numbersAt(data: string, start: number, command: string): NumbersRead | undefined {

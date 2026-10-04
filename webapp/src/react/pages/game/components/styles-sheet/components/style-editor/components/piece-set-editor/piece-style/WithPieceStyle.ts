@@ -32,10 +32,9 @@ export function withPieceStyle(
   const pieceOverrides: PieceOverrides | undefined =
     pieceSetStyle.pieces &&
     Object.fromEntries(
-      Object.entries(pieceSetStyle.pieces).map(([key, piece]) => [
-        key,
-        parsePieceKey(key)?.side === side ? update(piece) : piece,
-      ]),
+      Object.entries(pieceSetStyle.pieces).map(([key, piece]) => {
+        return [key, parsePieceKey(key)?.side === side ? update(piece) : piece];
+      }),
     );
 
   return {

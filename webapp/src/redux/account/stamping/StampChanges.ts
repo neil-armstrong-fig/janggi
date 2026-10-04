@@ -17,8 +17,9 @@ import {syncMerged} from "@src/redux/account/actions/SyncMerged";
  */
 export function stampChanges(startListening: AppStartListening): void {
   startListening({
-    predicate: (action, current, previous) =>
-      !syncMerged.match(action) && current.customStyles !== previous.customStyles,
+    predicate: (action, current, previous) => {
+      return !syncMerged.match(action) && current.customStyles !== previous.customStyles;
+    },
     effect: (_action, api) => {
       api.dispatch(
         stylesStamped(
@@ -36,8 +37,9 @@ export function stampChanges(startListening: AppStartListening): void {
   });
 
   startListening({
-    predicate: (action, current, previous) =>
-      !syncMerged.match(action) && haveSyncedPreferencesChanged(previous.preferences, current.preferences),
+    predicate: (action, current, previous) => {
+      return !syncMerged.match(action) && haveSyncedPreferencesChanged(previous.preferences, current.preferences);
+    },
     effect: (_action, api) => {
       api.dispatch(preferencesStamped(Date.now()));
     },

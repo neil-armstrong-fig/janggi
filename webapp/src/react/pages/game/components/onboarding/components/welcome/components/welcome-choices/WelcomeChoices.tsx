@@ -85,9 +85,17 @@ export function WelcomeChoices({onStartTour}: Props): React.JSX.Element {
 }
 
 function soundChoiceOf(volume: Volume): SoundChoiceName {
-  return volume === MUTED_VOLUME ? "Off" : "On";
+  if (volume === MUTED_VOLUME) {
+    return "Off";
+  }
+
+  return "On";
 }
 
 function volumeOf(choice: SoundChoiceName): Volume {
-  return choice === "On" ? FULL_VOLUME : MUTED_VOLUME;
+  if (choice === "On") {
+    return FULL_VOLUME;
+  }
+
+  return MUTED_VOLUME;
 }

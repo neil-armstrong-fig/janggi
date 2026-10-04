@@ -89,11 +89,13 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
   const coveredKeys = useMemo(() => new Set(covered.map(toPositionKey)), [covered]);
   // Not asked at all where the hint is not offered, since it is one question of the engine per point.
-  const bikjangRiskKeys = useMemo(
-    () =>
-      bikjangHintShown(bikjangHint, opponent) ? bikjangRisksFor(game, selected ?? hovered, destinations) : NOTHING,
-    [game, selected, hovered, destinations, bikjangHint, opponent],
-  );
+  const bikjangRiskKeys = useMemo(() => {
+    if (bikjangHintShown(bikjangHint, opponent)) {
+      return bikjangRisksFor(game, selected ?? hovered, destinations);
+    }
+
+    return NOTHING;
+  }, [game, selected, hovered, destinations, bikjangHint, opponent]);
 
   // On [game] rather than on every render: the cells re-render as the pointer crosses them, and
   // asking the engine for every legal move on the board is not something to do per hover.

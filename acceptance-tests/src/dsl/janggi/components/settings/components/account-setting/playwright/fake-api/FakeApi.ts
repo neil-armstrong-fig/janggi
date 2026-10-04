@@ -142,7 +142,11 @@ export class FakeApi {
     const asked = url.searchParams.get("return");
 
     try {
-      return asked !== null && new URL(asked).origin === siteOrigin ? asked : `${siteOrigin}/`;
+      if (asked !== null && new URL(asked).origin === siteOrigin) {
+        return asked;
+      }
+
+      return `${siteOrigin}/`;
     } catch {
       return `${siteOrigin}/`;
     }

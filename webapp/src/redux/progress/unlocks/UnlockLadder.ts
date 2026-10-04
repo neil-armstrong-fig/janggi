@@ -17,9 +17,9 @@ export function unlockLadder(): readonly UnlockStep[] {
     labelsByXp.set(xp, [...(labelsByXp.get(xp) ?? []), label]);
   };
 
-  BOARD_STYLE_NAMES.forEach(name =>
-    add(UNLOCK_PRICES.boardStyles[name], `${name} ${isTheme(name) ? "theme" : "board"}`),
-  );
+  BOARD_STYLE_NAMES.forEach(name => {
+    return add(UNLOCK_PRICES.boardStyles[name], `${name} ${isTheme(name) ? "theme" : "board"}`);
+  });
 
   PIECE_SET_NAMES.forEach(name => {
     if (!isTheme(name)) add(UNLOCK_PRICES.pieceSets[name], `${name} pieces`);

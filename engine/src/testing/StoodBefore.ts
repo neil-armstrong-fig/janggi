@@ -20,9 +20,9 @@ export function stoodBefore(state: GameState, times: number): GameState {
 }
 
 function elsewhere(state: GameState, count: number): readonly Standing[] {
-  return RANKS.slice(0, count).map(rank =>
-    standingOf({...state, pieces: [...state.pieces, placed({side: "han", type: "soldier", file: 9, rank})]}),
-  );
+  return RANKS.slice(0, count).map(rank => {
+    return standingOf({...state, pieces: [...state.pieces, placed({side: "han", type: "soldier", file: 9, rank})]});
+  });
 }
 
 /** The fewest standings `isRepetition` will look through, `game/repetition/IsRepetition.ts`. */

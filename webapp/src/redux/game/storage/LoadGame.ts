@@ -104,7 +104,11 @@ function placedPieceFrom(value: unknown): PlacedPiece | undefined {
 }
 
 function standingFrom(value: unknown): Standing | undefined {
-  return typeof value === "string" && isStanding(value) ? value : undefined;
+  if (typeof value === "string" && isStanding(value)) {
+    return value;
+  }
+
+  return undefined;
 }
 
 /** A standing is the board written out, then the army to move — `Standing`'s own template. */

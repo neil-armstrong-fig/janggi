@@ -25,11 +25,11 @@ export function InlayControls({pieceBodyStyle, onChange}: Props): React.JSX.Elem
         id="inlay-on"
         label="Inlay"
         value={pieceInlayStyle !== undefined}
-        onChange={on =>
-          onChange(
+        onChange={on => {
+          return onChange(
             withInlay(pieceBodyStyle, on ? {inset: 0.12, stroke: pieceBodyStyle.stroke, strokeWidth: 1} : undefined),
-          )
-        }
+          );
+        }}
       />
 
       {pieceInlayStyle && (
@@ -63,11 +63,11 @@ export function InlayControls({pieceBodyStyle, onChange}: Props): React.JSX.Elem
             id="inlay-fill-on"
             label="Filled"
             value={pieceInlayStyle.fill !== undefined}
-            onChange={filled =>
-              changeInlay(currentPieceInlayStyle =>
-                withInlayFill(currentPieceInlayStyle, filled ? INLAY_FILL : undefined),
-              )
-            }
+            onChange={filled => {
+              return changeInlay(currentPieceInlayStyle => {
+                return withInlayFill(currentPieceInlayStyle, filled ? INLAY_FILL : undefined);
+              });
+            }}
           />
 
           {pieceInlayStyle.fill !== undefined && (

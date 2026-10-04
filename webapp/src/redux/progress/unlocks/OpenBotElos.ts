@@ -34,6 +34,9 @@ export function openBotElos(beaten: BeatenLadders, format: MatchFormat, choice: 
 /** Up to and including the first rung not yet beaten, which is the one there is to play for. */
 function openTo(beaten: BeatenElos): readonly BotElo[] {
   const nextToBeat = BOT_ELOS.findIndex(elo => !beaten.includes(elo));
+  if (nextToBeat === -1) {
+    return BOT_ELOS;
+  }
 
-  return nextToBeat === -1 ? BOT_ELOS : BOT_ELOS.slice(0, nextToBeat + 1);
+  return BOT_ELOS.slice(0, nextToBeat + 1);
 }

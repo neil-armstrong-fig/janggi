@@ -13,14 +13,30 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
 export function plaqueStateOf(status: GameStatus, side: Side): PlaqueState {
   switch (status.kind) {
     case "layingOut":
-      return status.side === side ? "layingOut" : "waiting";
+      if (status.side === side) {
+        return "layingOut";
+      }
+
+      return "waiting";
     case "toMove":
-      return status.side === side ? "toMove" : "waiting";
+      if (status.side === side) {
+        return "toMove";
+      }
+
+      return "waiting";
     case "inCheck":
-      return status.side === side ? "inCheck" : "waiting";
+      if (status.side === side) {
+        return "inCheck";
+      }
+
+      return "waiting";
     case "won":
     case "wonOnPoints":
-      return status.by === side ? "won" : "lost";
+      if (status.by === side) {
+        return "won";
+      }
+
+      return "lost";
     case "drawn":
       return "drawn";
   }

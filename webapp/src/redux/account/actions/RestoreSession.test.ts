@@ -27,10 +27,11 @@ async function openedAs(status: string, answer: (path: string) => Promise<Respon
   return store;
 }
 
-const dataless = (path: string): Promise<Response> =>
-  Promise.resolve(
+const dataless = (path: string): Promise<Response> => {
+  return Promise.resolve(
     path === "/api/me" ? Response.json({displayName: "Kim Yu-sin"}) : Response.json({version: 0, blob: null}),
   );
+};
 
 it("is signed in once the server says who the player is", async () => {
   const store = await openedAs("signing-in", dataless);
@@ -45,9 +46,9 @@ it("is called what the server calls the player", async () => {
 });
 
 it("carries on with no name where the server's answer has none", async () => {
-  const store = await openedAs("signing-in", path =>
-    Promise.resolve(path === "/api/me" ? Response.json({}) : Response.json({version: 0, blob: null})),
-  );
+  const store = await openedAs("signing-in", path => {
+    return Promise.resolve(path === "/api/me" ? Response.json({}) : Response.json({version: 0, blob: null}));
+  });
 
   expect(store.getState().account.status).toBe("signed-in");
   expect(store.getState().account.displayName).toBeUndefined();

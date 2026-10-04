@@ -15,7 +15,11 @@ export function evaluationIn(line: string): number | undefined {
   const [, kind, value] = parts;
   const score = Number(value);
 
-  return kind === "cp" ? score : Math.sign(score) * MATE_SCORE;
+  if (kind === "cp") {
+    return score;
+  }
+
+  return Math.sign(score) * MATE_SCORE;
 }
 
 const SCORE = / score (cp|mate) (-?\d+)/;

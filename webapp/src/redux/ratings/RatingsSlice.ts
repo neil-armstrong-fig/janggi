@@ -26,11 +26,13 @@ export const ratingsSlice = createSlice({
       inProgress: action.payload,
     }),
 
-    ratedGameFinished: (state, action: PayloadAction<RatedGameFinish>): RatingsSliceState =>
-      rated(state, action.payload),
+    ratedGameFinished: (state, action: PayloadAction<RatedGameFinish>): RatingsSliceState => {
+      return rated(state, action.payload);
+    },
 
-    ratedGameAbandoned: (state, action: PayloadAction<string>): RatingsSliceState =>
-      rated(state, {result: "lost", ending: "abandoned", finishedAt: action.payload}),
+    ratedGameAbandoned: (state, action: PayloadAction<string>): RatingsSliceState => {
+      return rated(state, {result: "lost", ending: "abandoned", finishedAt: action.payload});
+    },
 
     /**
      * The player starting their record again: both formats back to where a newcomer starts, and every

@@ -14,6 +14,9 @@ export function merged<Style extends CustomStyle>(
   builtIns: readonly string[],
 ): readonly Style[] {
   const written = JSON.stringify(style);
+  if (styles.some(existing => JSON.stringify(existing) === written)) {
+    return styles;
+  }
 
-  return styles.some(existing => JSON.stringify(existing) === written) ? styles : added(styles, style, builtIns);
+  return added(styles, style, builtIns);
 }

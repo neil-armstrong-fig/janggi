@@ -8,5 +8,9 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
  * two armies exactly where the pieces already do.
  */
 export function sideOfPosition(position: Position): Side {
-  return position.rank <= RANK_COUNT / 2 ? "han" : "cho";
+  if (position.rank <= RANK_COUNT / 2) {
+    return "han";
+  }
+
+  return "cho";
 }

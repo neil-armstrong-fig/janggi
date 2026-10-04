@@ -21,8 +21,11 @@ export function candidateTurnsFor(state: GameState, evaluation: number | undefin
   const every = canPass(state) ? [...moves, PASS] : moves;
 
   const safe = every.filter(turn => !handsOpponentABikjang(state, turn, evaluation));
+  if (safe.length > 0) {
+    return safe;
+  }
 
-  return safe.length > 0 ? safe : every;
+  return every;
 }
 
 const PASS: BotTurn = {kind: "pass"};

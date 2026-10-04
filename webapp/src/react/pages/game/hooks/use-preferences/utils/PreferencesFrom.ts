@@ -31,15 +31,17 @@ export function preferencesFrom(
 ): Preferences {
   const defaults = defaultPreferences();
   const boardStyles = [...BUILT_IN_STYLES, ...customStyles.boards];
-  const wornBoard = (name: string): BoardStyle =>
-    wornOf(boardStyles, name, defaults.boardStyle, candidate => xp >= boardStylePrice(candidate));
+  const wornBoard = (name: string): BoardStyle => {
+    return wornOf(boardStyles, name, defaults.boardStyle, candidate => xp >= boardStylePrice(candidate));
+  };
   const armyBoardStyles: ArmyBoardStyles = {
     cho: wornBoard(names.boardStyle),
     han: wornBoard(names.hanBoardStyle ?? names.boardStyle),
   };
   const pieceSetStyles = [...BUILT_IN_PIECE_STYLES, ...customStyles.pieceSets];
-  const wornPieces = (name: string): PieceSetStyle =>
-    wornOf(pieceSetStyles, name, defaults.pieceSet, candidate => xp >= pieceSetPrice(candidate));
+  const wornPieces = (name: string): PieceSetStyle => {
+    return wornOf(pieceSetStyles, name, defaults.pieceSet, candidate => xp >= pieceSetPrice(candidate));
+  };
   const armyPieceSets: ArmyPieceSets = {
     cho: wornPieces(names.pieceSet),
     han: wornPieces(names.hanPieceSet ?? names.pieceSet),

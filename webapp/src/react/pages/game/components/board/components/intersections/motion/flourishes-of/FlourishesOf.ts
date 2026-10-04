@@ -19,10 +19,9 @@ export function flourishesOf(moment: GameMoment | undefined, game: GameState): R
 
   if (moment.direction === "dealt") {
     return new Map<PositionKey, Flourish>(
-      game.pieces.map(({position}) => [
-        toPositionKey(position),
-        {id: moment.id, kind: "dealt", delay: dealDelay(position)},
-      ]),
+      game.pieces.map(({position}) => {
+        return [toPositionKey(position), {id: moment.id, kind: "dealt", delay: dealDelay(position)}];
+      }),
     );
   }
 

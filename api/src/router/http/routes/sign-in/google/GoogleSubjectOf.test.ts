@@ -27,8 +27,9 @@ interface TokenRequest {
 
 /** A JWT as Google's token endpoint hands one out. Its signature is not checked, so it is not made. */
 function idToken(claims: Record<string, unknown>): string {
-  const encode = (part: unknown): string =>
-    btoa(JSON.stringify(part)).replaceAll("=", "").replaceAll("+", "-").replaceAll("/", "_");
+  const encode = (part: unknown): string => {
+    return btoa(JSON.stringify(part)).replaceAll("=", "").replaceAll("+", "-").replaceAll("/", "_");
+  };
   const now = Math.floor(Date.now() / 1000);
 
   return [

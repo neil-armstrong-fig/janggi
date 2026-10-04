@@ -40,5 +40,9 @@ function palaceDiagonalsAt(position: Position): Diagonal[] {
 
 function diagonalTowards(fileStep: number, rankStep: number): Diagonal {
   if (rankStep < 0) return fileStep < 0 ? "northWest" : "northEast";
-  return fileStep < 0 ? "southWest" : "southEast";
+  if (fileStep < 0) {
+    return "southWest";
+  }
+
+  return "southEast";
 }

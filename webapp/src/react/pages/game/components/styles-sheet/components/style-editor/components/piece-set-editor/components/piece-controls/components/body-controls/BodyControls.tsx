@@ -24,9 +24,9 @@ export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
           label="Shape"
           options={PIECE_BODY_SHAPES}
           value={body.shape}
-          onChange={shape =>
-            onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, shape}}))
-          }
+          onChange={shape => {
+            return onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, shape}}));
+          }}
         />
 
         <SliderField
@@ -43,18 +43,18 @@ export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
           label="Fill"
           value={body.fill}
           translucent
-          onChange={fill =>
-            onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, fill}}))
-          }
+          onChange={fill => {
+            return onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, fill}}));
+          }}
         />
 
         <ColourField
           id="piece-outline"
           label="Outline"
           value={body.stroke}
-          onChange={stroke =>
-            onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, stroke}}))
-          }
+          onChange={stroke => {
+            return onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, stroke}}));
+          }}
         />
 
         <SliderField
@@ -63,9 +63,12 @@ export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
           numberRange={STYLE_LIMITS.lineWidth}
           step={0.1}
           value={body.strokeWidth}
-          onChange={strokeWidth =>
-            onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, strokeWidth}}))
-          }
+          onChange={strokeWidth => {
+            return onChange(currentPieceStyle => ({
+              ...currentPieceStyle,
+              body: {...currentPieceStyle.body, strokeWidth},
+            }));
+          }}
         />
       </ControlGroup>
 

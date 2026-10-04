@@ -42,10 +42,11 @@ export function pictographFromSvg(text: string): Checked<string> {
   if (moved.some(path => path === undefined)) return refused("A shape in this SVG has path data that cannot be read.");
 
   const data = moved.join(" ");
+  if (data.length > LONGEST_DRAWING) {
+    return refused("This drawing is too detailed to keep. Simplify it, or use fewer points.");
+  }
 
-  return data.length > LONGEST_DRAWING
-    ? refused("This drawing is too detailed to keep. Simplify it, or use fewer points.")
-    : {kind: "accepted", value: data};
+  return {kind: "accepted", value: data};
 }
 
 /** What the file draws on: its viewBox, or failing that its width and height. */
@@ -61,8 +62,11 @@ function sizeOf(root: Element): Size | undefined {
 
   const wide = Number.parseFloat(root.getAttribute("width") ?? "");
   const high = Number.parseFloat(root.getAttribute("height") ?? "");
+  if (wide > 0 && high > 0) {
+    return {x: 0, y: 0, width: wide, height: high};
+  }
 
-  return wide > 0 && high > 0 ? {x: 0, y: 0, width: wide, height: high} : undefined;
+  return undefined;
 }
 
 /** Scaled to fit the box whole, and centred in it on the side there is room on. */

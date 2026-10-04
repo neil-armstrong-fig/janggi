@@ -25,5 +25,9 @@ export function friendArrivalFor({status, search, keptCode}: Arriving): FriendAr
     return {kind: "link", code: linked};
   }
 
-  return keptCode === undefined ? undefined : {kind: "kept", code: keptCode};
+  if (keptCode === undefined) {
+    return undefined;
+  }
+
+  return {kind: "kept", code: keptCode};
 }

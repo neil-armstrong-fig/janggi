@@ -29,7 +29,11 @@ export function progressFrom(value: unknown): ProgressSliceState | undefined {
 }
 
 function xpFrom(value: unknown): number {
-  return isFiniteNumber(value) && value >= 0 ? Math.min(Math.floor(value), Number.MAX_SAFE_INTEGER) : 0;
+  if (isFiniteNumber(value) && value >= 0) {
+    return Math.min(Math.floor(value), Number.MAX_SAFE_INTEGER);
+  }
+
+  return 0;
 }
 
 function laddersFrom(value: unknown): BeatenBySide {

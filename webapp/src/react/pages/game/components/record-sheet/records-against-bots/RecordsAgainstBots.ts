@@ -13,12 +13,12 @@ import type {SideRecord} from "@src/react/pages/game/components/record-sheet/typ
  * engine for a score.
  */
 export function recordsAgainstBots(games: readonly GameRecord[]): readonly RecordAgainstBot[] {
-  return BOT_ELOS.map(botElo =>
-    recordAgainst(
+  return BOT_ELOS.map(botElo => {
+    return recordAgainst(
       botElo,
       games.filter(game => game.botElo === botElo),
-    ),
-  );
+    );
+  });
 }
 
 function recordAgainst(botElo: BotElo, games: readonly GameRecord[]): RecordAgainstBot {

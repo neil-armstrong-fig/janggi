@@ -24,13 +24,14 @@ export function repetitionHoldsBackAMove(state: GameState): boolean {
   const pieces = piecesByPosition(state.pieces);
   const side = state.sideToMove;
 
-  return state.pieces.some(
-    ({piece, position: from}) =>
+  return state.pieces.some(({piece, position: from}) => {
+    return (
       piece.side === side &&
       pseudoLegalMovesFrom(pieces, from).some(to => {
         const after = positionAfter(state, {from, to});
 
         return !isInCheck(after, side) && isRepetition(after);
-      }),
-  );
+      })
+    );
+  });
 }

@@ -12,15 +12,21 @@ export function styleImportFrom(text: string): StyleOutcome {
   const board = decodeKey("board", text);
   if (board !== undefined) {
     const checked = boardStyleFrom(board);
+    if (checked.kind === "accepted") {
+      return {kind: "board", style: checked.value};
+    }
 
-    return checked.kind === "accepted" ? {kind: "board", style: checked.value} : checked;
+    return checked;
   }
 
   const pieces = decodeKey("pieces", text);
   if (pieces !== undefined) {
     const checked = pieceSetStyleFrom(pieces);
+    if (checked.kind === "accepted") {
+      return {kind: "pieces", style: checked.value};
+    }
 
-    return checked.kind === "accepted" ? {kind: "pieces", style: checked.value} : checked;
+    return checked;
   }
 
   return {kind: "refused", reason: "That is not a board or piece set key."};

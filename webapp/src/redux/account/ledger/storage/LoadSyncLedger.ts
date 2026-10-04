@@ -29,11 +29,13 @@ function stampsFrom(value: unknown): Record<string, StyleStamp> {
   if (!isObject(value)) return {};
 
   return Object.fromEntries(
-    Object.entries(value).flatMap(([name, stamp]) =>
-      isObject(stamp) && typeof stamp["id"] === "string" && isFiniteNumber(stamp["at"])
-        ? [[name, {id: stamp["id"], at: stamp["at"]}]]
-        : [],
-    ),
+    Object.entries(value).flatMap(([name, stamp]) => {
+      if (isObject(stamp) && typeof stamp["id"] === "string" && isFiniteNumber(stamp["at"])) {
+        return [[name, {id: stamp["id"], at: stamp["at"]}]];
+      }
+
+      return [];
+    }),
   );
 }
 
@@ -41,6 +43,9 @@ function deletionFrom(value: unknown): SyncLedgerSliceState["deleted"] {
   if (!isObject(value)) return [];
 
   const {kind, id, at} = value;
+  if (isAmong(STYLE_KINDS, kind) && typeof id === "string" && isFiniteNumber(at)) {
+    return [{kind, id, at}];
+  }
 
-  return isAmong(STYLE_KINDS, kind) && typeof id === "string" && isFiniteNumber(at) ? [{kind, id, at}] : [];
+  return [];
 }

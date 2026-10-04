@@ -43,7 +43,11 @@ export class Reading {
   }
 
   optionalObject(key: string): Reading | undefined {
-    return this.isGiven(key) ? this.object(key) : undefined;
+    if (this.isGiven(key)) {
+      return this.object(key);
+    }
+
+    return undefined;
   }
 
   /** A style's name: what its picker shows, so something to read and not too long to fit. */
@@ -78,7 +82,11 @@ export class Reading {
   }
 
   optionalCss(key: string): string | undefined {
-    return this.isGiven(key) ? this.css(key) : undefined;
+    if (this.isGiven(key)) {
+      return this.css(key);
+    }
+
+    return undefined;
   }
 
   number(key: string, {least, most}: NumberRange): number {
@@ -91,7 +99,11 @@ export class Reading {
   }
 
   optionalNumber(key: string, numberRange: NumberRange): number | undefined {
-    return this.isGiven(key) ? this.number(key, numberRange) : undefined;
+    if (this.isGiven(key)) {
+      return this.number(key, numberRange);
+    }
+
+    return undefined;
   }
 
   among<Member extends string>(key: string, members: readonly Member[]): Member {

@@ -7,5 +7,9 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
  * the same game, which a reducer rolling its own dice would not.
  */
 export function randomSide(): Side {
-  return Math.random() < 0.5 ? "cho" : "han";
+  if (Math.random() < 0.5) {
+    return "cho";
+  }
+
+  return "han";
 }

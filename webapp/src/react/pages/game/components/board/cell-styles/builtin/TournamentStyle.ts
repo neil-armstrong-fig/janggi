@@ -32,8 +32,8 @@ function checkered(): CellOverrides {
   const ranks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 
   return Object.fromEntries(
-    files.flatMap(file =>
-      ranks.filter(rank => (file + rank) % 2 === 0).map(rank => [toPositionKey({file, rank}), green]),
-    ),
+    files.flatMap(file => {
+      return ranks.filter(rank => (file + rank) % 2 === 0).map(rank => [toPositionKey({file, rank}), green]);
+    }),
   );
 }

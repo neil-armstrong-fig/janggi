@@ -9,8 +9,11 @@ export function bikjangLineIn(game: GameState): BoardLine | undefined {
 
   const han = generalOf(game, "han");
   const cho = generalOf(game, "cho");
+  if (han && cho) {
+    return {from: han, to: cho};
+  }
 
-  return han && cho ? {from: han, to: cho} : undefined;
+  return undefined;
 }
 
 function generalOf(game: GameState, side: Side): Position | undefined {

@@ -145,7 +145,11 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
   async getCode(): Promise<FriendCode | undefined> {
     const text = await this.code.getAttribute("data-code");
 
-    return text === null ? undefined : parseFriendCode(text);
+    if (text === null) {
+      return undefined;
+    }
+
+    return parseFriendCode(text);
   }
 
   /** The name the other player gave, or undefined where nobody is sat opposite yet. */

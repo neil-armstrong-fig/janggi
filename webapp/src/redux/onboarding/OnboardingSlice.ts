@@ -16,11 +16,13 @@ export const onboardingSlice = createSlice({
     /** From the welcome, or from the You pane's replay: the tour from its first step. */
     tourStarted: (): OnboardingSliceState => tourBegun(),
 
-    tourSteppedForward: (state, action: PayloadAction<TourStepsSkipped>): OnboardingSliceState =>
-      tourStepForward(state, action.payload),
+    tourSteppedForward: (state, action: PayloadAction<TourStepsSkipped>): OnboardingSliceState => {
+      return tourStepForward(state, action.payload);
+    },
 
-    tourSteppedBack: (state, action: PayloadAction<TourStepsSkipped>): OnboardingSliceState =>
-      tourStepBack(state, action.payload),
+    tourSteppedBack: (state, action: PayloadAction<TourStepsSkipped>): OnboardingSliceState => {
+      return tourStepBack(state, action.payload);
+    },
 
     /** Skipping the welcome or the tour, wherever the player is — neither is shown again. */
     onboardingSkipped: (): OnboardingSliceState => ({stage: "done", tourStep: 0}),

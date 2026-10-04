@@ -42,8 +42,11 @@ function formatRatingFrom(value: unknown, format: MatchFormat): FormatRating | u
 
   const games = value["games"].flatMap(game => {
     const record = gameRecordFrom(game);
+    if (record?.format === format) {
+      return [record];
+    }
 
-    return record?.format === format ? [record] : [];
+    return [];
   });
 
   return {elo: value["elo"], games};

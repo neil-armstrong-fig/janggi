@@ -16,6 +16,9 @@ export function cleanedDisplayName(typed: string): string | undefined {
 
   const tidied = typed.trim().replace(/[\t ]+/g, " ");
   const length = [...tidied].length;
+  if (length >= 1 && length <= DISPLAY_NAME_MAX_LENGTH) {
+    return tidied;
+  }
 
-  return length >= 1 && length <= DISPLAY_NAME_MAX_LENGTH ? tidied : undefined;
+  return undefined;
 }

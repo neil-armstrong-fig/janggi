@@ -7,8 +7,11 @@ import {FILE_COUNT, RANK_COUNT} from "@janggi/engine/board/BoardDimensions";
 export function moveFromWire({from, to}: WireMove): Move | undefined {
   const start = positionOf(from.file, from.rank);
   const end = positionOf(to.file, to.rank);
+  if (start !== undefined && end !== undefined) {
+    return {from: start, to: end};
+  }
 
-  return start !== undefined && end !== undefined ? {from: start, to: end} : undefined;
+  return undefined;
 }
 
 function positionOf(file: number, rank: number): Position | undefined {
@@ -19,6 +22,9 @@ function positionOf(file: number, rank: number): Position | undefined {
     file <= FILE_COUNT &&
     rank >= 1 &&
     rank <= RANK_COUNT;
+  if (onBoard) {
+    return {file, rank} as Position;
+  }
 
-  return onBoard ? ({file, rank} as Position) : undefined;
+  return undefined;
 }

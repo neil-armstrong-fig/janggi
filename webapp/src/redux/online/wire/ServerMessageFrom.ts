@@ -35,7 +35,11 @@ export function serverMessageFrom(text: string): ServerMessage | undefined {
     case "opponent-look":
       return opponentLookMessageFrom(value);
     case "rejected":
-      return isAmong(REJECTION_REASONS, value["reason"]) ? {kind: "rejected", reason: value["reason"]} : undefined;
+      if (isAmong(REJECTION_REASONS, value["reason"])) {
+        return {kind: "rejected", reason: value["reason"]};
+      }
+
+      return undefined;
     default:
       return undefined;
   }
@@ -60,22 +64,28 @@ function opponentLookMessageFrom(value: Record<string, unknown>): ServerMessage 
 
 function matchedFrom(value: Record<string, unknown>): ServerMessage | undefined {
   const opponent = introductionFrom(value["opponent"]);
+  if (isAmong(SIDES, value["side"]) && opponent !== undefined) {
+    return {kind: "matched", side: value["side"], opponent};
+  }
 
-  return isAmong(SIDES, value["side"]) && opponent !== undefined
-    ? {kind: "matched", side: value["side"], opponent}
-    : undefined;
+  return undefined;
 }
 
 function startedFrom(value: Record<string, unknown>): ServerMessage | undefined {
-  return isAmong(SETUP_NAMES, value["hanSetup"]) && isAmong(SETUP_NAMES, value["choSetup"])
-    ? {kind: "started", hanSetup: value["hanSetup"], choSetup: value["choSetup"]}
-    : undefined;
+  if (isAmong(SETUP_NAMES, value["hanSetup"]) && isAmong(SETUP_NAMES, value["choSetup"])) {
+    return {kind: "started", hanSetup: value["hanSetup"], choSetup: value["choSetup"]};
+  }
+
+  return undefined;
 }
 
 function actedFrom(value: Record<string, unknown>): ServerMessage | undefined {
   const action = actionFrom(value["action"]);
+  if (isAmong(SIDES, value["by"]) && action !== undefined) {
+    return {kind: "acted", by: value["by"], action};
+  }
 
-  return isAmong(SIDES, value["by"]) && action !== undefined ? {kind: "acted", by: value["by"], action} : undefined;
+  return undefined;
 }
 
 function snapshotFrom(value: Record<string, unknown>): ServerMessage | undefined {
@@ -103,13 +113,17 @@ function historyFrom(value: unknown): readonly SeatedAction[] | undefined {
 
   const entries = value.map((entry: unknown) => {
     const action = isObject(entry) ? actionFrom(entry["action"]) : undefined;
+    if (isObject(entry) && isAmong(SIDES, entry["by"]) && action !== undefined) {
+      return {by: entry["by"], action};
+    }
 
-    return isObject(entry) && isAmong(SIDES, entry["by"]) && action !== undefined
-      ? {by: entry["by"], action}
-      : undefined;
+    return undefined;
   });
+  if (entries.every(entry => entry !== undefined)) {
+    return entries;
+  }
 
-  return entries.every(entry => entry !== undefined) ? entries : undefined;
+  return undefined;
 }
 
 function actionFrom(value: unknown): RoomAction | undefined {

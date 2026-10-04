@@ -106,7 +106,11 @@ export class UciConversation {
 }
 
 function positionCommandFor({fen, moves}: Search): string {
-  return moves.length > 0 ? `position fen ${fen} moves ${moves.join(" ")}` : `position fen ${fen}`;
+  if (moves.length > 0) {
+    return `position fen ${fen} moves ${moves.join(" ")}`;
+  }
+
+  return `position fen ${fen}`;
 }
 
 function goCommandFor({moveTimeMs, searchMoves}: Search): string {

@@ -4,5 +4,9 @@ import {sideName} from "@src/react/pages/game/utils/SideNames";
 
 /** What the piece controls are changing, as the editor says it: `Cho`, or `Cho general`. */
 export function pieceTargetName(pieceTarget: PieceTarget): string {
-  return pieceTarget.kind === "side" ? sideName(pieceTarget.side) : pieceName(pieceTarget.piece);
+  if (pieceTarget.kind === "side") {
+    return sideName(pieceTarget.side);
+  }
+
+  return pieceName(pieceTarget.piece);
 }

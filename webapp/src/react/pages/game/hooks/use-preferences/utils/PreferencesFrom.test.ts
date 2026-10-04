@@ -134,9 +134,9 @@ it("draws the defaults in place of styles of the player's own that are no longer
 
 it("marks the movable pieces only while the mark is shown", () => {
   expect(
-    MOVABLE_HIGHLIGHT_NAMES.map(name =>
-      preferencesFrom({...initial(), movableHighlight: name}, EVERYTHING_UNLOCKED, noCustomStyles()),
-    ),
+    MOVABLE_HIGHLIGHT_NAMES.map(name => {
+      return preferencesFrom({...initial(), movableHighlight: name}, EVERYTHING_UNLOCKED, noCustomStyles());
+    }),
   ).toEqual([
     expect.objectContaining({movableHighlight: {name: "Shown", shown: true}}),
     expect.objectContaining({movableHighlight: {name: "Hidden", shown: false}}),
@@ -145,9 +145,9 @@ it("marks the movable pieces only while the mark is shown", () => {
 
 it("labels the moves that could allow a bikjang only while the hint is shown", () => {
   expect(
-    BIKJANG_HINT_NAMES.map(name =>
-      preferencesFrom({...initial(), bikjangHint: name}, EVERYTHING_UNLOCKED, noCustomStyles()),
-    ),
+    BIKJANG_HINT_NAMES.map(name => {
+      return preferencesFrom({...initial(), bikjangHint: name}, EVERYTHING_UNLOCKED, noCustomStyles());
+    }),
   ).toEqual([
     expect.objectContaining({bikjangHint: {name: "Shown", shown: true}}),
     expect.objectContaining({bikjangHint: {name: "Hidden", shown: false}}),

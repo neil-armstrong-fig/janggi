@@ -160,7 +160,11 @@ export function createConductor(context: BaseAudioContext, destination: AudioNod
 function curveFor(name: LayerName, rising: boolean, entering: boolean): number {
   if (entering) return ENTERING[name].rise;
 
-  return rising ? RISE_S[name] : FALL_S[name];
+  if (rising) {
+    return RISE_S[name];
+  }
+
+  return FALL_S[name];
 }
 
 /**

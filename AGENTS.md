@@ -110,7 +110,9 @@ Prettier owns formatting (`pnpm format`). What it won't tell you:
   engine, an audio context) may stay positional ahead of the object.
 - **Name a variable after the type it holds**, where the type has a name of its own.
 - **A guard sits directly under the line it checks**, no blank line between them: `const thing = build();` then
-  `if (!thing) return undefined;`. A blank line goes after the guard, before the next block.
+  `if (!thing) return undefined;`. A blank line goes after the guard, before the next block. This holds for
+  an `if` that reads the variable declared on the line above it, whatever it returns; a guard that checks a
+  parameter or an earlier line is separated as usual.
 - **An `if` with an `else` is braced on both sides**, even when each branch is one statement. ESLint can't enforce
   this (`curly` allows braceless one-liners), so it is on you.
 - **Return early, before building what the guard doesn't need.** Put the cheap guard first and compute the value
@@ -119,6 +121,13 @@ Prettier owns formatting (`pnpm format`). What it won't tell you:
   `if (a) { if (b) … }`.
 - **A ternary is the last resort**, for a plain value with no clearer form; prefer guards, `&&` or a small
   function. (JSX and `clsx` have their own rules in `webapp/AGENTS.md` and `webapp/src/react/AGENTS.md`.)
+  **Never `return cond ? a : b`** — write `if (cond) { return a; }` then `return b;`, and unroll a chain
+  (`a ? x : b ? y : z`) into one `if` per condition, separated by blank lines. A `const x = cond ? a : b`
+  becomes a small function that returns early, not a `let` assigned in branches.
+- **An arrow whose expression body runs onto a second line takes a block and a `return`**
+  (`() => { return this || that; }`), whether it is a multi-line call or an `||` chain. An arrow whose
+  body is wrapped in parentheses (`=> ({ ... })`, `=> (<li />)`) is fine as it is. A body on one line stays
+  an expression.
 - **A body on a line of its own is braced** (`curly: multi-line`, ESLint-enforced; Prettier won't add
   or remove braces).
 - **No `../` imports** — use the `@src/*` alias each package maps to its own `src/`.

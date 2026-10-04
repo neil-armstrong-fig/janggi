@@ -18,11 +18,13 @@ it("follows the general wherever it has gone in its palace", () => {
   const opening = newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual");
   const game: GameState = {
     ...opening,
-    pieces: opening.pieces.map(placed =>
-      placed.piece.side === "cho" && placed.piece.type === "general"
-        ? {...placed, position: {file: 4, rank: 8}}
-        : placed,
-    ),
+    pieces: opening.pieces.map(placed => {
+      if (placed.piece.side === "cho" && placed.piece.type === "general") {
+        return {...placed, position: {file: 4, rank: 8}};
+      }
+
+      return placed;
+    }),
   };
 
   expect(uciPassFor(game)).toBe("d3d3");

@@ -35,9 +35,11 @@ function doneBy(transition: Transition | undefined): Cue[] {
 
   switch (transition.kind) {
     case "moved":
-      return transition.taken
-        ? [{name: "pieceTaken", weight: TAKEN_WEIGHTS[transition.taken.type]}]
-        : [{name: "piecePlaced", weight: PLACED_WEIGHT}];
+      if (transition.taken) {
+        return [{name: "pieceTaken", weight: TAKEN_WEIGHTS[transition.taken.type]}];
+      }
+
+      return [{name: "piecePlaced", weight: PLACED_WEIGHT}];
     case "passed":
       return [{name: "turnRested", weight: 1}];
     case "bikjangCalled":
@@ -64,7 +66,11 @@ function consequencesIn(after: GameState): Cue[] {
       // Nobody called it. The position came round, and the game stopped with the move that did it.
       return [{name: "bikjang", weight: 1}];
     case "undecided":
-      return isInCheck(after, after.sideToMove) ? [{name: "check", weight: 1}] : [];
+      if (isInCheck(after, after.sideToMove)) {
+        return [{name: "check", weight: 1}];
+      }
+
+      return [];
   }
 }
 

@@ -7,5 +7,9 @@ import {isAmong} from "@src/redux/untrusted/IsAmong";
  * given it — so only a built-in has a price.
  */
 export function boardStylePrice(name: string): number {
-  return isAmong(BOARD_STYLE_NAMES, name) ? UNLOCK_PRICES.boardStyles[name] : 0;
+  if (isAmong(BOARD_STYLE_NAMES, name)) {
+    return UNLOCK_PRICES.boardStyles[name];
+  }
+
+  return 0;
 }

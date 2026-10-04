@@ -17,8 +17,9 @@ function data(overrides: Partial<SyncData> = {}): SyncData {
   };
 }
 
-const withPreferences = (bikjangHint: BikjangHintName, at: number): SyncData =>
-  data({preferences: {value: {...syncedPreferencesOf(defaultPreferences()), bikjangHint}, at}});
+const withPreferences = (bikjangHint: BikjangHintName, at: number): SyncData => {
+  return data({preferences: {value: {...syncedPreferencesOf(defaultPreferences()), bikjangHint}, at}});
+};
 
 it("carries the progress of whichever device has gone further", () => {
   const merged = mergedSyncData(

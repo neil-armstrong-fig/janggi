@@ -31,5 +31,9 @@ export function newlyUnlockedBotElo({status, opponent, format, beaten}: Game): B
   if (next === undefined) return undefined;
   if (beaten[format][opponent.playerSide].includes(next)) return undefined;
 
-  return openBotElos(beaten, format, opponent.sideChoice).includes(next) ? next : undefined;
+  if (openBotElos(beaten, format, opponent.sideChoice).includes(next)) {
+    return next;
+  }
+
+  return undefined;
 }

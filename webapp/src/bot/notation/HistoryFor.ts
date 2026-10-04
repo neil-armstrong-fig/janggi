@@ -46,5 +46,9 @@ function isReversible(transition: Transition | undefined): transition is Transit
 }
 
 function uciOfTransition(before: GameState, transition: Transition): string {
-  return transition.kind === "moved" ? uciOf(transition.move) : uciPassFor(before);
+  if (transition.kind === "moved") {
+    return uciOf(transition.move);
+  }
+
+  return uciPassFor(before);
 }

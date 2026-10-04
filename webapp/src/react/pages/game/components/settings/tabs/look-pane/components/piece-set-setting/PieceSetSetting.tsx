@@ -29,8 +29,9 @@ export function PieceSetSetting(): React.JSX.Element {
   const dispatch = useAppDispatch();
 
   const optionsPieceSetStyles = [...BUILT_IN_PIECE_STYLES, ...pieceSets];
-  const lockedReason = (pieceSetStyle: PieceSetStyle): string | undefined =>
-    lockBehindXp(pieceSetPrice(pieceSetStyle.name), xp);
+  const lockedReason = (pieceSetStyle: PieceSetStyle): string | undefined => {
+    return lockBehindXp(pieceSetPrice(pieceSetStyle.name), xp);
+  };
 
   return (
     <div className="flex flex-col gap-2">

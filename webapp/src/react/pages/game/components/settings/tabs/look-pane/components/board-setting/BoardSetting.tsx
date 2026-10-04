@@ -29,8 +29,9 @@ export function BoardSetting(): React.JSX.Element {
   const dispatch = useAppDispatch();
 
   const optionsBoardStyles = [...BUILT_IN_STYLES, ...boards];
-  const lockedReason = (boardStyle: BoardStyle): string | undefined =>
-    lockBehindXp(boardStylePrice(boardStyle.name), xp);
+  const lockedReason = (boardStyle: BoardStyle): string | undefined => {
+    return lockBehindXp(boardStylePrice(boardStyle.name), xp);
+  };
 
   return (
     <div className="flex flex-col gap-2">

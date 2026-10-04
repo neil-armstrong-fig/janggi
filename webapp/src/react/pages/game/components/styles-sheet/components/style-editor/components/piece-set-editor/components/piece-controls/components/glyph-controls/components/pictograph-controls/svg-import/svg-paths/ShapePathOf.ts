@@ -63,6 +63,9 @@ function length(shape: Element, name: string): number | undefined {
   if (written === null) return undefined;
 
   const match = /^\s*(-?(?:\d+\.?\d*|\.\d+))(?:px)?\s*$/.exec(written);
+  if (match?.[1] === undefined) {
+    return undefined;
+  }
 
-  return match?.[1] === undefined ? undefined : Number(match[1]);
+  return Number(match[1]);
 }

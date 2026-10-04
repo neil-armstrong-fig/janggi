@@ -53,8 +53,11 @@ function stampsFor({kind, previous, next, ledger}: KindOfStyleChange, {now, newI
   );
   const deleted = previous.flatMap(old => {
     const known = ledger[old.name];
+    if (known && !next.some(style => style.name === old.name)) {
+      return [{kind, id: known.id, at: now}];
+    }
 
-    return known && !next.some(style => style.name === old.name) ? [{kind, id: known.id, at: now}] : [];
+    return [];
   });
 
   return {stamps, deleted};

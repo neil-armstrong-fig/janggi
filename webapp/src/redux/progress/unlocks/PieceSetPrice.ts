@@ -4,5 +4,9 @@ import {isAmong} from "@src/redux/untrusted/IsAmong";
 
 /** The XP a piece set takes to wear. As with a board style, only a built-in has a price. */
 export function pieceSetPrice(name: string): number {
-  return isAmong(PIECE_SET_NAMES, name) ? UNLOCK_PRICES.pieceSets[name] : 0;
+  if (isAmong(PIECE_SET_NAMES, name)) {
+    return UNLOCK_PRICES.pieceSets[name];
+  }
+
+  return 0;
 }

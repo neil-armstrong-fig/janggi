@@ -52,7 +52,11 @@ function beyondTheScreen(pieces: PieceLookup, line: Line): Line {
     const occupant = pieceAt(pieces, point);
     if (!occupant) continue;
 
-    return occupant.type === "cannon" ? [] : line.slice(index + 1);
+    if (occupant.type === "cannon") {
+      return [];
+    }
+
+    return line.slice(index + 1);
   }
 
   return [];

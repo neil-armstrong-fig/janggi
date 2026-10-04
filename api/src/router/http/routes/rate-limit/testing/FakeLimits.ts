@@ -15,10 +15,11 @@ export class FakeLimits {
   allowed = (limit: LimitName, key: string): Promise<boolean> => Promise.resolve(!this.refused.get(limit)?.has(key));
 
   /** The `*Allowed` function for one limit: whether a key is allowed by it. */
-  allowedBy =
-    (limit: LimitName) =>
-    (key: string): Promise<boolean> =>
-      this.allowed(limit, key);
+  allowedBy = (limit: LimitName) => {
+    return (key: string): Promise<boolean> => {
+      return this.allowed(limit, key);
+    };
+  };
 
   /** Allows everything again. */
   reset = (): void => {

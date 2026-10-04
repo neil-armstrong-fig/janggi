@@ -55,5 +55,9 @@ function oldestFirst(games: readonly GameRecord[]): readonly GameRecord[] {
 function laterOf(a: string | undefined, b: string | undefined): string | undefined {
   if (a === undefined || b === undefined) return a ?? b;
 
-  return a > b ? a : b;
+  if (a > b) {
+    return a;
+  }
+
+  return b;
 }

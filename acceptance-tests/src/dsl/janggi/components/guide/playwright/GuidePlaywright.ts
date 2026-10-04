@@ -91,7 +91,11 @@ export class GuidePlaywright extends BasePage {
     const character = piece.locator("text");
     if ((await character.count()) > 0) return (await character.textContent()) ?? "";
 
-    return (await piece.locator("path").count()) > 0 ? "drawing" : "";
+    if ((await piece.locator("path").count()) > 0) {
+      return "drawing";
+    }
+
+    return "";
   }
 
   async areGuideSourcesLinked(): Promise<boolean> {

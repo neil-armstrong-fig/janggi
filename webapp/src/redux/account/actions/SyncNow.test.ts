@@ -162,9 +162,11 @@ it("does not bring back a style that was deleted on another device", async () =>
   const store = deviceHolding(empty.withBoardStyle(mine).build(), []);
   const id = store.getState().syncLedger.boards["Mine"]?.id ?? "";
   const deleted = {kind: "Board", id, at: Date.now() + 1000} as const;
-  vi.stubGlobal("fetch", () =>
-    Promise.resolve(holding(3, otherDevice(empty.build(), {styles: {boards: [], pieceSets: [], deleted: [deleted]}}))),
-  );
+  vi.stubGlobal("fetch", () => {
+    return Promise.resolve(
+      holding(3, otherDevice(empty.build(), {styles: {boards: [], pieceSets: [], deleted: [deleted]}})),
+    );
+  });
 
   await store.dispatch(syncNow());
 
@@ -186,9 +188,11 @@ it("remembers a style the player deleted here, and tells the server so it is not
 it("takes a style another device made", async () => {
   const store = deviceHolding(empty.build(), []);
   const theirs = {id: "theirs", at: 5, style: mine};
-  vi.stubGlobal("fetch", () =>
-    Promise.resolve(holding(1, otherDevice(empty.build(), {styles: {boards: [theirs], pieceSets: [], deleted: []}}))),
-  );
+  vi.stubGlobal("fetch", () => {
+    return Promise.resolve(
+      holding(1, otherDevice(empty.build(), {styles: {boards: [theirs], pieceSets: [], deleted: []}})),
+    );
+  });
 
   await store.dispatch(syncNow());
 
@@ -200,16 +204,16 @@ it("keeps the time the other device gave a style it changed, rather than stampin
   const store = deviceHolding(empty.withBoardStyle(mine).build(), []);
   const {id} = store.getState().syncLedger.boards["Mine"]!;
   const changed = {...mine, surface: "#000000"};
-  vi.stubGlobal("fetch", () =>
-    Promise.resolve(
+  vi.stubGlobal("fetch", () => {
+    return Promise.resolve(
       holding(
         2,
         otherDevice(empty.build(), {
           styles: {boards: [{id, at: Date.now() + 5000, style: changed}], pieceSets: [], deleted: []},
         }),
       ),
-    ),
-  );
+    );
+  });
 
   await store.dispatch(syncNow());
 
@@ -229,11 +233,11 @@ it("does not bring back the games of a record that was started again on another 
       },
     }),
   );
-  vi.stubGlobal("fetch", () =>
-    Promise.resolve(
+  vi.stubGlobal("fetch", () => {
+    return Promise.resolve(
       holding(2, otherDevice(empty.build(), {ratings: {byFormat: fresh, resetAt: "2026-02-01T00:00:00.000Z"}})),
-    ),
-  );
+    );
+  });
 
   await store.dispatch(syncNow());
 
@@ -252,8 +256,8 @@ it("tells the server when the player starts their record again", async () => {
 
 it("takes the preferences chosen most recently, here or there", async () => {
   const store = deviceHolding(empty.build(), []);
-  vi.stubGlobal("fetch", () =>
-    Promise.resolve(
+  vi.stubGlobal("fetch", () => {
+    return Promise.resolve(
       holding(
         1,
         otherDevice(empty.build(), {
@@ -263,8 +267,8 @@ it("takes the preferences chosen most recently, here or there", async () => {
           },
         }),
       ),
-    ),
-  );
+    );
+  });
 
   await store.dispatch(syncNow());
 
@@ -274,8 +278,8 @@ it("takes the preferences chosen most recently, here or there", async () => {
 it("keeps the device's own preferences when it takes the ones that follow the player", async () => {
   const store = deviceHolding(empty.build(), []);
   store.dispatch(boardStyleChosen("Neon"));
-  vi.stubGlobal("fetch", () =>
-    Promise.resolve(
+  vi.stubGlobal("fetch", () => {
+    return Promise.resolve(
       holding(
         1,
         otherDevice(empty.build(), {
@@ -285,8 +289,8 @@ it("keeps the device's own preferences when it takes the ones that follow the pl
           },
         }),
       ),
-    ),
-  );
+    );
+  });
 
   await store.dispatch(syncNow());
 

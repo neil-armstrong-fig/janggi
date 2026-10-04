@@ -17,5 +17,9 @@ export function emphasisFor(
 ): MovableEmphasis | undefined {
   if (!movable.has(toPositionKey(position))) return undefined;
 
-  return holding ? "faint" : "full";
+  if (holding) {
+    return "faint";
+  }
+
+  return "full";
 }

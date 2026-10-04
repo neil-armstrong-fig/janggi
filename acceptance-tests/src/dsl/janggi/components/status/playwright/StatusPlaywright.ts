@@ -331,8 +331,11 @@ export class StatusPlaywright extends BaseComponent {
 
     return keys.flatMap(key => {
       const piece = key ? parsePieceKey(key) : undefined;
+      if (piece) {
+        return [piece.type];
+      }
 
-      return piece ? [piece.type] : [];
+      return [];
     });
   }
 

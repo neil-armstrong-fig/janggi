@@ -22,6 +22,9 @@ interface StrengthQuestion {
  */
 export function strengthToFallBackTo({beaten, format, choice, botElo}: StrengthQuestion): BotElo | undefined {
   const open = openBotElos(beaten, format, choice);
+  if (open.includes(botElo)) {
+    return undefined;
+  }
 
-  return open.includes(botElo) ? undefined : (open.at(-1) ?? DEFAULT_BOT_ELO);
+  return open.at(-1) ?? DEFAULT_BOT_ELO;
 }

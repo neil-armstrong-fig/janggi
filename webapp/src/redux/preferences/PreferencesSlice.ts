@@ -35,10 +35,11 @@ export const preferencesSlice = createSlice({
     /** Han's board or Cho's, apart from the other's. Choosing for one army leaves the other on the board it wore. */
     armyBoardStyleChosen: (state, action: PayloadAction<ArmyBoardStyleChoice>): PreferencesSliceState => {
       const {side, name} = action.payload;
+      if (side === "han") {
+        return {...state, hanBoardStyle: name};
+      }
 
-      return side === "han"
-        ? {...state, hanBoardStyle: name}
-        : {...state, boardStyle: name, hanBoardStyle: state.hanBoardStyle ?? state.boardStyle};
+      return {...state, boardStyle: name, hanBoardStyle: state.hanBoardStyle ?? state.boardStyle};
     },
 
     /** The armies' boards chosen apart, each still on the board both wore. */
@@ -54,10 +55,11 @@ export const preferencesSlice = createSlice({
     /** Han's pieces or Cho's, apart from the other's. Choosing for one army leaves the other in the set it wore. */
     armyPieceSetChosen: (state, action: PayloadAction<ArmyPieceSetChoice>): PreferencesSliceState => {
       const {side, name} = action.payload;
+      if (side === "han") {
+        return {...state, hanPieceSet: name};
+      }
 
-      return side === "han"
-        ? {...state, hanPieceSet: name}
-        : {...state, pieceSet: name, hanPieceSet: state.hanPieceSet ?? state.pieceSet};
+      return {...state, pieceSet: name, hanPieceSet: state.hanPieceSet ?? state.pieceSet};
     },
 
     /** The armies' pieces chosen apart, each still in the set both wore. */

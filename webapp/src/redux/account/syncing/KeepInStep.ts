@@ -18,14 +18,17 @@ const QUIET_FOR_MS = 1500;
  */
 export function keepInStep(startListening: AppStartListening): void {
   startListening({
-    predicate: (action, current, previous) =>
-      current.account.status === "signed-in" &&
-      !syncMerged.match(action) &&
-      (current.progress !== previous.progress ||
-        current.customStyles !== previous.customStyles ||
-        current.ratings.byFormat !== previous.ratings.byFormat ||
-        haveSyncedPreferencesChanged(previous.preferences, current.preferences) ||
-        current.syncLedger !== previous.syncLedger),
+    predicate: (action, current, previous) => {
+      return (
+        current.account.status === "signed-in" &&
+        !syncMerged.match(action) &&
+        (current.progress !== previous.progress ||
+          current.customStyles !== previous.customStyles ||
+          current.ratings.byFormat !== previous.ratings.byFormat ||
+          haveSyncedPreferencesChanged(previous.preferences, current.preferences) ||
+          current.syncLedger !== previous.syncLedger)
+      );
+    },
     effect: async (_action, api) => {
       api.cancelActiveListeners();
       api.dispatch(syncPending());

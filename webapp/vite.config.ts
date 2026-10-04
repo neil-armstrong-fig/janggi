@@ -197,10 +197,13 @@ function serviceWorkerRegistrationStub(): Plugin {
   return {
     name: "service-worker-registration-stub",
     resolveId: source => (source === id ? `\0${id}` : undefined),
-    load: resolved =>
-      resolved === `\0${id}`
-        ? "export function useRegisterSW() { return {needRefresh: [false, () => {}], updateServiceWorker: () => {}}; }"
-        : undefined,
+    load: resolved => {
+      if (resolved === `\0${id}`) {
+        return "export function useRegisterSW() { return {needRefresh: [false, () => {}], updateServiceWorker: () => {}}; }";
+      }
+
+      return undefined;
+    },
   };
 }
 

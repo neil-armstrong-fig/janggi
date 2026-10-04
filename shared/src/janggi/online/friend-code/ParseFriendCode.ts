@@ -12,7 +12,9 @@ export function parseFriendCode(text: string): FriendCode | undefined {
     return undefined;
   }
 
-  return [...characters].every(character => FRIEND_CODE_ALPHABET.includes(character))
-    ? (characters as FriendCode)
-    : undefined;
+  if ([...characters].every(character => FRIEND_CODE_ALPHABET.includes(character))) {
+    return characters as FriendCode;
+  }
+
+  return undefined;
 }

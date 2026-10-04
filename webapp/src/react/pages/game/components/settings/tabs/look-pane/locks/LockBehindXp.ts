@@ -3,5 +3,9 @@
  * once the player has that much.
  */
 export function lockBehindXp(price: number, xp: number): string | undefined {
-  return xp >= price ? undefined : `${price.toLocaleString("en")} XP`;
+  if (xp >= price) {
+    return undefined;
+  }
+
+  return `${price.toLocaleString("en")} XP`;
 }

@@ -201,8 +201,9 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   // away from the app switcher kills the page with no warning, so a game started in the last five
   // seconds is lost and the one before it comes back. Writing everything again as the page is hidden is
   // the last chance a page is given. Best effort: the browser decides when the disk sees it.
-  const writeAll = (): void =>
-    slices.forEach(slice => saveJson(storage, keys[slice], writtenOf(slice, keptValue(kept.getState(), slice))));
+  const writeAll = (): void => {
+    return slices.forEach(slice => saveJson(storage, keys[slice], writtenOf(slice, keptValue(kept.getState(), slice))));
+  };
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") writeAll();
   });

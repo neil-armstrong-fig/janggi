@@ -95,5 +95,9 @@ export function gameStatusOf(game: GameState, phase: SetupPhase): GameStatus {
  * unfinished phase is waiting on Han until Han has chosen, and on Cho after that.
  */
 function layingOutNext(phase: SetupPhase): Side {
-  return phase.hanSetup === undefined ? "han" : "cho";
+  if (phase.hanSetup === undefined) {
+    return "han";
+  }
+
+  return "cho";
 }

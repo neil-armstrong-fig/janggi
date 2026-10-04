@@ -127,15 +127,22 @@ export const gameSlice = createSlice({
       opponent: state.opponent,
     }),
 
-    opponentChosen: (state, action: PayloadAction<OpponentName>): GameSliceState =>
-      dealtAgainst(state, {...state.opponent, name: action.payload}),
+    opponentChosen: (state, action: PayloadAction<OpponentName>): GameSliceState => {
+      return dealtAgainst(state, {...state.opponent, name: action.payload});
+    },
 
-    botStrengthChosen: (state, action: PayloadAction<BotElo>): GameSliceState =>
-      dealtAgainst(state, {...state.opponent, botElo: action.payload}),
+    botStrengthChosen: (state, action: PayloadAction<BotElo>): GameSliceState => {
+      return dealtAgainst(state, {...state.opponent, botElo: action.payload});
+    },
 
     sideChosen: {
-      reducer: (state, action: PayloadAction<SettledSideChoice>): GameSliceState =>
-        dealtAgainst(state, {...state.opponent, sideChoice: action.payload.choice, playerSide: action.payload.side}),
+      reducer: (state, action: PayloadAction<SettledSideChoice>): GameSliceState => {
+        return dealtAgainst(state, {
+          ...state.opponent,
+          sideChoice: action.payload.choice,
+          playerSide: action.payload.side,
+        });
+      },
       prepare: (choice: SideChoiceName) => ({payload: {choice, side: settledSide(choice)}}),
     },
 
@@ -144,8 +151,9 @@ export const gameSlice = createSlice({
       prepare: () => ({payload: randomSide()}),
     },
 
-    botKeptWithinReach: (state, action: PayloadAction<BeatenLadders>): GameSliceState =>
-      withinReach(state, action.payload),
+    botKeptWithinReach: (state, action: PayloadAction<BeatenLadders>): GameSliceState => {
+      return withinReach(state, action.payload);
+    },
   },
   extraReducers: builder => {
     builder.addCase(saveLoaded, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));

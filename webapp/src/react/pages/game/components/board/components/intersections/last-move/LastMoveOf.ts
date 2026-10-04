@@ -15,6 +15,9 @@ export function lastMoveOf(played: PlayedGame): Move | undefined {
   if (!previous) return undefined;
 
   const transition = transitionBetween(previous, played.present);
+  if (transition?.kind === "moved") {
+    return transition.move;
+  }
 
-  return transition?.kind === "moved" ? transition.move : undefined;
+  return undefined;
 }

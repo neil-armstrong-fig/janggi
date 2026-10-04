@@ -27,9 +27,12 @@ it("changes the style by hand, from what it is now", () => {
   const {result} = draft();
 
   act(() => result.current.change(boardStyle => ({...boardStyle, surface: "#000000"})));
-  act(() =>
-    result.current.change(boardStyle => ({...boardStyle, defaultCell: {...boardStyle.defaultCell, stroke: "#ffffff"}})),
-  );
+  act(() => {
+    return result.current.change(boardStyle => ({
+      ...boardStyle,
+      defaultCell: {...boardStyle.defaultCell, stroke: "#ffffff"},
+    }));
+  });
 
   expect(result.current.style.surface).toBe("#000000");
   expect(result.current.style.defaultCell.stroke).toBe("#ffffff");

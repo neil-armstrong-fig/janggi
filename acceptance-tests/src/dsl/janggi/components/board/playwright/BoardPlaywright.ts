@@ -108,7 +108,11 @@ export class BoardPlaywright extends BaseComponent {
 
     const key = await piece.getAttribute("data-piece");
 
-    return key ? parsePieceKey(key) : undefined;
+    if (key) {
+      return parsePieceKey(key);
+    }
+
+    return undefined;
   }
 
   /**
@@ -239,7 +243,11 @@ export class BoardPlaywright extends BaseComponent {
       // The shorthand carries layout defaults along with the colour; a gradient shows up as the
       // image and leaves the colour transparent, so read whichever of the two is actually painting.
       const style = getComputedStyle(surface);
-      return style.backgroundImage === "none" ? style.backgroundColor : style.backgroundImage;
+      if (style.backgroundImage === "none") {
+        return style.backgroundColor;
+      }
+
+      return style.backgroundImage;
     });
   }
 
@@ -252,7 +260,11 @@ export class BoardPlaywright extends BaseComponent {
   async getBikjangLineWidth(): Promise<number | undefined> {
     const width = await this.lineStyle("bikjang-line", "strokeWidth");
 
-    return width === undefined ? undefined : Number.parseFloat(width);
+    if (width === undefined) {
+      return undefined;
+    }
+
+    return Number.parseFloat(width);
   }
 
   /** The colour the lines of a check are drawn in, as the browser resolves it, or undefined with no check. */
@@ -278,7 +290,11 @@ export class BoardPlaywright extends BaseComponent {
     const scale = await this.pieceLocator(file, rank).evaluate(piece => {
       const lifter = piece.parentElement;
 
-      return lifter ? getComputedStyle(lifter).scale : "none";
+      if (lifter) {
+        return getComputedStyle(lifter).scale;
+      }
+
+      return "none";
     });
 
     return scale !== "none" && Number.parseFloat(scale) > 1;
@@ -313,7 +329,11 @@ export class BoardPlaywright extends BaseComponent {
     return await this.pieceLocator(file, rank).evaluate(piece => {
       const lifter = piece.parentElement;
 
-      return lifter ? getComputedStyle(lifter).filter : "none";
+      if (lifter) {
+        return getComputedStyle(lifter).filter;
+      }
+
+      return "none";
     });
   }
 
@@ -351,13 +371,11 @@ export class BoardPlaywright extends BaseComponent {
    */
   private async motionSettled(): Promise<void> {
     await this.page.waitForFunction(
-      () =>
-        document
-          .getAnimations()
-          .every(
-            animation =>
-              animation.playState !== "running" || animation.effect?.getComputedTiming().iterations === Infinity,
-          ),
+      () => {
+        return document.getAnimations().every(animation => {
+          return animation.playState !== "running" || animation.effect?.getComputedTiming().iterations === Infinity;
+        });
+      },
       undefined,
       {timeout: SETTLES_WITHIN_MS},
     );
