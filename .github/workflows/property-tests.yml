@@ -93,7 +93,7 @@ jobs:
             echo
             echo "That uses a new seed, so it may well pass. To replay this exact run, paste the"
             echo "\`{ seed, path, endOnFailure }\` block above into the failing \`fc.assert\` call in"
-            echo "\`webapp/src/game/PlayingRandomGames.test.ts\`."
+            echo "\`webapp/src/record/PlayingRandomGames.test.ts\`."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload the log

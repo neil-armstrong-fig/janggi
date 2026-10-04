@@ -1,4 +1,4 @@
-import type {Move} from "@src/game/types/Move";
+import type {Move} from "@janggi/engine/types/Move";
 import {expect, it} from "vitest";
 import {lastMoveEndAt} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveEndAt";
 

@@ -1,5 +1,5 @@
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 
 /**
  * The four arrangements a scored game is laid out from — every setup but the Central Chariot, which is

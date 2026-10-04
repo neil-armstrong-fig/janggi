@@ -1,0 +1,68 @@
+import type {File, Rank} from "@janggi/engine/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
+import {expect, it} from "vitest";
+import {isBikjang} from "@janggi/engine/bikjang/IsBikjang";
+import {placed} from "@janggi/engine/testing/Placed";
+
+/**
+ * 빅장 is the position alone — two generals down one file with nothing in the way. Whether anyone
+ * may call it is `canCallBikjang`'s question, and none of it is asked here. See `docs/rules.md`
+ * §6.2.
+ */
+
+it("is a bikjang with the two generals facing down an empty file", () => {
+  expect(isBikjang(position(cho("general", 5, 9), han("general", 5, 2)))).toBe(true);
+});
+
+it("is a bikjang down a wing file of the palace as much as the middle one", () => {
+  expect(isBikjang(position(cho("general", 4, 9), han("general", 4, 2)))).toBe(true);
+});
+
+it("is no bikjang with the generals on different files", () => {
+  expect(isBikjang(position(cho("general", 4, 9), han("general", 5, 2)))).toBe(false);
+});
+
+it("is no bikjang with a piece standing between them", () => {
+  const state = position(cho("general", 5, 9), cho("soldier", 5, 5), han("general", 5, 2));
+
+  expect(isBikjang(state)).toBe(false);
+});
+
+it("does not care whose piece blocks the file", () => {
+  const state = position(cho("general", 5, 9), han("chariot", 5, 5), han("general", 5, 2));
+
+  expect(isBikjang(state)).toBe(false);
+});
+
+it("is unmoved by pieces standing on the file outside the two generals", () => {
+  const state = position(cho("general", 5, 9), cho("chariot", 5, 10), han("general", 5, 2), han("chariot", 5, 1));
+
+  expect(isBikjang(state)).toBe(true);
+});
+
+it("is no bikjang when only one army has a general on the board", () => {
+  expect(isBikjang(position(cho("general", 5, 9), han("chariot", 5, 2)))).toBe(false);
+});
+
+function position(...pieces: readonly PlacedPiece[]): GameState {
+  return {
+    pieces,
+    sideToMove: "cho",
+    format: "Casual",
+    consecutivePasses: 0,
+    seen: [],
+    reachedByAGeneralCapture: false,
+    bikjangCalled: false,
+    drawAgreed: false,
+  };
+}
+
+function cho(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "cho", type, file, rank});
+}
+
+function han(type: PieceType, file: File, rank: Rank): PlacedPiece {
+  return placed({side: "han", type, file, rank});
+}

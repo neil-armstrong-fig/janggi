@@ -1,5 +1,5 @@
 import type {WithName} from "@src/react/pages/game/types/WithName";
-import {clsx} from "clsx";
+import {SelectField} from "@src/react/pages/game/components/select-field/SelectField";
 import {toSlug} from "@src/react/pages/game/components/settings/components/option-picker/utils/ToSlug";
 
 /**
@@ -40,55 +40,39 @@ export function OptionSelect<Option extends WithName>({
   onSelect,
 }: Props<Option>): React.JSX.Element {
   return (
-    <div className="relative">
-      <select
-        data-testid={`${pickerId}-select`}
-        aria-label={label}
-        value={selected?.name ?? ""}
-        disabled={disabled}
-        onChange={event => {
-          const chosen = options.find(option => option.name === event.target.value);
-          if (chosen) onSelect(chosen);
-        }}
-        className="w-full cursor-pointer appearance-none rounded-xl bg-black/25 py-2.5 pr-10 pl-3 text-base font-medium text-white/90 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {selected === undefined && (
-          <option value="" disabled className="bg-ground-raised">
-            Not yet chosen
+    <SelectField
+      data-testid={`${pickerId}-select`}
+      aria-label={label}
+      value={selected?.name ?? ""}
+      disabled={disabled}
+      onChange={event => {
+        const chosen = options.find(option => option.name === event.target.value);
+        if (chosen) onSelect(chosen);
+      }}
+      className="py-2.5 text-base font-medium"
+    >
+      {selected === undefined && (
+        <option value="" disabled className="bg-ground-raised">
+          Not yet chosen
+        </option>
+      )}
+
+      {options.map(option => {
+        const reason = lockedReason?.(option);
+
+        return (
+          <option
+            key={option.name}
+            data-testid={`${pickerId}-option-${toSlug(option.name)}`}
+            data-locked={reason !== undefined || undefined}
+            value={option.name}
+            disabled={reason !== undefined}
+            className="bg-ground-raised"
+          >
+            {reason === undefined ? option.name : `${option.name} — 🔒 ${reason}`}
           </option>
-        )}
-
-        {options.map(option => {
-          const reason = lockedReason?.(option);
-
-          return (
-            <option
-              key={option.name}
-              data-testid={`${pickerId}-option-${toSlug(option.name)}`}
-              data-locked={reason !== undefined || undefined}
-              value={option.name}
-              disabled={reason !== undefined}
-              className="bg-ground-raised"
-            >
-              {reason === undefined ? option.name : `${option.name} — 🔒 ${reason}`}
-            </option>
-          );
-        })}
-      </select>
-
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden
-        className={clsx(
-          "pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-white/60",
-          disabled && "opacity-40",
-        )}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </div>
+        );
+      })}
+    </SelectField>
   );
 }

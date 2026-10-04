@@ -1,4 +1,4 @@
-import type {Move} from "@src/game/types/Move";
+import type {Move} from "@janggi/engine/types/Move";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Vector} from "@src/react/pages/game/components/board/types/Vector";
 import {headingOf} from "@src/react/pages/game/components/board/components/impact/utils/HeadingOf";

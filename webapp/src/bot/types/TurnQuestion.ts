@@ -1,5 +1,5 @@
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
 
 /** What the bot is asked when its army is to move. */
 export interface TurnQuestion {

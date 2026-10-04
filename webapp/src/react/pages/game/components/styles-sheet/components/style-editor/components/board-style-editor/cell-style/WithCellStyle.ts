@@ -2,7 +2,7 @@ import type {BoardStyle, CellOverrides} from "@src/styles/types/BoardStyle";
 import type {BoardTarget} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/board-target/types/BoardTarget";
 import type {CellStyle} from "@src/styles/types/CellStyle";
 import {cellStyleAt} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/cell-style/CellStyleAt";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * The board with what is being changed changed by `update`.

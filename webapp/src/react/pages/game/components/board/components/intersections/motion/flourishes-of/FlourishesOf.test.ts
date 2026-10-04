@@ -1,12 +1,12 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {GameState} from "@src/game/types/GameState";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {dealDelay} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/deal-delay/DealDelay";
 import {expect, it} from "vitest";
 import {flourishesOf} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/FlourishesOf";
-import {newGame} from "@src/game/NewGame";
-import {pass} from "@src/game/passing/Pass";
+import {newGame} from "@janggi/engine/NewGame";
+import {pass} from "@janggi/engine/passing/Pass";
 
 it("sets out every piece on the board when a game is dealt, each at its own moment", () => {
   const game = opening();

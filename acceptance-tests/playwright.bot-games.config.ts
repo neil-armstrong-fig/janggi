@@ -9,6 +9,9 @@ import {defineConfig, devices} from "@playwright/test";
  */
 export default defineConfig<AcceptanceTestOptions>({
   ...baseConfig,
+  // A game played out is some fifty turns, each waiting on a bot, and the strongest thinks for seconds over each of
+  // its own: far past the 30 seconds a spec of a few taps is given.
+  timeout: 600_000,
   projects: [
     {
       name: "desktop-bot-games",

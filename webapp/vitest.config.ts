@@ -13,7 +13,7 @@ import {configDefaults, defineConfig} from "vitest/config";
  * Listed by path rather than matched by a suffix because there is one of them. Add the second here
  * when it exists.
  */
-export const PROPERTY_TESTS = ["src/game/PlayingRandomGames.test.ts"];
+export const PROPERTY_TESTS = ["src/record/PlayingRandomGames.test.ts"];
 
 /**
  * The whole games against the bot, which `pnpm test` leaves out as well.

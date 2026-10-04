@@ -1,4 +1,4 @@
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 
 /**
  * How long after a game is dealt the piece on a point drops into place, in milliseconds.

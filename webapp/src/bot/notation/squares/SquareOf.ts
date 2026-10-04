@@ -1,5 +1,5 @@
 import {FILE_LETTERS} from "@src/bot/notation/squares/utils/FileLetters";
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 
 /**
  * A point as the engine names it: a file letter and a rank counted **up from Cho's edge**, so our

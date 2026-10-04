@@ -1,5 +1,5 @@
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {SetupRating} from "@src/bot/setups/types/SetupRating";
 import {TOURNAMENT_SETUPS} from "@src/bot/setups/TournamentSetups";
 

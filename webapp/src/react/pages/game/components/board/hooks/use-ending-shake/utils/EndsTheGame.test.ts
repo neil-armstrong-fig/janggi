@@ -1,11 +1,11 @@
-import type {ChangeDirection} from "@src/game/record/types/ChangeDirection";
+import type {ChangeDirection} from "@src/record/types/ChangeDirection";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {GameState} from "@src/game/types/GameState";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {endsTheGame} from "@src/react/pages/game/components/board/hooks/use-ending-shake/utils/EndsTheGame";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 
 it("ends the game with a turn played into a decided position", () => {
   expect(endsTheGame(moment("advanced"), decided())).toBe(true);

@@ -1,6 +1,6 @@
 import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/intersections/types/MovableEmphasis";
-import type {Position, PositionKey} from "@src/game/board/types/Position";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import type {Position, PositionKey} from "@janggi/engine/board/types/Position";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * How loudly to mark one intersection as holding a piece its owner may move, or undefined to leave it

@@ -9,7 +9,7 @@ import {PiecePreviewOptions} from "@src/react/pages/game/components/styles-sheet
 import {PieceSetTools} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-set-tools/PieceSetTools";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {PieceTarget} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/piece-target/types/PieceTarget";
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {StylePreview} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/style-preview/StylePreview";
 import {editedStyle} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/EditedStyle";

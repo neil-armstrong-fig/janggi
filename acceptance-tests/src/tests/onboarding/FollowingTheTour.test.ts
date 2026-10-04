@@ -141,6 +141,10 @@ given("a player who is on the tour's fourth step, which is about Settings", () =
         then("it says signing in is optional", async ({janggi}) => {
           expect(await janggi.onboarding.getTourText()).toContain("optional");
         });
+
+        then("it says an account is needed to play a friend", async ({janggi}) => {
+          expect(await janggi.onboarding.getTourText()).toContain("friend");
+        });
       });
     });
 
@@ -202,6 +206,70 @@ given("a player who is on the tour's last step", () => {
       then("the settings are opened again, on the tab that holds the sign-in", async ({janggi}) => {
         expect(await janggi.settings.isOpen()).toBe(true);
         expect(await janggi.settings.isTabSelected("Account")).toBe(true);
+      });
+    });
+  });
+});
+
+given("a player who is on the tour's account step", () => {
+  useFreshPlayer();
+
+  beforeEach(async ({janggi}) => {
+    await janggi.onboarding.continueTheWelcome();
+    await janggi.onboarding.startTheTour();
+    await janggi.onboarding.nextTourStep();
+    await janggi.onboarding.nextTourStep();
+    await janggi.onboarding.nextTourStep();
+    await janggi.settings.openTheSettings();
+    await janggi.onboarding.nextTourStep();
+    await janggi.onboarding.nextTourStep();
+  });
+
+  when("they skip signing in and go on", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.onboarding.nextTourStep();
+    });
+
+    then("the tour goes straight to the last step, with no step about playing a friend", async ({janggi}) => {
+      expect(await janggi.onboarding.getTourStepCount()).toBe(8);
+      expect(await janggi.onboarding.getTourStep()).toBe(8);
+      expect(await janggi.onboarding.isTourGuideLinkForTheGuide()).toBe(true);
+    });
+  });
+
+  when("they sign in and go on", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.account.signInWithGoogle();
+      await janggi.onboarding.nextTourStep();
+    });
+
+    then("the tour shows them how to play a friend, on the tab that holds it", async ({janggi}) => {
+      expect(await janggi.onboarding.getTourStepCount()).toBe(9);
+      expect(await janggi.onboarding.getTourStep()).toBe(8);
+      expect(await janggi.settings.isTabSelected("Account")).toBe(true);
+      expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("friend");
+      expect(await janggi.playAFriend.isOffered()).toBe(true);
+    });
+
+    when("they go on", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.onboarding.nextTourStep();
+      });
+
+      then("it is the last step, and the settings are put away", async ({janggi}) => {
+        expect(await janggi.onboarding.getTourStep()).toBe(9);
+        expect(await janggi.settings.isOpen()).toBe(false);
+      });
+    });
+
+    when("they go back", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.onboarding.previousTourStep();
+      });
+
+      then("they are on the account step again", async ({janggi}) => {
+        expect(await janggi.onboarding.getTourStep()).toBe(7);
+        expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("account");
       });
     });
   });

@@ -3,10 +3,10 @@ import {createSlice} from "@reduxjs/toolkit";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
-import type {Move} from "@src/game/types/Move";
+import type {Move} from "@janggi/engine/types/Move";
 import type {OpponentName} from "@janggi/shared/janggi/settings/OpponentName";
 import type {SettledSideChoice} from "@src/redux/game/types/SettledSideChoice";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {SideChoiceName} from "@janggi/shared/janggi/settings/SideChoiceName";
 import {acceptedADraw} from "@src/redux/game/drawing/AcceptedADraw";
@@ -15,18 +15,22 @@ import {dealtGame} from "@src/redux/game/dealing/DealtGame";
 import {offeredADraw} from "@src/redux/game/drawing/OfferedADraw";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
 import {freshPhaseFor} from "@src/redux/game/dealing/FreshPhaseFor";
-import {place} from "@src/game/setups/Place";
-import {callBikjangIn} from "@src/game/record/CallBikjangIn";
-import {playMove} from "@src/game/record/PlayMove";
-import {redo} from "@src/game/record/Redo";
-import {restTurn} from "@src/game/record/RestTurn";
-import {undo} from "@src/game/record/Undo";
+import {place} from "@janggi/engine/setups/Place";
+import {callBikjangIn} from "@src/record/CallBikjangIn";
+import {playMove} from "@src/record/PlayMove";
+import {redo} from "@src/record/Redo";
+import {restTurn} from "@src/record/RestTurn";
+import {undo} from "@src/record/Undo";
 import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
 import {dealtAgainst} from "@src/redux/game/dealing/DealtAgainst";
 import {randomSide} from "@src/redux/game/sides/RandomSide";
 import {restartedFrom} from "@src/redux/game/restarting/RestartedFrom";
 import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
+import {friendGameDealt} from "@src/redux/online/actions/FriendGameDealt";
+import {gamesSwapped} from "@src/redux/online/actions/GamesSwapped";
+import {localGameRestored} from "@src/redux/online/actions/LocalGameRestored";
 import {syncMerged} from "@src/redux/account/actions/SyncMerged";
+import {friendPhaseFor} from "@src/redux/online/dealing/FriendPhaseFor";
 import {settledSide} from "@src/redux/game/sides/SettledSide";
 import {withinReach} from "@src/redux/game/within-reach/WithinReach";
 
@@ -70,6 +74,10 @@ import {withinReach} from "@src/redux/game/within-reach/WithinReach";
  * accepted draw reaches it, as the agreement `agreeADrawIn` makes; an offer takes nobody's turn, and
  * anything that then happens in the game — a move, a rested turn, an undo — lets it lapse, which is why
  * each of those reducers puts `drawOffer` back to nothing.
+ *
+ * `friendGameDealt` deals what a room dealt, as a casual game between two people with the player on the army the room
+ * gave them; `localGameRestored` puts back the game they had before it. Neither is the player's own to dispatch: the friend
+ * game's `redux/online/` is what does, and the game it deals is played by the actions above, as any is.
  *
  * `botLetOpen` touches neither the board nor the record. It is the player saying a game against the
  * bot may start, which a bot holding cho's first move waits for; every deal takes it back.
@@ -141,6 +149,12 @@ export const gameSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(saveLoaded, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
+    builder.addCase(friendGameDealt, (state, action): GameSliceState => ({
+      ...dealtGame(friendPhaseFor(action.payload)),
+      opponent: {...state.opponent, name: "Human", playerSide: action.payload.ownSide},
+    }));
+    builder.addCase(gamesSwapped, (_state, action): GameSliceState => action.payload.incoming);
+    builder.addCase(localGameRestored, (_state, action): GameSliceState => action.payload);
     builder.addCase(syncMerged, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
   },
 });

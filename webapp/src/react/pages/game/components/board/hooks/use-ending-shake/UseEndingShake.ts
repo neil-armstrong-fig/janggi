@@ -1,5 +1,5 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Vector} from "@src/react/pages/game/components/board/types/Vector";
 import {endsTheGame} from "@src/react/pages/game/components/board/hooks/use-ending-shake/utils/EndsTheGame";
 import {useEffect, useEffectEvent, useRef} from "react";

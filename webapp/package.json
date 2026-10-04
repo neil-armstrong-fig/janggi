@@ -21,6 +21,7 @@
     "test:bot-games": "vitest run --config vitest.bot-games.config.ts"
   },
   "dependencies": {
+    "@janggi/engine": "workspace:*",
     "@janggi/shared": "workspace:*",
     "@reduxjs/toolkit": "catalog:",
     "clsx": "catalog:",

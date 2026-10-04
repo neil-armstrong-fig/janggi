@@ -3,7 +3,7 @@ import {tourStepNameOf} from "@src/redux/onboarding/touring/TourStepNameOf";
 
 it("names the step the tour is on", () => {
   expect(tourStepNameOf({stage: "tour", tourStep: 0})).toBe("pick-up");
-  expect(tourStepNameOf({stage: "tour", tourStep: 7})).toBe("guide");
+  expect(tourStepNameOf({stage: "tour", tourStep: 8})).toBe("guide");
 });
 
 it("names none for a player who is not on the tour", () => {

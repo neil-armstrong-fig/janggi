@@ -1,8 +1,8 @@
 import type {BotTurn} from "@src/bot/types/BotTurn";
-import type {GameState} from "@src/game/types/GameState";
-import {canPass} from "@src/game/passing/CanPass";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {canPass} from "@janggi/engine/passing/CanPass";
 import {handsOpponentABikjang} from "@src/bot/choice/hands-opponent-a-bikjang/HandsOpponentABikjang";
-import {legalMovesFor} from "@src/game/LegalMovesFor";
+import {legalMovesFor} from "@janggi/engine/LegalMovesFor";
 
 /**
  * Every turn the engine may choose between — the list its search is restricted to.

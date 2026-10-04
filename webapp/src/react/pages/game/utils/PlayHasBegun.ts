@@ -1,4 +1,4 @@
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
 
 /**
  * Whether a turn has been taken in this game — a move played or a turn rested, both of which leave a

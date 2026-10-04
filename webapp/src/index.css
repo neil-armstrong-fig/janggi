@@ -27,6 +27,11 @@
     overflow: hidden;
   }
 
+  html {
+    /* Native controls (a dropdown's open list) draw dark, not in the OS theme. */
+    color-scheme: dark;
+  }
+
   body {
     /* Touch defaults: no 300ms tap delay, no rubber-band scroll, no grey tap flash. */
     touch-action: manipulation;

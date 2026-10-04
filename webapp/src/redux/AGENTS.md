@@ -43,7 +43,7 @@ hooks. Add state as a slice via `createSlice`.
 - **The store holds a `PlayedGame`, not a `GameState`.** `state.game.played.present` is the position,
   and everything drawn takes that. The record beside it is what `UndoButton` and `RedoButton` act on,
   and those two are the only controls **not** gated on the game still being undecided — taking back
-  the turn that ended a game is the ordinary reason to reach for one. `game/AGENTS.md` says why the
+  the turn that ended a game is the ordinary reason to reach for one. `engine/AGENTS.md` says why the
   engine keeps it that way.
 - **A setting that is part of the game is dealt, not applied.** The two setups and the match format go
   through `dealtGame`, which starts a fresh game rather than changing the one under way, and all three
@@ -105,6 +105,19 @@ hooks. Add state as a slice via `createSlice`.
   `PieceSetStyleFrom` fill a missing new group with its default rather than refuse it.
 
 ## Testing
+
+**A game with a friend is the game slice's own game, dealt by a room** (`online/`; `docs/online-play.md` is why the room is the
+judge). The room speaks, `receiveFromFriendRoom` turns what it says into the actions any game is played by (`moved`,
+`passed`, `drawOffered`…, so sound and motion are unchanged), and a player's own move is **only sent** (`actInFriendRoom`):
+nothing happens on screen until the room says so, to both. The opponent is dealt as `"Human"` — never a third name, which would
+grow the picker — and "this is a friend game" is `withAFriend` — a friend seated, and the room's game on the board — not a property of the game. While a room is only reached or waiting, the board is the player's own and nothing is locked; a host who plays on is brought back to the sheet when a friend sits down. The player's own
+game waits in `friend.parkedGame` while `friend.viewing` says which of the two is on the board, and both go on: a room's
+message goes through `intoTheFriendGame`, which plays it on the board or in the parked game. The player's own game, whichever
+is shown, is what `Store.ts` keeps on the device (`keptValue`), with only the room's code kept from the friend slice, so a
+reload puts the player back in the room and a leave puts their own game back. `connection` is the player's own link to the room,
+separate from the game. Reconnection is `FriendConnection`'s: it introduces the player first on **every** socket,
+because the room clears their absence and sends the `snapshot` only on `introduce`; a snapshot re-deals and replays from
+nothing, so it can arrive twice. Everything the room sends is read as untrusted (`ServerMessageFrom`, `OpponentLookFrom`).
 
 **One door is open, and only because it opens onto nothing new.** `redux/debug/` lets a posted message
 set the player's progress — `{janggi: "debug", progress: {xp: 640}}` — and `VITE_DEBUG_XP` does the

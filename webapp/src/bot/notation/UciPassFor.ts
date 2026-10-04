@@ -1,4 +1,4 @@
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import {squareOf} from "@src/bot/notation/squares/SquareOf";
 
 /**

@@ -1,5 +1,5 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
 import {FULL_VOLUME} from "@janggi/shared/janggi/settings/Volume";
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 import {createAudioDirector} from "@src/audio/CreateAudioDirector";

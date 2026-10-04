@@ -1,10 +1,10 @@
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {expect, it} from "vitest";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
-import {place} from "@src/game/setups/Place";
-import {playMove} from "@src/game/record/PlayMove";
+import {place} from "@janggi/engine/setups/Place";
+import {playMove} from "@src/record/PlayMove";
 import {restartedFrom} from "@src/redux/game/restarting/RestartedFrom";
 
 it("clears what was played", () => {

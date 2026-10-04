@@ -86,16 +86,18 @@ criterion; it carries a scoped `eslint-disable` saying so.
 
 ## Fixtures and spec organisation
 
-**A second device is the one other fixture.** `anotherDevice` is the app open in a second browser
-context, for a spec about two copies of it. `PlayingTheBotToTheEnd.test.ts` has the strongest bot choose
-the player's moves on one, and relays every turn to the other by hand; `account/KeepingStylesInStep.test.ts`
-signs one Google account in on both, the two sharing a stand-in API the way two phones share a server. Only
-`beforeEach.withAnotherDevice` names it — named in `withDslOnly`, it would open a second context for
-every spec in the suite. A test that opens one is given ten minutes, since a game played out is
-minutes of bots thinking (the account spec does not need it, and is not slowed by having it), and a spec's own helper is handed a device typed as `Janggi`, from the
-mapping. That spec is left out of `pnpm acceptance-tests`: the default projects ignore
-`BOT_GAME_SPECS`, and `playwright.bot-games.config.ts` (`pnpm acceptance-tests:bot-games`) runs it
-alone, in `.github/workflows/bot-games.yml`, which gates no deploy.
+**A second device is opened by the spec that wants one**, with `await janggi.openSeparateDevice()` in a `beforeEach`,
+and kept in a variable named for who is using it (`friend`, `strongestBotsDevice`) declared in the `given`. It is the
+app on another browser context, made as the first was (same window, same effects) and sharing its stand-in API, so two
+copies meet in one server as two phones would; the fixture closes it when the test ends. Playwright runs every hook of a
+test afresh, so the `let` is the test's own and nothing carries between tests. A criterion can then assert on either
+device, and a spec's own helper is handed one typed as `Janggi`, from the mapping. `PlayingTheBotToTheEnd.test.ts` has the
+strongest bot choose the player's moves on one, and relays every turn to the other by hand;
+`account/KeepingStylesInStep.test.ts` signs one Google account in on both; `play-a-friend/` plays two _different_ people
+against one stand-in room (the second device signs in with `signInWithGoogleAsAnotherPlayer()`). The bot game is left out
+of `pnpm acceptance-tests`: the default projects ignore `BOT_GAME_SPECS`, and `playwright.bot-games.config.ts`
+(`pnpm acceptance-tests:bot-games`) runs it alone, with the ten minutes a game played out needs, in
+`.github/workflows/bot-games.yml`, which gates no deploy.
 
 **The release-update specs are separate for the opposite reason:** they're deterministic and gate the
 deploy, but need the production service worker that the Vite development server deliberately omits.

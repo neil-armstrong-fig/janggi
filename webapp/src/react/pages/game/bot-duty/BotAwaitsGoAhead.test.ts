@@ -1,7 +1,7 @@
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import type {Move} from "@src/game/types/Move";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Move} from "@janggi/engine/types/Move";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {UnknownAction} from "@reduxjs/toolkit";
 import {botAwaitsGoAhead} from "@src/react/pages/game/bot-duty/BotAwaitsGoAhead";
 import {

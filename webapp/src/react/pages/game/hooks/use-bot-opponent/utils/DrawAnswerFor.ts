@@ -1,4 +1,4 @@
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {UnknownAction} from "@reduxjs/toolkit";
 import {drawAccepted, drawDeclined} from "@src/redux/game/GameSlice";
 import {wouldAcceptADraw} from "@src/bot/choice/would-accept-a-draw/WouldAcceptADraw";

@@ -1,4 +1,4 @@
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 
 /** Every point that has no style of its own. */
 interface DefaultTarget {

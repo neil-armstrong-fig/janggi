@@ -1,16 +1,16 @@
-import type {File, Rank} from "@src/game/board/types/Position";
-import type {GameState} from "@src/game/types/GameState";
+import type {File, Rank} from "@janggi/engine/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import type {RecordChange} from "@src/game/record/types/RecordChange";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
+import type {RecordChange} from "@src/record/types/RecordChange";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {cuesFor} from "@src/react/pages/game/hooks/utils/CuesFor";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
-import {placed} from "@src/testing/Placed";
-import {stoodBefore} from "@src/testing/StoodBefore";
+import {newGame} from "@janggi/engine/NewGame";
+import {placed} from "@janggi/engine/testing/Placed";
+import {stoodBefore} from "@janggi/engine/testing/StoodBefore";
 
 /**
  * Changes are written out by hand, because what is under test is which sounds a change makes, not

@@ -1,6 +1,7 @@
 import {Account} from "@src/react/pages/game/components/settings/tabs/account-pane/components/account/Account";
 import {GuideLink} from "@src/react/pages/game/components/settings/tabs/account-pane/components/guide-link/GuideLink";
 import {InstallButton} from "@src/react/pages/game/components/settings/tabs/account-pane/components/install-button/InstallButton";
+import {PlayAFriendEntry} from "@src/react/pages/game/components/settings/tabs/account-pane/components/play-a-friend-entry/PlayAFriendEntry";
 import {ReferencesLink} from "@src/react/pages/game/components/settings/tabs/account-pane/components/references-link/ReferencesLink";
 import {ReplayTourButton} from "@src/react/pages/game/components/settings/tabs/account-pane/components/replay-tour-button/ReplayTourButton";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
@@ -17,6 +18,8 @@ export function AccountPane({selected}: Props): React.JSX.Element {
   return (
     <SettingsPane name="Account" selected={selected}>
       <Account />
+
+      <PlayAFriendEntry />
 
       <div className="flex flex-col gap-2">
         <p className="text-xs font-medium text-white/60">App &amp; help</p>

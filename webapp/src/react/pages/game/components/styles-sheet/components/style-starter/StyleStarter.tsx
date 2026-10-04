@@ -1,3 +1,5 @@
+import {Button} from "@src/react/pages/game/components/button/Button";
+import {SelectField} from "@src/react/pages/game/components/select-field/SelectField";
 import {SectionHeading} from "@src/react/pages/game/components/styles-sheet/components/section-heading/SectionHeading";
 import {STYLE_KINDS} from "@janggi/shared/janggi/settings/StyleKind";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
@@ -57,7 +59,8 @@ export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onSt
           </p>
 
           <div className="flex gap-2">
-            <select
+            <SelectField
+              wrapperClassName="w-full"
               data-testid="style-editor-kind"
               aria-label="What kind of style to make"
               value={kind}
@@ -68,42 +71,36 @@ export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onSt
                   setFrom("");
                 }
               }}
-              className={FIELD}
+              className="py-2.5 text-base"
             >
               {STYLE_KINDS.map(candidate => (
                 <option key={candidate} value={candidate} className="bg-ground-raised">
                   {candidate}
                 </option>
               ))}
-            </select>
+            </SelectField>
 
-            <select
+            <SelectField
+              wrapperClassName="w-full"
               data-testid="style-editor-from"
               aria-label="The style to start from"
               value={from || startingPoints[0]?.name}
               onChange={event => setFrom(event.target.value)}
-              className={FIELD}
+              className="py-2.5 text-base"
             >
               {startingPoints.map(style => (
                 <option key={style.name} value={style.name} className="bg-ground-raised">
                   {style.name}
                 </option>
               ))}
-            </select>
+            </SelectField>
           </div>
 
-          <button
-            type="button"
-            data-testid="style-editor-start"
-            onClick={start}
-            className="h-11 cursor-pointer rounded-xl bg-wood text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.98] motion-reduce:transition-none"
-          >
+          <Button variant="primary" data-testid="style-editor-start" onClick={start}>
             Start
-          </button>
+          </Button>
         </>
       )}
     </section>
   );
 }
-
-const FIELD = "w-full rounded-xl bg-black/25 px-3 py-2.5 text-base text-white/90 placeholder:text-white/30";

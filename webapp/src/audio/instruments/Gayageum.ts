@@ -44,8 +44,11 @@ export function gayageum({context, destination}: SoundOutput, when: number, gaya
     path.forEach(({seconds, cents}, index) => {
       const pitch = frequency * partial.ratio * 2 ** (cents / 1200);
 
-      if (index === 0) tone.frequency.setValueAtTime(pitch, when);
-      else tone.frequency.exponentialRampToValueAtTime(pitch, when + seconds);
+      if (index === 0) {
+        tone.frequency.setValueAtTime(pitch, when);
+      } else {
+        tone.frequency.exponentialRampToValueAtTime(pitch, when + seconds);
+      }
     });
     vibrato?.connect(tone.detune);
 

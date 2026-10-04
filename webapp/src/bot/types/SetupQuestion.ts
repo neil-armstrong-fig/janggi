@@ -1,5 +1,5 @@
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /** What the bot is asked when it has a scored game's back rank to lay out. */

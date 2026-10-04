@@ -5,7 +5,7 @@ import {botEngineFailed} from "@src/redux/bot-engine/BotEngineSlice";
 import {failureReasonOf} from "@src/react/pages/game/hooks/bot-failure/FailureReasonOf";
 import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/BotReplyFor";
 import {drawAnswerFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/DrawAnswerFor";
-import {opponentOf} from "@src/game/utils/OpponentOf";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useRef} from "react";
 

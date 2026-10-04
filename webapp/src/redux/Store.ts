@@ -43,6 +43,10 @@ import {settingsReducer} from "@src/redux/settings/SettingsSlice";
 import {onboardingReducer} from "@src/redux/onboarding/OnboardingSlice";
 import {preferencesReducer} from "@src/redux/preferences/PreferencesSlice";
 import {ratingsReducer} from "@src/redux/ratings/RatingsSlice";
+import {friendReducer} from "@src/redux/online/FriendSlice";
+import type {FriendSliceState} from "@src/redux/online/types/FriendSliceState";
+import {FRIEND_STORAGE_KEY} from "@src/redux/online/storage/FriendStorageKey";
+import {loadFriend} from "@src/redux/online/storage/LoadFriend";
 import {restoredRatings} from "@src/redux/restored-ratings/RestoredRatings";
 import {saveJson} from "@src/redux/device-storage/SaveJson";
 
@@ -66,6 +70,7 @@ export interface RootState {
   readonly settings: SettingsSliceState;
   readonly account: AccountSliceState;
   readonly syncLedger: SyncLedgerSliceState;
+  readonly friend: FriendSliceState;
 }
 
 /**
@@ -73,6 +78,9 @@ export interface RootState {
  * are the sheets': a page opens with none up.
  */
 type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings">;
+
+/** What is compared, to know a slice has changed, and then written: a slice itself, except where what is kept is less than the slice (`keptValue`). */
+type KeptValue = RootState[KeptSlice] | string | undefined;
 
 export type AppStore = ReturnType<typeof configureStore<RootState>>;
 export type AppDispatch = AppStore["dispatch"];
@@ -116,6 +124,7 @@ export function createStore(storage?: Storage): AppStore {
       settings: settingsReducer,
       account: accountReducer,
       syncLedger: syncLedgerReducer,
+      friend: friendReducer,
     },
     preloadedState: {
       game,
@@ -126,6 +135,7 @@ export function createStore(storage?: Storage): AppStore {
       onboarding: loadOnboarding(storage),
       account: loadAccount(storage),
       syncLedger: loadSyncLedger(storage),
+      friend: loadFriend(storage),
     },
   });
 
@@ -155,8 +165,10 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
     "onboarding",
     "syncLedger",
     "account",
+    "friend",
   ];
   const keys: Record<KeptSlice, string> = {
+    friend: FRIEND_STORAGE_KEY,
     game: GAME_STORAGE_KEY,
     preferences: PREFERENCES_STORAGE_KEY,
     ratings: RATINGS_STORAGE_KEY,
@@ -168,13 +180,14 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   };
 
   let saved = kept.getState();
-  slices.forEach(slice => saveJson(storage, keys[slice], saved[slice]));
+  slices.forEach(slice => saveJson(storage, keys[slice], writtenOf(slice, keptValue(saved, slice))));
 
   kept.subscribe(() => {
     const state = kept.getState();
 
     slices.forEach(slice => {
-      if (state[slice] !== saved[slice]) saveJson(storage, keys[slice], state[slice]);
+      const value = keptValue(state, slice);
+      if (value !== keptValue(saved, slice)) saveJson(storage, keys[slice], writtenOf(slice, value));
     });
 
     saved = state;
@@ -184,11 +197,35 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   // away from the app switcher kills the page with no warning, so a game started in the last five
   // seconds is lost and the one before it comes back. Writing everything again as the page is hidden is
   // the last chance a page is given. Best effort: the browser decides when the disk sees it.
-  const writeAll = (): void => slices.forEach(slice => saveJson(storage, keys[slice], kept.getState()[slice]));
+  const writeAll = (): void =>
+    slices.forEach(slice => saveJson(storage, keys[slice], writtenOf(slice, keptValue(kept.getState(), slice))));
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") writeAll();
   });
   window.addEventListener("pagehide", writeAll);
+}
+
+/**
+ * What is kept of a slice. Nearly always the slice; but while a friend game is on the board, **the game kept is the one it
+ * set aside**, so a reload brings back the player's own game rather than a friend's — which the room holds, and puts back
+ * (`friend/FriendSlice.ts`). And of the friend slice only the room's code is kept.
+ */
+function keptValue(state: RootState, slice: KeptSlice): KeptValue {
+  if (slice === "game") {
+    if (state.friend.viewing === "friend") return state.friend.parkedGame ?? state.game;
+
+    return state.game;
+  }
+
+  if (slice === "friend") return state.friend.code;
+
+  return state[slice];
+}
+
+function writtenOf(slice: KeptSlice, value: KeptValue): unknown {
+  if (slice === "friend") return {code: value};
+
+  return value;
 }
 
 /** `localStorage`, where there is one to reach — reading the property itself throws where it is blocked. */

@@ -1,4 +1,4 @@
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 import {checkLinesOf} from "@src/react/pages/game/components/board/components/check-lines/utils/CheckLinesOf";
 import {expect, it} from "vitest";
 

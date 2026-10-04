@@ -1,10 +1,13 @@
 import {BoardDsl} from "@src/dsl/janggi/components/board/BoardDsl";
+import type {DeviceSetup} from "@src/dsl/janggi/playwright/types/DeviceSetup";
 import {DebugDsl} from "@src/dsl/janggi/components/debug/DebugDsl";
 import {DslError} from "@src/dsl/errors/DslError";
+import {EVERYTHING_UNLOCKED} from "@src/dsl/janggi/starting/EverythingUnlocked";
 import {GuideDsl} from "@src/dsl/janggi/components/guide/GuideDsl";
 import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import {LegalDsl} from "@src/dsl/janggi/components/legal/LegalDsl";
 import {OnboardingDsl} from "@src/dsl/janggi/components/onboarding/OnboardingDsl";
+import {PlayAFriendDsl} from "@src/dsl/janggi/components/play-a-friend/PlayAFriendDsl";
 import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
@@ -38,11 +41,13 @@ import {StylesSheetDsl} from "@src/dsl/janggi/components/styles-sheet/StylesShee
  */
 export class JanggiDsl {
   private readonly janggi: JanggiPlaywright;
+  private readonly separateDevices: JanggiDsl[] = [];
 
   readonly board: BoardDsl;
   readonly guide: GuideDsl;
   readonly legal: LegalDsl;
   readonly onboarding: OnboardingDsl;
+  readonly playAFriend: PlayAFriendDsl;
   readonly settings: SettingsDsl;
   readonly status: StatusDsl;
   readonly recordSheet: RecordSheetDsl;
@@ -51,13 +56,17 @@ export class JanggiDsl {
   readonly stylesSheet: StylesSheetDsl;
   readonly debug: DebugDsl;
 
-  constructor(page: Page) {
+  constructor(
+    page: Page,
+    private readonly setup: DeviceSetup,
+  ) {
     this.janggi = new JanggiPlaywright(page);
 
     this.board = new BoardDsl(page);
     this.guide = new GuideDsl(page);
     this.legal = new LegalDsl(page);
     this.onboarding = new OnboardingDsl(page);
+    this.playAFriend = new PlayAFriendDsl(page);
     this.settings = new SettingsDsl(page);
     this.status = new StatusDsl(page);
     this.recordSheet = new RecordSheetDsl(page);
@@ -65,6 +74,68 @@ export class JanggiDsl {
     this.releaseUpdate = new ReleaseUpdateDsl(page);
     this.stylesSheet = new StylesSheetDsl(page);
     this.debug = new DebugDsl(page);
+  }
+
+  /**
+   * Opens the app on this device, as a spec starts: arranged as the project asks (`DeviceSetup`), and **everything
+   * unlocked** — a million XP and every bot beaten, through the debug door — so a spec about the locks is the one that
+   * puts them back. The API is stood in for before the app opens, so no spec reaches a real one and every call the app
+   * makes to it is counted: `src/tests/account/` asserts a player who never signs in makes none.
+   *
+   * Said by the fixture, once, and by `openSeparateDevice` for the device it opens. A spec never needs to. Given the
+   * device that opened this one, both are answered by the same stand-in server, as two phones would be.
+   */
+  async begin(sharingTheApiWith?: JanggiDsl): Promise<void> {
+    try {
+      const {effects, keepShippedOpponent, freshPlayer} = this.setup;
+
+      if (!freshPlayer) await this.janggi.keepOnboardingDone();
+
+      await this.settings.account.standInForTheApi(sharingTheApiWith?.settings.account);
+      await this.navigateToPage();
+      if (freshPlayer) return;
+
+      if (!keepShippedOpponent) await this.settings.opponent.setTo("Human");
+      if (effects !== "Full") await this.settings.effects.setTo(effects);
+      await this.debug.setProgress(EVERYTHING_UNLOCKED);
+    } catch (error) {
+      throw new DslError("Failed to start the app on this device", error);
+    }
+  }
+
+  /**
+   * The app opened on a second device, for a spec about two copies of it: a game played between them, or one account
+   * signed in on both. It is made as this one was — the same window, the same effects — and shares this one's stand-in
+   * API, so the two meet in one server as two phones would. Keep it in a variable named for who is using it:
+   *
+   * ```ts
+   * let friend: Janggi;
+   * beforeEach(async ({janggi}) => {
+   *   friend = await janggi.openSeparateDevice();
+   * });
+   * ```
+   *
+   * It is closed when the test ends. Playwright runs every hook of a test afresh, so the variable is the test's own.
+   */
+  async openSeparateDevice(): Promise<JanggiDsl> {
+    try {
+      const device = new JanggiDsl(await this.janggi.openAnotherDevicePage(this.setup.context), this.setup);
+
+      this.separateDevices.push(device);
+      await device.begin(this);
+
+      return device;
+    } catch (error) {
+      throw new DslError("Failed to open the app on a separate device", error);
+    }
+  }
+
+  /** Closes every device `openSeparateDevice` opened from here, and theirs. Said by the fixture when the test ends. */
+  async closeSeparateDevices(): Promise<void> {
+    for (const device of this.separateDevices.splice(0)) {
+      await device.closeSeparateDevices();
+      await device.janggi.closeTheDevice();
+    }
   }
 
   async navigateToPage(): Promise<void> {

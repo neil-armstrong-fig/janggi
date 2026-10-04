@@ -78,6 +78,11 @@ export const preferencesSlice = createSlice({
       flipBoardForHan: action.payload,
     }),
 
+    showOpponentLookChosen: (state, action: PayloadAction<boolean>): PreferencesSliceState => ({
+      ...state,
+      showOpponentLook: action.payload,
+    }),
+
     effectsChosen: (state, action: PayloadAction<EffectsName>): PreferencesSliceState => ({
       ...state,
       effects: action.payload,
@@ -116,6 +121,7 @@ export const {
   movableHighlightChosen,
   bikjangHintChosen,
   flipBoardForHanChosen,
+  showOpponentLookChosen,
   effectsChosen,
   soundEffectsVolumeChanged,
   musicVolumeChanged,

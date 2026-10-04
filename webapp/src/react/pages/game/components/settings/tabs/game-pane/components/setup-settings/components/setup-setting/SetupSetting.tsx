@@ -1,10 +1,11 @@
 import {choSetupChosen, hanSetupChosen} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
-import {SETUPS} from "@src/game/setups/Setups";
+import {SETUPS} from "@janggi/engine/setups/Setups";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {canPlace} from "@src/game/setups/CanPlace";
-import {opponentOf} from "@src/game/utils/OpponentOf";
+import {canPlace} from "@janggi/engine/setups/CanPlace";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
+import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/game-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
 
@@ -28,6 +29,7 @@ interface Props {
 
 export function SetupSetting({side}: Props): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
+  const withAFriend = useWithAFriend();
   const dispatch = useAppDispatch();
 
   const laysOutItself =
@@ -36,7 +38,7 @@ export function SetupSetting({side}: Props): React.JSX.Element {
   return (
     <OptionPicker
       id={`${side}-setup`}
-      disabled={playHasBegun(played) || laysOutItself || !canPlace(phase, side)}
+      disabled={playHasBegun(played) || withAFriend || laysOutItself || !canPlace(phase, side)}
       label={`${sideName(side)}'s setup`}
       hideLabel
       ariaLabel={`${sideName(side)}'s opening setup`}

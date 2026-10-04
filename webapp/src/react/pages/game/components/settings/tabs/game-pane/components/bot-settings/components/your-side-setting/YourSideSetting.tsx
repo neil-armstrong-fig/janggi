@@ -2,6 +2,7 @@ import {botStrengthChosen, sideChosen} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import {SIDE_CHOICE_OPTIONS} from "@src/react/pages/game/components/settings/tabs/game-pane/utils/OpponentOptions";
+import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/game-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {strengthToFallBackTo} from "@src/react/pages/game/components/settings/tabs/game-pane/locks/StrengthToFallBackTo";
 
@@ -14,13 +15,14 @@ import {strengthToFallBackTo} from "@src/react/pages/game/components/settings/ta
  */
 export function YourSideSetting(): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
+  const withAFriend = useWithAFriend();
   const beaten = useAppSelector(state => state.progress.beaten);
   const dispatch = useAppDispatch();
 
   return (
     <OptionPicker
       id="your-side"
-      disabled={playHasBegun(played) || opponent.name !== "Bot"}
+      disabled={playHasBegun(played) || withAFriend || opponent.name !== "Bot"}
       label="Your side"
       ariaLabel="Which army you play against the bot"
       options={SIDE_CHOICE_OPTIONS}

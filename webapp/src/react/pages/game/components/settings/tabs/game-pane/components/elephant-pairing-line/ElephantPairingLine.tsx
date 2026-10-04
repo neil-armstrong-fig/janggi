@@ -1,5 +1,5 @@
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
-import {elephantPairingOf} from "@src/game/setups/ElephantPairingOf";
+import {elephantPairingOf} from "@janggi/engine/setups/ElephantPairingOf";
 import {useAppSelector} from "@src/redux/Hooks";
 
 /**
@@ -21,7 +21,6 @@ import {useAppSelector} from "@src/redux/Hooks";
 export function ElephantPairingLine(): React.JSX.Element | null {
   const {hanSetup, choSetup} = useAppSelector(state => state.game.phase);
   const pairing = hanSetup && choSetup ? elephantPairingOf(hanSetup, choSetup) : undefined;
-
   if (!pairing) return null;
 
   return (

@@ -1,14 +1,14 @@
 import type {Engine} from "@src/bot/engine/types/Engine";
-import type {Move} from "@src/game/types/Move";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
+import type {Move} from "@janggi/engine/types/Move";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {SearchResult} from "@src/bot/engine/types/SearchResult";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/BotReplyFor";
 import {choSetupChosen, hanSetupChosen, moved, passed} from "@src/redux/game/GameSlice";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
-import {playMove} from "@src/game/record/PlayMove";
-import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
+import {newGame} from "@janggi/engine/NewGame";
+import {playMove} from "@src/record/PlayMove";
+import {playedGameFrom} from "@src/record/PlayedGameFrom";
 
 const opening: PlayedGame = playedGameFrom(newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual"));
 

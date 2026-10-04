@@ -1,7 +1,9 @@
-import {handleApiRequest} from "@src/handler/HandleApiRequest";
+import {routeRequest} from "@src/router/RouteRequest";
 import {missingSecrets} from "@src/env/MissingSecrets";
-import {servicesFor} from "@src/env/ServicesFor";
 import {workerEnvironment} from "@src/env/WorkerEnvironment";
+
+// Cloudflare finds a Durable Object by its class being exported from the Worker module.
+export {GameRoom} from "@src/room/GameRoom";
 
 // Cloudflare requires the Worker module to be the default export.
 export default {
@@ -13,6 +15,6 @@ export default {
       return Response.json({}, {status: 500});
     }
 
-    return handleApiRequest(request, servicesFor(request));
+    return routeRequest(request);
   },
 } satisfies ExportedHandler;

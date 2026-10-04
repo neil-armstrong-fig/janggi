@@ -2,7 +2,7 @@
 
 Vite + React 19 + Redux Toolkit + Tailwind v4, client-side rendered, installable as a PWA.
 
-`src/game/`, `src/audio/`, `src/bot/`, `src/react/` and `src/redux/` each have their own `AGENTS.md`
+`src/record/`, `src/audio/`, `src/bot/`, `src/react/` and `src/redux/` each have their own `AGENTS.md`
 — read the one for what you're touching, in addition to this one, before you touch it. `src/styles/`
 (the shape of a board/piece style, the ranges its numbers may take, and what a style that says nothing
 of a part gets), `src/sw/` (the service worker) and `src/isolation/` (whether a reload into
@@ -14,16 +14,17 @@ engine, which waits for it) don't have one yet; nothing folder-specific has accu
 This package's own internal layering, enforced by ESLint alongside the workspace-level table in the
 root `AGENTS.md` — a violation of any of these is a lint error:
 
-- Layering is one-way: `react/` → `redux/` → `game/`. `src/redux/` may not import `src/react/` —
+- Layering is one-way: `react/` → `redux/` → `record/` → the engine (`@janggi/engine`, its own package). `src/redux/` may not import `src/react/` —
   components depend on state, never the reverse.
-- `src/game/` may import neither `react/` nor `redux/`, nor React or Redux themselves.
+- The engine is the `engine/` package (`engine/AGENTS.md`): it imports neither this package, React nor Redux, and only this
+  package and `api` may import it.
 - `audio/` sits beside `redux/`: `react/` may reach it, and it reaches nothing of this package's
-  (`src/game/` included), nor React, Redux or `@janggi/shared` — the page decides what a game sounds
+  (the engine included), nor React, Redux or `@janggi/shared` — the page decides what a game sounds
   like and hands it cues and a mood to play.
-- `src/bot/` may import `src/game/` and `@janggi/shared` only — never the store, the page or the
+- `src/bot/` may import `@janggi/engine` and `@janggi/shared` only — never the store, the page or the
   sound, nor React or Redux.
 - `src/styles/` may import neither the page, the store nor the sound.
-- `board/`'s geometry (positions, dimensions, palaces) lives in `src/game/board/`, not in `react/`,
+- `board/`'s geometry (positions, dimensions, palaces) lives in `engine/src/board/`, not in `react/`,
   because the engine needs it too and may not reach into `react/` — `cellShapeAt` in `react/` asks
   `palaceDiagonalStepsAt` for the palace X rather than working it out again, so what's painted and
   what's legal can't drift apart.

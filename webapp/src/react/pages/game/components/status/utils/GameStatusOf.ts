@@ -1,10 +1,10 @@
 import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
-import type {GameState} from "@src/game/types/GameState";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {isArranged} from "@src/game/setups/IsArranged";
-import {isInCheck} from "@src/game/check/IsInCheck";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import {isArranged} from "@janggi/engine/setups/IsArranged";
+import {isInCheck} from "@janggi/engine/check/IsInCheck";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /**
  * The board is still being laid out — 판차림 — and this is the army it is waiting on. Only a scored
@@ -77,7 +77,6 @@ export function gameStatusOf(game: GameState, phase: SetupPhase): GameStatus {
   if (!isArranged(phase)) return {kind: "layingOut", side: layingOutNext(phase)};
 
   const outcome = outcomeOf(game);
-
   if (outcome.kind === "checkmate") return {kind: "won", by: outcome.winner};
 
   if (outcome.kind === "pointsWin") return {kind: "wonOnPoints", by: outcome.winner};

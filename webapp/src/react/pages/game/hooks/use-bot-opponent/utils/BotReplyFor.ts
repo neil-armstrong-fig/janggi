@@ -2,7 +2,7 @@ import type {BotReply} from "@src/react/pages/game/hooks/use-bot-opponent/types/
 import type {BotTurn} from "@src/bot/types/BotTurn";
 import type {Engine} from "@src/bot/engine/types/Engine";
 import type {ReplyQuestion} from "@src/react/pages/game/hooks/use-bot-opponent/types/ReplyQuestion";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {UnknownAction} from "@reduxjs/toolkit";
 import {bikjangCalled, choSetupChosen, hanSetupChosen, moved, passed} from "@src/redux/game/GameSlice";

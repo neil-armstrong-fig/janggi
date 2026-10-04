@@ -1,5 +1,5 @@
-import {FILES, RANKS} from "@src/game/board/BoardDimensions";
-import type {Position} from "@src/game/board/types/Position";
+import {FILES, RANKS} from "@janggi/engine/board/BoardDimensions";
+import type {Position} from "@janggi/engine/board/types/Position";
 
 /**
  * Every intersection of the board, in reading order — the order a CSS grid wants them in.

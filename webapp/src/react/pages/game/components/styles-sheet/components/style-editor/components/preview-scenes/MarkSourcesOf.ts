@@ -1,11 +1,11 @@
 import type {MarkSources} from "@src/react/pages/game/components/board/components/intersections/cell-marks/types/MarkSources";
-import type {Position, PositionKey} from "@src/game/board/types/Position";
+import type {Position, PositionKey} from "@janggi/engine/board/types/Position";
 import type {PreviewScene} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/PreviewScene";
-import {coveredFrom} from "@src/game/moves/CoveredFrom";
+import {coveredFrom} from "@janggi/engine/moves/CoveredFrom";
 import {movablePieces} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/MovablePieces";
-import {movesFrom} from "@src/game/MovesFrom";
-import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {movesFrom} from "@janggi/engine/MovesFrom";
+import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * What the marks of a scene are worked out from, asked of the engine as the board in play asks it: where

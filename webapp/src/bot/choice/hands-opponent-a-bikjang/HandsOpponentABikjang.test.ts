@@ -1,9 +1,9 @@
-import type {GameState} from "@src/game/types/GameState";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import {expect, it} from "vitest";
 import {handsOpponentABikjang} from "@src/bot/choice/hands-opponent-a-bikjang/HandsOpponentABikjang";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 
 /**
  * Cho to move, its soldier the only thing standing between the two generals on file 5. Stepping it

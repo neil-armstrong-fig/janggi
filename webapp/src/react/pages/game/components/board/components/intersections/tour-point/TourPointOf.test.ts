@@ -1,8 +1,8 @@
-import type {GameState} from "@src/game/types/GameState";
-import {SETUPS} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {SETUPS} from "@janggi/engine/setups/Setups";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {newGame} from "@janggi/engine/NewGame";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {tourPointOf} from "@src/react/pages/game/components/board/components/intersections/tour-point/TourPointOf";
 
 const OPENING: GameState = newGame(SETUPS[0]!, SETUPS[0]!, "Casual");

@@ -1,12 +1,12 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {Move} from "@src/game/types/Move";
-import type {Position} from "@src/game/board/types/Position";
-import {coveredFrom} from "@src/game/moves/CoveredFrom";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {Move} from "@janggi/engine/types/Move";
+import type {Position} from "@janggi/engine/board/types/Position";
+import {coveredFrom} from "@janggi/engine/moves/CoveredFrom";
 import {gameIsOver} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/game-is-over/GameIsOver";
-import {movesFrom} from "@src/game/MovesFrom";
-import {pieceAt} from "@src/game/board/lookup/PieceAt";
-import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {movesFrom} from "@janggi/engine/MovesFrom";
+import {pieceAt} from "@janggi/engine/board/lookup/PieceAt";
+import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {useMemo, useState} from "react";
 
 /** A piece picked up, a piece under the pointer, and everywhere the one in question may go. */

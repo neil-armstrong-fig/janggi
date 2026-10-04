@@ -1,7 +1,7 @@
 import type {DealtBoard} from "@src/redux/game/dealing/types/DealtBoard";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 import {boardShownFor} from "@src/redux/game/dealing/board-shown-for/BoardShownFor";
-import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
+import {playedGameFrom} from "@src/record/PlayedGameFrom";
 
 /**
  * A game about to start, and the slice around it.

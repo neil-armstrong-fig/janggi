@@ -1,3 +1,4 @@
+import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/game-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {restarted} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
@@ -22,6 +23,7 @@ interface Props {
 
 export function NewGameButton({onStarted}: Props): React.JSX.Element {
   const {played, opponent} = useAppSelector(state => state.game);
+  const withAFriend = useWithAFriend();
   const dispatch = useAppDispatch();
 
   return (
@@ -29,11 +31,12 @@ export function NewGameButton({onStarted}: Props): React.JSX.Element {
       <button
         type="button"
         data-testid="new-game"
+        disabled={withAFriend}
         onClick={() => {
           dispatch(restarted());
           onStarted();
         }}
-        className="h-12 cursor-pointer rounded-xl border border-wood/40 text-sm font-semibold tracking-wide text-wood uppercase transition-[transform,background-color] duration-150 hover:bg-wood/10 active:scale-[0.98] motion-reduce:transition-none"
+        className="h-12 cursor-pointer disabled:cursor-default disabled:opacity-40 rounded-xl border border-wood/40 text-sm font-semibold tracking-wide text-wood uppercase transition-[transform,background-color] duration-150 hover:bg-wood/10 active:scale-[0.98] motion-reduce:transition-none"
       >
         New game
       </button>

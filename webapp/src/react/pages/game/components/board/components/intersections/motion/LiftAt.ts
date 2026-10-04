@@ -1,5 +1,5 @@
 import type {PieceLift} from "@src/react/pages/game/components/board/types/PieceLift";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 
 /** What the board's hand is doing: which piece is held, which is under the pointer, and whether it moves. */
 export interface Handling {

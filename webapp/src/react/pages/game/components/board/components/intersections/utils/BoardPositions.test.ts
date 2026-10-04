@@ -1,5 +1,5 @@
 import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/components/intersections/utils/BoardPositions";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {expect, it} from "vitest";
 
 it("covers the 90 intersections of 9 files and 10 ranks", () => {

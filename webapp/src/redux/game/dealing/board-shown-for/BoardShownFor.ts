@@ -1,9 +1,9 @@
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
-import type {GameState} from "@src/game/types/GameState";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
-import {isArranged} from "@src/game/setups/IsArranged";
-import {newGame} from "@src/game/NewGame";
-import {newGameFrom} from "@src/game/setups/NewGameFrom";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
+import {isArranged} from "@janggi/engine/setups/IsArranged";
+import {newGame} from "@janggi/engine/NewGame";
+import {newGameFrom} from "@janggi/engine/setups/NewGameFrom";
 
 /**
  * The position to draw for a phase, finished or not.

@@ -1,3 +1,5 @@
+import {SelectField} from "@src/react/pages/game/components/select-field/SelectField";
+
 /**
  * Which style the one being made is previewed with — a piece set, for a board; a board, for a piece set — so a
  * style can be seen against setups other than the one the player is playing with. It changes only the
@@ -22,11 +24,12 @@ export function CompanionPicker({label, currentLabel, names, value, onChange}: P
     <label className="flex items-center gap-2 text-xs text-white/60">
       <span className="shrink-0">{label}</span>
 
-      <select
+      <SelectField
+        wrapperClassName="min-w-0 flex-1"
         data-testid="style-editor-companion"
         value={value}
         onChange={event => onChange(event.target.value)}
-        className="h-8 min-w-0 flex-1 rounded-lg bg-black/25 px-2 text-sm text-white/90"
+        className="h-8 text-sm"
       >
         <option value="" className="bg-ground-raised">
           {currentLabel}
@@ -37,7 +40,7 @@ export function CompanionPicker({label, currentLabel, names, value, onChange}: P
             {name}
           </option>
         ))}
-      </select>
+      </SelectField>
     </label>
   );
 }

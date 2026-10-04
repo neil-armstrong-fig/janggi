@@ -3,6 +3,7 @@ import {useAppDispatch} from "@src/redux/Hooks";
 import {BotSettings} from "@src/react/pages/game/components/settings/tabs/game-pane/components/bot-settings/BotSettings";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/tabs/game-pane/components/elephant-pairing-line/ElephantPairingLine";
 import {FlipBoardSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/flip-board-setting/FlipBoardSetting";
+import {GamesSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/games-setting/GamesSetting";
 import {MatchFormatSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/match-format-setting/MatchFormatSetting";
 import {NewGameButton} from "@src/react/pages/game/components/settings/tabs/game-pane/components/new-game-button/NewGameButton";
 import {OpponentSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/opponent-setting/OpponentSetting";
@@ -43,6 +44,8 @@ export function GamePane({selected}: Props): React.JSX.Element {
         </div>
       }
     >
+      <GamesSetting />
+
       <MatchFormatSetting />
 
       <OpponentSetting />

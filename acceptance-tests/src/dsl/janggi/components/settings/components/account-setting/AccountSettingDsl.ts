@@ -1,5 +1,6 @@
 import type {Page} from "@playwright/test";
 import {AccountSettingPlaywright} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/AccountSettingPlaywright";
+import type {RoomAsked} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
 import {DslError} from "@src/dsl/errors/DslError";
 
 /**
@@ -34,6 +35,27 @@ export class AccountSettingDsl {
       await this.account.signInWithGoogle();
     } catch (error) {
       throw new DslError("Failed to sign in with Google", error);
+    }
+  }
+
+  /**
+   * As `signInWithGoogle`, but as a different Google account from the one the other device uses — for a spec between
+   * two players, where signing in as the same one on both would make them the same person.
+   */
+  async signInWithGoogleAsAnotherPlayer(): Promise<void> {
+    try {
+      await this.account.signInWithGoogle("another player");
+    } catch (error) {
+      throw new DslError("Failed to sign in with Google as another player", error);
+    }
+  }
+
+  /** As `signInWithGoogleAsAnotherPlayer`, but pressing the button on the prompt a friend's link opens, not the one in the settings. */
+  async signInAsAnotherPlayerFromThePrompt(): Promise<void> {
+    try {
+      await this.account.signInFromThePrompt("another player");
+    } catch (error) {
+      throw new DslError("Failed to sign in from the friend's link prompt", error);
     }
   }
 
@@ -86,6 +108,41 @@ export class AccountSettingDsl {
       this.account.cutOffTheApi();
     } catch (error) {
       throw new DslError("Failed to cut off the API", error);
+    }
+  }
+
+  /** From now on this device's connections to a friend's game are lost, and cannot be made again — a phone in a tunnel. */
+  async dropTheFriendConnection(): Promise<void> {
+    try {
+      this.account.dropTheFriendConnection();
+    } catch (error) {
+      throw new DslError("Failed to drop the connection to the friend's game", error);
+    }
+  }
+
+  /** Every room a host has asked a friend's game for, in order. */
+  async getRoomsAsked(): Promise<readonly RoomAsked[]> {
+    try {
+      return this.account.getRoomsAsked();
+    } catch (error) {
+      throw new DslError("Failed to read the rooms asked for", error);
+    }
+  }
+
+  /** The rooms are let go, as the real ones are once both players have been away as long as the host allowed. */
+  async letGoOfTheRooms(): Promise<void> {
+    try {
+      this.account.letGoOfTheRooms();
+    } catch (error) {
+      throw new DslError("Failed to let go of the friends' rooms", error);
+    }
+  }
+
+  async restoreTheFriendConnection(): Promise<void> {
+    try {
+      this.account.restoreTheFriendConnection();
+    } catch (error) {
+      throw new DslError("Failed to restore the connection to the friend's game", error);
     }
   }
 

@@ -1,15 +1,15 @@
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Opponent} from "@src/redux/game/types/Opponent";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import type {RecordChange} from "@src/game/record/types/RecordChange";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import type {RecordChange} from "@src/record/types/RecordChange";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
-import {playMove} from "@src/game/record/PlayMove";
-import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
+import {newGame} from "@janggi/engine/NewGame";
+import {playMove} from "@src/record/PlayMove";
+import {playedGameFrom} from "@src/record/PlayedGameFrom";
 import {ratingEventFor} from "@src/react/pages/game/hooks/use-rated-game/utils/RatingEventFor";
-import {restTurn} from "@src/game/record/RestTurn";
-import {stoodBefore} from "@src/testing/StoodBefore";
+import {restTurn} from "@src/record/RestTurn";
+import {stoodBefore} from "@janggi/engine/testing/StoodBefore";
 
 const bot: Opponent = {name: "Bot", botElo: 1400, sideChoice: "Han", playerSide: "han"};
 const human: Opponent = {name: "Human", botElo: 1400, sideChoice: "Cho", playerSide: "cho"};

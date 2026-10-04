@@ -1,10 +1,10 @@
 import type {BoardStyle, CellOverrides} from "@src/styles/types/BoardStyle";
-import {FILES, RANKS} from "@src/game/board/BoardDimensions";
+import {FILES, RANKS} from "@janggi/engine/board/BoardDimensions";
 import type {CellStyle} from "@src/styles/types/CellStyle";
-import type {Position, PositionKey} from "@src/game/board/types/Position";
+import type {Position, PositionKey} from "@janggi/engine/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {sideOfPosition} from "@src/game/board/halves/SideOfPosition";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {sideOfPosition} from "@janggi/engine/board/halves/SideOfPosition";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * The board with one army's half drawn as another board draws it.

@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {Move} from "@src/game/types/Move";
+import type {Move} from "@janggi/engine/types/Move";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import {act, renderHook} from "@testing-library/react";
 import {expect, it} from "vitest";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {useMoveFlight} from "@src/react/pages/game/components/board/hooks/use-move-flight/UseMoveFlight";
 
 /** What the hook is re-rendered on, so a test can hand it the next change. */

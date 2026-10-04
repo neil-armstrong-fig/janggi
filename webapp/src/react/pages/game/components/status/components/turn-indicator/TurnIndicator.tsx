@@ -25,7 +25,8 @@ interface Announcement {
  * sharper case of the same thing — every piece refuses at once, and only this line says the game is
  * over rather than broken. The plaques say the same thing in light; this says it in words.
  *
- * Tinted by what it announces: the colour of the army to move, red for a check, gold for a result. While
+ * **It takes no room on the screen** (`sr-only`): the plaques already light for whose move it is, a check and a win, and
+ * the board is worth more than a line repeating them. Screen readers and the specs still get it. While
  * the game waits on the bot it says so, in words and in `data-bot-to-move` — the attribute a spec waits on
  * to know the bot has played. While the bot's engine is not yet up it says that instead, in
  * `data-bot-loading`, or `data-bot-unavailable` where it could not be started: beside `data-bot-to-move`
@@ -60,11 +61,7 @@ export function TurnIndicator(): React.JSX.Element {
       data-drawn={status.kind === "drawn" ? status.by : undefined}
       data-winner={winner}
       aria-live="polite"
-      className={clsx(
-        "h-6 shrink-0 self-center rounded-full px-3 group-data-[flipped=true]/flip:rotate-180 text-center text-xs leading-6 font-semibold tracking-wide uppercase transition-colors duration-300 motion-reduce:transition-none",
-        engineFailed && "bg-danger/20 text-danger",
-        !engineFailed && toneOf(status),
-      )}
+      className={clsx("sr-only", engineFailed && "bg-danger/20 text-danger", !engineFailed && toneOf(status))}
     >
       {/* Keyed by the words, so each new announcement bumps from the start; the live region itself
           stays put, so a screen reader still hears it. */}

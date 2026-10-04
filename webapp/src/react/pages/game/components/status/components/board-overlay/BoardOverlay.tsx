@@ -1,6 +1,9 @@
+import {actInGame} from "@src/redux/online/acting/ActInGame";
+import {isAskedToAnswerDraw} from "@src/redux/online/selecting/IsAskedToAnswerDraw";
+import {startAnotherGame} from "@src/redux/online/acting/StartAnotherGame";
 import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
 import {botEngineRetried} from "@src/redux/bot-engine/BotEngineSlice";
-import {botLetOpen, botStrengthChosen, drawAccepted, drawDeclined, restarted} from "@src/redux/game/GameSlice";
+import {botLetOpen, botStrengthChosen, drawAccepted, drawDeclined} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {BotEngineNotice} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-engine-notice/BotEngineNotice";
 import {BotGoAhead} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-go-ahead/BotGoAhead";
@@ -8,13 +11,14 @@ import {DrawDeclinedNote} from "@src/react/pages/game/components/status/componen
 import {DrawOffer} from "@src/react/pages/game/components/status/components/board-overlay/components/draw-offer/DrawOffer";
 import {RepetitionNotice} from "@src/react/pages/game/components/status/components/board-overlay/components/repetition-notice/RepetitionNotice";
 import {ResultBanner} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/ResultBanner";
+import type {RoomAction} from "@janggi/shared/janggi/online/messages/action/RoomAction";
 import type {UnknownAction} from "@reduxjs/toolkit";
-import {endsAGameByRepetition} from "@src/game/repetition/EndsAGameByRepetition";
+import {endsAGameByRepetition} from "@janggi/engine/repetition/EndsAGameByRepetition";
 import {newlyUnlockedBotElo} from "@src/react/pages/game/components/status/components/board-overlay/rewards/NewlyUnlockedBotElo";
-import {opponentOf} from "@src/game/utils/OpponentOf";
-import {repetitionHoldsBackAMove} from "@src/game/repetition/RepetitionHoldsBackAMove";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
+import {repetitionHoldsBackAMove} from "@janggi/engine/repetition/RepetitionHoldsBackAMove";
 import {rewardFor} from "@src/react/pages/game/components/status/components/board-overlay/rewards/RewardFor";
-import {scoreFor} from "@src/game/scoring/ScoreFor";
+import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
@@ -48,6 +52,7 @@ interface Props {
 export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
   const {xp, beaten} = useAppSelector(state => state.progress);
+  const friend = useAppSelector(state => state.friend);
   const {effects} = usePreferences();
   const {status, botsTurn, awaitingGoAhead, engineHoldsPlay, botEngine} = useGameStatus();
   const dispatch = useAppDispatch();
@@ -70,7 +75,12 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
 
   // Between two people an offer waits on the other's tap. Against the bot the answer comes from the bot
   // itself, so there is nobody here to ask — only a refusal to report.
-  const offerAwaitsAnAnswer = drawOffer !== undefined && !drawOffer.declined && botSide === undefined;
+  const offerAwaitsAnAnswer =
+    drawOffer !== undefined &&
+    !drawOffer.declined &&
+    botSide === undefined &&
+    // With a friend only the one who was offered the draw is asked (`isAskedToAnswerDraw`).
+    isAskedToAnswerDraw(friend, drawOffer.by);
   const offerRefused = drawOffer?.declined ? opponentOf(drawOffer.by) : undefined;
 
   const nextBotElo = newlyUnlockedBotElo({status, opponent, format: phase.format, beaten});
@@ -78,6 +88,17 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   function pressed(action: UnknownAction): void {
     onControlPressed();
     dispatch(action);
+  }
+
+  function pressedStartAnotherGame(): void {
+    onControlPressed();
+    dispatch(startAnotherGame());
+  }
+
+  // In a game with a friend the room does it, and says so to both: nothing changes here until it does (`actInGame`).
+  function pressedInGame(forTheRoom: RoomAction, forThisDevice: UnknownAction): void {
+    onControlPressed();
+    dispatch(actInGame(forTheRoom, forThisDevice));
   }
 
   return (
@@ -91,7 +112,7 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
       {offerAwaitsAnAnswer && (
         <DrawOffer
           offeredBy={drawOffer.by}
-          onAccept={() => pressed(drawAccepted())}
+          onAccept={() => pressedInGame({kind: "accept-draw"}, drawAccepted())}
           onDecline={() => pressed(drawDeclined())}
         />
       )}
@@ -110,7 +131,7 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
         xp={xp}
         animated={effects.full}
         nextBotElo={nextBotElo}
-        onStartNewGame={() => pressed(restarted())}
+        onStartNewGame={pressedStartAnotherGame}
         onStartNewGameAtBotElo={elo => pressed(botStrengthChosen(elo))}
       />
     </>

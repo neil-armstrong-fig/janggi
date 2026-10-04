@@ -1,14 +1,14 @@
-import type {File, Rank} from "@src/game/board/types/Position";
-import type {GameState} from "@src/game/types/GameState";
+import type {File, Rank} from "@janggi/engine/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {expect, it} from "vitest";
 import {moodOf} from "@src/react/pages/game/hooks/use-game-audio/utils/MoodOf";
-import {newGame} from "@src/game/NewGame";
-import {placed} from "@src/testing/Placed";
-import {stoodBefore} from "@src/testing/StoodBefore";
+import {newGame} from "@janggi/engine/NewGame";
+import {placed} from "@janggi/engine/testing/Placed";
+import {stoodBefore} from "@janggi/engine/testing/StoodBefore";
 
 it("is calm at the opening, and waiting for the game to get under way", () => {
   expect(moodOf(opening(), false)).toEqual({tension: 0, inCheck: false, ending: "none", underWay: false});

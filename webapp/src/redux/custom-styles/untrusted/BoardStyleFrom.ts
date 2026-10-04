@@ -3,7 +3,7 @@ import type {BoardStyle, CellOverrides} from "@src/styles/types/BoardStyle";
 import {CELL_MARKER_SHAPES} from "@src/styles/types/CellStyle";
 import type {CellMarker, CellStyle} from "@src/styles/types/CellStyle";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import {Reading} from "@src/redux/custom-styles/untrusted/reading/Reading";
 import {RefusedReading} from "@src/redux/custom-styles/untrusted/reading/RefusedReading";

@@ -1,10 +1,10 @@
 import type {Ending} from "@src/audio/types/Ending";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Mood} from "@src/audio/types/Mood";
-import type {Outcome} from "@src/game/types/Outcome";
-import {isInCheck} from "@src/game/check/IsInCheck";
-import {materialFor} from "@src/game/scoring/MaterialFor";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import type {Outcome} from "@janggi/engine/types/Outcome";
+import {isInCheck} from "@janggi/engine/check/IsInCheck";
+import {materialFor} from "@janggi/engine/scoring/MaterialFor";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /**
  * How a position feels to listen to: whether a game is under way at all, how tense it is, whether a

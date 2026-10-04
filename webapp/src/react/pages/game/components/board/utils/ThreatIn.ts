@@ -1,6 +1,6 @@
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
-import {attackersOf} from "@src/game/check/AttackersOf";
+import {attackersOf} from "@janggi/engine/check/AttackersOf";
 
 /**
  * The check on the board, if there is one: the general of the army to move, and every piece attacking

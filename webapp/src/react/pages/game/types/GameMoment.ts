@@ -1,4 +1,4 @@
-import type {RecordChange} from "@src/game/record/types/RecordChange";
+import type {RecordChange} from "@src/record/types/RecordChange";
 
 /**
  * One change to the game, as the screen shows it and the sound hears it: the engine's own

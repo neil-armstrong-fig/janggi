@@ -1,3 +1,5 @@
+import {GamesSettingDsl} from "@src/dsl/janggi/components/settings/components/games-setting/GamesSettingDsl";
+import {OpponentLookSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-look-setting/OpponentLookSettingDsl";
 import {FlipBoardSettingDsl} from "@src/dsl/janggi/components/settings/components/flip-board-setting/FlipBoardSettingDsl";
 import {AccountSettingDsl} from "@src/dsl/janggi/components/settings/components/account-setting/AccountSettingDsl";
 import {BikjangHintSettingDsl} from "@src/dsl/janggi/components/settings/components/bikjang-hint-setting/BikjangHintSettingDsl";
@@ -51,6 +53,8 @@ export class SettingsDsl {
   readonly movableHighlight: MovableHighlightSettingDsl;
   readonly bikjangHint: BikjangHintSettingDsl;
   readonly flipBoard: FlipBoardSettingDsl;
+  readonly opponentLook: OpponentLookSettingDsl;
+  readonly games: GamesSettingDsl;
   readonly matchFormat: MatchFormatSettingDsl;
   readonly opponent: OpponentSettingDsl;
   readonly botStrength: BotStrengthSettingDsl;
@@ -73,6 +77,8 @@ export class SettingsDsl {
     this.movableHighlight = new MovableHighlightSettingDsl(page);
     this.bikjangHint = new BikjangHintSettingDsl(page);
     this.flipBoard = new FlipBoardSettingDsl(page);
+    this.opponentLook = new OpponentLookSettingDsl(page);
+    this.games = new GamesSettingDsl(page);
     this.matchFormat = new MatchFormatSettingDsl(page);
     this.opponent = new OpponentSettingDsl(page);
     this.botStrength = new BotStrengthSettingDsl(page);

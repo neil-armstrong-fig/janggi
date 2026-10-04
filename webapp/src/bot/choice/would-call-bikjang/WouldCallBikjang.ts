@@ -1,7 +1,7 @@
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {opponentOf} from "@src/game/utils/OpponentOf";
-import {scoreFor} from "@src/game/scoring/ScoreFor";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
+import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 
 /**
  * Whether an army would call a bikjang in this position if the rules let it — the one decision the

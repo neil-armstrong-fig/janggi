@@ -1,7 +1,7 @@
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
-import type {GameState} from "@src/game/types/GameState";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 import {uciOfTurn} from "@src/bot/notation/UciOfTurn";
 
 const opening: GameState = newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual");

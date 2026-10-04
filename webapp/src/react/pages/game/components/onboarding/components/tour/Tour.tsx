@@ -1,6 +1,7 @@
 import {settingsTabSelected, sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {TOUR_STEPS} from "@src/react/pages/game/components/onboarding/components/tour/tour-steps/TourSteps";
 import {TOUR_STEP_NAMES} from "@src/redux/onboarding/touring/TourStepName";
+import {stepsSkipped} from "@src/react/pages/game/components/onboarding/components/tour/tour-steps/steps-skipped/StepsSkipped";
 import {TourCard} from "@src/react/pages/game/components/onboarding/components/tour/components/tour-card/TourCard";
 import {TourSpotlight} from "@src/react/pages/game/components/onboarding/components/tour/components/tour-spotlight/TourSpotlight";
 import type {TourSheet} from "@src/react/pages/game/components/onboarding/components/tour/types/TourStep";
@@ -25,10 +26,13 @@ export function Tour(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const tourStep = useAppSelector(state => state.onboarding.tourStep);
   const moveCount = useAppSelector(state => state.game.played.past.length);
+  const signedIn = useAppSelector(state => state.account.status === "signed-in");
+  const skipping = stepsSkipped(signedIn);
   const stepName = TOUR_STEP_NAMES[tourStep];
   const step = stepName && TOUR_STEPS[stepName];
+  const shown = TOUR_STEP_NAMES.filter(name => !skipping.includes(name));
   const forward = (): void => {
-    dispatch(tourSteppedForward());
+    dispatch(tourSteppedForward({skipping}));
   };
   const skip = (): void => {
     dispatch(sheetClosed());
@@ -54,7 +58,7 @@ export function Tour(): React.JSX.Element {
   }, [step]);
 
   // The store keeps the step within the tour, so this is only for the type: there is no step to draw.
-  if (step === undefined) return <></>;
+  if (stepName === undefined || step === undefined) return <></>;
 
   return (
     <>
@@ -62,10 +66,10 @@ export function Tour(): React.JSX.Element {
 
       <TourCard
         step={step}
-        number={tourStep + 1}
-        count={TOUR_STEP_NAMES.length}
+        number={shown.indexOf(stepName) + 1}
+        count={shown.length}
         dock={rect !== undefined && rect.top + rect.height / 2 > window.innerHeight / 2 ? "top" : "bottom"}
-        onBack={() => dispatch(tourSteppedBack())}
+        onBack={() => dispatch(tourSteppedBack({skipping}))}
         onNext={forward}
         onSkip={skip}
       />

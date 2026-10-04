@@ -1,4 +1,4 @@
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 
 /**
  * How long after a piece is picked up the mark on one of its destinations appears, in milliseconds:

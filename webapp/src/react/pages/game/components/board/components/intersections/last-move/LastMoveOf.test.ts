@@ -1,14 +1,14 @@
-import type {Move} from "@src/game/types/Move";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Move} from "@janggi/engine/types/Move";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {expect, it} from "vitest";
 import {lastMoveOf} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveOf";
-import {newGame} from "@src/game/NewGame";
-import {playMove} from "@src/game/record/PlayMove";
-import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
-import {restTurn} from "@src/game/record/RestTurn";
-import {undo} from "@src/game/record/Undo";
+import {newGame} from "@janggi/engine/NewGame";
+import {playMove} from "@src/record/PlayMove";
+import {playedGameFrom} from "@src/record/PlayedGameFrom";
+import {restTurn} from "@src/record/RestTurn";
+import {undo} from "@src/record/Undo";
 
 const CHO_STEP: Move = {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}};
 const HAN_STEP: Move = {from: {file: 1, rank: 4}, to: {file: 1, rank: 5}};

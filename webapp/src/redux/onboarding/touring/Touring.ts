@@ -1,22 +1,28 @@
 import type {OnboardingSliceState} from "@src/redux/onboarding/types/OnboardingSliceState";
-import {TOUR_STEP_COUNT} from "@src/redux/onboarding/touring/TourStepCount";
+import type {TourStepsSkipped} from "@src/redux/onboarding/touring/types/TourStepsSkipped";
+import {TOUR_STEP_NAMES} from "@src/redux/onboarding/touring/TourStepName";
 
 /** The tour, at its first step. */
 export function tourBegun(): OnboardingSliceState {
   return {stage: "tour", tourStep: 0};
 }
 
-/** One step on, and the tour finished by going on from the last. Nothing happens off the tour. */
-export function tourStepForward(state: OnboardingSliceState): OnboardingSliceState {
+/** The next step not skipped, and the tour finished by going on from the last. Nothing happens off the tour. */
+export function tourStepForward(state: OnboardingSliceState, {skipping}: TourStepsSkipped): OnboardingSliceState {
   if (state.stage !== "tour") return state;
-  if (state.tourStep >= TOUR_STEP_COUNT - 1) return {stage: "done", tourStep: 0};
 
-  return {...state, tourStep: state.tourStep + 1};
+  const next = TOUR_STEP_NAMES.findIndex((name, index) => index > state.tourStep && !skipping.includes(name));
+  if (next === -1) return {stage: "done", tourStep: 0};
+
+  return {...state, tourStep: next};
 }
 
-/** One step back, and no further than the first. Nothing happens off the tour. */
-export function tourStepBack(state: OnboardingSliceState): OnboardingSliceState {
+/** The step before, not skipped, and no further than the first. Nothing happens off the tour. */
+export function tourStepBack(state: OnboardingSliceState, {skipping}: TourStepsSkipped): OnboardingSliceState {
   if (state.stage !== "tour") return state;
 
-  return {...state, tourStep: Math.max(0, state.tourStep - 1)};
+  const previous = TOUR_STEP_NAMES.findLastIndex((name, index) => index < state.tourStep && !skipping.includes(name));
+  if (previous === -1) return state;
+
+  return {...state, tourStep: previous};
 }

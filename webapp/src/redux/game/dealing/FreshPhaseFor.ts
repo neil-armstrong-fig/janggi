@@ -1,8 +1,8 @@
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
-import {place} from "@src/game/setups/Place";
-import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
+import {place} from "@janggi/engine/setups/Place";
+import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
 
 /**
  * The phase a game of this format begins in — and the one place the two formats start differently.

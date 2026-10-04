@@ -1,7 +1,7 @@
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
-import type {Position} from "@src/game/board/types/Position";
-import {pieceAt} from "@src/game/board/lookup/PieceAt";
-import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
+import type {Position} from "@janggi/engine/board/types/Position";
+import {pieceAt} from "@janggi/engine/board/lookup/PieceAt";
+import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
 import {sceneOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/SceneOf";
 
 /**

@@ -52,9 +52,16 @@ export const TOUR_STEPS: Readonly<Record<TourStepName, TourStep>> = {
   },
   account: {
     title: "Keep it in sync",
-    body: "Signing in with Google is optional. It keeps your XP, unlocks and styles in step across your devices, and Janggi plays the same without it.",
+    body: "Signing in with Google is optional: skip it any time and Janggi plays the same. It keeps your XP, unlocks and styles in step across your devices, and it is the only way to play a friend, so sign in first if you want to.",
     target: "account",
     sheet: "Account",
+  },
+  friend: {
+    title: "Play a friend",
+    body: "Make a code and send it to a friend, or enter theirs, to play each other live. You both need to be signed in.",
+    target: "friend",
+    sheet: "Account",
+    needsSignIn: true,
   },
   guide: {
     title: "New to Janggi?",

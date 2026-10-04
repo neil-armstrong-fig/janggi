@@ -77,7 +77,6 @@ function failureAfter(error: unknown): Action {
 
 async function readServerData(): Promise<ServerData> {
   const response = await callServer("/api/data");
-
   if (response.status === 401) throw new SessionEnded();
   if (!response.ok) throw new Error(`The server would not give the data: ${response.status}`);
 

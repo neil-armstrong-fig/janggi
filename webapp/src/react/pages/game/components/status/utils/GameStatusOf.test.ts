@@ -1,16 +1,16 @@
-import type {File, Rank} from "@src/game/board/types/Position";
-import type {GameState} from "@src/game/types/GameState";
+import type {File, Rank} from "@janggi/engine/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {expect, it} from "vitest";
 import {gameStatusOf} from "@src/react/pages/game/components/status/utils/GameStatusOf";
-import {newGame} from "@src/game/NewGame";
-import {place} from "@src/game/setups/Place";
-import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
-import {stoodBefore} from "@src/testing/StoodBefore";
+import {newGame} from "@janggi/engine/NewGame";
+import {place} from "@janggi/engine/setups/Place";
+import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
+import {stoodBefore} from "@janggi/engine/testing/StoodBefore";
 
 it("says whose move it is when nothing is hanging over them", () => {
   expect(gameStatusOf(opening(), LAID_OUT)).toEqual({kind: "toMove", side: "cho"});

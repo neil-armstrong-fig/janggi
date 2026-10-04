@@ -1,7 +1,7 @@
-import type {GameState} from "@src/game/types/GameState";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 import {uciPassFor} from "@src/bot/notation/UciPassFor";
 
 it("writes a rested turn as cho's general standing still, the way the engine lists it", () => {

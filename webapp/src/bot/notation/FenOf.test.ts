@@ -1,7 +1,7 @@
-import type {GameState} from "@src/game/types/GameState";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 
 import {fenOf} from "@src/bot/notation/FenOf";
 

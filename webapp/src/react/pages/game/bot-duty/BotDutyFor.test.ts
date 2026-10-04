@@ -1,15 +1,15 @@
 import type {Opponent} from "@src/redux/game/types/Opponent";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {dealtGame} from "@src/redux/game/dealing/DealtGame";
 import {expect, it} from "vitest";
-import {place} from "@src/game/setups/Place";
-import {playMove} from "@src/game/record/PlayMove";
-import {restTurn} from "@src/game/record/RestTurn";
-import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
+import {place} from "@janggi/engine/setups/Place";
+import {playMove} from "@src/record/PlayMove";
+import {restTurn} from "@src/record/RestTurn";
+import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
 
 const botAsHan: Opponent = {name: "Bot", botElo: 800, sideChoice: "Cho", playerSide: "cho"};
 const botAsCho: Opponent = {name: "Bot", botElo: 800, sideChoice: "Han", playerSide: "han"};

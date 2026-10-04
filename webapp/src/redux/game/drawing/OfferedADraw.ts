@@ -1,5 +1,5 @@
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import {canAgreeADraw} from "@src/game/drawing/CanAgreeADraw";
+import {canAgreeADraw} from "@janggi/engine/drawing/CanAgreeADraw";
 
 /**
  * The game once the army to move has offered the other a draw. It moves nothing and takes nobody's

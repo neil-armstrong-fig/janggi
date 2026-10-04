@@ -4,6 +4,6 @@
  * Approximate, and deliberately a single knob to turn.
  *
  * Purely a drawing decision — the rules know nothing about it — which is why it sits here rather
- * than with the board's dimensions in `@src/game/board/`.
+ * than with the board's dimensions in `@janggi/engine/board/`.
  */
 export const CELL_ASPECT_RATIO = 1.1;

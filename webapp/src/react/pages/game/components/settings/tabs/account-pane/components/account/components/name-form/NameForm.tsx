@@ -1,3 +1,4 @@
+import {Button} from "@src/react/pages/game/components/button/Button";
 import type {RenameResult} from "@src/redux/account/types/RenameResult";
 import {clsx} from "clsx";
 import {renameAccount} from "@src/redux/account/actions/RenameAccount";
@@ -40,14 +41,9 @@ export function NameForm(): React.JSX.Element {
           className="min-w-0 flex-1 rounded-xl bg-black/25 px-3 py-2 text-base text-white/90 select-text placeholder:text-white/30"
         />
 
-        <button
-          type="button"
-          data-testid="account-name-save"
-          onClick={() => void save()}
-          className="h-11 shrink-0 cursor-pointer rounded-xl bg-black/25 px-4 text-sm font-semibold tracking-wide text-white/80 uppercase hover:bg-black/35"
-        >
+        <Button variant="secondary" data-testid="account-name-save" onClick={() => void save()} className="shrink-0">
           Save
-        </button>
+        </Button>
       </div>
 
       {result && (

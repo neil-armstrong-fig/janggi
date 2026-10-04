@@ -96,8 +96,11 @@ export function createAudioDirector(): AudioDirector {
       onScreen = next;
       if (!graph) return;
 
-      if (next) start();
-      else void graph.context.suspend();
+      if (next) {
+        start();
+      } else {
+        void graph.context.suspend();
+      }
     },
 
     dispose: () => {

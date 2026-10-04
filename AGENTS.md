@@ -1,12 +1,13 @@
 # AGENTS.md
 
-Janggi (Korean Chess) as an installable PWA. pnpm workspace, five packages:
+Janggi (Korean Chess) as an installable PWA. pnpm workspace, six packages:
 
 | Package             | Contains                                                           |
 | ------------------- | --------------------------------------------------------------------- |
 | `webapp/`           | The React app. Vite, React 19, Redux Toolkit, Tailwind v4.         |
 | `acceptance-tests/` | The acceptance-test DSL and specs, run by Playwright.              |
 | `shared/`           | The janggi vocabulary, code shared by both, and base tool config.  |
+| `engine/`           | The rules of janggi, run by the webapp and the API's Worker.        |
 | `api/`              | The Cloudflare Worker for opt-in Google sign-in and sync.          |
 | `infra/`            | The Cloudflare infrastructure for it, as code (Alchemy).            |
 
@@ -14,7 +15,7 @@ Each has its own `AGENTS.md`, and webapp has one per subfolder besides.
 
 `docs/` holds research a decision in the code rests on, linked from the code it justifies:
 `docs/opening-setups.md`, `docs/rules.md`, `docs/bot.md`, `docs/sound.md`,
-`docs/alchemy-state.md`, `docs/online-capability/`. Add a document here only
+`docs/alchemy-state.md`, `docs/online-play.md`. Add a document here only
 when losing the reasoning would mean someone re-deriving it.
 
 ## Before changing code
@@ -50,7 +51,7 @@ pnpm acceptance-tests:bot-games  # a whole game in the browser, left out of `pnp
 `pnpm checks` is the gate (`--max-warnings=0`). It deliberately leaves out the property tests — a
 fresh seed every run means a failure isn't reproducible from the same commit, so it can't gate a
 deploy — and the bot games, which play whole games against the real Fairy-Stockfish and are slow and
-non-deterministic. Run `pnpm test:properties` before finishing work in `webapp/src/game/`, and
+non-deterministic. Run `pnpm test:properties` before finishing work in `engine/src/` or `webapp/src/record/`, and
 `pnpm test:bot-games` / `pnpm acceptance-tests:bot-games` before finishing work in `webapp/src/bot/`.
 
 ## How work is done here
@@ -80,6 +81,12 @@ Prettier owns formatting (`pnpm format`). What it won't tell you:
 
 - **Declare functions below their callers**, so a file reads top to bottom. Helpers must be
   `function` declarations — an arrow `const` is in the temporal dead zone above its line.
+- **A file with a class holds that class and nothing else but the interfaces it needs** (and its constants, above
+  it). No loose `function` above or below it: a helper that uses the class's state or is used by one method is a
+  `private` method, below its caller; a helper that is pure and worth testing alone is its own file in a subfolder
+  beneath. A function that must run in the browser (`page.evaluate`, `addInitScript`) is an inline arrow at the call,
+  since a method does not serialise. An interface used by one other file lives in a `types/` folder beside it; one a
+  class leans on only as a parameter is still named, never inline.
 - **Extract pure logic and hooks when they're easy to test alone.** A small function local to a TSX
   component — an event handler closing over its props/hooks/dispatch — may stay inline when that
   keeps the JSX readable.
@@ -102,6 +109,16 @@ Prettier owns formatting (`pnpm format`). What it won't tell you:
 - **Three parameters at most; past that, take one object.** What a function acts *through* (an
   engine, an audio context) may stay positional ahead of the object.
 - **Name a variable after the type it holds**, where the type has a name of its own.
+- **A guard sits directly under the line it checks**, no blank line between them: `const thing = build();` then
+  `if (!thing) return undefined;`. A blank line goes after the guard, before the next block.
+- **An `if` with an `else` is braced on both sides**, even when each branch is one statement. ESLint can't enforce
+  this (`curly` allows braceless one-liners), so it is on you.
+- **Return early, before building what the guard doesn't need.** Put the cheap guard first and compute the value
+  after it passes (`if (state !== "playing") return state;` *then* ask the engine), not the other way round.
+- **Nest, don't repeat a condition.** Two `if`s sharing a leading test (`if (a && b) …` then `if (a) …`) become
+  `if (a) { if (b) … }`.
+- **A ternary is the last resort**, for a plain value with no clearer form; prefer guards, `&&` or a small
+  function. (JSX and `clsx` have their own rules in `webapp/AGENTS.md` and `webapp/src/react/AGENTS.md`.)
 - **A body on a line of its own is braced** (`curly: multi-line`, ESLint-enforced; Prettier won't add
   or remove braces).
 - **No `../` imports** — use the `@src/*` alias each package maps to its own `src/`.
@@ -120,9 +137,10 @@ Enforced by ESLint (`no-restricted-imports`, in `shared/config/eslint.base.js`) 
 | From                | May import                                                    |
 | ------------------- | -------------------------------------------------------------- |
 | `shared/`           | nothing else in the workspace — it is the bottom of the graph |
-| `webapp/`           | itself and `@janggi/shared`                                   |
+| `engine/`           | itself and `@janggi/shared`                                   |
+| `webapp/`           | itself, `@janggi/shared` and `@janggi/engine`                 |
 | `acceptance-tests/` | itself and `@janggi/shared`                                   |
-| `api/`              | itself and `@janggi/shared`; nothing imports it               |
+| `api/`              | itself, `@janggi/shared` and `@janggi/engine`; nothing imports it |
 | `infra/`            | itself only; nothing imports it                               |
 
 A workspace package added later is **denied by default**; add it to `allowedPackages` in that

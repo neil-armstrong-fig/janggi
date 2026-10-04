@@ -1,6 +1,6 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {Move} from "@src/game/types/Move";
-import type {Position} from "@src/game/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {Move} from "@janggi/engine/types/Move";
+import type {Position} from "@janggi/engine/board/types/Position";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
 
 /**

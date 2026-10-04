@@ -1,9 +1,11 @@
+import {actInGame} from "@src/redux/online/acting/ActInGame";
+import {friendAllowsPlay} from "@src/redux/online/selecting/FriendAllowsPlay";
 import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/components/intersections/utils/BoardPositions";
 import {Cell} from "@src/react/pages/game/components/board/components/intersections/components/cell/Cell";
 import type {Flourish} from "@src/react/pages/game/components/board/types/Flourish";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {MarkSources} from "@src/react/pages/game/components/board/components/intersections/cell-marks/types/MarkSources";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 import type {Threat} from "@src/react/pages/game/components/board/types/Threat";
 import {bikjangHintShown} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangHintShown";
 import {bikjangRisksFor} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangRisksFor";
@@ -14,13 +16,14 @@ import {flourishesOf} from "@src/react/pages/game/components/board/components/in
 import {hintDelay} from "@src/react/pages/game/components/board/components/intersections/motion/HintDelay";
 import {tourPointOf} from "@src/react/pages/game/components/board/components/intersections/tour-point/TourPointOf";
 import {tourStepNameOf} from "@src/redux/onboarding/touring/TourStepNameOf";
-import {isArranged} from "@src/game/setups/IsArranged";
+import {isArranged} from "@janggi/engine/setups/IsArranged";
 import {lastMoveOf} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveOf";
 import {liftAt} from "@src/react/pages/game/components/board/components/intersections/motion/LiftAt";
 import {movablePieces} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/MovablePieces";
 import {moved} from "@src/redux/game/GameSlice";
-import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
+import {wireOfMove} from "@src/redux/online/wire/WireOfMove";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useEffectEvent, useMemo} from "react";
 import {useMoveSelection} from "@src/react/pages/game/components/board/components/intersections/hooks/use-move-selection/UseMoveSelection";
@@ -61,20 +64,23 @@ interface Props {
 export function Intersections({threat, concealed, moment, onPickUp}: Props): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
   const engineStatus = useAppSelector(state => state.botEngine.status);
+  const friend = useAppSelector(state => state.friend);
   const dispatch = useAppDispatch();
   const {movableHighlight, bikjangHint, effects} = usePreferences();
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
   // be touched until both armies have chosen. Closed while the bot is thinking too, and while its engine
   // is not up: a first move made then would begin a rated game against nobody.
+  // And, in a game with a friend, until it is this player's army's turn: the room is the judge of the rest.
   const playable =
     isArranged(phase) &&
+    friendAllowsPlay(friend, game) &&
     botDutyFor(played, phase, opponent) === undefined &&
     !botEngineHoldsPlay(played, opponent, engineStatus);
   const animated = effects.full;
   const {selected, hovered, destinations, covered, tap, hover} = useMoveSelection(
     game,
-    move => dispatch(moved(move)),
+    move => dispatch(actInGame({kind: "move", move: wireOfMove(move)}, moved(move))),
     playable,
   );
   const tourStep = useAppSelector(state => tourStepNameOf(state.onboarding));

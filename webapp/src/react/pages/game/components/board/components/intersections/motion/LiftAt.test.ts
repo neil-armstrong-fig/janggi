@@ -1,6 +1,6 @@
 import {expect, it} from "vitest";
 import {liftAt} from "@src/react/pages/game/components/board/components/intersections/motion/LiftAt";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 const HELD = toPositionKey({file: 1, rank: 7});
 const HOVERED = toPositionKey({file: 3, rank: 7});

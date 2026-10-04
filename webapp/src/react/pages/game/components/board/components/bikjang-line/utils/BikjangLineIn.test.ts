@@ -1,9 +1,9 @@
-import type {GameState} from "@src/game/types/GameState";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {bikjangLineIn} from "@src/react/pages/game/components/board/components/bikjang-line/utils/BikjangLineIn";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 
 it("draws nothing before a bikjang is called", () => {
   expect(bikjangLineIn(opening())).toBeUndefined();

@@ -1,3 +1,4 @@
+import {SelectField} from "@src/react/pages/game/components/select-field/SelectField";
 import {COPY_SCOPES} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/style-tools/types/CopyScope";
 import type {CopyScope} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/style-tools/types/CopyScope";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
@@ -48,34 +49,36 @@ export function StyleTools({startName, onReset, onPasteKey, sources, onCopy, byA
           <span className="text-xs text-white/60">Load one you have</span>
 
           <div className="flex gap-2">
-            <select
+            <SelectField
+              wrapperClassName="min-w-0 flex-1"
               data-testid="style-editor-copy-from"
               aria-label="The style to load"
               value={from || sources[0]}
               onChange={event => setFrom(event.target.value)}
-              className="h-10 min-w-0 flex-1 rounded-xl bg-black/25 px-2 text-sm text-white/90"
+              className="h-10 text-sm"
             >
               {sources.map(name => (
                 <option key={name} value={name} className="bg-ground-raised">
                   {name}
                 </option>
               ))}
-            </select>
+            </SelectField>
 
             {byArmy && (
-              <select
+              <SelectField
+                wrapperClassName="w-28 shrink-0"
                 data-testid="style-editor-copy-scope"
                 aria-label="How much of it to load"
                 value={scope}
                 onChange={event => setScope(COPY_SCOPES.find(option => option === event.target.value) ?? "both")}
-                className="h-10 w-28 shrink-0 rounded-xl bg-black/25 px-2 text-sm text-white/90"
+                className="h-10 text-sm"
               >
                 {COPY_SCOPES.map(option => (
                   <option key={option} value={option} className="bg-ground-raised">
                     {SCOPE_NAMES[option]}
                   </option>
                 ))}
-              </select>
+              </SelectField>
             )}
           </div>
 

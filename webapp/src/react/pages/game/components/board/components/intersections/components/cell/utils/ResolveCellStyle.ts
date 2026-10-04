@@ -1,5 +1,5 @@
-import type {Position} from "@src/game/board/types/Position";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import type {Position} from "@janggi/engine/board/types/Position";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {CellStyle} from "@src/styles/types/CellStyle";
 

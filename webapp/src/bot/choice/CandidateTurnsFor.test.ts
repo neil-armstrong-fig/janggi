@@ -1,8 +1,8 @@
-import type {GameState} from "@src/game/types/GameState";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {candidateTurnsFor} from "@src/bot/choice/CandidateTurnsFor";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 
 it("offers every one of the 31 opening moves and a rested turn besides", () => {
   const turns = candidateTurnsFor(newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual"), undefined);

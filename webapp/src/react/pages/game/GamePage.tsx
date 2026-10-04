@@ -1,5 +1,7 @@
 import {Board} from "@src/react/pages/game/components/board/Board";
+import {FriendStrip} from "@src/react/pages/game/components/friend-strip/FriendStrip";
 import {Onboarding} from "@src/react/pages/game/components/onboarding/Onboarding";
+import {PlayAFriend} from "@src/react/pages/game/components/play-a-friend/PlayAFriend";
 import {RecordSheet} from "@src/react/pages/game/components/record-sheet/RecordSheet";
 import {Settings} from "@src/react/pages/game/components/settings/Settings";
 import {createFairyStockfish} from "@src/bot/engine/CreateFairyStockfish";
@@ -8,6 +10,8 @@ import {StylesSheet} from "@src/react/pages/game/components/styles-sheet/StylesS
 import {useAppSelector} from "@src/redux/Hooks";
 import {useBotEngine} from "@src/react/pages/game/hooks/use-bot-engine/UseBotEngine";
 import {useBotOpponent} from "@src/react/pages/game/hooks/use-bot-opponent/UseBotOpponent";
+import {FriendSignIn} from "@src/react/pages/game/components/friend-sign-in/FriendSignIn";
+import {useFriendRoom} from "@src/react/pages/game/hooks/use-friend-room/UseFriendRoom";
 import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAudio";
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
 import {useHaptics} from "@src/react/pages/game/hooks/use-haptics/UseHaptics";
@@ -44,6 +48,10 @@ import {useState} from "react";
  * Everything else comes from the store, and each section reads it for itself — the game, and the
  * player's preferences through `usePreferences`.
  *
+ * `FriendStrip` is the one line over the board while a game with a friend is joined, and `PlayAFriend` the sheet that
+ * makes or takes a code; `useFriendRoom` keeps a signed-in player in the room they are in. All three are nothing to a player
+ * who has never opened Play a friend.
+ *
  * The bot plays from here, and the rating is kept from here, because both answer the game as a whole
  * rather than any one section of it. The engine is made here once and costs nothing until the bot is the
  * opponent — it downloads nothing before then, and `useBotEngine` starts it the moment the bot is chosen.
@@ -59,10 +67,13 @@ export function GamePage(): React.JSX.Element {
   useBotEngine(engine);
   useBotOpponent(engine);
   useRatedGame(moment);
+  useFriendRoom();
 
   return (
     <main className="flex h-full w-full flex-col bg-ground p-2">
       <h1 className="sr-only">Janggi: Korean Chess</h1>
+
+      <FriendStrip />
 
       <Status onControlPressed={() => sound("controlPressed")}>
         <Board moment={moment} onPickUp={() => sound("pieceLifted")} />
@@ -74,7 +85,11 @@ export function GamePage(): React.JSX.Element {
 
       <StylesSheet />
 
+      <PlayAFriend />
+
       <Onboarding />
+
+      <FriendSignIn />
     </main>
   );
 }

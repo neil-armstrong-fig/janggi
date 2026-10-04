@@ -1,7 +1,7 @@
 import {ArmySwitch} from "@src/react/pages/game/components/settings/tabs/game-pane/components/setup-settings/components/army-switch/ArmySwitch";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {SetupSetting} from "@src/react/pages/game/components/settings/tabs/game-pane/components/setup-settings/components/setup-setting/SetupSetting";
-import {canPlace} from "@src/game/setups/CanPlace";
+import {canPlace} from "@janggi/engine/setups/CanPlace";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useState} from "react";
 

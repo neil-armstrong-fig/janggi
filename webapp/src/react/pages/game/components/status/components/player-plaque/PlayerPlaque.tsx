@@ -5,9 +5,10 @@ import {TakenTray} from "@src/react/pages/game/components/status/components/play
 import {clsx} from "clsx";
 import {plaquePlayerFor} from "@src/react/pages/game/components/status/components/player-plaque/players/PlaquePlayerFor";
 import {plaqueStateOf} from "@src/react/pages/game/components/status/components/player-plaque/plaque-state/PlaqueStateOf";
-import {scoreFor} from "@src/game/scoring/ScoreFor";
+import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
+import {inFriendGame} from "@src/redux/online/selecting/InFriendGame";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
-import {takenFrom} from "@src/game/scoring/TakenFrom";
+import {takenFrom} from "@janggi/engine/scoring/TakenFrom";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
@@ -17,6 +18,8 @@ import {useRolledNumber} from "@src/react/pages/game/components/status/component
  * One army's side of the frame: its name in its own colour, the pieces it has lost, and what it is
  * worth. Lit while the board is waiting on it, red while its general is attacked, gold once it has
  * won — so whose turn it is can be read from the edge of the eye without reading the herald at all.
+ *
+ * **In a game with a friend, the army this player has wears a gold ring**, which is how they know which side they are.
  *
  * **The score is Han's 1.5 덤 folded in**, so the two figures are directly comparable — the whole
  * point of the half point being that they can never be equal. That is also why Han opens on 73.5
@@ -53,6 +56,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
   const xp = useAppSelector(state => state.progress.xp);
   const {pieceStyle, effects} = usePreferences();
   const {status} = useGameStatus();
+  const ownedByYou = useAppSelector(state => inFriendGame(state.friend) && state.friend.ownSide === side);
 
   const game = played.present;
   const state = plaqueStateOf(status, side);
@@ -64,10 +68,12 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
     <section
       data-testid={`plaque-${side}`}
       data-state={state}
+      data-own={ownedByYou ? "" : undefined}
       aria-label={sideName(side)}
       className={clsx(
         "flex h-11 shrink-0 items-center gap-2 rounded-xl border px-3 group-data-[flipped=true]/flip:rotate-180 transition-[background-color,border-color,opacity] duration-300 motion-reduce:transition-none",
         FRAMES[state],
+        ownedByYou && "ring-2 ring-gold/80",
       )}
     >
       <span

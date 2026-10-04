@@ -1,14 +1,11 @@
-import type {CDPSession, Page} from "@playwright/test";
+import type {BrowserContextOptions, CDPSession, Page} from "@playwright/test";
+import {ONBOARDING_DONE_JSON, ONBOARDING_STORAGE_KEY} from "@janggi/shared/janggi/onboarding/OnboardingStorage";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 import type {InstallationAppearance, InstallationIcon} from "@src/dsl/janggi/types/InstallationAppearance";
+import type {OnboardingKept} from "@src/dsl/janggi/playwright/types/OnboardingKept";
 import type {InstallationManifest} from "@src/dsl/janggi/types/InstallationManifest";
 import type {SearchData} from "@src/dsl/janggi/types/SearchData";
-
-/**
- * How long a first visit may take to come back isolated. The service worker precaches the engine's
- * wasm before it takes control, which is seconds on a slow runner — past the config's action timeout.
- */
-const ISOLATION_TIMEOUT_MS = 15_000;
+import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
 /** The script the page loads the bot's engine from, and so the first thing that fails when it cannot. */
 const ENGINE_SCRIPT = "**/engine/stockfish.js";
@@ -45,6 +42,41 @@ export class JanggiPlaywright extends BasePage {
 
   constructor(page: Page) {
     super(page);
+  }
+
+  /**
+   * What the page is told before its own scripts run, so a returning player has been shown around by the time the app
+   * reads its storage. Only where nothing is kept yet: a reload keeps whatever the app has since written, and never sets
+   * the welcome back over a player who had skipped it. The key and the record are the app's own, from `@janggi/shared`: if
+   * either changes without that package following, the welcome shows and every spec fails on its first tap.
+   */
+  async keepOnboardingDone(): Promise<void> {
+    await this.page.context().addInitScript(
+      (kept: OnboardingKept) => {
+        try {
+          if (localStorage.getItem(kept.key) === null) localStorage.setItem(kept.key, kept.json);
+        } catch {
+          // Storage blocked: the app falls back to a first visit, and the specs fail loudly on the welcome.
+        }
+      },
+      {key: ONBOARDING_STORAGE_KEY, json: ONBOARDING_DONE_JSON},
+    );
+  }
+
+  /**
+   * A new page in a browser context of its own, as a second device would be: nothing shared with this one but the
+   * browser. Made with the options this device was made with, and closed with `closeTheDevice`.
+   */
+  async openAnotherDevicePage(options: BrowserContextOptions): Promise<Page> {
+    const browser = this.page.context().browser();
+    if (browser === null) throw new Error("This page has no browser to open another device in");
+
+    return await (await browser.newContext(options)).newPage();
+  }
+
+  /** Closes the browser context this page is in, and with it the device. */
+  async closeTheDevice(): Promise<void> {
+    await this.page.context().close();
   }
 
   /**

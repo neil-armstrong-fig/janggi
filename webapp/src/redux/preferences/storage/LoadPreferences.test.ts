@@ -16,6 +16,7 @@ const chosen: PreferencesSliceState = {
   movableHighlight: "Hidden",
   bikjangHint: "Hidden",
   flipBoardForHan: true,
+  showOpponentLook: false,
   effects: "Reduced",
   soundEffectsVolume: 40,
   musicVolume: 0,
@@ -113,4 +114,9 @@ it("takes Han's pieces to be Cho's where none were kept, or what was kept is not
   expect(loadPreferences(storageHolding(chosen)).hanPieceSet).toBeUndefined();
   expect(loadPreferences(storageHolding({...chosen, hanPieceSet: 3})).hanPieceSet).toBeUndefined();
   expect(loadPreferences(storageHolding({...chosen, hanPieceSet: ""})).hanPieceSet).toBeUndefined();
+});
+
+it("shows the opponent's board and pieces where nothing says otherwise, and not where it was turned off", () => {
+  expect(loadPreferences(storageHolding({...chosen, showOpponentLook: "no"})).showOpponentLook).toBe(true);
+  expect(loadPreferences(storageHolding({...chosen, showOpponentLook: false})).showOpponentLook).toBe(false);
 });

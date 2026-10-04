@@ -51,7 +51,6 @@ export function soloNotesAt(step: number, rhythm: Rhythm, plan: SoloPlan): reado
 function motifFor(step: number, meter: Meter, plan: SoloPlan): Motif {
   const chordIndex = Math.floor(step / STEPS_PER_GAME_CHORD);
   const place = ((chordIndex % CHORDS_PER_PHRASE) + CHORDS_PER_PHRASE) % CHORDS_PER_PHRASE;
-
   if (place === CLOSE) return CADENCES[meter];
 
   return MOTIFS[meter][place === ANSWER ? plan.answer : plan.call] ?? CADENCES[meter];

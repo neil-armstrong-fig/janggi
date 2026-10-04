@@ -1,7 +1,7 @@
 import type {BoardMarks} from "@src/styles/types/board-marks/BoardMarks";
 import type {CellStyle} from "@src/styles/types/CellStyle";
 import type {LastMoveStyle} from "@src/styles/types/board-marks/LastMoveStyle";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 
 /** Overrides keyed by `toPositionKey`, e.g. `{f5r2: {...}}`. */
 export type CellOverrides = Readonly<Partial<Record<PositionKey, CellStyle>>>;

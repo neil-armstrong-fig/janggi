@@ -1,8 +1,8 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 import {gameIsOver} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/game-is-over/GameIsOver";
-import {legalMovesFor} from "@src/game/LegalMovesFor";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {legalMovesFor} from "@janggi/engine/LegalMovesFor";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * Where a piece stands that its owner may move this turn.

@@ -3,15 +3,15 @@ import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/components
 import {BikjangLine} from "@src/react/pages/game/components/board/components/bikjang-line/BikjangLine";
 import {BoardGrid} from "@src/react/pages/game/components/board/components/board-grid/BoardGrid";
 import {Cell} from "@src/react/pages/game/components/board/components/intersections/components/cell/Cell";
-import {FILE_COUNT, RANK_COUNT} from "@src/game/board/BoardDimensions";
+import {FILE_COUNT, RANK_COUNT} from "@janggi/engine/board/BoardDimensions";
 import {CheckLines} from "@src/react/pages/game/components/board/components/check-lines/CheckLines";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 import type {SceneName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
 import {cellMarksAt} from "@src/react/pages/game/components/board/components/intersections/cell-marks/CellMarksAt";
 import {markSourcesOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/MarkSourcesOf";
 import {sceneOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/SceneOf";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {useMemo} from "react";
 
 /**

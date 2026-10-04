@@ -4,7 +4,7 @@ import {dealtAgainst} from "@src/redux/game/dealing/DealtAgainst";
 import {expect, it} from "vitest";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
 import {freshPhaseFor} from "@src/redux/game/dealing/FreshPhaseFor";
-import {playMove} from "@src/game/record/PlayMove";
+import {playMove} from "@src/record/PlayMove";
 
 const theBot: Opponent = {name: "Bot", botElo: 1600, sideChoice: "Han", playerSide: "han"};
 

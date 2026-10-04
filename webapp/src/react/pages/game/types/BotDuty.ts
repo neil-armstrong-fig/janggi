@@ -1,4 +1,4 @@
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /** The bot has its back rank to arrange — a scored game's 판차림, in the order the rules give. */

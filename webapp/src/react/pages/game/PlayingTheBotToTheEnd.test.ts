@@ -11,8 +11,8 @@ import {botStrengthChosen, formatChosen, gameReducer, opponentChosen, sideChosen
 import {createNodeFairyStockfish} from "@src/testing/CreateNodeFairyStockfish";
 import {expect, it} from "vitest";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
-import {opponentOf} from "@src/game/utils/OpponentOf";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /** An army the game is waiting on, the strength it is played at, and what it is waited on for. */
 interface Waiting {

@@ -1,7 +1,7 @@
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import type {Move} from "@src/game/types/Move";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Move} from "@janggi/engine/types/Move";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {expect, it} from "vitest";
 import {
   bikjangCalled,
@@ -26,7 +26,7 @@ import {
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
 import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 
 /**

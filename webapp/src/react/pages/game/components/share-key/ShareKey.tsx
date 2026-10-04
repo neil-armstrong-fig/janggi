@@ -1,3 +1,4 @@
+import {Button} from "@src/react/pages/game/components/button/Button";
 import {useState} from "react";
 
 /**
@@ -24,8 +25,8 @@ export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <button
-        type="button"
+      <Button
+        variant="secondary"
         data-testid={`${id}-copy`}
         onClick={() => {
           const key = keyOf();
@@ -33,10 +34,9 @@ export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
           setCopied(false);
           void copiedToClipboard(key).then(setCopied);
         }}
-        className="h-11 cursor-pointer rounded-xl bg-black/25 text-sm font-semibold tracking-wide text-white/80 uppercase transition-[transform,background-color] duration-150 hover:bg-black/35 active:scale-[0.98] motion-reduce:transition-none"
       >
         {label}
-      </button>
+      </Button>
 
       {shown !== undefined && (
         <textarea

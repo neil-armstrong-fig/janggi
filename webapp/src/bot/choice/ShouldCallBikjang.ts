@@ -1,5 +1,5 @@
-import type {GameState} from "@src/game/types/GameState";
-import {canCallBikjang} from "@src/game/bikjang/CanCallBikjang";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {canCallBikjang} from "@janggi/engine/bikjang/CanCallBikjang";
 import {wouldCallBikjang} from "@src/bot/choice/would-call-bikjang/WouldCallBikjang";
 
 /**

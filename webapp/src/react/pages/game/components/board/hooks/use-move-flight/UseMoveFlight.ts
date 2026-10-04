@@ -1,8 +1,8 @@
 import type {Flight} from "@src/react/pages/game/components/board/hooks/use-move-flight/types/Flight";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 import {flightOf} from "@src/react/pages/game/components/board/hooks/use-move-flight/utils/FlightOf";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {useMemo, useState} from "react";
 
 /** The flight the latest change is shown with, how far through being shown it is, and the two calls that move it on. */

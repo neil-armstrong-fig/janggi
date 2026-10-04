@@ -1,7 +1,7 @@
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import type {RatedGameInProgress} from "@src/redux/ratings/types/RatedGameInProgress";
 import type {RatingsSliceState} from "@src/redux/ratings/types/RatingsSliceState";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 import {ratedGameAbandoned, ratingsReducer} from "@src/redux/ratings/RatingsSlice";
 
 /**

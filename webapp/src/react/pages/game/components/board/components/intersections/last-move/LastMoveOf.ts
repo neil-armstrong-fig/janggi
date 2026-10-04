@@ -1,6 +1,6 @@
-import type {Move} from "@src/game/types/Move";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import {transitionBetween} from "@src/game/record/TransitionBetween";
+import type {Move} from "@janggi/engine/types/Move";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import {transitionBetween} from "@src/record/TransitionBetween";
 
 /**
  * The move that reached the position on the board, or nothing where no move did — the game has just

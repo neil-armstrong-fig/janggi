@@ -1,5 +1,5 @@
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 
 /**
  * What a deal produces: a record with nothing in it yet, the phase it was dealt from, a bot that

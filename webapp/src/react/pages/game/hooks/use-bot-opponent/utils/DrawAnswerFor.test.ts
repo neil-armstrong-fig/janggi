@@ -1,9 +1,9 @@
-import type {GameState} from "@src/game/types/GameState";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {drawAccepted, drawDeclined} from "@src/redux/game/GameSlice";
 import {drawAnswerFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/DrawAnswerFor";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 
 const endgame: GameState = {
   ...newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual"),

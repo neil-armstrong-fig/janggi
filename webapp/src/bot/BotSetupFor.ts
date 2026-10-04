@@ -1,15 +1,15 @@
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {Engine} from "@src/bot/engine/types/Engine";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import {SETUP_SEARCH_MS} from "@src/bot/levels/SetupSearchTime";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {SetupQuestion} from "@src/bot/types/SetupQuestion";
 import type {SetupRating} from "@src/bot/setups/types/SetupRating";
 import {TOURNAMENT_SETUPS} from "@src/bot/setups/TournamentSetups";
 import {candidateTurnsFor} from "@src/bot/choice/CandidateTurnsFor";
 import {fenOf} from "@src/bot/notation/FenOf";
 import {nearBestSetup} from "@src/bot/setups/NearBestSetup";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 import {uciOfTurn} from "@src/bot/notation/UciOfTurn";
 
 /** The engine, and what every opening it rates for one layout is searched under. */

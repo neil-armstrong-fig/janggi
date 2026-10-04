@@ -1,8 +1,8 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {Position, PositionKey} from "@src/game/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {Position, PositionKey} from "@janggi/engine/board/types/Position";
 import type {TourStepName} from "@src/redux/onboarding/touring/TourStepName";
 import {movablePieces} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/MovablePieces";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /** What the board is doing as the tour looks at it. */
 interface Situation {

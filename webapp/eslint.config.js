@@ -27,37 +27,6 @@ const hookTestingOnly = [
 ];
 
 /**
- * The engine in `src/game/` is the rules of janggi and nothing else. It has to stay runnable and
- * testable with no React, no store and no DOM around it — that is what makes exhaustive
- * move-generation tests cheap to write, and what would let it move to its own package, or to a
- * server, without being unpicked first.
- *
- * Denying the packages and not only the folders is what makes "pure TypeScript" a rule rather than
- * an intention: `@src/react` is already unreachable, but `import {useMemo} from "react"` would not
- * be.
- */
-const engineIsPure = [
-  {name: "react", message: "The engine must not import React. The rules do not depend on how they are drawn."},
-  {name: "react-dom", message: "The engine must not import React. The rules do not depend on how they are drawn."},
-  {
-    name: "react-redux",
-    message: "The engine must not import Redux. Where the state is kept is the store's problem, not the rules'.",
-  },
-  {
-    name: "@reduxjs/toolkit",
-    message: "The engine must not import Redux. Where the state is kept is the store's problem, not the rules'.",
-  },
-  {
-    name: "@testing-library/react",
-    message: "There is nothing to render here — an engine test calls the function and reads what comes back.",
-  },
-  {
-    name: "@testing-library/dom",
-    message: "There is nothing to render here — an engine test calls the function and reads what comes back.",
-  },
-];
-
-/**
  * The bot in `src/bot/` is the opponent's decision and nothing else: a position in, what to play out,
  * with Fairy-Stockfish asked through the one interface in `engine/`. No React and no store, so every
  * choice it makes is a plain function a test can call, and the engine can be swapped for a fake.
@@ -104,7 +73,7 @@ const audioIsIsolated = [
 ];
 
 export default [
-  ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages: ["@janggi/shared"]}),
+  ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages: ["@janggi/shared", "@janggi/engine"]}),
   globalIgnores(["scripts/*"]),
   {
     files: ["src/**/*.{ts,tsx}"],
@@ -127,7 +96,7 @@ export default [
       // eslint-plugin-react-hooks owns these; letting both report would double up.
       ...eslintReact.configs["disable-conflict-eslint-plugin-react-hooks"].rules,
       "no-restricted-imports": restrictedImports({
-        allowedPackages: ["@janggi/shared"],
+        allowedPackages: ["@janggi/shared", "@janggi/engine"],
         paths: hookTestingOnly,
       }),
     },
@@ -140,7 +109,7 @@ export default [
       // Flat config replaces this rule rather than merging it, so a file matching both this block
       // and the one above gets only what is listed here — `hookTestingOnly` has to be repeated.
       "no-restricted-imports": restrictedImports({
-        allowedPackages: ["@janggi/shared"],
+        allowedPackages: ["@janggi/shared", "@janggi/engine"],
         paths: hookTestingOnly,
         patterns: [
           {
@@ -159,7 +128,7 @@ export default [
     rules: {
       // As above: flat config replaces this rule rather than merging it.
       "no-restricted-imports": restrictedImports({
-        allowedPackages: ["@janggi/shared"],
+        allowedPackages: ["@janggi/shared", "@janggi/engine"],
         paths: hookTestingOnly,
         patterns: [
           {
@@ -188,29 +157,9 @@ export default [
               "The sound must not import from react/ or redux/. It is handed cues and a mood and plays them; nothing else is its job.",
           },
           {
-            group: ["@src/game", "@src/game/**"],
+            group: ["@janggi/engine", "@janggi/engine/**"],
             message:
               "The sound must not import the engine. The page decides what a change sounds like and hands over cues and a mood.",
-          },
-        ],
-      }),
-    },
-  },
-  {
-    // The rules of janggi do not depend on how they are drawn or on where the state is kept.
-    // Components and the store read the engine; the engine never reaches back into either.
-    files: ["src/game/**"],
-    rules: {
-      // As above: flat config replaces this rule rather than merging it, so everything the blocks
-      // higher up would have contributed has to be listed here too.
-      "no-restricted-imports": restrictedImports({
-        allowedPackages: ["@janggi/shared"],
-        paths: engineIsPure,
-        patterns: [
-          {
-            group: ["@src/react", "@src/react/**", "@src/redux", "@src/redux/**"],
-            message:
-              "The engine must not import from react/ or redux/. It takes a game state and returns one; everything else is somebody else's job.",
           },
         ],
       }),
@@ -223,7 +172,7 @@ export default [
     rules: {
       // As above: flat config replaces this rule rather than merging it.
       "no-restricted-imports": restrictedImports({
-        allowedPackages: ["@janggi/shared"],
+        allowedPackages: ["@janggi/shared", "@janggi/engine"],
         paths: botIsHeadless,
         patterns: [
           {

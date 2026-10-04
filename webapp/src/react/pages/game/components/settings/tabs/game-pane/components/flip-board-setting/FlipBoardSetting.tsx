@@ -1,4 +1,4 @@
-import {clsx} from "clsx";
+import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
 import {flipBoardForHanChosen} from "@src/redux/preferences/PreferencesSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
@@ -18,20 +18,12 @@ export function FlipBoardSetting(): React.JSX.Element {
 
   return (
     <div hidden={!isHuman} className="flex flex-col gap-0.5">
-      <button
-        type="button"
-        data-testid="flip-board-toggle"
-        aria-pressed={flipBoardForHan}
-        onClick={() => dispatch(flipBoardForHanChosen(!flipBoardForHan))}
-        className={clsx(
-          "flex h-9 cursor-pointer items-center gap-2 self-start rounded-lg px-2 text-xs transition-colors duration-150 motion-reduce:transition-none",
-          flipBoardForHan && "bg-wood/20 text-wood",
-          !flipBoardForHan && "text-white/60 hover:bg-white/10",
-        )}
-      >
-        <span aria-hidden>{flipBoardForHan ? "☑" : "☐"}</span>
-        Flip board for Han
-      </button>
+      <Switch
+        testId="flip-board-toggle"
+        on={flipBoardForHan}
+        label="Flip board for Han"
+        onToggle={() => dispatch(flipBoardForHanChosen(!flipBoardForHan))}
+      />
 
       <p className="px-2 text-xs text-white/40">
         Turns the pieces to face Han's player on Han's move, for the player sat across from you.

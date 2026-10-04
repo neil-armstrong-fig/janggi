@@ -1,15 +1,15 @@
 import type {Engine} from "@src/bot/engine/types/Engine";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Search} from "@src/bot/engine/types/Search";
 import type {SearchResult} from "@src/bot/engine/types/SearchResult";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {MOVE_TIMES_MS} from "@src/bot/levels/MoveTimes";
 import {botTurnFor} from "@src/bot/BotTurnFor";
 import {expect, it} from "vitest";
 import {fenOf} from "@src/bot/notation/FenOf";
-import {newGame} from "@src/game/NewGame";
-import {playMove} from "@src/game/record/PlayMove";
-import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
+import {newGame} from "@janggi/engine/NewGame";
+import {playMove} from "@src/record/PlayMove";
+import {playedGameFrom} from "@src/record/PlayedGameFrom";
 
 /** An engine that answers whatever it is told to, and remembers what it was asked. */
 interface FakeEngine extends Engine {

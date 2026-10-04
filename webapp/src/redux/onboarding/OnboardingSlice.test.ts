@@ -18,14 +18,14 @@ it("starts the tour from the welcome", () => {
 });
 
 it("steps through the tour and back", () => {
-  const second = onboardingReducer(onboardingReducer(initial, tourStarted()), tourSteppedForward());
+  const second = onboardingReducer(onboardingReducer(initial, tourStarted()), tourSteppedForward({skipping: []}));
 
   expect(second).toEqual({stage: "tour", tourStep: 1});
-  expect(onboardingReducer(second, tourSteppedBack())).toEqual({stage: "tour", tourStep: 0});
+  expect(onboardingReducer(second, tourSteppedBack({skipping: []}))).toEqual({stage: "tour", tourStep: 0});
 });
 
 it("is done once skipped, from the welcome or from the middle of the tour", () => {
-  const midway = onboardingReducer(onboardingReducer(initial, tourStarted()), tourSteppedForward());
+  const midway = onboardingReducer(onboardingReducer(initial, tourStarted()), tourSteppedForward({skipping: []}));
 
   expect(onboardingReducer(initial, onboardingSkipped())).toEqual({stage: "done", tourStep: 0});
   expect(onboardingReducer(midway, onboardingSkipped())).toEqual({stage: "done", tourStep: 0});

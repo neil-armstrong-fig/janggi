@@ -1,5 +1,5 @@
 import {CELL_ASPECT_RATIO} from "@src/react/pages/game/components/board/utils/CellAspectRatio";
-import {FILE_COUNT, RANK_COUNT} from "@src/game/board/BoardDimensions";
+import {FILE_COUNT, RANK_COUNT} from "@janggi/engine/board/BoardDimensions";
 
 /**
  * The 9x10 grid a board is drawn on, and its surface: fills whatever box it is given and centres a

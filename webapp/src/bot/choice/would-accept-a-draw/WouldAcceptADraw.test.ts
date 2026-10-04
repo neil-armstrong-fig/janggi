@@ -1,12 +1,12 @@
-import type {File, Rank} from "@src/game/board/types/Position";
-import type {GameState} from "@src/game/types/GameState";
+import type {File, Rank} from "@janggi/engine/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
-import {placed} from "@src/testing/Placed";
+import {newGame} from "@janggi/engine/NewGame";
+import {placed} from "@janggi/engine/testing/Placed";
 import {wouldAcceptADraw} from "@src/bot/choice/would-accept-a-draw/WouldAcceptADraw";
 
 it("accepts a draw in an endgame it is not winning", () => {

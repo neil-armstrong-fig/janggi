@@ -3,6 +3,7 @@ import {BOT_STRENGTH_OPTIONS} from "@src/react/pages/game/components/settings/ta
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import {botStrengthChosen} from "@src/redux/game/GameSlice";
 import {lockBehindBot} from "@src/react/pages/game/components/settings/tabs/game-pane/components/bot-settings/components/bot-strength-setting/locks/LockBehindBot";
+import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/game-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 
 /**
@@ -14,13 +15,14 @@ import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
  */
 export function BotStrengthSetting(): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
+  const withAFriend = useWithAFriend();
   const beaten = useAppSelector(state => state.progress.beaten);
   const dispatch = useAppDispatch();
 
   return (
     <OptionPicker
       id="bot-strength"
-      disabled={playHasBegun(played) || opponent.name !== "Bot"}
+      disabled={playHasBegun(played) || withAFriend || opponent.name !== "Bot"}
       label="Bot strength"
       ariaLabel="How strongly the bot plays, as an Elo rating"
       options={BOT_STRENGTH_OPTIONS}

@@ -1,7 +1,7 @@
 import type {BotEngineStatus} from "@src/redux/bot-engine/types/BotEngineStatus";
 import type {Opponent} from "@src/redux/game/types/Opponent";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /**
  * Whether the game is being held until the bot's engine can be searched: the bot is the opponent, the

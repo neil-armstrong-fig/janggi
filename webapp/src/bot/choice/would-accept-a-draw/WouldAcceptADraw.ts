@@ -1,6 +1,6 @@
-import type {GameState} from "@src/game/types/GameState";
-import {canAgreeADraw} from "@src/game/drawing/CanAgreeADraw";
-import {underThirtyPointsEach} from "@src/game/utils/UnderThirtyPointsEach";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {canAgreeADraw} from "@janggi/engine/drawing/CanAgreeADraw";
+import {underThirtyPointsEach} from "@janggi/engine/utils/UnderThirtyPointsEach";
 
 /**
  * Whether the bot accepts a draw a player has offered it. Like a called bikjang it is a decision the

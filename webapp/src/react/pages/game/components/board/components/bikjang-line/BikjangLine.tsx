@@ -1,5 +1,5 @@
 import type {BikjangStyle} from "@src/styles/types/board-marks/BikjangStyle";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import {LinesOverlay} from "@src/react/pages/game/components/board/components/lines-overlay/LinesOverlay";
 import {bikjangLineIn} from "@src/react/pages/game/components/board/components/bikjang-line/utils/BikjangLineIn";
 

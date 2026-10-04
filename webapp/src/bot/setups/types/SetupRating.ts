@@ -1,4 +1,4 @@
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 
 /** A setup the bot might lay out, and how good the engine judged it for the bot's army. */
 export interface SetupRating {

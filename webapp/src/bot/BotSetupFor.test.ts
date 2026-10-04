@@ -1,13 +1,13 @@
 import type {Engine} from "@src/bot/engine/types/Engine";
 import type {Search} from "@src/bot/engine/types/Search";
-import {SETUPS} from "@src/game/setups/Setups";
+import {SETUPS} from "@janggi/engine/setups/Setups";
 import {SETUP_SEARCH_MS} from "@src/bot/levels/SetupSearchTime";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {TOURNAMENT_SETUPS} from "@src/bot/setups/TournamentSetups";
 import {botSetupFor} from "@src/bot/BotSetupFor";
 import {expect, it} from "vitest";
 import {fenOf} from "@src/bot/notation/FenOf";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 
 /** An engine that rates each pairing of setups as it is told to, and remembers what it was asked. */
 interface FakeEngine extends Engine {

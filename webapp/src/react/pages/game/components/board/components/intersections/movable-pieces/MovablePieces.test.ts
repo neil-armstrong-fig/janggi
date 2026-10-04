@@ -1,15 +1,15 @@
-import type {File, Rank} from "@src/game/board/types/Position";
-import type {GameState} from "@src/game/types/GameState";
+import type {File, Rank} from "@janggi/engine/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {SETUPS} from "@src/game/setups/Setups";
-import {applyMove} from "@src/game/ApplyMove";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import {applyMove} from "@janggi/engine/ApplyMove";
 import {expect, it} from "vitest";
 import {movablePieces} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/MovablePieces";
-import {newGame} from "@src/game/NewGame";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {newGame} from "@janggi/engine/NewGame";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 it("marks the army to move, and only that army", () => {
   const movable = movablePieces(opening(), PLAYABLE);

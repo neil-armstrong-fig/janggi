@@ -19,7 +19,9 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   the Account tab: `account-sign-in` where nobody is signed in; `account-signed-in`, `account-sign-out`,
   `account-name` carrying `data-name`, `account-name-input`, `account-name-save` and `account-name-message` carrying
   `data-accepted`, `account-delete` (then `account-delete-confirm`) and `account-sync-state` carrying `data-state`
-  (`idle`, `synced`, `paused` or `too-large`) where somebody is. The styles
+  (`idle`, `synced`, `paused` or `too-large`) where somebody is. Beside them, only where somebody is signed in,
+  `play-a-friend-open` (see "Playing a friend" below), and in the same tab `opponent-look-toggle` (`aria-pressed`: the
+  "Show opponent's board and pieces" switch, on unless turned off). The styles
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
   `-submit` and `-message` (`data-accepted`), and starting one of their own: `style-editor-locked` where
   XP has not unlocked it, or `style-editor-kind`, `-from` and `-start` where it has — the editor itself,
@@ -131,3 +133,15 @@ anything. Where that matters, add an `is…Shown()` question beside the value on
   Every spec but those under `tests/onboarding/` starts as a returning player: the fixture keeps
   `ONBOARDING_DONE_JSON` under `ONBOARDING_STORAGE_KEY` (from `@janggi/shared`) before the page loads, unless a
   spec calls `useFreshPlayer()` — so none of the above is on their page.
+
+- **Playing a friend** (webapp `play-a-friend/`; the specs are `tests/play-a-friend/`, and `FakeApi`'s room stands in for
+  the Worker's). `play-a-friend-open` opens the sheet from the Account tab and is **absent**, not disabled, where nobody is
+  signed in. `play-a-friend` is the sheet (`aria-modal` while open), with `friend-side-han` / `friend-side-cho` (`aria-pressed`), `friend-away-<days>` (`1`, `3`, `7`, `14`, `30` and `90` — the default; `aria-pressed`) and
+  `friend-create` to make a code; `friend-code` carrying `data-code` once there is one; `friend-code-input`, `friend-join`
+  and `friend-join-message` carrying `data-refused="true"` where a code was turned away (one no room has, or one that is not a
+  code); and, once both are sat down, one `friend-setup-<name>` per arrangement (`inner-elephant`, `outer-elephant`,
+  `left-elephant`, `right-elephant`, `central-chariot`). **The strip is in the page whenever a room is, even under the
+  sheet**: `friend-status` carrying `data-state` (`FRIEND_GAME_STATES` in `@janggi/shared`, `idle` when there is no room, so
+  the element may simply be absent), `friend-opponent` carrying `data-name`, `friend-own-side` carrying `data-side`, and
+  `friend-resign`. `friend-sign-in` is the dialog a signed-out player gets for a `?join=CODE` link, with `friend-sign-in-confirm` (sign in with Google, and come back to the same link) and `friend-sign-in-dismiss` ("Not now"; the link is taken off the address); it never appears without a link or once signed in. `friend-close` closes the sheet and `friend-leave` leaves the room from it; in the strip `friend-leave-game` leaves a room that is waiting for a friend (the strip then reads "Waiting for friend to join" in `friend-status`, visible), a game that is over, or one whose friend is away, for the player's own game, which is put back. The sheet closes itself when the game starts; `?join=CODE` on the address takes a signed-in player
+  straight into the room. A socket closed before its first message is "no such room".

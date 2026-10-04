@@ -108,7 +108,12 @@ of its own still has to write `constructor(page) { super(page) }` to be construc
 
 **A `*Playwright` file puts its constants above the class and keeps class-owned detail inside the
 class.** Implementation used only by that adapter is a private method, immediately below its caller
-(or below its smallest contiguous group of callers) — not a loose function after the class. If the
+(or below its smallest contiguous group of callers) — not a loose function above or below the class, and
+not a loose interface either: a type used by one other file goes in a `types/` folder beside it, named for
+what it is. This holds for every class here, the fakes under `fake-api/` included. A function the page runs
+(`evaluate`, `addInitScript`) is an inline arrow at the call, because a method does not serialise. A class
+used by only one other (`FakeRooms`, by `FakeApi`) lives in a subfolder of its user, with its own `types/`.
+What more than one adapter needs, such as `ISOLATION_TIMEOUT_MS`, is one file in `src/dsl/playwright/`. If the
 detail gets complex enough to obscure the adapter, move it beneath the `playwright/` folder in a
 subject-named subfolder; use `utils/` only as the last resort, following the webapp's own locality
 rule.
@@ -150,9 +155,9 @@ that fetches a value and is not called `get…` will slip past it.
 **A new fixture (or a new area) must be named in `withDslOnly`'s destructuring**
 (`AcceptanceCriteriaMapping.ts`). Playwright reads that destructuring to decide which fixtures to
 build, so one missing from it is silently never constructed. There is one fixture for the app —
-`janggi` — and new areas belong on it as members rather than as fixtures of their own. `anotherDevice`
-— the app open in a second browser context, for a spec that plays a game between two copies of it —
-is the one other fixture there is; `src/tests/AGENTS.md` has how it's used.
+`janggi` — and new areas belong on it as members rather than as fixtures of their own. A second copy of the app is not a
+fixture either: `JanggiDsl.openSeparateDevice()` opens one on demand, from the same `DeviceSetup` the project gave the
+first, and the fixture closes it after the test (`src/tests/AGENTS.md` has how a spec uses it).
 
 ## Locators
 

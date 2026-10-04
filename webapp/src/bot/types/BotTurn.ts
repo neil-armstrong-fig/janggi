@@ -1,4 +1,4 @@
-import type {Move} from "@src/game/types/Move";
+import type {Move} from "@janggi/engine/types/Move";
 
 /** The bot plays a move. */
 interface Moves {

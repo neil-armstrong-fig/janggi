@@ -12,6 +12,7 @@ import {
   pieceSetSplit,
   preferencesReducer,
   sheetOpacityChanged,
+  showOpponentLookChosen,
   soundEffectsVolumeChanged,
 } from "@src/redux/preferences/PreferencesSlice";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -26,6 +27,7 @@ it("starts on the classic board and the modern set, with every mark, motion and 
     movableHighlight: "Shown",
     bikjangHint: "Shown",
     flipBoardForHan: false,
+    showOpponentLook: true,
     effects: "Full",
     soundEffectsVolume: 100,
     musicVolume: 100,
@@ -161,4 +163,11 @@ it("leaves Han where the player put them when Cho's are chosen", () => {
 
 it("splits the armies with each still in the set both wore, which changes nothing on the board", () => {
   expect(preferencesReducer(initial(), pieceSetSplit())).toEqual({...initial(), hanPieceSet: "Modern"});
+});
+
+it("turns showing the opponent's board and pieces off and on", () => {
+  const off = preferencesReducer(initial(), showOpponentLookChosen(false));
+
+  expect(off.showOpponentLook).toBe(false);
+  expect(preferencesReducer(off, showOpponentLookChosen(true)).showOpponentLook).toBe(true);
 });

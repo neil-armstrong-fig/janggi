@@ -18,6 +18,9 @@ src/janggi/share-keys/  the share key codec: `janggi-<kind>:` and base64url JSON
 src/janggi/progress/    the four ladders a player climbs, and the JSON a save key carries
 src/janggi/onboarding/  the welcome's and tour's stages and targets, and the storage key and "done" record
                         the acceptance tests keep for a returning player
+src/janggi/online/      playing a friend: `friend-code/` (the code, its parser, the `?join=` link) and `messages/` (what the
+                        socket carries each way, and `action/`, the turns a game is replayed from), `RoomAway` (how long a room waits, which
+                        the host chooses) and `RoomGone` (the close code that says a room is not there)
 ```
 
 **A wire contract is shared on purpose — a tool, not a rule.** Two copies of a format (the share-key
@@ -42,7 +45,7 @@ which of the two a board has come to, stays in the engine.
 **Vocabulary, not rules.** Types, names and the conversions between them belong here. The engine —
 move generation, check detection, bikjang — does **not**, however tempting. `MatchFormat` is the line
 drawn exactly: the two names a player picks between are vocabulary and live here, while what casual
-and scored actually _do_ to a bikjang or a repetition is the engine's, in `webapp/src/game/`.
+and scored actually _do_ to a bikjang or a repetition is the engine's, in `engine/src/`.
 `acceptance-tests` can import anything in this package, and a spec that recomputed its expected
 outcome from the same code under test would agree with it no matter what either of them did — the
 engine needs a home the tests cannot reach.

@@ -1,10 +1,10 @@
 import type {Locator, Page} from "@playwright/test";
 import {API_ORIGIN} from "@janggi/shared/janggi/account/ApiOrigin";
+import type {RoomAsked} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
 import {FakeApi} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/FakeApi";
+import type {GooglePlayer} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/types/GooglePlayer";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
-
-/** How long a first visit may take to come back isolated, as `JanggiPlaywright.open` allows. */
-const ISOLATION_TIMEOUT_MS = 15_000;
+import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
 /**
  * The Account section of the settings sheet: signing in with Google, signing out, deleting the account, and whether
@@ -17,6 +17,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   private api = new FakeApi();
 
   private readonly signIn: Locator;
+  private readonly signInFromPrompt: Locator;
   private readonly signedIn: Locator;
   private readonly signOut: Locator;
   private readonly deleteAccount: Locator;
@@ -32,6 +33,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
     super(page);
 
     this.signIn = page.getByTestId("account-sign-in");
+    this.signInFromPrompt = page.getByTestId("friend-sign-in-confirm");
     this.signedIn = page.getByTestId("account-signed-in");
     this.signOut = page.getByTestId("account-sign-out");
     this.deleteAccount = page.getByTestId("account-delete");
@@ -52,11 +54,46 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
     if (sharedWith) this.api = sharedWith.api;
 
     await this.page.route(`${API_ORIGIN}/**`, route => this.api.answer(route, new URL(this.page.url()).origin, this));
+    await this.page.routeWebSocket(
+      url => this.isARoomSocket(url),
+      socket => this.api.acceptSocket(socket, this),
+    );
   }
 
-  async signInWithGoogle(): Promise<void> {
+  /** A socket to one of the API's rooms: the API's own address, with `ws` in place of `http`, and a room's path. */
+  private isARoomSocket(url: URL): boolean {
+    return url.origin.replace(/^ws/, "http") === API_ORIGIN && url.pathname.startsWith("/api/rooms/");
+  }
+
+  /** From now on this device's connections to a friend's room are lost and refused, as in a tunnel. */
+  dropTheFriendConnection(): void {
+    this.api.dropRoomSockets(this);
+  }
+
+  getRoomsAsked(): readonly RoomAsked[] {
+    return this.api.getRoomsAsked();
+  }
+
+  letGoOfTheRooms(): void {
+    this.api.letGoOfRooms();
+  }
+
+  restoreTheFriendConnection(): void {
+    this.api.restoreRoomSockets(this);
+  }
+
+  async signInWithGoogle(player?: GooglePlayer): Promise<void> {
+    if (player !== undefined) this.api.signInNextAs(this, player);
+
     await this.openSheet(this.signIn);
     await this.signIn.click();
+    await this.signedIn.waitFor({state: "attached"});
+  }
+
+  async signInFromThePrompt(player: GooglePlayer): Promise<void> {
+    this.api.signInNextAs(this, player);
+
+    await this.signInFromPrompt.click();
     await this.signedIn.waitFor({state: "attached"});
   }
 

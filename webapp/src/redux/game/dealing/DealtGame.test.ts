@@ -1,12 +1,12 @@
 import type {DealtBoard} from "@src/redux/game/dealing/types/DealtBoard";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 import {dealtGame} from "@src/redux/game/dealing/DealtGame";
 import {expect, it} from "vitest";
-import {place} from "@src/game/setups/Place";
-import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
+import {place} from "@janggi/engine/setups/Place";
+import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
 
 const inner = setup("Inner Elephant");
 const outer = setup("Outer Elephant");

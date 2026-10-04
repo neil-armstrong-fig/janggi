@@ -1,5 +1,5 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {Move} from "@src/game/types/Move";
+import type {Move} from "@janggi/engine/types/Move";
 import {expect, it} from "vitest";
 import {flightOf} from "@src/react/pages/game/components/board/hooks/use-move-flight/utils/FlightOf";
 

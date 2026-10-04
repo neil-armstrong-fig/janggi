@@ -1,9 +1,9 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import {expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 import {shouldCallBikjang} from "@src/bot/choice/ShouldCallBikjang";
 
 /**

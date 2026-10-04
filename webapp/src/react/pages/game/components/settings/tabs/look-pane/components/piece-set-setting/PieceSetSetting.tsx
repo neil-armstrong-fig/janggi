@@ -1,4 +1,4 @@
-import {ArmySplitToggle} from "@src/react/pages/game/components/settings/components/army-split-toggle/ArmySplitToggle";
+import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
@@ -8,7 +8,7 @@ import {lockBehindXp} from "@src/react/pages/game/components/settings/tabs/look-
 import {pieceSetPrice} from "@src/redux/progress/unlocks/PieceSetPrice";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
-import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
+import {useOwnPreferences} from "@src/react/pages/game/hooks/use-own-preferences/UseOwnPreferences";
 
 /**
  * The pieces the game is drawn with. A preference rather than part of the game, so a choice is worn at
@@ -25,7 +25,7 @@ export function PieceSetSetting(): React.JSX.Element {
   const xp = useAppSelector(state => state.progress.xp);
   const pieceSets = useAppSelector(state => state.customStyles.pieceSets);
   const split = useAppSelector(state => state.preferences.hanPieceSet !== undefined);
-  const {armyPieceSets} = usePreferences();
+  const {armyPieceSets} = useOwnPreferences();
   const dispatch = useAppDispatch();
 
   const optionsPieceSetStyles = [...BUILT_IN_PIECE_STYLES, ...pieceSets];
@@ -58,9 +58,9 @@ export function PieceSetSetting(): React.JSX.Element {
           />
         ))}
 
-      <ArmySplitToggle
-        id="piece-style"
-        split={split}
+      <Switch
+        testId="piece-style-split"
+        on={split}
         label="Different pieces for each army"
         onToggle={() => dispatch(split ? pieceSetChosen(armyPieceSets.cho.name) : pieceSetSplit())}
       />

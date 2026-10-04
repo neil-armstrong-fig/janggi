@@ -2,13 +2,13 @@
 import "@src/testing/SetupDomTest";
 import type {EndingShake} from "@src/react/pages/game/components/board/hooks/use-ending-shake/UseEndingShake";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Mock} from "vitest";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {Vector} from "@src/react/pages/game/components/board/types/Vector";
 import {expect, it, vi} from "vitest";
-import {newGame} from "@src/game/NewGame";
+import {newGame} from "@janggi/engine/NewGame";
 import {renderHook} from "@testing-library/react";
 import {useEndingShake} from "@src/react/pages/game/components/board/hooks/use-ending-shake/UseEndingShake";
 

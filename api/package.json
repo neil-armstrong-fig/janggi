@@ -17,6 +17,7 @@
     "db:migrate:local": "wrangler d1 migrations apply janggi --local"
   },
   "dependencies": {
+    "@janggi/engine": "workspace:*",
     "@janggi/shared": "workspace:*",
     "drizzle-orm": "catalog:"
   },

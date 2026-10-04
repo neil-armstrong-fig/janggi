@@ -1,10 +1,10 @@
 import type {CellMarks} from "@src/react/pages/game/components/board/components/intersections/cell-marks/types/CellMarks";
 import type {MarkSources} from "@src/react/pages/game/components/board/components/intersections/cell-marks/types/MarkSources";
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 import {emphasisFor} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/EmphasisFor";
 import {lastMoveEndAt} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveEndAt";
-import {pieceAt} from "@src/game/board/lookup/PieceAt";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {pieceAt} from "@janggi/engine/board/lookup/PieceAt";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * What one intersection is marked with, worked out from the whole board — so the board that is played on

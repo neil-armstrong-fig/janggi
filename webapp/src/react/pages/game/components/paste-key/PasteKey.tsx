@@ -1,3 +1,4 @@
+import {Button} from "@src/react/pages/game/components/button/Button";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {clsx} from "clsx";
 import {useState} from "react";
@@ -39,8 +40,8 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
         className="w-full resize-none rounded-xl bg-black/25 px-3 py-2 font-mono select-text text-base break-all text-white/90 placeholder:text-white/30"
       />
 
-      <button
-        type="button"
+      <Button
+        variant="secondary"
         data-testid={`${id}-submit`}
         disabled={text.trim() === ""}
         onClick={() => {
@@ -48,10 +49,9 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
           setPasteResult(submitted);
           if (submitted.accepted) setText("");
         }}
-        className="h-11 rounded-xl bg-black/25 text-sm font-semibold tracking-wide text-white/80 uppercase transition-[transform,background-color] duration-150 enabled:cursor-pointer enabled:hover:bg-black/35 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
       >
         {label}
-      </button>
+      </Button>
 
       {pasteResult && (
         <p

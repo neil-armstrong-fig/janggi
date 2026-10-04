@@ -1,26 +1,26 @@
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
-import {FILES, RANKS} from "@src/game/board/BoardDimensions";
+import {FILES, RANKS} from "@janggi/engine/board/BoardDimensions";
 import {GAME_STORAGE_KEY} from "@src/redux/game/storage/GameStorageKey";
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import {OPPONENT_NAMES} from "@janggi/shared/janggi/settings/OpponentName";
 import type {Opponent} from "@src/redux/game/types/Opponent";
 import {PIECE_TYPES} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import {SETUPS} from "@src/game/setups/Setups";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import {SETUPS} from "@janggi/engine/setups/Setups";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 import {SIDE_CHOICE_NAMES} from "@janggi/shared/janggi/settings/SideChoiceName";
-import type {Setup} from "@src/game/setups/types/Setup";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
-import type {Standing} from "@src/game/types/Standing";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
+import type {Standing} from "@janggi/engine/types/Standing";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
 import {isAmong} from "@src/redux/untrusted/IsAmong";
 import {isObject} from "@src/redux/untrusted/IsObject";
 import {readJson} from "@src/redux/device-storage/ReadJson";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /** A setup as it was kept: whatever sits beside its name is ignored, the name is looked up. */
 type SetupChoice = Setup | undefined;
@@ -77,7 +77,6 @@ function positionFrom(value: unknown): GameState | undefined {
   const {sideToMove, format, consecutivePasses, reachedByAGeneralCapture, bikjangCalled} = value;
   const pieces = everyOf(value["pieces"], placedPieceFrom);
   const seen = everyOf(value["seen"], standingFrom);
-
   if (!pieces || !seen || !isAmong(SIDES, sideToMove) || !isAmong(MATCH_FORMATS, format)) return undefined;
   if (!Number.isInteger(consecutivePasses) || typeof consecutivePasses !== "number" || consecutivePasses < 0) {
     return undefined;

@@ -45,6 +45,8 @@ export interface PreferencesSliceState {
    * person. Against the bot there is no one across the table, so it is not asked there.
    */
   readonly flipBoardForHan: boolean;
+  /** Whether a game against a friend is drawn in the friend's board and pieces, and whether this player sends theirs. On unless turned off. Kept on the device, not synced. */
+  readonly showOpponentLook: boolean;
   readonly effects: EffectsName;
   readonly soundEffectsVolume: Volume;
   readonly musicVolume: Volume;

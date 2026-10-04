@@ -1,5 +1,5 @@
 import type {BotTurn} from "@src/bot/types/BotTurn";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import {uciOf} from "@src/bot/notation/UciOf";
 import {uciPassFor} from "@src/bot/notation/UciPassFor";
 

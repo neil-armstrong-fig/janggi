@@ -14,7 +14,6 @@ import type {Cue} from "@src/audio/types/Cue";
  */
 export function vibrationFor(cues: readonly Cue[]): readonly number[] | undefined {
   const heard = new Set(cues.map(({name}) => name));
-
   if (heard.has("checkmate") || heard.has("pointsWin") || heard.has("bikjang")) return ENDING;
   if (heard.has("check")) return CHECK;
   if (heard.has("pieceTaken")) return TAKEN;

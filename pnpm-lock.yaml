@@ -276,6 +276,9 @@ importers:
 
   api:
     dependencies:
+      '@janggi/engine':
+        specifier: workspace:*
+        version: link:../engine
       '@janggi/shared':
         specifier: workspace:*
         version: link:../shared
@@ -322,6 +325,40 @@ importers:
       wrangler:
         specifier: 'catalog:'
         version: 4.136.3(@cloudflare/workers-types@5.20260921.1)(@types/node@24.13.3)
+
+  engine:
+    dependencies:
+      '@janggi/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@eslint/js':
+        specifier: 'catalog:'
+        version: 10.0.1(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.13.3
+      eslint:
+        specifier: 'catalog:'
+        version: 10.10.0(jiti@2.7.0)(supports-color@10.2.2)
+      eslint-config-prettier:
+        specifier: 'catalog:'
+        version: 10.1.8(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))
+      globals:
+        specifier: 'catalog:'
+        version: 17.12.0
+      prettier:
+        specifier: 'catalog:'
+        version: 3.9.6
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      typescript-eslint:
+        specifier: 'catalog:'
+        version: 8.69.0(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.0(@types/node@24.13.3)(jsdom@30.0.1)(vite@8.2.2(@types/node@24.13.3)(jiti@2.7.0)(terser@5.51.2))
 
   infra:
     dependencies:
@@ -395,6 +432,9 @@ importers:
 
   webapp:
     dependencies:
+      '@janggi/engine':
+        specifier: workspace:*
+        version: link:../engine
       '@janggi/shared':
         specifier: workspace:*
         version: link:../shared

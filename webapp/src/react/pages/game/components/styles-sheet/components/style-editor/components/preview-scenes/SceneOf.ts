@@ -1,12 +1,12 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {Move} from "@src/game/types/Move";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {Move} from "@janggi/engine/types/Move";
 import type {PreviewScene} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/PreviewScene";
 import type {SceneName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
-import {applyMove} from "@src/game/ApplyMove";
-import {callBikjang} from "@src/game/bikjang/CallBikjang";
-import {movesFrom} from "@src/game/MovesFrom";
-import {newGame} from "@src/game/NewGame";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
+import {applyMove} from "@janggi/engine/ApplyMove";
+import {callBikjang} from "@janggi/engine/bikjang/CallBikjang";
+import {movesFrom} from "@janggi/engine/MovesFrom";
+import {newGame} from "@janggi/engine/NewGame";
 import {threatIn} from "@src/react/pages/game/components/board/utils/ThreatIn";
 
 /**

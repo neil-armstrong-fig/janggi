@@ -1,11 +1,11 @@
 import type {BotDuty} from "@src/react/pages/game/types/BotDuty";
 import type {Opponent} from "@src/redux/game/types/Opponent";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
-import {canPlace} from "@src/game/setups/CanPlace";
-import {isArranged} from "@src/game/setups/IsArranged";
-import {opponentOf} from "@src/game/utils/OpponentOf";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
+import {canPlace} from "@janggi/engine/setups/CanPlace";
+import {isArranged} from "@janggi/engine/setups/IsArranged";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /**
  * Whether the game is waiting on the bot, and for what — or undefined when it is the player's turn,

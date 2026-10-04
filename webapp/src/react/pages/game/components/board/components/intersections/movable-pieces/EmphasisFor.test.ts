@@ -1,7 +1,7 @@
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 import {emphasisFor} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/EmphasisFor";
 import {expect, it} from "vitest";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 const MOVABLE = {file: 1, rank: 7} as const;
 const STUCK = {file: 5, rank: 10} as const;

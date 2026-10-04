@@ -1,3 +1,6 @@
+import {actInGame} from "@src/redux/online/acting/ActInGame";
+import {friendAllowsPlay} from "@src/redux/online/selecting/FriendAllowsPlay";
+import {withAFriend} from "@src/redux/online/selecting/WithAFriend";
 import {sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {bikjangCalled, drawOffered, passed, playedAgain, takenBack} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
@@ -8,13 +11,14 @@ import {RedoButton} from "@src/react/pages/game/components/status/components/con
 import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {SettingsButton} from "@src/react/pages/game/components/status/components/controls/components/settings-button/SettingsButton";
 import {UndoButton} from "@src/react/pages/game/components/status/components/controls/components/undo-button/UndoButton";
+import type {RoomAction} from "@janggi/shared/janggi/online/messages/action/RoomAction";
 import type {UnknownAction} from "@reduxjs/toolkit";
-import {canAgreeADraw} from "@src/game/drawing/CanAgreeADraw";
-import {canCallBikjang} from "@src/game/bikjang/CanCallBikjang";
-import {canPass} from "@src/game/passing/CanPass";
-import {canRedo} from "@src/game/record/CanRedo";
-import {canUndo} from "@src/game/record/CanUndo";
-import {isArranged} from "@src/game/setups/IsArranged";
+import {canAgreeADraw} from "@janggi/engine/drawing/CanAgreeADraw";
+import {canCallBikjang} from "@janggi/engine/bikjang/CanCallBikjang";
+import {canPass} from "@janggi/engine/passing/CanPass";
+import {canRedo} from "@src/record/CanRedo";
+import {canUndo} from "@src/record/CanUndo";
+import {isArranged} from "@janggi/engine/setups/IsArranged";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 
 /**
@@ -36,6 +40,9 @@ import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-g
  * hold: the tick every control makes before it acts, the sound being the page's, and opening the settings
  * sheet, whose open state is the page's too.
  *
+ * **In a game with a friend** Undo and Redo are off, as against the bot — a move is the room's, and cannot be taken back — and
+ * Pass, Bikjang and Draw are for this player's own army's turn, and ask the room rather than act.
+ *
  * Starting a new game is not in the row. It lives in the settings sheet, beside the format and the
  * setups it deals from, where a stray thumb cannot abandon a game half played — and on the announcement
  * of a result, where there is no game left to abandon.
@@ -46,12 +53,15 @@ interface Props {
 
 export function Controls({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
+  const friend = useAppSelector(state => state.friend);
   const {botsTurn, engineHoldsPlay} = useGameStatus();
   const dispatch = useAppDispatch();
 
   const game = played.present;
   const againstBot = opponent.name === "Bot";
-  const playersTurn = isArranged(phase) && !botsTurn && !engineHoldsPlay;
+  // In a game with a friend a control is for this player's own army's turn, and only asks the room.
+  const playersTurn = isArranged(phase) && !botsTurn && !engineHoldsPlay && friendAllowsPlay(friend, game);
+  const takingBackAllowed = !againstBot && !withAFriend(friend);
   const offerWaiting = drawOffer !== undefined && !drawOffer.declined;
 
   // Every control ticks before it does what it does, so each handler below is one call rather than the
@@ -61,22 +71,31 @@ export function Controls({onControlPressed}: Props): React.JSX.Element {
     dispatch(action);
   }
 
+  // In a game with a friend the room does it, and says so to both: nothing changes here until it does (`actInGame`).
+  function pressedInGame(forTheRoom: RoomAction, forThisDevice: UnknownAction): void {
+    onControlPressed();
+    dispatch(actInGame(forTheRoom, forThisDevice));
+  }
+
   return (
     <div
       {...tourTarget("controls")}
       className="flex shrink-0 gap-1.5 group-data-[flipped=true]/flip:order-first group-data-[flipped=true]/flip:rotate-180"
     >
-      <UndoButton enabled={!againstBot && canUndo(played)} onUndo={() => pressed(takenBack())} />
+      <UndoButton enabled={takingBackAllowed && canUndo(played)} onUndo={() => pressed(takenBack())} />
 
-      <RedoButton enabled={!againstBot && canRedo(played)} onRedo={() => pressed(playedAgain())} />
+      <RedoButton enabled={takingBackAllowed && canRedo(played)} onRedo={() => pressed(playedAgain())} />
 
-      <PassButton enabled={playersTurn && canPass(game)} onPass={() => pressed(passed())} />
+      <PassButton enabled={playersTurn && canPass(game)} onPass={() => pressedInGame({kind: "pass"}, passed())} />
 
-      <BikjangButton enabled={playersTurn && canCallBikjang(game)} onCall={() => pressed(bikjangCalled())} />
+      <BikjangButton
+        enabled={playersTurn && canCallBikjang(game)}
+        onCall={() => pressedInGame({kind: "call-bikjang"}, bikjangCalled())}
+      />
 
       <DrawButton
         enabled={playersTurn && !offerWaiting && canAgreeADraw(game)}
-        onOffer={() => pressed(drawOffered())}
+        onOffer={() => pressedInGame({kind: "offer-draw"}, drawOffered())}
       />
 
       <SettingsButton

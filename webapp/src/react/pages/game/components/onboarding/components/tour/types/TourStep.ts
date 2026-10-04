@@ -17,6 +17,8 @@ export interface TourStep {
   readonly sheet: TourSheet;
   /** What moves the step on besides the player pressing Next. */
   readonly advance?: TourAdvance;
+  /** Whether the step is shown only to a player who is signed in; a signed-out player goes past it. */
+  readonly needsSignIn?: boolean;
   /** Whether the step offers the guide in a new tab. */
   readonly offersTheGuide?: boolean;
 }

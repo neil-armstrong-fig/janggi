@@ -1,3 +1,4 @@
+import {Button} from "@src/react/pages/game/components/button/Button";
 import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {LegalLinks} from "@src/react/pages/game/components/settings/tabs/account-pane/components/account/components/legal-links/LegalLinks";
 import {NameForm} from "@src/react/pages/game/components/settings/tabs/account-pane/components/account/components/name-form/NameForm";
@@ -106,14 +107,14 @@ export function Account(): React.JSX.Element {
           <NameForm />
 
           <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
+            <Button
+              variant="outline"
               data-testid="account-sign-out"
               onClick={() => dispatch(signOut())}
-              className="flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-wood/20 px-3 py-2 text-sm text-wood hover:bg-wood/10"
+              className="items-center justify-center"
             >
               Sign out
-            </button>
+            </Button>
 
             {!confirmingDelete && (
               <button

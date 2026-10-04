@@ -13,13 +13,13 @@ import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
 import type {LastMoveEnd} from "@src/react/pages/game/components/board/components/intersections/types/LastMoveEnd";
 import type {PieceLift} from "@src/react/pages/game/components/board/types/PieceLift";
 import type {MovableEmphasis} from "@src/react/pages/game/components/board/components/intersections/types/MovableEmphasis";
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {ThreatMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/threat-mark/ThreatMark";
 import {cellShapeAt} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellShapes";
 import {resolveCellStyle} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/ResolveCellStyle";
 import {clsx} from "clsx";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
 /**

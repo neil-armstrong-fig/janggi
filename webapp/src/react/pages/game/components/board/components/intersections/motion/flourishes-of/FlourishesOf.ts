@@ -1,9 +1,9 @@
 import type {Flourish} from "@src/react/pages/game/components/board/types/Flourish";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {GameState} from "@src/game/types/GameState";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 import {dealDelay} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/deal-delay/DealDelay";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * Which pieces show a change in place, keyed by the point each stands on.

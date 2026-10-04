@@ -2,7 +2,7 @@ import {DEFAULT_BOARD_MARKS} from "@src/styles/defaults/DefaultBoardMarks";
 import type {BuiltInBoardStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/types/BuiltInBoardStyle";
 import type {CellOverrides} from "@src/styles/types/BoardStyle";
 import type {CellStyle} from "@src/styles/types/CellStyle";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 const LINE: CellStyle = {stroke: "#2d3b1f", strokeWidth: 1};
 

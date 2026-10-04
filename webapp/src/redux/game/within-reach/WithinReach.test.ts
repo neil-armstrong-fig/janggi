@@ -3,7 +3,7 @@ import {expect, it} from "vitest";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
 import {freshPhaseFor} from "@src/redux/game/dealing/FreshPhaseFor";
 import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
-import {playMove} from "@src/game/record/PlayMove";
+import {playMove} from "@src/record/PlayMove";
 import {withinReach} from "@src/redux/game/within-reach/WithinReach";
 
 const NOTHING_BEATEN = freshProgress().beaten;

@@ -1,7 +1,7 @@
 import {GAME_STORAGE_KEY} from "@src/redux/game/storage/GameStorageKey";
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {
   botStrengthChosen,
   choSetupChosen,

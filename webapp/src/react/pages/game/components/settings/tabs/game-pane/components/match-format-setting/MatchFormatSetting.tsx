@@ -3,6 +3,7 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {MATCH_FORMAT_OPTIONS} from "@src/react/pages/game/components/settings/tabs/game-pane/components/match-format-setting/utils/MatchFormats";
 import {MatchFormatExplanation} from "@src/react/pages/game/components/settings/tabs/game-pane/components/match-format-setting/components/match-format-explanation/MatchFormatExplanation";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
+import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/game-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {strengthToFallBackTo} from "@src/react/pages/game/components/settings/tabs/game-pane/locks/StrengthToFallBackTo";
 
@@ -20,13 +21,14 @@ import {strengthToFallBackTo} from "@src/react/pages/game/components/settings/ta
  */
 export function MatchFormatSetting(): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
+  const withAFriend = useWithAFriend();
   const beaten = useAppSelector(state => state.progress.beaten);
   const dispatch = useAppDispatch();
 
   return (
     <OptionPicker
       id="match-format"
-      disabled={playHasBegun(played)}
+      disabled={playHasBegun(played) || withAFriend}
       label="Format"
       ariaLabel="Which of janggi's two games is being played"
       options={MATCH_FORMAT_OPTIONS}

@@ -1,13 +1,13 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import {DEFAULT_SETUP} from "@src/game/setups/Setups";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {expect, it} from "vitest";
 import {fenOf} from "@src/bot/notation/FenOf";
 import {historyFor} from "@src/bot/notation/HistoryFor";
-import {newGame} from "@src/game/NewGame";
-import {playMove} from "@src/game/record/PlayMove";
-import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
-import {restTurn} from "@src/game/record/RestTurn";
+import {newGame} from "@janggi/engine/NewGame";
+import {playMove} from "@src/record/PlayMove";
+import {playedGameFrom} from "@src/record/PlayedGameFrom";
+import {restTurn} from "@src/record/RestTurn";
 
 const opening: GameState = newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual");
 

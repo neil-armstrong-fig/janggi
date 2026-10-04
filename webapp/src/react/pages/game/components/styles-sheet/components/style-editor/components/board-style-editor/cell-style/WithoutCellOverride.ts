@@ -1,6 +1,6 @@
 import type {BoardStyle, CellOverrides} from "@src/styles/types/BoardStyle";
-import type {Position} from "@src/game/board/types/Position";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import type {Position} from "@janggi/engine/board/types/Position";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /** The board with a point's own style taken back, so it wears what the rest do. */
 export function withoutCellOverride(boardStyle: BoardStyle, position: Position): BoardStyle {

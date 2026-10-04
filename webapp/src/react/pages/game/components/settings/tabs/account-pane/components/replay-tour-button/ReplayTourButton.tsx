@@ -1,3 +1,4 @@
+import {Button} from "@src/react/pages/game/components/button/Button";
 import {tourStarted} from "@src/redux/onboarding/OnboardingSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 
@@ -9,15 +10,15 @@ export function ReplayTourButton(): React.JSX.Element {
   const dispatch = useAppDispatch();
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="outline"
       data-testid="tour-replay"
       onClick={() => dispatch(tourStarted())}
-      className="flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-lg border border-wood/20 px-3 py-2 text-sm text-wood hover:bg-wood/10"
+      className="items-center justify-between gap-4"
     >
       <span>Replay the tour</span>
 
       <span className="text-xs text-wood/70">Show me around again</span>
-    </button>
+    </Button>
   );
 }

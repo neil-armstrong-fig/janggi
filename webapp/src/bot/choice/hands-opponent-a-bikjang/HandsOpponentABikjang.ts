@@ -1,8 +1,8 @@
 import type {BotTurn} from "@src/bot/types/BotTurn";
-import type {GameState} from "@src/game/types/GameState";
-import {applyMove} from "@src/game/ApplyMove";
-import {canCallBikjang} from "@src/game/bikjang/CanCallBikjang";
-import {pass} from "@src/game/passing/Pass";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {applyMove} from "@janggi/engine/ApplyMove";
+import {canCallBikjang} from "@janggi/engine/bikjang/CanCallBikjang";
+import {pass} from "@janggi/engine/passing/Pass";
 import {wouldCallBikjang} from "@src/bot/choice/would-call-bikjang/WouldCallBikjang";
 
 /**

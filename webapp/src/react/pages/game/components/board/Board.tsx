@@ -5,7 +5,7 @@ import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import {Impact} from "@src/react/pages/game/components/board/components/impact/Impact";
 import {Intersections} from "@src/react/pages/game/components/board/components/intersections/Intersections";
 import {MoveFlight} from "@src/react/pages/game/components/board/components/move-flight/MoveFlight";
-import {isArranged} from "@src/game/setups/IsArranged";
+import {isArranged} from "@janggi/engine/setups/IsArranged";
 import {threatIn} from "@src/react/pages/game/components/board/utils/ThreatIn";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useBoardShake} from "@src/react/pages/game/components/board/hooks/use-board-shake/UseBoardShake";

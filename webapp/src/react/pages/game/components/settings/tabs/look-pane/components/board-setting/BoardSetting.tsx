@@ -1,4 +1,4 @@
-import {ArmySplitToggle} from "@src/react/pages/game/components/settings/components/army-split-toggle/ArmySplitToggle";
+import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
@@ -8,7 +8,7 @@ import {boardStylePrice} from "@src/redux/progress/unlocks/BoardStylePrice";
 import {lockBehindXp} from "@src/react/pages/game/components/settings/tabs/look-pane/locks/LockBehindXp";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
-import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
+import {useOwnPreferences} from "@src/react/pages/game/hooks/use-own-preferences/UseOwnPreferences";
 
 /**
  * The board the game is drawn on. A preference rather than part of the game, so a choice is worn at once
@@ -25,7 +25,7 @@ export function BoardSetting(): React.JSX.Element {
   const xp = useAppSelector(state => state.progress.xp);
   const boards = useAppSelector(state => state.customStyles.boards);
   const split = useAppSelector(state => state.preferences.hanBoardStyle !== undefined);
-  const {armyBoardStyles} = usePreferences();
+  const {armyBoardStyles} = useOwnPreferences();
   const dispatch = useAppDispatch();
 
   const optionsBoardStyles = [...BUILT_IN_STYLES, ...boards];
@@ -58,9 +58,9 @@ export function BoardSetting(): React.JSX.Element {
           />
         ))}
 
-      <ArmySplitToggle
-        id="board-style"
-        split={split}
+      <Switch
+        testId="board-style-split"
+        on={split}
         label="Different board for each army"
         onToggle={() => dispatch(split ? boardStyleChosen(armyBoardStyles.cho.name) : boardStyleSplit())}
       />

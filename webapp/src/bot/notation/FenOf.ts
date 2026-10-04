@@ -1,12 +1,12 @@
-import {FILES, RANKS} from "@src/game/board/BoardDimensions";
-import type {GameState} from "@src/game/types/GameState";
+import {FILES, RANKS} from "@janggi/engine/board/BoardDimensions";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
-import type {PieceLookup} from "@src/game/board/types/PieceLookup";
+import type {PieceLookup} from "@janggi/engine/board/types/PieceLookup";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {Rank} from "@src/game/board/types/Position";
+import type {Rank} from "@janggi/engine/board/types/Position";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {pieceAt} from "@src/game/board/lookup/PieceAt";
-import {piecesByPosition} from "@src/game/board/lookup/PiecesByPosition";
+import {pieceAt} from "@janggi/engine/board/lookup/PieceAt";
+import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
 
 /**
  * A position written the way Fairy-Stockfish reads a janggi one.

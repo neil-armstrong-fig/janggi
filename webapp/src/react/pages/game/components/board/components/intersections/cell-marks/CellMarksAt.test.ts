@@ -1,9 +1,9 @@
 import type {MarkSources} from "@src/react/pages/game/components/board/components/intersections/cell-marks/types/MarkSources";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 import {cellMarksAt} from "@src/react/pages/game/components/board/components/intersections/cell-marks/CellMarksAt";
 import {expect, it} from "vitest";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 const CHARIOT: Piece = {side: "cho", type: "chariot"};
 const HERE: Position = {file: 1, rank: 10};

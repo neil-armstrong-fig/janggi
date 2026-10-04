@@ -1,5 +1,5 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
 import {cuesFor} from "@src/react/pages/game/hooks/utils/CuesFor";
 import {useEffect, useRef} from "react";
 import {vibrationFor} from "@src/react/pages/game/hooks/use-haptics/utils/VibrationFor";

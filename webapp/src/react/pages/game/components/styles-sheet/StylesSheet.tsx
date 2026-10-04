@@ -1,9 +1,9 @@
+import {Sheet} from "@src/react/pages/game/components/sheet/Sheet";
 import {sheetClosed} from "@src/redux/settings/SettingsSlice";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {EditingStyle} from "@src/react/pages/game/components/styles-sheet/types/EditingStyle";
 import {OwnStyles} from "@src/react/pages/game/components/styles-sheet/components/own-styles/OwnStyles";
-import {SheetHeader} from "@src/react/pages/game/components/styles-sheet/components/sheet-header/SheetHeader";
 import {StyleEditor} from "@src/react/pages/game/components/styles-sheet/components/style-editor/StyleEditor";
 import {StyleImporter} from "@src/react/pages/game/components/styles-sheet/components/style-importer/StyleImporter";
 import {StyleStarter} from "@src/react/pages/game/components/styles-sheet/components/style-starter/StyleStarter";
@@ -51,70 +51,50 @@ export function StylesSheet(): React.JSX.Element {
   ];
 
   return (
-    <>
+    <Sheet
+      testId="styles"
+      closeTestId="styles-close"
+      title="Your styles"
+      open={open}
+      onClose={onClose}
+      className={clsx(editingStyle && "h-[92dvh] lg:max-w-6xl", !editingStyle && "max-h-[85dvh]")}
+    >
       <div
-        aria-hidden
-        onClick={onClose}
         className={clsx(
-          "fixed inset-0 z-10 bg-black/50 transition-opacity duration-300 motion-reduce:transition-none",
-          open && "opacity-100",
-          !open && "pointer-events-none opacity-0",
-        )}
-      />
-
-      <section
-        data-testid="styles"
-        role="dialog"
-        aria-label="Your styles"
-        aria-modal={open}
-        inert={!open}
-        className={clsx(
-          "fixed inset-x-0 bottom-0 z-20 mx-auto flex w-full max-w-lg select-none flex-col rounded-t-2xl bg-ground-raised transition-transform duration-300 ease-out motion-reduce:transition-none",
-          editingStyle && "h-[92dvh] lg:max-w-6xl",
-          !editingStyle && "max-h-[85dvh]",
-          open && "translate-y-0 shadow-2xl shadow-black",
-          !open && "translate-y-full",
+          "flex flex-col gap-5 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]",
+          // Kept in the page while a style is made, so what it holds can still be read.
+          editingStyle && "hidden",
         )}
       >
-        <SheetHeader onClose={onClose} />
+        <OwnStyles />
 
-        <div
-          className={clsx(
-            "flex flex-col gap-5 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]",
-            // Kept in the page while a style is made, so what it holds can still be read.
-            editingStyle && "hidden",
-          )}
-        >
-          <OwnStyles />
+        <StyleImporter />
 
-          <StyleImporter />
+        <StyleStarter
+          unlocked={xp >= UNLOCK_PRICES.styleEditor}
+          price={UNLOCK_PRICES.styleEditor}
+          boardStyles={boardStyles}
+          pieceSetStyles={pieceSetStyles}
+          onStart={setEditingStyle}
+        />
+      </div>
 
-          <StyleStarter
-            unlocked={xp >= UNLOCK_PRICES.styleEditor}
-            price={UNLOCK_PRICES.styleEditor}
-            boardStyles={boardStyles}
-            pieceSetStyles={pieceSetStyles}
-            onStart={setEditingStyle}
-          />
-        </div>
-
-        {editingStyle && (
-          <StyleEditor
-            editingStyle={editingStyle}
-            boardStyles={boardStyles}
-            pieceSetStyles={pieceSetStyles}
-            onBack={() => setEditingStyle(undefined)}
-            onSaveBoard={boardStyle => {
-              dispatch(boardStyleSaved(boardStyle));
-              dispatch(boardStyleChosen(boardStyle.name));
-            }}
-            onSavePieces={pieceSetStyle => {
-              dispatch(pieceSetSaved(pieceSetStyle));
-              dispatch(pieceSetChosen(pieceSetStyle.name));
-            }}
-          />
-        )}
-      </section>
-    </>
+      {editingStyle && (
+        <StyleEditor
+          editingStyle={editingStyle}
+          boardStyles={boardStyles}
+          pieceSetStyles={pieceSetStyles}
+          onBack={() => setEditingStyle(undefined)}
+          onSaveBoard={boardStyle => {
+            dispatch(boardStyleSaved(boardStyle));
+            dispatch(boardStyleChosen(boardStyle.name));
+          }}
+          onSavePieces={pieceSetStyle => {
+            dispatch(pieceSetSaved(pieceSetStyle));
+            dispatch(pieceSetChosen(pieceSetStyle.name));
+          }}
+        />
+      )}
+    </Sheet>
   );
 }

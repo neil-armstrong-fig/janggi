@@ -2,7 +2,7 @@
 
 The Cloudflare infrastructure for the API, as code, with [Alchemy](https://alchemy.run) (the 0.x line: `latest` on npm is
 the 2.0 beta rewrite). `src/ApiInfrastructure.ts` puts together `src/api-database/` (the D1 database, with the migrations Drizzle generated into
-`api/migrations/`) and `src/api-worker/` (the Worker bound to it, with its two rate limiters). It is what
+`api/migrations/`) and `src/api-worker/` (the Worker bound to it, with its three rate limiters and the `game-rooms/` Durable Object namespace). It is what
 someone standing the game up on their own Cloudflare account runs, and what CI runs for this one.
 
 ## What it does not do, on purpose

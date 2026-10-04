@@ -1,17 +1,17 @@
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
-import type {GameState} from "@src/game/types/GameState";
-import type {Move} from "@src/game/types/Move";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {Move} from "@janggi/engine/types/Move";
 import type {MoveSelection} from "@src/react/pages/game/components/board/components/intersections/hooks/use-move-selection/UseMoveSelection";
-import type {Position} from "@src/game/board/types/Position";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Position} from "@janggi/engine/board/types/Position";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {act, renderHook} from "@testing-library/react";
-import {applyMove} from "@src/game/ApplyMove";
+import {applyMove} from "@janggi/engine/ApplyMove";
 import {beforeEach, describe, expect, it} from "vitest";
-import {isCheckmate} from "@src/game/check/IsCheckmate";
-import {newGame} from "@src/game/NewGame";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import {isCheckmate} from "@janggi/engine/check/IsCheckmate";
+import {newGame} from "@janggi/engine/NewGame";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 import {useMoveSelection} from "@src/react/pages/game/components/board/components/intersections/hooks/use-move-selection/UseMoveSelection";
 
 /**

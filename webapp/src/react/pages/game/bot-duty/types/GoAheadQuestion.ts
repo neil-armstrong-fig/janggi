@@ -1,6 +1,6 @@
 import type {Opponent} from "@src/redux/game/types/Opponent";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import type {SetupPhase} from "@src/game/setups/types/SetupPhase";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 
 /**
  * What `botAwaitsGoAhead` reads of the game: the record, the phase, who the opponent is and whether the

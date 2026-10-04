@@ -1,4 +1,6 @@
 import type {OnboardingSliceState} from "@src/redux/onboarding/types/OnboardingSliceState";
+import type {PayloadAction} from "@reduxjs/toolkit";
+import type {TourStepsSkipped} from "@src/redux/onboarding/touring/types/TourStepsSkipped";
 import {createSlice} from "@reduxjs/toolkit";
 import {tourBegun, tourStepBack, tourStepForward} from "@src/redux/onboarding/touring/Touring";
 
@@ -14,9 +16,11 @@ export const onboardingSlice = createSlice({
     /** From the welcome, or from the Progress pane's replay: the tour from its first step. */
     tourStarted: (): OnboardingSliceState => tourBegun(),
 
-    tourSteppedForward: (state): OnboardingSliceState => tourStepForward(state),
+    tourSteppedForward: (state, action: PayloadAction<TourStepsSkipped>): OnboardingSliceState =>
+      tourStepForward(state, action.payload),
 
-    tourSteppedBack: (state): OnboardingSliceState => tourStepBack(state),
+    tourSteppedBack: (state, action: PayloadAction<TourStepsSkipped>): OnboardingSliceState =>
+      tourStepBack(state, action.payload),
 
     /** Skipping the welcome or the tour, wherever the player is — neither is shown again. */
     onboardingSkipped: (): OnboardingSliceState => ({stage: "done", tourStep: 0}),

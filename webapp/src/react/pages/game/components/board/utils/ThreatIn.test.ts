@@ -1,11 +1,11 @@
-import type {File, Rank} from "@src/game/board/types/Position";
-import type {GameState} from "@src/game/types/GameState";
+import type {File, Rank} from "@janggi/engine/board/types/Position";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {PlacedPiece} from "@src/game/board/types/PlacedPiece";
+import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {expect, it} from "vitest";
 import {threatIn} from "@src/react/pages/game/components/board/utils/ThreatIn";
-import {placed} from "@src/testing/Placed";
+import {placed} from "@janggi/engine/testing/Placed";
 
 it("names the general of the army to move, and the piece giving it check", () => {
   const game = position("cho", cho("general", 5, 9), han("chariot", 5, 1), han("general", 4, 2));

@@ -3,9 +3,9 @@ import type {
   Diagonal,
   Orthogonal,
 } from "@src/react/pages/game/components/board/components/intersections/components/cell/types/CellShape";
-import {FILE_COUNT, RANK_COUNT} from "@src/game/board/BoardDimensions";
-import type {Position} from "@src/game/board/types/Position";
-import {palaceDiagonalStepsAt} from "@src/game/board/palaces/PalaceDiagonals";
+import {FILE_COUNT, RANK_COUNT} from "@janggi/engine/board/BoardDimensions";
+import type {Position} from "@janggi/engine/board/types/Position";
+import {palaceDiagonalStepsAt} from "@janggi/engine/board/palaces/PalaceDiagonals";
 
 /** Which lines meet at one intersection. Geometry only — nothing here knows how they are painted. */
 export function cellShapeAt(position: Position): CellShape {

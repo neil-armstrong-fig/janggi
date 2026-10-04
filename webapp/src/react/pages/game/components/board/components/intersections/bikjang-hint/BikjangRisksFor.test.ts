@@ -1,12 +1,12 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {Position} from "@src/game/board/types/Position";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
-import {applyMove} from "@src/game/ApplyMove";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {Position} from "@janggi/engine/board/types/Position";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
+import {applyMove} from "@janggi/engine/ApplyMove";
 import {bikjangRisksFor} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangRisksFor";
 import {expect, it} from "vitest";
-import {movesFrom} from "@src/game/MovesFrom";
-import {newGame} from "@src/game/NewGame";
+import {movesFrom} from "@janggi/engine/MovesFrom";
+import {newGame} from "@janggi/engine/NewGame";
 
 /**
  * Cho's soldier has stepped off file 5, so han's is the one piece left between the generals: stepping

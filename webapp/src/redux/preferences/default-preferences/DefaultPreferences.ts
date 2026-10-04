@@ -15,6 +15,7 @@ export function defaultPreferences(): PreferencesSliceState {
     movableHighlight: "Shown",
     bikjangHint: "Shown",
     flipBoardForHan: false,
+    showOpponentLook: true,
     effects: "Full",
     soundEffectsVolume: FULL_VOLUME,
     musicVolume: FULL_VOLUME,

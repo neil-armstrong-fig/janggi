@@ -1,6 +1,6 @@
-import {FILE_COUNT, RANK_COUNT} from "@src/game/board/BoardDimensions";
+import {FILE_COUNT, RANK_COUNT} from "@janggi/engine/board/BoardDimensions";
 import type {PointBox} from "@src/react/pages/game/components/board/types/PointBox";
-import type {Position} from "@src/game/board/types/Position";
+import type {Position} from "@janggi/engine/board/types/Position";
 
 /**
  * The box of the cell an intersection is drawn in, as fractions of the board.

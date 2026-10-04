@@ -17,19 +17,23 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  * spec with a million and a player with everything unlocked has no bar to see on the result.
  */
 given("a player with no XP takes on the weakest bot, playing what the strongest bot chooses on another device", () => {
-  beforeEach.withAnotherDevice(async ({janggi, anotherDevice}) => {
+  let strongestBotsDevice: Janggi;
+
+  beforeEach(async ({janggi}) => {
+    strongestBotsDevice = await janggi.openSeparateDevice();
+
     await janggi.settings.progress.loadSave(saveKeyWith({xp: 0}));
     await janggi.settings.opponent.setTo("Bot");
     await janggi.settings.botStrength.setTo(800);
 
-    await anotherDevice.settings.opponent.setTo("Bot");
-    await anotherDevice.settings.botStrength.setTo(2850);
-    await anotherDevice.settings.yourSide.setTo("Han");
+    await strongestBotsDevice.settings.opponent.setTo("Bot");
+    await strongestBotsDevice.settings.botStrength.setTo(2850);
+    await strongestBotsDevice.settings.yourSide.setTo("Han");
   });
 
   when("every turn either bot takes is played on the other device, until the game ends", () => {
-    beforeEach.withAnotherDevice(async ({janggi, anotherDevice}) => {
-      await playOut(janggi, anotherDevice);
+    beforeEach(async ({janggi}) => {
+      await playOut(janggi, strongestBotsDevice);
     });
 
     then("the result is announced", async ({janggi}) => {
@@ -55,14 +59,14 @@ given("a player with no XP takes on the weakest bot, playing what the strongest 
  * The other device's bot is let open as cho, and from then on each bot's turn is played on the device
  * it is not on, until the player's game has a result or `MOST_TURNS` have gone.
  */
-async function playOut(janggi: Janggi, anotherDevice: Janggi): Promise<void> {
-  await anotherDevice.status.letTheBotStart();
-  await anotherDevice.status.waitForTheBot();
+async function playOut(janggi: Janggi, strongestBotsDevice: Janggi): Promise<void> {
+  await strongestBotsDevice.status.letTheBotStart();
+  await strongestBotsDevice.status.waitForTheBot();
 
   for (let turn = 0; turn < MOST_TURNS; turn += 1) {
     if (await janggi.status.isResultAnnounced()) return;
 
-    const [played, answering] = turn % 2 === 0 ? [anotherDevice, janggi] : [janggi, anotherDevice];
+    const [played, answering] = turn % 2 === 0 ? [strongestBotsDevice, janggi] : [janggi, strongestBotsDevice];
     await playTheBotsTurn(played, answering);
   }
 }

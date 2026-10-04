@@ -1,10 +1,10 @@
 import type {Cue} from "@src/audio/types/Cue";
-import type {GameState} from "@src/game/types/GameState";
+import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {RecordChange} from "@src/game/record/types/RecordChange";
-import type {Transition} from "@src/game/record/types/Transition";
-import {isInCheck} from "@src/game/check/IsInCheck";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import type {RecordChange} from "@src/record/types/RecordChange";
+import type {Transition} from "@src/record/types/Transition";
+import {isInCheck} from "@janggi/engine/check/IsInCheck";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /**
  * The sounds one change to the game makes: first what was done — a piece set down, a piece taken, a

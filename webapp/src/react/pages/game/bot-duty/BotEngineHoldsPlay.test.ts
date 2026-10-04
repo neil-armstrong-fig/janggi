@@ -1,13 +1,13 @@
 import type {BotEngineStatus} from "@src/redux/bot-engine/types/BotEngineStatus";
 import type {Opponent} from "@src/redux/game/types/Opponent";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
 import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
 import {dealtGame} from "@src/redux/game/dealing/DealtGame";
 import {expect, it} from "vitest";
-import {place} from "@src/game/setups/Place";
-import {restTurn} from "@src/game/record/RestTurn";
-import {SETUPS} from "@src/game/setups/Setups";
-import {setupPhaseFor} from "@src/game/setups/SetupPhaseFor";
+import {place} from "@janggi/engine/setups/Place";
+import {restTurn} from "@src/record/RestTurn";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
 
 const bot: Opponent = {name: "Bot", botElo: 800, sideChoice: "Cho", playerSide: "cho"};
 const human: Opponent = {name: "Human", botElo: 800, sideChoice: "Cho", playerSide: "cho"};

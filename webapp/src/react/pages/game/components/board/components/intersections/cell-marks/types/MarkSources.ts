@@ -1,6 +1,6 @@
-import type {Move} from "@src/game/types/Move";
-import type {PieceLookup} from "@src/game/board/types/PieceLookup";
-import type {PositionKey} from "@src/game/board/types/Position";
+import type {Move} from "@janggi/engine/types/Move";
+import type {PieceLookup} from "@janggi/engine/board/types/PieceLookup";
+import type {PositionKey} from "@janggi/engine/board/types/Position";
 
 /**
  * Everything the marks on the board are worked out from — what stands where, what is in hand and where

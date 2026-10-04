@@ -1,4 +1,4 @@
-import {FILE_COUNT, RANK_COUNT} from "@src/game/board/BoardDimensions";
+import {FILE_COUNT, RANK_COUNT} from "@janggi/engine/board/BoardDimensions";
 import {BOARD_POSITIONS} from "@src/react/pages/game/components/board/components/intersections/utils/BoardPositions";
 import {expect, it} from "vitest";
 import {pointBox} from "@src/react/pages/game/components/board/motion/PointBox";

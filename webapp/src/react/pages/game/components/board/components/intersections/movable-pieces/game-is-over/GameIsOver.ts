@@ -1,5 +1,5 @@
-import type {GameState} from "@src/game/types/GameState";
-import {outcomeOf} from "@src/game/OutcomeOf";
+import type {GameState} from "@janggi/engine/types/GameState";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /**
  * Whether the game has ended, and so whether the board should still answer a player at all.

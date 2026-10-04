@@ -1,5 +1,6 @@
 packages:
   - shared
+  - engine
   - webapp
   - acceptance-tests
   - api

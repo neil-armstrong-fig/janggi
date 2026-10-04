@@ -1,4 +1,4 @@
-import type {Move} from "@src/game/types/Move";
+import type {Move} from "@janggi/engine/types/Move";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 
 /** A piece shown travelling over the board, and whatever it knocks off where it lands. */

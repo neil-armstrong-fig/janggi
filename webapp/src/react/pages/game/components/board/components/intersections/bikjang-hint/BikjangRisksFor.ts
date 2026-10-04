@@ -1,7 +1,7 @@
-import type {GameState} from "@src/game/types/GameState";
-import type {Position, PositionKey} from "@src/game/board/types/Position";
-import {canCallBikjangAfter} from "@src/game/bikjang/CanCallBikjangAfter";
-import {toPositionKey} from "@src/game/board/PositionKeys";
+import type {GameState} from "@janggi/engine/types/GameState";
+import type {Position, PositionKey} from "@janggi/engine/board/types/Position";
+import {canCallBikjangAfter} from "@janggi/engine/bikjang/CanCallBikjangAfter";
+import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
 /**
  * Of the points the piece in question may go to, the ones where the move would leave the opponent a

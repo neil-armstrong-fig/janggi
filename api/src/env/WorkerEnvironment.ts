@@ -6,6 +6,10 @@ interface ApiWorkerEnv {
   // Rate Limiting bindings, one counter each: sign-in attempts by address, and writes of the player's data by account.
   LOGIN_LIMITER: RateLimit;
   DATA_LIMITER: RateLimit;
+  // Opening rooms, by account.
+  ROOM_LIMITER: RateLimit;
+  // The friend-code rooms: one `GameRoom` Durable Object for each code.
+  GAME_ROOMS: DurableObjectNamespace;
   // Comma-separated origins allowed to call the API with credentials: the site, plus the dev server locally.
   ALLOWED_ORIGINS: string;
   // Secrets: set with `wrangler secret put`, or in .dev.vars locally. Never committed.

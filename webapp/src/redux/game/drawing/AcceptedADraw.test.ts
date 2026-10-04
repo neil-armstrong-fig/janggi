@@ -2,8 +2,8 @@ import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
 import {acceptedADraw} from "@src/redux/game/drawing/AcceptedADraw";
 import {expect, it} from "vitest";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
-import {outcomeOf} from "@src/game/OutcomeOf";
-import {undo} from "@src/game/record/Undo";
+import {outcomeOf} from "@janggi/engine/OutcomeOf";
+import {undo} from "@src/record/Undo";
 
 it("draws the game the offer was made in", () => {
   expect(outcomeOf(acceptedADraw(offered()).played.present)).toEqual({kind: "agreement"});

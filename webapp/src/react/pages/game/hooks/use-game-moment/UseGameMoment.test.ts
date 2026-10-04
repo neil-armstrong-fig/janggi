@@ -1,16 +1,16 @@
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import type {Move} from "@src/game/types/Move";
-import type {PlayedGame} from "@src/game/record/types/PlayedGame";
-import {SETUPS} from "@src/game/setups/Setups";
-import type {Setup} from "@src/game/setups/types/Setup";
+import type {Move} from "@janggi/engine/types/Move";
+import type {PlayedGame} from "@src/record/types/PlayedGame";
+import {SETUPS} from "@janggi/engine/setups/Setups";
+import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {beforeEach, describe, expect, it} from "vitest";
-import {newGame} from "@src/game/NewGame";
-import {playMove} from "@src/game/record/PlayMove";
-import {playedGameFrom} from "@src/game/record/PlayedGameFrom";
+import {newGame} from "@janggi/engine/NewGame";
+import {playMove} from "@src/record/PlayMove";
+import {playedGameFrom} from "@src/record/PlayedGameFrom";
 import {renderHook} from "@testing-library/react";
-import {undo} from "@src/game/record/Undo";
+import {undo} from "@src/record/Undo";
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
 
 /**
