@@ -7,14 +7,14 @@ import {SETUPS} from "@janggi/engine/setups/Setups";
 import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {beforeEach, describe, expect, it} from "vitest";
 import {newGame} from "@janggi/engine/NewGame";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
 import {renderHook} from "@testing-library/react";
-import {undo} from "@src/record/Undo";
+import {undo} from "@src/record/undo/Undo";
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
 
 /**
- * What changed is the engine's `changeBetween` to decide, and `game/record/ChangeBetween.test.ts` covers every case of it.
+ * What changed is the engine's `changeBetween` to decide, and `record/change/ChangeBetween.test.ts` covers every case of it.
  * What is left for the hook is the part a pure function cannot have: remembering what was last shown,
  * and handing out one moment per change however many times it is rendered.
  *

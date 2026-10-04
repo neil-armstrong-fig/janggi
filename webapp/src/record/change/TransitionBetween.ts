@@ -1,7 +1,7 @@
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import type {Transition} from "@src/record/types/Transition";
+import type {Transition} from "@src/record/change/types/Transition";
 import {pieceAt} from "@janggi/engine/board/lookup/PieceAt";
 import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
 import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";

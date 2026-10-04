@@ -1,4 +1,4 @@
-import type {ChangeDirection} from "@src/record/types/ChangeDirection";
+import type {ChangeDirection} from "@src/record/change/types/ChangeDirection";
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {GameState} from "@janggi/engine/types/GameState";
 import {SETUPS} from "@janggi/engine/setups/Setups";

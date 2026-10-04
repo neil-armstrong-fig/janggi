@@ -16,8 +16,8 @@ import type {UnknownAction} from "@reduxjs/toolkit";
 import {canAgreeADraw} from "@janggi/engine/drawing/CanAgreeADraw";
 import {canCallBikjang} from "@janggi/engine/bikjang/CanCallBikjang";
 import {canPass} from "@janggi/engine/passing/CanPass";
-import {canRedo} from "@src/record/CanRedo";
-import {canUndo} from "@src/record/CanUndo";
+import {canRedo} from "@src/record/redo/CanRedo";
+import {canUndo} from "@src/record/undo/CanUndo";
 import {isArranged} from "@janggi/engine/setups/IsArranged";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 

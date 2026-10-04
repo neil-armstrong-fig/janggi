@@ -1,14 +1,14 @@
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {Opponent} from "@src/redux/game/types/Opponent";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
-import type {RecordChange} from "@src/record/types/RecordChange";
+import type {RecordChange} from "@src/record/change/types/RecordChange";
 import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {expect, it} from "vitest";
 import {newGame} from "@janggi/engine/NewGame";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
 import {ratingEventFor} from "@src/react/pages/game/hooks/use-rated-game/utils/RatingEventFor";
-import {restTurn} from "@src/record/RestTurn";
+import {restTurn} from "@src/record/resting/RestTurn";
 import {stoodBefore} from "@janggi/engine/testing/StoodBefore";
 
 const bot: Opponent = {name: "Bot", botElo: 1400, sideChoice: "Han", playerSide: "han"};

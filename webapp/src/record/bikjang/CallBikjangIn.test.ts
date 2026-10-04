@@ -2,11 +2,11 @@ import type {File, Rank} from "@janggi/engine/board/types/Position";
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
-import {callBikjangIn} from "@src/record/CallBikjangIn";
+import {callBikjangIn} from "@src/record/bikjang/CallBikjangIn";
 import {expect, it} from "vitest";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {undo} from "@src/record/Undo";
+import {undo} from "@src/record/undo/Undo";
 import {placed} from "@janggi/engine/testing/Placed";
 
 /** 빅장 recorded — `callBikjang`'s counterpart to `playMove`. See `docs/rules.md` §6.2. */

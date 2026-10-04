@@ -5,8 +5,8 @@ import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {expect, it} from "vitest";
-import {redo} from "@src/record/Redo";
-import {undo} from "@src/record/Undo";
+import {redo} from "@src/record/redo/Redo";
+import {undo} from "@src/record/undo/Undo";
 import {placed} from "@janggi/engine/testing/Placed";
 
 it("stands the game on the nearest position that had been taken back", () => {

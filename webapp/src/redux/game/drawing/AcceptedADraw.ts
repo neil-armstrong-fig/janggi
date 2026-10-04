@@ -1,5 +1,5 @@
 import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import {agreeADrawIn} from "@src/record/AgreeADrawIn";
+import {agreeADrawIn} from "@src/record/drawing/AgreeADrawIn";
 
 /**
  * The game once the draw on offer has been accepted: the agreement is recorded, so that it can be taken

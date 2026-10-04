@@ -2,7 +2,7 @@ import type {Opponent} from "@src/redux/game/types/Opponent";
 import type {Outcome} from "@janggi/engine/types/Outcome";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {RatingEvent} from "@src/react/pages/game/hooks/use-rated-game/types/RatingEvent";
-import type {RecordChange} from "@src/record/types/RecordChange";
+import type {RecordChange} from "@src/record/change/types/RecordChange";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
 

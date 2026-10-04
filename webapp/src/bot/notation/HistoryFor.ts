@@ -1,9 +1,9 @@
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {History} from "@src/bot/notation/types/History";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
-import type {Transition} from "@src/record/types/Transition";
+import type {Transition} from "@src/record/change/types/Transition";
 import {fenOf} from "@src/bot/notation/FenOf";
-import {transitionBetween} from "@src/record/TransitionBetween";
+import {transitionBetween} from "@src/record/change/TransitionBetween";
 import {uciOf} from "@src/bot/notation/UciOf";
 import {uciPassFor} from "@src/bot/notation/UciPassFor";
 

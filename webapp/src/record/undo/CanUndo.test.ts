@@ -4,24 +4,34 @@ import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {canRedo} from "@src/record/CanRedo";
+import {canUndo} from "@src/record/undo/CanUndo";
 import {expect, it} from "vitest";
 import {placed} from "@janggi/engine/testing/Placed";
 
-it("says no before anything has been taken back", () => {
-  expect(canRedo(record([board()], board(), []))).toBe(false);
+it("says no before anything at all has been played", () => {
+  expect(canUndo(record([], board(), []))).toBe(false);
 });
 
-it("says yes once a position has been set aside", () => {
-  expect(canRedo(record([], board(), [board()]))).toBe(true);
+it("says yes once a position has been left behind", () => {
+  expect(canUndo(record([board()], board(), []))).toBe(true);
 });
 
-it("says yes however far back the game has been taken", () => {
-  expect(canRedo(record([], board(), [board(), board(), board()]))).toBe(true);
+it("says yes however deep the game has got", () => {
+  expect(canUndo(record([board(), board(), board()], board(), []))).toBe(true);
 });
 
-it("says no on a game nobody has played, there being nothing either way", () => {
-  expect(canRedo(record([], board(), []))).toBe(false);
+it("says no again once the game has been taken all the way back", () => {
+  expect(canUndo(record([], board(), [board(), board()]))).toBe(false);
+});
+
+/**
+ * The one place this parts company with `canPass`, which refuses once the game is decided. A decided
+ * game is exactly when a player reaches for undo, so nothing here asks `outcomeOf`.
+ */
+it("still says yes once the game has been settled on points", () => {
+  const settled = toMove("cho", 2, cho("general", 5, 9), han("general", 5, 2));
+
+  expect(canUndo(record([board()], settled, []))).toBe(true);
 });
 
 function record(past: readonly GameState[], present: GameState, future: readonly GameState[]): PlayedGame {

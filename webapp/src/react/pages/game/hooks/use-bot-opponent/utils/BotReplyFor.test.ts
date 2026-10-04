@@ -7,7 +7,7 @@ import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/Bo
 import {choSetupChosen, hanSetupChosen, moved, passed} from "@src/redux/game/GameSlice";
 import {expect, it} from "vitest";
 import {newGame} from "@janggi/engine/NewGame";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
 
 const opening: PlayedGame = playedGameFrom(newGame(DEFAULT_SETUP, DEFAULT_SETUP, "Casual"));

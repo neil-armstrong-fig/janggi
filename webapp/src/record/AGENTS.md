@@ -3,7 +3,11 @@
 Stepping back and forward through a game: `PlayedGame` wraps the engine's `GameState` (`@janggi/engine/...`) with the positions
 before and after it. It is not a rule of janggi, so it is not in `engine/`; the API's Worker has no use for it. A turn
 leaves no event behind and a record keeps positions rather than moves, so what a turn did is derived from the positions
-either side of it (`TransitionBetween.ts`, `ChangeBetween.ts`) — what the board's motion and the sound both hear.
+either side of it (`change/TransitionBetween.ts`, `change/ChangeBetween.ts`) — what the board's motion and the sound both hear.
+
+One folder per verb — `undo/`, `redo/`, `moving/` (`playMove`), `resting/`, `bikjang/`, `drawing/` — plus `change/` for
+reading a turn back out of two positions. `advancing/Advanced.ts` is the one step the four forward verbs share.
+`PlayedGame` (`types/`) and `playedGameFrom` stay at the root, as do the two whole-game tests.
 
 - **A record keeps positions, not moves.** Undo is then a step between three lists with nothing to
   replay, and a list of moves would have had to carry the `Move | "pass"` union the pass move was kept

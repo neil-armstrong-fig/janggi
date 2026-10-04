@@ -1,5 +1,5 @@
 import type {PlayedGame} from "@src/record/types/PlayedGame";
-import {advanced} from "@src/record/utils/Advanced";
+import {advanced} from "@src/record/advancing/Advanced";
 import {pass} from "@janggi/engine/passing/Pass";
 
 /**

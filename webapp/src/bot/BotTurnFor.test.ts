@@ -8,7 +8,7 @@ import {botTurnFor} from "@src/bot/BotTurnFor";
 import {expect, it} from "vitest";
 import {fenOf} from "@src/bot/notation/FenOf";
 import {newGame} from "@janggi/engine/NewGame";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
 
 /** An engine that answers whatever it is told to, and remembers what it was asked. */

@@ -13,9 +13,9 @@ import {applyMove} from "@janggi/engine/ApplyMove";
 import {attackersOf} from "@janggi/engine/check/AttackersOf";
 import {isInCheck} from "@janggi/engine/check/IsInCheck";
 import {takenFrom} from "@janggi/engine/scoring/TakenFrom";
-import {transitionBetween} from "@src/record/TransitionBetween";
+import {transitionBetween} from "@src/record/change/TransitionBetween";
 import {canPlace} from "@janggi/engine/setups/CanPlace";
-import {canUndo} from "@src/record/CanUndo";
+import {canUndo} from "@src/record/undo/CanUndo";
 import {describe, expect, it} from "vitest";
 import fc from "fast-check";
 import {isInPalace} from "@janggi/engine/board/palaces/Palaces";
@@ -30,13 +30,13 @@ import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {pieceAt} from "@janggi/engine/board/lookup/PieceAt";
 import {place} from "@janggi/engine/setups/Place";
 import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {redo} from "@src/record/Redo";
+import {redo} from "@src/record/redo/Redo";
 import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
 import {standingOf} from "@janggi/engine/utils/StandingOf";
 import {toPositionKey} from "@janggi/engine/board/PositionKeys";
-import {undo} from "@src/record/Undo";
+import {undo} from "@src/record/undo/Undo";
 
 /**
  * The rules asserted against games nobody wrote down.

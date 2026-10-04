@@ -6,7 +6,7 @@ import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {expect, it} from "vitest";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
-import {undo} from "@src/record/Undo";
+import {undo} from "@src/record/undo/Undo";
 import {placed} from "@janggi/engine/testing/Placed";
 
 it("stands the game back on the position it was last played from", () => {

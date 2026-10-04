@@ -2,11 +2,11 @@ import type {File, Rank} from "@janggi/engine/board/types/Position";
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
-import {agreeADrawIn} from "@src/record/AgreeADrawIn";
+import {agreeADrawIn} from "@src/record/drawing/AgreeADrawIn";
 import {expect, it} from "vitest";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {undo} from "@src/record/Undo";
+import {undo} from "@src/record/undo/Undo";
 import {placed} from "@janggi/engine/testing/Placed";
 
 /** 합의 무승부 recorded — `agreeADraw`'s counterpart to `playMove`. See `docs/rules.md` §6.4. */

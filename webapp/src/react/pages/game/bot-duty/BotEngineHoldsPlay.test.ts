@@ -5,7 +5,7 @@ import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsP
 import {dealtGame} from "@src/redux/game/dealing/DealtGame";
 import {expect, it} from "vitest";
 import {place} from "@janggi/engine/setups/Place";
-import {restTurn} from "@src/record/RestTurn";
+import {restTurn} from "@src/record/resting/RestTurn";
 import {SETUPS} from "@janggi/engine/setups/Setups";
 import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
 

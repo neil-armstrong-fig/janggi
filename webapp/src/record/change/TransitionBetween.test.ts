@@ -11,7 +11,7 @@ import {expect, it} from "vitest";
 import {newGame} from "@janggi/engine/NewGame";
 import {pass} from "@janggi/engine/passing/Pass";
 import {positionAfter} from "@janggi/engine/utils/PositionAfter";
-import {transitionBetween} from "@src/record/TransitionBetween";
+import {transitionBetween} from "@src/record/change/TransitionBetween";
 import {placed} from "@janggi/engine/testing/Placed";
 
 /**

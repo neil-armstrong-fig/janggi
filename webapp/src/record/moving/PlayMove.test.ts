@@ -7,9 +7,9 @@ import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {applyMove} from "@janggi/engine/ApplyMove";
 import {expect, it} from "vitest";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {undo} from "@src/record/Undo";
+import {undo} from "@src/record/undo/Undo";
 import {placed} from "@janggi/engine/testing/Placed";
 
 it("plays the move onto the position the game stands at", () => {

@@ -4,7 +4,7 @@ import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {expect, it} from "vitest";
 import {firstGame} from "@src/redux/game/first-game/FirstGame";
 import {place} from "@janggi/engine/setups/Place";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {restartedFrom} from "@src/redux/game/restarting/RestartedFrom";
 
 it("clears what was played", () => {

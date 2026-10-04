@@ -3,7 +3,7 @@ import type {GameState} from "@janggi/engine/types/GameState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
-import type {RecordChange} from "@src/record/types/RecordChange";
+import type {RecordChange} from "@src/record/change/types/RecordChange";
 import {SETUPS} from "@janggi/engine/setups/Setups";
 import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {cuesFor} from "@src/react/pages/game/hooks/utils/CuesFor";
@@ -14,7 +14,7 @@ import {stoodBefore} from "@janggi/engine/testing/StoodBefore";
 
 /**
  * Changes are written out by hand, because what is under test is which sounds a change makes, not
- * whether the engine can tell one change from another — `game/record/ChangeBetween.test.ts` covers
+ * whether the engine can tell one change from another — `record/change/ChangeBetween.test.ts` covers
  * that. The positions they arrive at are built by hand too, as a check or a mate is a shape on the
  * board.
  */

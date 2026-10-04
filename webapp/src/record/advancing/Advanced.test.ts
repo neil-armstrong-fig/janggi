@@ -4,7 +4,7 @@ import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {advanced} from "@src/record/utils/Advanced";
+import {advanced} from "@src/record/advancing/Advanced";
 import {expect, it} from "vitest";
 import {placed} from "@janggi/engine/testing/Placed";
 

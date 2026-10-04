@@ -1,6 +1,6 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
-import {changeBetween} from "@src/record/ChangeBetween";
+import {changeBetween} from "@src/record/change/ChangeBetween";
 import {useState} from "react";
 
 /** The record last drawn, and the change that brought it. */

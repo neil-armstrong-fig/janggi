@@ -16,10 +16,10 @@ import {callBikjang} from "@janggi/engine/bikjang/CallBikjang";
 import {canCallBikjang} from "@janggi/engine/bikjang/CanCallBikjang";
 import {canPass} from "@janggi/engine/passing/CanPass";
 import {canPlace} from "@janggi/engine/setups/CanPlace";
-import {canRedo} from "@src/record/CanRedo";
+import {canRedo} from "@src/record/redo/CanRedo";
 import {elephantPairingOf} from "@janggi/engine/setups/ElephantPairingOf";
 import {isArranged} from "@janggi/engine/setups/IsArranged";
-import {canUndo} from "@src/record/CanUndo";
+import {canUndo} from "@src/record/undo/CanUndo";
 import {isBikjang} from "@janggi/engine/bikjang/IsBikjang";
 import {isCheckmate} from "@janggi/engine/check/IsCheckmate";
 import {isInCheck} from "@janggi/engine/check/IsInCheck";
@@ -34,13 +34,13 @@ import {pass} from "@janggi/engine/passing/Pass";
 import {place} from "@janggi/engine/setups/Place";
 import {pieceAt} from "@janggi/engine/board/lookup/PieceAt";
 import {piecesByPosition} from "@janggi/engine/board/lookup/PiecesByPosition";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {redo} from "@src/record/Redo";
-import {restTurn} from "@src/record/RestTurn";
+import {redo} from "@src/record/redo/Redo";
+import {restTurn} from "@src/record/resting/RestTurn";
 import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
-import {undo} from "@src/record/Undo";
+import {undo} from "@src/record/undo/Undo";
 
 /**
  * End to end test for the entire game engine.

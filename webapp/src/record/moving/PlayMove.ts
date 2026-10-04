@@ -1,6 +1,6 @@
 import type {Move} from "@janggi/engine/types/Move";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
-import {advanced} from "@src/record/utils/Advanced";
+import {advanced} from "@src/record/advancing/Advanced";
 import {applyMove} from "@janggi/engine/ApplyMove";
 
 /**

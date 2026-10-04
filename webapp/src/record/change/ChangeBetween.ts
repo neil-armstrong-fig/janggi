@@ -1,6 +1,6 @@
 import type {PlayedGame} from "@src/record/types/PlayedGame";
-import type {RecordChange} from "@src/record/types/RecordChange";
-import {transitionBetween} from "@src/record/TransitionBetween";
+import type {RecordChange} from "@src/record/change/types/RecordChange";
+import {transitionBetween} from "@src/record/change/TransitionBetween";
 
 /**
  * What changed between two readings of a record: a turn played, taken back or played again — with

@@ -5,8 +5,8 @@ import type {PlacedPiece} from "@janggi/engine/board/types/PlacedPiece";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {expect, it} from "vitest";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {restTurn} from "@src/record/RestTurn";
-import {undo} from "@src/record/Undo";
+import {restTurn} from "@src/record/resting/RestTurn";
+import {undo} from "@src/record/undo/Undo";
 import {placed} from "@janggi/engine/testing/Placed";
 
 /** 한수쉼 recorded — `pass`'s counterpart to `playMove`. See `docs/rules.md` §6.3. */

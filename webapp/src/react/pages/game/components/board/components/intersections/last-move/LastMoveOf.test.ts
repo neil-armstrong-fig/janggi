@@ -5,10 +5,10 @@ import type {Setup} from "@janggi/engine/setups/types/Setup";
 import {expect, it} from "vitest";
 import {lastMoveOf} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveOf";
 import {newGame} from "@janggi/engine/NewGame";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {restTurn} from "@src/record/RestTurn";
-import {undo} from "@src/record/Undo";
+import {restTurn} from "@src/record/resting/RestTurn";
+import {undo} from "@src/record/undo/Undo";
 
 const CHO_STEP: Move = {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}};
 const HAN_STEP: Move = {from: {file: 1, rank: 4}, to: {file: 1, rank: 5}};

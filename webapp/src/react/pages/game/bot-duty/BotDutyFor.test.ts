@@ -7,8 +7,8 @@ import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {dealtGame} from "@src/redux/game/dealing/DealtGame";
 import {expect, it} from "vitest";
 import {place} from "@janggi/engine/setups/Place";
-import {playMove} from "@src/record/PlayMove";
-import {restTurn} from "@src/record/RestTurn";
+import {playMove} from "@src/record/moving/PlayMove";
+import {restTurn} from "@src/record/resting/RestTurn";
 import {setupPhaseFor} from "@janggi/engine/setups/SetupPhaseFor";
 
 const botAsHan: Opponent = {name: "Bot", botElo: 800, sideChoice: "Cho", playerSide: "cho"};

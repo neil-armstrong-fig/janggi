@@ -2,14 +2,14 @@ import type {Move} from "@janggi/engine/types/Move";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import {SETUPS} from "@janggi/engine/setups/Setups";
 import type {Setup} from "@janggi/engine/setups/types/Setup";
-import {changeBetween} from "@src/record/ChangeBetween";
+import {changeBetween} from "@src/record/change/ChangeBetween";
 import {expect, it} from "vitest";
 import {newGame} from "@janggi/engine/NewGame";
-import {playMove} from "@src/record/PlayMove";
+import {playMove} from "@src/record/moving/PlayMove";
 import {playedGameFrom} from "@src/record/PlayedGameFrom";
-import {redo} from "@src/record/Redo";
-import {restTurn} from "@src/record/RestTurn";
-import {undo} from "@src/record/Undo";
+import {redo} from "@src/record/redo/Redo";
+import {restTurn} from "@src/record/resting/RestTurn";
+import {undo} from "@src/record/undo/Undo";
 
 /** Every record here is built by the engine, because identity is the whole of what is being read. */
 

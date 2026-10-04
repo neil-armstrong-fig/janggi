@@ -1,5 +1,5 @@
-import type {ChangeDirection} from "@src/record/types/ChangeDirection";
-import type {Transition} from "@src/record/types/Transition";
+import type {ChangeDirection} from "@src/record/change/types/ChangeDirection";
+import type {Transition} from "@src/record/change/types/Transition";
 
 /** What changed between two readings of a record: which way it moved, and the turn that moved it. */
 export interface RecordChange {

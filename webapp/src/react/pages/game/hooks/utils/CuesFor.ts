@@ -1,8 +1,8 @@
 import type {Cue} from "@src/audio/types/Cue";
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import type {RecordChange} from "@src/record/types/RecordChange";
-import type {Transition} from "@src/record/types/Transition";
+import type {RecordChange} from "@src/record/change/types/RecordChange";
+import type {Transition} from "@src/record/change/types/Transition";
 import {isInCheck} from "@janggi/engine/check/IsInCheck";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
