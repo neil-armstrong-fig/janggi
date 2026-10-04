@@ -1,8 +1,8 @@
-import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import {EFFECTS} from "@src/react/pages/game/utils/EffectsOptions";
-import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
-import {useAppDispatch} from "@src/redux/Hooks";
+import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
 import {effectsChosen} from "@src/redux/preferences/PreferencesSlice";
+import {useAppDispatch} from "@src/redux/Hooks";
+import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
 /** Whether the board's flights, flourishes and shakes accompany its permanent marks. */
 export function EffectsSetting(): React.JSX.Element {
@@ -10,13 +10,14 @@ export function EffectsSetting(): React.JSX.Element {
   const dispatch = useAppDispatch();
 
   return (
-    <OptionPicker
-      id="effects"
-      label="Effects"
-      ariaLabel="How much the board moves as the game is played"
-      options={EFFECTS}
-      selected={effects}
-      onSelect={chosen => dispatch(effectsChosen(chosen.name))}
+    <Switch
+      testId="effects-toggle"
+      on={effects.full}
+      label="Motion: flights, flourishes and shakes"
+      onToggle={() => {
+        const other = EFFECTS.find(option => option.full !== effects.full);
+        if (other) dispatch(effectsChosen(other.name));
+      }}
     />
   );
 }

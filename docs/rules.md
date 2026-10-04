@@ -1,7 +1,7 @@
 # The rules of janggi — implementation reference
 
 Research date: 2026-09-08. Written to be read alongside the engine in
-`webapp/src/game/`, which encodes the movement rules in §4.
+`engine/src/`, which encodes the movement rules in §4.
 
 **What this is for.** The rules a piece moves by are settled and every source
 agrees on them. The rules that end a game are *not*: bikjang, repetition and the
@@ -39,7 +39,7 @@ rank_here = 11 − rank_there        file is unchanged
 Cho's left chariot is `(1,1)` there and `(1,10)` here. Getting this wrong puts a
 piece on the wrong army's half of the board and every derived move with it.
 
-This matches `webapp/src/game/board/types/Position.ts` and the `HOME_RANKS`
+This matches `engine/src/board/types/Position.ts` and the `HOME_RANKS`
 table in `StartingPieces.ts`, and it is the order a CSS grid fills in, which is
 why the code is that way round.
 
@@ -83,7 +83,7 @@ diagonal is actually drawn.** en.wikipedia states it explicitly for the general
 — "the blue general can move diagonally … but the red general cannot, since
 there are no diagonal markings at that point."
 
-`webapp/src/game/board/palaces/PalaceDiagonals.ts` is the single place this
+`engine/src/board/palaces/PalaceDiagonals.ts` is the single place this
 geometry is computed, and `react/…/intersections/components/cell/utils/CellShapes.ts` draws the lines
 from the same source, so what is painted and what is legal cannot drift apart.
 
@@ -272,7 +272,7 @@ Captures exactly as it moves.
 
 Cho moves first. From the standard opening with **both** players on 안상차림
 (Inner Elephant, the app's default), Cho has **31 legal moves**. The table is in
-this document's coordinates and is what `webapp/src/game/` is tested against.
+this document's coordinates and is what `engine/src/` is tested against.
 
 Occupied points at the start, for working the table through by hand:
 
@@ -345,7 +345,7 @@ from the opening.
 
 ## 6. The endgame rules, and where the sources disagree
 
-Everything above is encoded in `webapp/src/game/`, and as of 2026-09-09 so is
+Everything above is encoded in `engine/src/`, and as of 2026-09-09 so is
 everything below that is a rule of play — §6.6's setup phase included, which was
 the last of them. Each item says what was decided where the sources conflict.
 What is left unimplemented is 묵장 and 자장 in §6.1, and they say for themselves
@@ -362,7 +362,7 @@ only from the point at which it is noticed), and 자장 (moving your own general
 into check hands the decision to the opponent). Both are human-tournament rules
 about mistakes, not engine rules.
 
-**Implemented.** `webapp/src/game/check/IsInCheck.ts` asks whether any enemy
+**Implemented.** `engine/src/check/IsInCheck.ts` asks whether any enemy
 piece attacks the general, `check/IsCheckmate.ts` is that plus having no legal
 reply, and `MovesFrom.ts` no longer offers a move that would leave its own
 general attacked — so a general can no longer be captured.
@@ -457,7 +457,7 @@ player. Label them that way. The scored option needs material scoring, and with
 it the 30-point threshold and the general-capture exception above.
 
 **Implemented.** `MatchFormat` in `shared/` is the two names, `GameState.format`
-is which game is being played, and `webapp/src/game/bikjang/IsBikjang.ts` is the
+is which game is being played, and `engine/src/bikjang/IsBikjang.ts` is the
 position alone — two generals down one file with nothing between them.
 `bikjang/CanCallBikjang.ts` is where the formats part company and
 `bikjang/CallBikjang.ts` is the call itself. Four decisions are encoded, and each
@@ -550,7 +550,7 @@ legal move passes and the game continues.
 > "Stalemate does not result in the end of a game in janggi; if a player has no
 > legal move left, he is just forced to pass." — en.wikipedia
 
-**Implemented.** `webapp/src/game/passing/Pass.ts` rests a turn and
+**Implemented.** `engine/src/passing/Pass.ts` rests a turn and
 `passing/CanPass.ts` says whether one may be rested. Three decisions are encoded,
 and each is a choice rather than a transcription:
 
@@ -605,7 +605,7 @@ judgement about intent and the engine has no referee. pychess's mechanical
 resolution (perpetual check loses for the checking side, everything else goes to
 material) is pychess's decision and not any federation's, so it is not taken.
 
-**Implemented.** `webapp/src/game/repetition/IsRepetition.ts` says whether the
+**Implemented.** `engine/src/repetition/IsRepetition.ts` says whether the
 position now standing is standing for the third time, and `MovesFrom.ts` does not
 offer the move that would put it there — so `applyMove` refuses it without a rule
 of its own, and a board never lights up a point the rules will not take. Four
@@ -670,7 +670,7 @@ the game and counts the points._ It is the same split as §6.2's bikjang, so it 
 handled the same way, and both formats are answered:
 
 - **The third standing ends the game where nothing refuses it.**
-  `webapp/src/game/repetition/EndsAGameByRepetition.ts` is `isRepetition` and
+  `engine/src/repetition/EndsAGameByRepetition.ts` is `isRepetition` and
   `underThirtyPointsEach`, and `OutcomeOf.ts` asks it straight after checkmate, so
   a mate on the very move that repeats is still a mate. A casual game is drawn —
   `Outcome`'s `repetition` kind — and a scored one settles on points, exactly as a
@@ -721,7 +721,7 @@ Each army's pieces total **72**. Han receives **1.5 points (덤, deom)** in
 compensation for Cho moving first and choosing its setup last, so Han starts on
 **73.5** — the half point exists so a scored game cannot tie.
 
-**Implemented.** `webapp/src/game/scoring/MaterialFor.ts` holds the table and
+**Implemented.** `engine/src/scoring/MaterialFor.ts` holds the table and
 sums one army's remaining pieces; `scoring/ScoreFor.ts` adds Han's 덤 on top, so
 a new game stands at 72 against 73.5. `OutcomeOf.ts` decides a stopped game by
 comparing the two.
@@ -737,7 +737,7 @@ Han's 덤 folded into the figure rather than shown apart, so the two are directl
 comparable — which is the whole point of a half point that cannot be tied.
 
 The 30-point threshold this piece score exists to serve is
-`webapp/src/game/utils/UnderThirtyPointsEach.ts`, one function because it is one
+`engine/src/utils/UnderThirtyPointsEach.ts`, one function because it is one
 rule with one number, quoted twice: bikjang in §6.2 and repetition in §6.4. It
 reads `materialFor` rather than `scoreFor`, the 덤 being what a game is won on and
 not what an endgame is recognised by.
@@ -752,7 +752,7 @@ seen it, and moves first. Cho's three privileges — choosing last, changing tha
 choice before the first move, and moving first — are what Han's 1.5 덤 pays for.
 Quoted, translated and corroborated in `opening-setups.md` §4.
 
-**Implemented, and gated on the match format.** `webapp/src/game/setups/` holds
+**Implemented, and gated on the match format.** `engine/src/setups/` holds
 the phase: `types/SetupPhase.ts` is a format and what each player has chosen so
 far, `SetupPhaseFor.ts` starts one with nobody having chosen, `CanPlace.ts` is
 the rule, `Place.ts` is a player choosing, `IsArranged.ts` says when there is a

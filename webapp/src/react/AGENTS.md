@@ -34,10 +34,10 @@ which tab the settings sheet shows, are the store's `settings` slice, since the 
 drawn by `Status` and the tour turns it too.
 
 `Settings` is divided into tabs, and `settings/tabs/<tab>-pane/` holds each one: its root
-(`GamePane.tsx`) and whatever only that tab uses, in the same `components/`, `locks/` and `utils/`
+(`PlayPane.tsx`) and whatever only that tab uses, in the same `components/`, `locks/` and `utils/`
 folders as anywhere else. What two tabs share (`option-picker/`, `settings-pane/`, `explanation-toggle/`)
 sits in `settings/components/`, and what a tab shares with a sibling sheet rises to `pages/game/components/`
-(`paste-key/`, which the Progress tab and the styles sheet both use).
+(`paste-key/`, which the You tab and the styles sheet both use).
 
 `Onboarding` is a section of its own, drawn over the page: the welcome, then the tour. What the tour
 points at wears `data-tour-target` (`tourTarget()` in `components/tour-target/`, the names in

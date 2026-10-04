@@ -40,9 +40,23 @@ given("a player, and a friend who wears a board and a set of pieces of their own
     await friend.settings.account.signInWithGoogleAsAnotherPlayer();
   });
 
+  when("they are playing only on this device", () => {
+    then("the setting for an online opponent's look is not shown", async ({janggi}) => {
+      expect(await janggi.settings.opponentLook.isShown()).toBe(false);
+    });
+  });
+
   when("the two play, the player as Han, with showing the opponent's board and pieces left on", () => {
     beforeEach(async ({janggi}) => {
       await playTogether(janggi, friend);
+    });
+
+    then("the online opponent's look can be chosen", async ({janggi}) => {
+      expect(await janggi.settings.opponentLook.isShown()).toBe(true);
+    });
+
+    then("the setting says it affects online PvP only", async ({janggi}) => {
+      expect(await janggi.settings.opponentLook.getExplanation()).toContain("Online PvP only");
     });
 
     then("their friend's half of the board is drawn as their friend's board is", async ({janggi}) => {
@@ -76,8 +90,8 @@ given("a player, and a friend who wears a board and a set of pieces of their own
 
   when("they have turned showing the opponent's board and pieces off, and the two play", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.opponentLook.setTo(false);
       await playTogether(janggi, friend);
+      await janggi.settings.opponentLook.setTo(false);
     });
 
     then("both halves of the board stay as they have it", async ({janggi}) => {

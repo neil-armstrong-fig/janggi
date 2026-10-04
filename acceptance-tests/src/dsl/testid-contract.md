@@ -10,19 +10,22 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `guide-movement-destination`; `record` (the record sheet, `inert` while closed) with `record-elo`
   carrying `data-elo`; and the
   controls `new-game`, `result-new-game`, `pass`, `bikjang`, `draw`, `undo`, `redo`, `settings-open`,
-  `settings-close`, `settings-install`, `record-open`, `record-close`, `record-reset`, `guide-open`,
-  `references-open`, `privacy-open`, `terms-open`,
+  `settings-close`, `settings-install`, `record-open`, `record-back`, `record-close`, `record-reset`, `guide-open`,
+  `references-open`, `developer-website-open`, `repository-open`, `privacy-open`, `terms-open`,
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
   `progress-xp` and `progress-next-unlock` carrying `data-xp`, `progress-xp-bar` carrying `data-percent`
   (absent once everything is unlocked), `save-copy` and the `save-key` it shows,
   and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The account section of
-  the Account tab: `account-sign-in` where nobody is signed in; `account-signed-in`, `account-sign-out`,
+  the You tab: `account-sign-in` where nobody is signed in; `account-signed-in`, `account-sign-out`,
   `account-name` carrying `data-name`, `account-name-input`, `account-name-save` and `account-name-message` carrying
   `data-accepted`, `account-delete` (then `account-delete-confirm`) and `account-sync-state` carrying `data-state`
   (`idle`, `synced`, `paused` or `too-large`) where somebody is. Beside them, only where somebody is signed in,
-  `play-a-friend-open` (see "Playing a friend" below), and in the same tab `opponent-look-toggle` (`aria-pressed`: the
-  "Show opponent's board and pieces" switch, on unless turned off). The styles
-  sheet: `styles` (`inert` while closed), `styles-open`, `styles-close`, `style-import-input`,
+  `play-a-friend-open` (see "Playing a friend" below), in the Play tab; and, while a friend game exists,
+  `opponent-look-toggle` (`aria-pressed`: the "Show opponent's board and pieces" switch, on unless turned off) and
+  `opponent-look-explanation` in the Look tab. The three board hints are switches too, in
+  the Look tab: `movable-highlight-toggle`, `bikjang-hint-toggle` and `effects-toggle`, each `aria-pressed` when on (marks shown,
+  hint shown, effects full). The styles
+  sheet: `styles` (`inert` while closed), `styles-open`, `styles-back`, `styles-close`, `style-import-input`,
   `-submit` and `-message` (`data-accepted`), and starting one of their own: `style-editor-locked` where
   XP has not unlocked it, or `style-editor-kind`, `-from` and `-start` where it has — the editor itself,
   once started, has its own entry below ("Making a style"). On the
@@ -41,12 +44,12 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   unlock (the player's own plaque only, and the words are shortened — read the attribute);
   `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
   `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
-  option. The picker ids are `board-style`, `piece-style`, `movable-highlight`, `bikjang-hint`,
-  `match-format`, `opponent`, `bot-strength`, `your-side`, `han-setup`, `cho-setup` and `effects`.
+  option. The picker ids are `board-style`, `piece-style`,
+  `match-format`, `opponent`, `bot-strength`, `your-side`, `han-setup` and `cho-setup`.
   `board-style` and `piece-style` can each split apart into one picker per army —
   `han-board-style`/`cho-board-style` and `han-piece-style`/`cho-piece-style` — behind an `<id>-split`
   toggle (`aria-pressed` is whether it's split); split or not, the combined picker keeps its own id
-  and shows Cho's choice. A picker that explains itself — `match-format` and `bikjang-hint` — adds an
+  and shows Cho's choice. A picker that explains itself — `match-format` — adds an
   `<id>-explain` toggle, never disabled, and
   an `<id>-explanation` panel present only while unfolded. A picker of two options is a row of buttons, the chosen one carrying
   `aria-pressed`; one of more is a native `<id>-select`, whose `<option>`s carry the option ids and
@@ -84,9 +87,10 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `privacy-open` and `terms-open`.
 - **On the release notice** — `release-update`, `release-update-refresh` and `release-update-later`.
 - **On a settings tab** — the sheet is divided into tabs, each a `settings-tab` carrying `data-tab`
-  with its label and `aria-selected`, and each pane is a `settings-pane` carrying `data-pane` with the
+  with its label and `aria-selected`; the selected one holds `settings-tab-highlight`, whose bounds fill the tab. Each pane is a
+  `settings-pane` carrying `data-pane` with the
   same label, `hidden` unless its tab is showing. The tab-switching `inSheet` drives (see the DSL
-  `AGENTS.md`) is these two. In the Game pane, `setup-army-han` and `setup-army-cho` are the
+  `AGENTS.md`) is these two. In the Play pane, `setup-army-han` and `setup-army-cho` are the
   `aria-pressed` buttons choosing which army's setup grid is showing.
 - **On the Janggi guide** — `guide-piece-<type>` is an expandable movement card, and `guide-section`
   is every top-level section of the reading page. `guide` wraps the page and carries
@@ -128,14 +132,14 @@ anything. Where that matters, add an `is…Shown()` question beside the value on
   carrying `data-target`, and is there only while the step has something on screen to ring. What it rings wears
   `data-tour-target` — the one attribute the app reads to find it, so it is not `data-testid`; the names are
   `TOUR_TARGET_NAMES` in `@janggi/shared`, and the board point wears it on its `cell-f<file>r<rank>`.
-  `tour-replay` is "Replay the tour" on the Account tab.
+  `tour-replay` is "Replay the tour" on the You tab.
 
   Every spec but those under `tests/onboarding/` starts as a returning player: the fixture keeps
   `ONBOARDING_DONE_JSON` under `ONBOARDING_STORAGE_KEY` (from `@janggi/shared`) before the page loads, unless a
   spec calls `useFreshPlayer()` — so none of the above is on their page.
 
 - **Playing a friend** (webapp `play-a-friend/`; the specs are `tests/play-a-friend/`, and `FakeApi`'s room stands in for
-  the Worker's). `play-a-friend-open` opens the sheet from the Account tab and is **absent**, not disabled, where nobody is
+  the Worker's). `play-a-friend-open` opens the sheet from the Play tab and is **absent**, not disabled, where nobody is
   signed in. `play-a-friend` is the sheet (`aria-modal` while open), with `friend-side-han` / `friend-side-cho` (`aria-pressed`), `friend-away-<days>` (`1`, `3`, `7`, `14`, `30` and `90` — the default; `aria-pressed`) and
   `friend-create` to make a code; `friend-code` carrying `data-code` once there is one; `friend-code-input`, `friend-join`
   and `friend-join-message` carrying `data-refused="true"` where a code was turned away (one no room has, or one that is not a

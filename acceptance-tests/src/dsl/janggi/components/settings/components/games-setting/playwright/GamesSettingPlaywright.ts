@@ -3,7 +3,7 @@ import {GAMES_SHOWN} from "@janggi/shared/janggi/online/GameShown";
 import type {GameShown} from "@janggi/shared/janggi/online/GameShown";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
-/** The choice between the game on the board and the one waiting, shown in the Game tab while a game with a friend is on. */
+/** The choice between the game on the board and the one waiting, shown in the Play tab while a game with a friend is on. */
 export class GamesSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<GameShown, Locator>;

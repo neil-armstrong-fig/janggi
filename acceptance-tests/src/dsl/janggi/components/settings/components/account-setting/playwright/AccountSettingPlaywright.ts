@@ -115,7 +115,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   /** The tour closes Settings itself because its first step points at the board. */
   async replayTheTour(): Promise<void> {
     await this.openIfClosed();
-    await this.tabNamed("Account").click();
+    await this.tabNamed("You").click();
     await this.replay.click();
   }
 

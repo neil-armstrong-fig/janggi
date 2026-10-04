@@ -13,7 +13,7 @@ export const onboardingSlice = createSlice({
   name: "onboarding",
   initialState: {stage: "welcome", tourStep: 0} as OnboardingSliceState,
   reducers: {
-    /** From the welcome, or from the Progress pane's replay: the tour from its first step. */
+    /** From the welcome, or from the You pane's replay: the tour from its first step. */
     tourStarted: (): OnboardingSliceState => tourBegun(),
 
     tourSteppedForward: (state, action: PayloadAction<TourStepsSkipped>): OnboardingSliceState =>

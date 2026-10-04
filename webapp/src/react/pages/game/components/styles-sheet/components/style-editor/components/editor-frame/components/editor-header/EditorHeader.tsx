@@ -21,10 +21,22 @@ export function EditorHeader({name, onName, onSave, onBack, pasteResult}: Props)
         <button
           type="button"
           data-testid="style-editor-back"
+          aria-label="Back"
           onClick={onBack}
-          className="h-11 shrink-0 cursor-pointer rounded-xl bg-white/10 px-3 text-sm text-white/80 hover:bg-white/15"
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
         >
-          Back
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
         </button>
 
         <input

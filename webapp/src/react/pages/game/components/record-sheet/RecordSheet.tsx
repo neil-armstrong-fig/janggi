@@ -1,5 +1,5 @@
 import {Sheet} from "@src/react/pages/game/components/sheet/Sheet";
-import {sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {DEFAULT_MATCH_FORMAT} from "@janggi/shared/janggi/settings/MatchFormat";
 import {FormatTabs} from "@src/react/pages/game/components/record-sheet/components/format-tabs/FormatTabs";
 import {GameHistory} from "@src/react/pages/game/components/record-sheet/components/game-history/GameHistory";
@@ -34,6 +34,9 @@ export function RecordSheet(): React.JSX.Element {
   const onClose = (): void => {
     dispatch(sheetClosed());
   };
+  const onBack = (): void => {
+    dispatch(sheetOpened("settings"));
+  };
   const [format, setFormat] = useState<MatchFormat>(DEFAULT_MATCH_FORMAT);
   const rating = useAppSelector(state => state.ratings.byFormat[format]);
 
@@ -41,9 +44,11 @@ export function RecordSheet(): React.JSX.Element {
     <Sheet
       testId="record"
       closeTestId="record-close"
+      backTestId="record-back"
       title="Your record"
       open={open}
       onClose={onClose}
+      onBack={onBack}
       className="max-h-[85dvh]"
     >
       <div className="flex flex-col gap-5 overflow-y-auto px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">

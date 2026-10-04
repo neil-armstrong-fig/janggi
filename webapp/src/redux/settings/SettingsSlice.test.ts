@@ -4,7 +4,7 @@ import {settingsReducer, settingsTabSelected, sheetClosed, sheetOpened} from "@s
 const initial = settingsReducer(undefined, {type: "@@init"});
 
 it("starts with no sheet up, on the first tab", () => {
-  expect(initial).toEqual({openSheet: undefined, tab: "Game"});
+  expect(initial).toEqual({openSheet: undefined, tab: "Play"});
 });
 
 it("raises the sheet it is asked for, and puts it away again", () => {

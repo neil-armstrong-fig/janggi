@@ -108,7 +108,7 @@ given("a player who is on the tour's fourth step, which is about Settings", () =
 
     then("it shows them their progress, on the tab that keeps it", async ({janggi}) => {
       expect(await janggi.settings.isOpen()).toBe(true);
-      expect(await janggi.settings.isTabSelected("Progress")).toBe(true);
+      expect(await janggi.settings.isTabSelected("You")).toBe(true);
       expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("xp");
     });
 
@@ -119,7 +119,7 @@ given("a player who is on the tour's fourth step, which is about Settings", () =
 
       then("the settings stay open on the tab that holds their styles", async ({janggi}) => {
         expect(await janggi.settings.isOpen()).toBe(true);
-        expect(await janggi.settings.isTabSelected("Progress")).toBe(true);
+        expect(await janggi.settings.isTabSelected("Look")).toBe(true);
         expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("styles");
       });
 
@@ -134,7 +134,7 @@ given("a player who is on the tour's fourth step, which is about Settings", () =
 
         then("the settings move to the tab that holds the sign-in, which it points at", async ({janggi}) => {
           expect(await janggi.onboarding.getTourStep()).toBe(7);
-          expect(await janggi.settings.isTabSelected("Account")).toBe(true);
+          expect(await janggi.settings.isTabSelected("You")).toBe(true);
           expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("account");
         });
 
@@ -156,7 +156,7 @@ given("a player who is on the tour's fourth step, which is about Settings", () =
       then("the tour comes back to the same step with the settings open for it", async ({janggi}) => {
         expect(await janggi.onboarding.getTourStep()).toBe(5);
         expect(await janggi.settings.isOpen()).toBe(true);
-        expect(await janggi.settings.isTabSelected("Progress")).toBe(true);
+        expect(await janggi.settings.isTabSelected("You")).toBe(true);
       });
     });
 
@@ -205,7 +205,7 @@ given("a player who is on the tour's last step", () => {
 
       then("the settings are opened again, on the tab that holds the sign-in", async ({janggi}) => {
         expect(await janggi.settings.isOpen()).toBe(true);
-        expect(await janggi.settings.isTabSelected("Account")).toBe(true);
+        expect(await janggi.settings.isTabSelected("You")).toBe(true);
       });
     });
   });
@@ -246,9 +246,13 @@ given("a player who is on the tour's account step", () => {
     then("the tour shows them how to play a friend, on the tab that holds it", async ({janggi}) => {
       expect(await janggi.onboarding.getTourStepCount()).toBe(9);
       expect(await janggi.onboarding.getTourStep()).toBe(8);
-      expect(await janggi.settings.isTabSelected("Account")).toBe(true);
+      expect(await janggi.settings.isTabSelected("Play")).toBe(true);
       expect(await janggi.onboarding.getTourSpotlightTarget()).toBe("friend");
       expect(await janggi.playAFriend.isOffered()).toBe(true);
+    });
+
+    then("the Play highlight fills the whole tab", async ({janggi}) => {
+      expect(await janggi.settings.doesSelectedTabHighlightFillTab("Play")).toBe(true);
     });
 
     when("they go on", () => {

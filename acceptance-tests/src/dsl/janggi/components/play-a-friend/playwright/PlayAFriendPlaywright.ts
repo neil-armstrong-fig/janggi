@@ -15,7 +15,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
 /**
- * Playing a friend: the entry in the settings' Account tab, the sheet that makes or takes a code and has the two
+ * Playing a friend: the entry in the settings' Play tab, the sheet that makes or takes a code and has the two
  * choose their arrangements, and the strip over the board that says who the opponent is and how the game stands.
  *
  * The strip is in the page whenever a room is, even while the sheet covers it, so what it says is read the way a
@@ -77,14 +77,14 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
   }
 
   /**
-   * Whether the settings' Account tab offers it. The tab is chosen by name rather than found by the control, because
+   * Whether the settings' Play tab offers it. The tab is chosen by name rather than found by the control, because
    * where nobody is signed in the control is not there to be found.
    */
   async isOffered(): Promise<boolean> {
     let offered = false;
 
     await this.withSheetOpen(async () => {
-      await this.tabNamed("Account").click();
+      await this.tabNamed("Play").click();
       offered = await this.open.isVisible();
     });
 
@@ -99,7 +99,7 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
     return everywhere > inTheSettings;
   }
 
-  /** Opens the sheet from the Account tab, which closes the settings behind it. */
+  /** Opens the sheet from the Play tab, which closes the settings behind it. */
   async openTheSheet(): Promise<void> {
     await this.openSheet(this.open);
     await this.open.click();

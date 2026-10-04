@@ -1,15 +1,14 @@
-import {BikjangHintSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/bikjang-hint-setting/BikjangHintSetting";
+import {BoardHints} from "@src/react/pages/game/components/settings/tabs/look-pane/components/board-hints/BoardHints";
 import {BoardSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/board-setting/BoardSetting";
-import {EffectsSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/effects-setting/EffectsSetting";
-import {MovableHighlightSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/movable-highlight-setting/MovableHighlightSetting";
 import {OpacitySetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/opacity-setting/OpacitySetting";
+import {OpponentLookSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/opponent-look-setting/OpponentLookSetting";
 import {PieceSetSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/piece-set-setting/PieceSetSetting";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
+import {StylesButton} from "@src/react/pages/game/components/settings/tabs/look-pane/components/styles-button/StylesButton";
 
 /**
- * The Look tab: how the game is drawn — the board, the pieces, whether the pieces that can move are
- * marked, whether a move that would hand the opponent a bikjang is flagged, and how much the board moves as
- * it is played.
+ * The Look tab: how the game is drawn — the board and the pieces, the styles a player makes of their
+ * own, what the board marks and how much it moves, and how a friend's game is drawn.
  *
  * Effects are here rather than under Sound because they are motion, not audio. Each is worn the moment
  * it is chosen, which is what the see-through sheet is for: the board is behind it. The sheet's own
@@ -28,11 +27,11 @@ export function LookPane({selected}: Props): React.JSX.Element {
 
       <PieceSetSetting />
 
-      <MovableHighlightSetting />
+      <StylesButton />
 
-      <BikjangHintSetting />
+      <BoardHints />
 
-      <EffectsSetting />
+      <OpponentLookSetting />
 
       <OpacitySetting />
     </SettingsPane>

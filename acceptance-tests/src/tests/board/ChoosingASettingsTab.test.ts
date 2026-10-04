@@ -9,14 +9,13 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a player opens the settings", () => {
   when("nothing has been chosen yet", () => {
     then("the game's settings are showing", async ({janggi}) => {
-      expect(await janggi.settings.isTabShowing("Game")).toBe(true);
+      expect(await janggi.settings.isTabShowing("Play")).toBe(true);
     });
 
     then("the look, the sound, the progress and the account are a tab away", async ({janggi}) => {
       expect(await janggi.settings.isTabShowing("Look")).toBe(false);
       expect(await janggi.settings.isTabShowing("Sound")).toBe(false);
-      expect(await janggi.settings.isTabShowing("Progress")).toBe(false);
-      expect(await janggi.settings.isTabShowing("Account")).toBe(false);
+      expect(await janggi.settings.isTabShowing("You")).toBe(false);
     });
   });
 
@@ -31,11 +30,11 @@ given("a player opens the settings", () => {
 
     then("its tab is marked as the one chosen", async ({janggi}) => {
       expect(await janggi.settings.isTabSelected("Look")).toBe(true);
-      expect(await janggi.settings.isTabSelected("Game")).toBe(false);
+      expect(await janggi.settings.isTabSelected("Play")).toBe(false);
     });
 
     then("the game's settings are put away, one pane showing at a time", async ({janggi}) => {
-      expect(await janggi.settings.isTabShowing("Game")).toBe(false);
+      expect(await janggi.settings.isTabShowing("Play")).toBe(false);
     });
   });
 
@@ -56,7 +55,7 @@ given("a player opens the settings", () => {
     });
 
     then("the tab they were on is still the one showing, put back as they left it", async ({janggi}) => {
-      expect(await janggi.settings.isTabShowing("Game")).toBe(true);
+      expect(await janggi.settings.isTabShowing("Play")).toBe(true);
     });
   });
 
@@ -66,7 +65,7 @@ given("a player opens the settings", () => {
       await janggi.settings.openTheSettings();
     });
 
-    then("all five tabs fit in one row without scrolling or clipping", async ({janggi}) => {
+    then("all four tabs fit in one row without scrolling or clipping", async ({janggi}) => {
       expect(await janggi.settings.canTabsFitInOneRow()).toBe(true);
     });
   });

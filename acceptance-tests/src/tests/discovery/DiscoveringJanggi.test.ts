@@ -32,6 +32,12 @@ given("someone searches for a way to play janggi", () => {
     then("the in-depth Janggi guide is linked from the game", async ({janggi}) => {
       expect(await janggi.settings.isGuideLinkedFromGame()).toBe(true);
     });
+
+    then("the developer and the source are linked from App & help", async ({janggi}) => {
+      expect(await janggi.settings.getDeveloperWebsiteDestination()).toBe("https://neilarmstrong.dev");
+      expect(await janggi.settings.getRepositoryDestination()).toBe("https://github.com/neil-armstrong-fig/janggi");
+      expect(await janggi.settings.doExternalAppHelpLinksOpenSeparately()).toBe(true);
+    });
   });
 
   when("they visit the guide", () => {

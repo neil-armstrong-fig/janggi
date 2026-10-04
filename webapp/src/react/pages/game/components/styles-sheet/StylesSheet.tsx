@@ -1,5 +1,5 @@
 import {Sheet} from "@src/react/pages/game/components/sheet/Sheet";
-import {sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {EditingStyle} from "@src/react/pages/game/components/styles-sheet/types/EditingStyle";
@@ -38,6 +38,9 @@ export function StylesSheet(): React.JSX.Element {
   const onClose = (): void => {
     dispatch(sheetClosed());
   };
+  const onBack = (): void => {
+    dispatch(sheetOpened("settings"));
+  };
   const [editingStyle, setEditingStyle] = useState<EditingStyle | undefined>(undefined);
 
   // What the player has: every built-in they have unlocked, and their own. What a style is started from, and shown with.
@@ -54,9 +57,12 @@ export function StylesSheet(): React.JSX.Element {
     <Sheet
       testId="styles"
       closeTestId="styles-close"
+      backTestId="styles-back"
       title="Your styles"
       open={open}
       onClose={onClose}
+      onBack={onBack}
+      showBack={editingStyle === undefined}
       className={clsx(editingStyle && "h-[92dvh] lg:max-w-6xl", !editingStyle && "max-h-[85dvh]")}
     >
       <div

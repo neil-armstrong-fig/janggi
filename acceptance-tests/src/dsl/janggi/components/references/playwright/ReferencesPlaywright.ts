@@ -10,11 +10,11 @@ export class ReferencesPlaywright extends BasePage {
   async openReferences(): Promise<void> {
     await this.page.getByTestId("settings-open").click();
 
-    // The link lives on the Account tab, so choose it, and put the tab the player was on back after.
+    // The link lives on the You tab, so choose it, and put the tab the player was on back after.
     const leftOn = await this.page
       .locator("[data-testid='settings-tab'][aria-selected='true']")
       .getAttribute("data-tab");
-    await this.page.locator("[data-testid='settings-tab'][data-tab='Account']").click();
+    await this.page.locator("[data-testid='settings-tab'][data-tab='You']").click();
 
     await this.page.getByTestId("references-open").waitFor({state: "visible"});
     const [references] = await Promise.all([

@@ -9,7 +9,7 @@ import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabNa
  * remounted when its tab is chosen again — the same reason the sheet itself is only moved out of
  * sight, and it is what lets the acceptance tests read a setting without opening its tab.
  *
- * The footer is for what a player reaches for after choosing: on the Game pane, dealing the new
+ * The footer is for what a player reaches for after choosing: on the Play pane, dealing the new
  * game. Outside the scrolling column, it is in the thumb's reach however far the settings above it
  * have been scrolled.
  */

@@ -49,6 +49,33 @@ export class SettingsPlaywright extends SettingsSheetComponent {
     return href !== null && new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href;
   }
 
+  async getDeveloperWebsiteDestination(): Promise<string> {
+    return await this.appHelpDestination("developer-website-open");
+  }
+
+  async getRepositoryDestination(): Promise<string> {
+    return await this.appHelpDestination("repository-open");
+  }
+
+  private async appHelpDestination(testId: string): Promise<string> {
+    const href = await this.page.getByTestId(testId).getAttribute("href");
+    if (href === null) throw new Error(`The ${testId} link has no destination`);
+
+    return href;
+  }
+
+  async doExternalAppHelpLinksOpenSeparately(): Promise<boolean> {
+    const developerWebsite = this.page.getByTestId("developer-website-open");
+    const repository = this.page.getByTestId("repository-open");
+
+    return (
+      (await developerWebsite.getAttribute("target")) === "_blank" &&
+      (await developerWebsite.getAttribute("rel")) === "noopener noreferrer" &&
+      (await repository.getAttribute("target")) === "_blank" &&
+      (await repository.getAttribute("rel")) === "noopener noreferrer"
+    );
+  }
+
   /** Only opens the sheet: dealing a new game closes it, so the player is looking at the new board. */
   async startNewGame(): Promise<void> {
     await this.openSheet(this.newGame);
@@ -78,6 +105,21 @@ export class SettingsPlaywright extends SettingsSheetComponent {
     return (await this.tabNamed(name).getAttribute("aria-selected")) === "true";
   }
 
+  /** The selected layer has exactly the tab button's bounds, so no inset or stale column width remains. */
+  async doesSelectedTabHighlightFillTab(name: SettingsTabName): Promise<boolean> {
+    const tab = this.tabNamed(name);
+    const tabBounds = await tab.boundingBox();
+    const highlightBounds = await tab.getByTestId("settings-tab-highlight").boundingBox();
+    if (tabBounds === null || highlightBounds === null) return false;
+
+    return (
+      tabBounds.x === highlightBounds.x &&
+      tabBounds.y === highlightBounds.y &&
+      tabBounds.width === highlightBounds.width &&
+      tabBounds.height === highlightBounds.height
+    );
+  }
+
   /** Every label is visible in one row, within the viewport, with a fingertip-sized target. */
   async canTabsFitInOneRow(): Promise<boolean> {
     return await this.sheet.getByTestId("settings-tab").evaluateAll(tabs => {
@@ -85,7 +127,7 @@ export class SettingsPlaywright extends SettingsSheetComponent {
       const first = bounds[0];
 
       return (
-        tabs.length === 5 &&
+        tabs.length === 4 &&
         first !== undefined &&
         tabs.every((tab, index) => {
           const box = bounds[index];

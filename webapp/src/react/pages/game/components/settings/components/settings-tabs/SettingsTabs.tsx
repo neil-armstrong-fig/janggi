@@ -22,7 +22,7 @@ interface Props {
 
 export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
   return (
-    <div role="tablist" aria-label="Kinds of setting" className="grid min-w-0 flex-1 grid-cols-5 gap-0.5">
+    <div role="tablist" aria-label="Kinds of setting" className="grid min-w-0 flex-1 grid-cols-4 gap-0.5">
       {SETTINGS_TAB_NAMES.map(name => (
         <button
           key={name}
@@ -33,12 +33,20 @@ export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
           aria-selected={name === selected}
           onClick={() => onSelect(name)}
           className={clsx(
-            "h-12 min-w-0 cursor-pointer rounded-lg text-[0.6875rem] font-semibold tracking-normal transition-colors duration-150 min-[360px]:text-xs min-[400px]:tracking-wide sm:text-sm motion-reduce:transition-none",
-            name === selected && "bg-wood/15 text-wood",
+            "relative h-12 w-full min-w-0 cursor-pointer overflow-hidden rounded-lg text-[0.6875rem] font-semibold tracking-normal transition-colors duration-150 min-[360px]:text-xs min-[400px]:tracking-wide sm:text-sm motion-reduce:transition-none",
+            name === selected && "text-wood",
             name !== selected && "text-white/50 hover:text-white/80",
           )}
         >
-          {name}
+          {name === selected && (
+            <span
+              data-testid="settings-tab-highlight"
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-lg bg-wood/15"
+            />
+          )}
+
+          <span className="relative">{name}</span>
         </button>
       ))}
     </div>

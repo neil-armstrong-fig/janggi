@@ -212,7 +212,7 @@ Corroborated by:
 **This does not affect the naming**, but it has a real consequence: **Cho is the
 one who decides which of the two possible 귀마-vs-귀마 shapes the game becomes.**
 
-**Implemented**, in the scored format only — `webapp/src/game/setups/CanPlace.ts`,
+**Implemented**, in the scored format only — `engine/src/setups/CanPlace.ts`,
 with the reasoning in `docs/rules.md` §6.6. A casual game leaves both armies
 freely and repeatedly choosable, because this clause is a regulation of official
 play rather than a rule of janggi.
@@ -384,7 +384,7 @@ may live in a tournament-specific regulation, or in the 대한장기연맹's sep
 2019 rules revision, neither of which I retrieved.
 
 **What was done about it: classified, shown, never barred.**
-`webapp/src/game/setups/ElephantPairingOf.ts` answers 맞상 / 엇상 / neither, a line
+`engine/src/setups/ElephantPairingOf.ts` answers 맞상 / 엇상 / neither, a line
 under the two setup pickers names it for the player, and no format refuses an
 arrangement on the strength of it. A claim this well sourced
 deserves to be computable; a claim with no rulebook text behind it does not get
@@ -748,7 +748,7 @@ Recorded so nobody re-does them.
    implement the setup phase faithfully, Cho is the player who decides whether the
    game becomes 맞상.
 
-   **Taken, in the scored format.** `webapp/src/game/setups/` runs the phase, the
+   **Taken, in the scored format.** `engine/src/setups/` runs the phase, the
    two pickers on screen enforce its order, and `docs/rules.md` §6.6 says why a
    casual game is not held to it. Cho really is the player who decides whether the
    game becomes 맞상: Han's picker has closed by the time Cho's opens.

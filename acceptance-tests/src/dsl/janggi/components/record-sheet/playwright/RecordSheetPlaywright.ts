@@ -24,6 +24,7 @@ export class RecordSheetPlaywright extends BaseComponent {
   private readonly settingsOpener: Locator;
   private readonly opener: Locator;
   private readonly closer: Locator;
+  private readonly back: Locator;
   private readonly closed: Locator;
   private readonly tabs: Record<MatchFormat, Locator>;
   private readonly elo: Locator;
@@ -37,6 +38,7 @@ export class RecordSheetPlaywright extends BaseComponent {
     this.settingsOpener = page.getByTestId("settings-open");
     this.opener = page.getByTestId("record-open");
     this.closer = page.getByTestId("record-close");
+    this.back = page.getByTestId("record-back");
     this.closed = page.locator("[data-testid='record'][inert]");
     this.tabs = {
       Casual: page.getByTestId("record-tab-casual"),
@@ -46,6 +48,16 @@ export class RecordSheetPlaywright extends BaseComponent {
     this.board = page.getByTestId("board");
     this.reset = page.getByTestId("record-reset");
     this.confirmReset = page.getByTestId("record-reset-confirm");
+  }
+
+  async openRecord(): Promise<void> {
+    await this.settingsOpener.click();
+    await this.opener.click();
+    await this.elo.waitFor({state: "visible"});
+  }
+
+  async goBackToSettings(): Promise<void> {
+    await this.back.click();
   }
 
   /** Clears the record, answering the question the reset asks before it does anything. */

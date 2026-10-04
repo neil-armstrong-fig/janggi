@@ -53,7 +53,7 @@ export class LegalPlaywright extends BasePage {
     const leftOn = await this.page
       .locator("[data-testid='settings-tab'][aria-selected='true']")
       .getAttribute("data-tab");
-    await this.page.locator("[data-testid='settings-tab'][data-tab='Account']").click();
+    await this.page.locator("[data-testid='settings-tab'][data-tab='You']").click();
     await this.privacyLink.waitFor({state: "visible"});
 
     const answer = await question();

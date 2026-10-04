@@ -21,6 +21,22 @@ export class OpponentLookSettingDsl {
     }
   }
 
+  async isShown(): Promise<boolean> {
+    try {
+      return await this.opponentLook.isShown();
+    } catch (error) {
+      throw new DslError("Failed to read whether the opponent-look setting is shown", error);
+    }
+  }
+
+  async getExplanation(): Promise<string> {
+    try {
+      return await this.opponentLook.getExplanation();
+    } catch (error) {
+      throw new DslError("Failed to read what the opponent-look setting affects", error);
+    }
+  }
+
   async setTo(on: boolean): Promise<void> {
     try {
       await this.opponentLook.setTo(on);

@@ -49,8 +49,8 @@ given("a player in a game with a friend who wears a board of their own", () => {
 
   when("they choose another board, with showing the opponent's board turned off", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.opponentLook.setTo(false);
       await playTogether(janggi, friend);
+      await janggi.settings.opponentLook.setTo(false);
       await janggi.settings.board.setTo("Diagram");
     });
 

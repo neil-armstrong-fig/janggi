@@ -3,7 +3,7 @@ import type {Janggi} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMa
 
 /**
  * A game with a friend can take a while, so a player's own game — two people at the one device here, as the bot needs its
- * engine — goes on beside it: the Game tab says which of the two is on the board, and the other waits where it was. The
+ * engine — goes on beside it: the Play tab says which of the two is on the board, and the other waits where it was. The
  * friend's game is the room's, and is played while it is out of sight: a move the friend makes meanwhile is there on the
  * return.
  *
@@ -29,6 +29,10 @@ given("a player in a game with a friend, and a game of their own", () => {
     then("the board shows their own game, at its start", async ({janggi}) => {
       expect(await janggi.settings.games.getShown()).toBe("local");
       expect(await janggi.board.getPieceAt(1, 7)).toEqual({side: "cho", type: "soldier"});
+    });
+
+    then("the friend's look can still be chosen for the online game waiting beside it", async ({janggi}) => {
+      expect(await janggi.settings.opponentLook.isShown()).toBe(true);
     });
 
     when("they play a move in it, and the friend plays one in theirs", () => {

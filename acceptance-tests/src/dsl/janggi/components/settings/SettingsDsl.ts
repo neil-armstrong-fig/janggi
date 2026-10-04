@@ -141,6 +141,30 @@ export class SettingsDsl {
     }
   }
 
+  async getDeveloperWebsiteDestination(): Promise<string> {
+    try {
+      return await this.settings.getDeveloperWebsiteDestination();
+    } catch (error) {
+      throw new DslError("Failed to read where the developer website link leads", error);
+    }
+  }
+
+  async getRepositoryDestination(): Promise<string> {
+    try {
+      return await this.settings.getRepositoryDestination();
+    } catch (error) {
+      throw new DslError("Failed to read where the Janggi repository link leads", error);
+    }
+  }
+
+  async doExternalAppHelpLinksOpenSeparately(): Promise<boolean> {
+    try {
+      return await this.settings.doExternalAppHelpLinksOpenSeparately();
+    } catch (error) {
+      throw new DslError("Failed to check whether the external App & help links open separately", error);
+    }
+  }
+
   /** Opens the sheet and leaves it open, so a spec can watch the board behind it while it chooses. */
   async openTheSettings(): Promise<void> {
     try {
@@ -176,7 +200,16 @@ export class SettingsDsl {
     }
   }
 
-  /** Whether all five tab labels fit beside Close on one touch-sized row. */
+  /** Whether the selected treatment fills the tab's whole touch target. */
+  async doesSelectedTabHighlightFillTab(name: SettingsTabName): Promise<boolean> {
+    try {
+      return await this.settings.doesSelectedTabHighlightFillTab(name);
+    } catch (error) {
+      throw new DslError(`Failed to check the size of the "${name}" tab's highlight`, error);
+    }
+  }
+
+  /** Whether all four tab labels fit beside Close on one touch-sized row. */
   async canTabsFitInOneRow(): Promise<boolean> {
     try {
       return await this.settings.canTabsFitInOneRow();

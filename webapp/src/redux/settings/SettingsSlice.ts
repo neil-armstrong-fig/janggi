@@ -10,7 +10,7 @@ import {createSlice} from "@reduxjs/toolkit";
  */
 export const settingsSlice = createSlice({
   name: "settings",
-  initialState: {openSheet: undefined, tab: "Game"} as SettingsSliceState,
+  initialState: {openSheet: undefined, tab: "Play"} as SettingsSliceState,
   reducers: {
     sheetOpened: (state, action: PayloadAction<SheetName>): SettingsSliceState => ({
       ...state,

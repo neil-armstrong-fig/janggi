@@ -6,7 +6,7 @@ whose §6 decisions this document is measured against.
 The bot is [Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish),
 run in the page from the `fairy-stockfish-nnue.wasm` npm package (1.1.12). It is
 the only engine that plays janggi at strength, and it plays **a** janggi — not
-quite the one `webapp/src/game/` encodes. This document records where the two
+quite the one `engine/src/` encodes. This document records where the two
 differ, what was done about it, and what the Elo numbers do and do not mean.
 
 ---

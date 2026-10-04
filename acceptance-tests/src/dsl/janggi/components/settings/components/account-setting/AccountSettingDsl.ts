@@ -75,12 +75,12 @@ export class AccountSettingDsl {
     }
   }
 
-  /** Starts the tour again from its first step, from where the Account tab offers it. */
+  /** Starts the tour again from its first step, from where the You tab offers it. */
   async replayTheTour(): Promise<void> {
     try {
       await this.account.replayTheTour();
     } catch (error) {
-      throw new DslError("Failed to replay the tour from the Account tab", error);
+      throw new DslError("Failed to replay the tour from the You tab", error);
     }
   }
 

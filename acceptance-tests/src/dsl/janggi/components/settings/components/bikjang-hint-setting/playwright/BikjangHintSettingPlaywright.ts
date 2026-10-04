@@ -1,41 +1,35 @@
-import {BIKJANG_HINT_NAMES} from "@janggi/shared/janggi/settings/BikjangHintName";
-import type {BikjangHintName} from "@janggi/shared/janggi/settings/BikjangHintName";
 import type {Locator, Page} from "@playwright/test";
+import type {BikjangHintName} from "@janggi/shared/janggi/settings/BikjangHintName";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
 /**
- * The picker for whether a move that could allow a bikjang is labelled: one locator per option, written
- * out.
+ * The switch for whether a move that could allow a bikjang is labelled.
  *
- * The same shape as every other picker here, and for the same reason — the test ids are the
- * contract, so they are stated rather than recomputed from the option's name the way the webapp
- * builds them.
+ * A switch, where the player once had two buttons to choose between; the spec still says which of the two
+ * names it wants, and this turns the switch only if it is not already there. `aria-pressed` is the state.
  */
 export class BikjangHintSettingPlaywright extends SettingsSheetComponent {
-  private readonly picker: Locator;
-  private readonly options: Record<BikjangHintName, Locator>;
+  private readonly toggle: Locator;
 
   constructor(page: Page) {
     super(page);
 
-    this.picker = page.getByTestId("bikjang-hint-picker");
-    this.options = {
-      Shown: page.getByTestId("bikjang-hint-option-shown"),
-      Hidden: page.getByTestId("bikjang-hint-option-hidden"),
-    };
+    this.toggle = page.getByTestId("bikjang-hint-toggle");
   }
 
   async choose(name: BikjangHintName): Promise<void> {
-    await this.inSheet(this.picker, () => this.options[name].click());
+    if ((await this.getSelected()) === name) return;
+
+    await this.inSheet(this.toggle, () => this.toggle.click());
   }
 
-  /** The name on whichever button is pressed, or undefined before anything has rendered. */
+  /** The name the switch stands for, or undefined before anything has rendered. */
   async getSelected(): Promise<BikjangHintName | undefined> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    if ((await pressed.count()) === 0) return undefined;
+    const pressed = await this.toggle.getAttribute("aria-pressed");
+    if (pressed === null) return undefined;
 
-    const name = await pressed.textContent();
+    if (pressed === "true") return "Shown";
 
-    return BIKJANG_HINT_NAMES.find(candidate => candidate === name);
+    return "Hidden";
   }
 }

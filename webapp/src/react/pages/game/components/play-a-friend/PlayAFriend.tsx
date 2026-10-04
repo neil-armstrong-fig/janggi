@@ -9,7 +9,7 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 
 /**
  * Where a player makes a code to give a friend, or types the one they were given, and — once both are sat down — chooses
- * the arrangement of their army. **A sheet over the game, like `StylesSheet`**, opened from the Account tab, which it
+ * the arrangement of their army. **A sheet over the game, like `StylesSheet`**, opened from the Play tab, which it
  * replaces on screen; it closes itself as the game begins (`useFriendRoom`).
  *
  * What it shows is the room's state and nothing it keeps of its own: nothing yet, a code to give out, or the choice of

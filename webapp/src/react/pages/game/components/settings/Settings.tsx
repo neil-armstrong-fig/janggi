@@ -1,11 +1,10 @@
-import {AccountPane} from "@src/react/pages/game/components/settings/tabs/account-pane/AccountPane";
-import {GamePane} from "@src/react/pages/game/components/settings/tabs/game-pane/GamePane";
 import {LookPane} from "@src/react/pages/game/components/settings/tabs/look-pane/LookPane";
-import {ProgressPane} from "@src/react/pages/game/components/settings/tabs/progress-pane/ProgressPane";
 import {settingsTabSelected, sheetClosed} from "@src/redux/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {SettingsTabs} from "@src/react/pages/game/components/settings/components/settings-tabs/SettingsTabs";
+import {PlayPane} from "@src/react/pages/game/components/settings/tabs/play-pane/PlayPane";
 import {SoundPane} from "@src/react/pages/game/components/settings/tabs/sound-pane/SoundPane";
+import {YouPane} from "@src/react/pages/game/components/settings/tabs/you-pane/YouPane";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {clsx} from "clsx";
 
@@ -26,10 +25,10 @@ interface SheetPanelStyle extends React.CSSProperties {
  * is behind is a suggestion and never something to read past. How much is the player's own choice, in
  * the Look tab, since the same blur reads differently from one screen to another.
  *
- * **Five tabs, one pane at a time**, so the sheet is never one long scroll — `GamePane`, `LookPane`,
- * `SoundPane`, `ProgressPane` and `AccountPane`, each of which lays out its own settings. **Game** is
- * what a player opens the sheet for before a game; **Look** and **Sound** hold preferences worn
- * immediately; **Progress** holds XP, earned styles and save keys; **Account** holds optional sync and
+ * **Four tabs, one pane at a time**, so the sheet is never one long scroll — `PlayPane`, `LookPane`,
+ * `SoundPane` and `YouPane`, each of which lays out its own settings. **Play** is what a player opens the
+ * sheet for before a game, friends included; **Look** and **Sound** hold preferences worn immediately,
+ * Look being also where the player's own styles are made; **You** holds XP, save keys, optional sync and
  * the links out of the game. The tabs are the sheet's head, beside Close, and take the place of a heading.
  *
  * **It is always in the page, only moved out of sight.** Closed, it sits below the bottom edge and is
@@ -93,15 +92,13 @@ export function Settings(): React.JSX.Element {
           </button>
         </header>
 
-        <GamePane selected={tab === "Game"} />
+        <PlayPane selected={tab === "Play"} />
 
         <LookPane selected={tab === "Look"} />
 
         <SoundPane selected={tab === "Sound"} />
 
-        <ProgressPane selected={tab === "Progress"} />
-
-        <AccountPane selected={tab === "Account"} />
+        <YouPane selected={tab === "You"} />
       </section>
     </>
   );

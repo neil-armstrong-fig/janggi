@@ -20,7 +20,7 @@ export class PlayAFriendDsl {
     this.friend = new PlayAFriendPlaywright(page);
   }
 
-  /** Whether the settings' Account tab offers to play a friend. */
+  /** Whether the settings' Play tab offers to play a friend. */
   async isOffered(): Promise<boolean> {
     try {
       return await this.friend.isOffered();
@@ -38,7 +38,7 @@ export class PlayAFriendDsl {
     }
   }
 
-  /** Opens the sheet to play a friend, from the Account tab of the settings. */
+  /** Opens the sheet to play a friend, from the Play tab of the settings. */
   async openPlayAFriend(): Promise<void> {
     try {
       await this.friend.openTheSheet();

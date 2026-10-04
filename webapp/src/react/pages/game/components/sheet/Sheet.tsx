@@ -9,14 +9,28 @@ import {clsx} from "clsx";
 interface Props {
   readonly testId: string;
   readonly closeTestId: string;
+  readonly backTestId?: string;
   readonly title: string;
   readonly open: boolean;
   readonly onClose: () => void;
+  readonly onBack?: () => void;
+  readonly showBack?: boolean;
   readonly className: string;
   readonly children: React.ReactNode;
 }
 
-export function Sheet({testId, closeTestId, title, open, onClose, className, children}: Props): React.JSX.Element {
+export function Sheet({
+  testId,
+  closeTestId,
+  backTestId,
+  title,
+  open,
+  onClose,
+  onBack,
+  showBack = true,
+  className,
+  children,
+}: Props): React.JSX.Element {
   return (
     <>
       <div
@@ -43,7 +57,32 @@ export function Sheet({testId, closeTestId, title, open, onClose, className, chi
         )}
       >
         <header className="flex shrink-0 items-center justify-between px-4 pt-3 pb-1">
-          <h2 className="text-sm font-semibold tracking-wide text-wood uppercase">{title}</h2>
+          <div className="flex min-w-0 items-center gap-2">
+            {showBack && onBack !== undefined && backTestId !== undefined && (
+              <button
+                type="button"
+                data-testid={backTestId}
+                aria-label="Back"
+                onClick={onBack}
+                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M15 6l-6 6 6 6" />
+                </svg>
+              </button>
+            )}
+
+            <h2 className="truncate text-sm font-semibold tracking-wide text-wood uppercase">{title}</h2>
+          </div>
 
           <button
             type="button"

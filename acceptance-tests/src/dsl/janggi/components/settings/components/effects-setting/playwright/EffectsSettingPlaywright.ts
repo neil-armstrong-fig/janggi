@@ -1,34 +1,35 @@
-import {EFFECTS_NAMES} from "@janggi/shared/janggi/settings/EffectsName";
-import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {Locator, Page} from "@playwright/test";
+import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
-/** The picker for how much the board moves: one locator per option, spelled out as every picker's are. */
+/**
+ * The switch for how much the board moves.
+ *
+ * A switch, where the player once had two buttons to choose between; the spec still says which of the two
+ * names it wants, and this turns the switch only if it is not already there. `aria-pressed` is the state.
+ */
 export class EffectsSettingPlaywright extends SettingsSheetComponent {
-  private readonly picker: Locator;
-  private readonly options: Record<EffectsName, Locator>;
+  private readonly toggle: Locator;
 
   constructor(page: Page) {
     super(page);
 
-    this.picker = page.getByTestId("effects-picker");
-    this.options = {
-      Full: page.getByTestId("effects-option-full"),
-      Reduced: page.getByTestId("effects-option-reduced"),
-    };
+    this.toggle = page.getByTestId("effects-toggle");
   }
 
   async choose(name: EffectsName): Promise<void> {
-    await this.inSheet(this.picker, () => this.options[name].click());
+    if ((await this.getSelected()) === name) return;
+
+    await this.inSheet(this.toggle, () => this.toggle.click());
   }
 
-  /** The name on whichever button is pressed, or undefined before anything has rendered. */
+  /** The name the switch stands for, or undefined before anything has rendered. */
   async getSelected(): Promise<EffectsName | undefined> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    if ((await pressed.count()) === 0) return undefined;
+    const pressed = await this.toggle.getAttribute("aria-pressed");
+    if (pressed === null) return undefined;
 
-    const name = await pressed.textContent();
+    if (pressed === "true") return "Full";
 
-    return EFFECTS_NAMES.find(candidate => candidate === name);
+    return "Reduced";
   }
 }

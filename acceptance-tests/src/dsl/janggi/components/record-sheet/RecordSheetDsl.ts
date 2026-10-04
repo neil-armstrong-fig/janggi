@@ -16,6 +16,22 @@ export class RecordSheetDsl {
     this.record = new RecordSheetPlaywright(page);
   }
 
+  async openRecord(): Promise<void> {
+    try {
+      await this.record.openRecord();
+    } catch (error) {
+      throw new DslError("Failed to open the player's record", error);
+    }
+  }
+
+  async goBackToSettings(): Promise<void> {
+    try {
+      await this.record.goBackToSettings();
+    } catch (error) {
+      throw new DslError("Failed to go back from the record to Settings", error);
+    }
+  }
+
   /** Whether the game stays on the page while the record is open over it. */
   async isGameStillBeneath(): Promise<boolean> {
     try {
