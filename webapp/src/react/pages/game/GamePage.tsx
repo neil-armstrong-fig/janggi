@@ -12,6 +12,7 @@ import {useBotEngine} from "@src/react/pages/game/hooks/use-bot-engine/UseBotEng
 import {useBotOpponent} from "@src/react/pages/game/hooks/use-bot-opponent/UseBotOpponent";
 import {FriendSignIn} from "@src/react/pages/game/components/friend-sign-in/FriendSignIn";
 import {useDocumentLanguage} from "@src/react/pages/game/hooks/use-document-language/UseDocumentLanguage";
+import {useWorkerLanguage} from "@src/react/pages/game/hooks/use-worker-language/UseWorkerLanguage";
 import {useLanguageAddress} from "@src/react/pages/game/hooks/use-language-address/UseLanguageAddress";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useFriendRoom} from "@src/react/pages/game/hooks/use-friend-room/UseFriendRoom";
@@ -72,6 +73,7 @@ export function GamePage(): React.JSX.Element {
   useHaptics(played, moment, effects.full);
   useBotEngine(engine);
   useDocumentLanguage();
+  useWorkerLanguage();
   useLanguageAddress(language);
   useBotOpponent(engine);
   useRatedGame(moment);

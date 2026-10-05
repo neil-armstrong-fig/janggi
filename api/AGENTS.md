@@ -44,7 +44,7 @@ Import with the `@src/*` alias.
 - **Everything that touches the database is in `src/database/`, and it reaches into almost nothing else.** The rest of the Worker imports
   from it; it may import only itself and the Worker's environment (its D1 binding) — a lint rule (`eslint.config.js`) says so. What it
   takes in and gives back is spelled out in its own `types/`. It holds the schema (`schema/`, one table per file), one function per
-  operation (`accounts/`, `sessions/`, `data/`, `rooms/`), the shared client (`Database.ts`), and what tests need (`testing/`: the
+  operation (`accounts/`, `sessions/`, `data/`, `rooms/`, `push/`), the shared client (`Database.ts`), and what tests need (`testing/`: the
   in-memory `InMemoryDatabase`, and `databaseContract`, the one set of tests both it and the real functions must pass).
 - **Drizzle writes the SQL, Wrangler applies it.** `drizzle-kit generate` turns a change to the schema into a SQL
   file in `migrations/` (inspect it: Drizzle can generate something destructive), and **Wrangler is what applies
@@ -76,7 +76,7 @@ router/
   http/                    HandleHttp: preflight, 404 for an unknown route, 403 for a forged cross-site change, the route, CORS last
     cors/
     routes/                AnswerHttpRoute is the one switch (a case per route); HttpRouteOf matches; ForSignedInPlayer checks the session once
-      <one folder per route>/   sign-in/{start,finish,oauth}, log-out, read-me, rename-me, read-data, write-data, delete-account, open-room
+      <one folder per route>/   sign-in/{start,finish,oauth}, log-out, read-me, rename-me, read-data, write-data, delete-account, open-room, push-subscription
   websocket/               HandleWebSocket: a room's socket path (404), the site's origin (403), a session (401), then the room
     room-socket/           SocketRouteOf, ForwardToRoom
   shared/                  what both flows use, a folder to a subject: origin/ respond/ session/
@@ -88,16 +88,17 @@ A route's own helpers live in its folder; what two routes share rises to the fol
 is answered 404 and looked at no further — including `GET /api/rooms/<CODE>/socket` without an upgrade. The webapp's
 `redux/account/` and the acceptance tests' `FakeApi` both speak this contract.
 
-| Route                            | Does                                                                                                                                         |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/auth/google?return=`   | Redirects to Google; the attempt (state, PKCE verifier, checked return address) rides in a short cookie                                      |
-| `GET /api/auth/google/callback`  | Checks the state, asks Google who the player is, makes the account and session, redirects back                                               |
-| `POST /api/auth/logout`          | Ends the session; succeeds with none                                                                                                         |
-| `GET /api/me`, `PATCH /api/me`   | `{displayName}`; rename checked by `@janggi/shared`'s `cleanedDisplayName`                                                                   |
-| `GET /api/data`, `PUT /api/data` | `{version, blob}`; the write carries `If-Match: <version>` — 409 with the version where behind, 428 without it, 413 over 1 MB                |
-| `DELETE /api/account`            | Deletes the account, its sessions and its data                                                                                               |
-| `POST /api/rooms`                | `{side, awayDays?}` → 201 `{code}`: a friend-code room for the host on that side. 409 with one already open, 503 when full, 429 limited      |
-| `GET /api/rooms/<CODE>/socket`   | The player's WebSocket upgrade, handed to the room: 403 unless `Origin` is the site, 401 no session, 404 not a room's socket or no such room |
+| Route                                                         | Does                                                                                                                                                 |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/auth/google?return=`                                | Redirects to Google; the attempt (state, PKCE verifier, checked return address) rides in a short cookie                                              |
+| `GET /api/auth/google/callback`                               | Checks the state, asks Google who the player is, makes the account and session, redirects back                                                       |
+| `POST /api/auth/logout`                                       | Ends the session; succeeds with none                                                                                                                 |
+| `GET /api/me`, `PATCH /api/me`                                | `{displayName}`; rename checked by `@janggi/shared`'s `cleanedDisplayName`                                                                           |
+| `GET /api/data`, `PUT /api/data`                              | `{version, blob}`; the write carries `If-Match: <version>` — 409 with the version where behind, 428 without it, 413 over 1 MB                        |
+| `PUT /api/push-subscription`, `DELETE /api/push-subscription` | `{endpoint, keys: {p256dh, auth}}` / `{endpoint}`: the device asks to be sent "your turn" notifications, or to stop (`push/`, `docs/online-play.md`) |
+| `DELETE /api/account`                                         | Deletes the account, its sessions, its devices' notification addresses and its data                                                                  |
+| `POST /api/rooms`                                             | `{side, awayDays?}` → 201 `{code}`: a friend-code room for the host on that side. 409 with one already open, 503 when full, 429 limited              |
+| `GET /api/rooms/<CODE>/socket`                                | The player's WebSocket upgrade, handed to the room: 403 unless `Origin` is the site, 401 no session, 404 not a room's socket or no such room         |
 
 **Tested three ways, each where it is cheapest.** Each route against the in-memory database, Google and limits `SetupApiTests` puts in
 place of the real ones (`router/testing/ApiHarness.ts`), in a test file beside the route; the database functions against a real local
@@ -116,6 +117,13 @@ beneath it), `leaving/` (`closedSocket`), `alarm/` (`alarmDecisionFor`, `alarmPl
 **nothing in a field**, since it hibernates: the room is read from storage per message. Who is in which room, one open per
 account and a ceiling overall, is the `rooms` table behind `openRoomRecord`/`closeRoomRecord`; the object clears its row when the game finishes, and on
 teardown. The room is exercised whole only by hand (`pnpm api:dev`, two browsers).
+
+**Turn notifications** (`docs/online-play.md`). After a move the room asks `turnNotificationFor` (`room/notifying/`, pure) whom the turn
+has passed to and whether they are away, and `GameRoom` hands the answer to `notifyTurn` (`push/`) under `ctx.waitUntil`, so a slow push service
+never holds a game. `push/` is plain Web Crypto, no library: `encrypting/` is RFC 8291 `aes128gcm` (tested against the RFC's own example) and
+`vapid/` the RFC 8292 `Authorization` header. The public VAPID key is `VAPID_PUBLIC_KEY` in `@janggi/shared` (the app subscribes with it); the
+private key and the contact subject are `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT`, and with either unset nothing is sent. A subscription a push
+service calls gone (404/410) is deleted. Locally, put both in `api/.dev.vars`.
 
 **Rate limits** are Cloudflare's Rate Limiting bindings (`ratelimits` in `wrangler.jsonc`): sign-in by address, writes of the player's data and
 opening a room, each by account. A binding that fails lets the request through.

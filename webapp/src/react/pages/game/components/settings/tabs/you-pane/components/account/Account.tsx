@@ -2,6 +2,7 @@ import {Button} from "@src/react/pages/game/components/button/Button";
 import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {LegalLinks} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/legal-links/LegalLinks";
 import {NameForm} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/name-form/NameForm";
+import {TurnNotifications} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/turn-notifications/TurnNotifications";
 import type {SyncState} from "@src/redux/account/types/SyncState";
 import {clsx} from "clsx";
 import {deleteAccount} from "@src/redux/account/actions/DeleteAccount";
@@ -112,6 +113,8 @@ export function Account(): React.JSX.Element {
           </div>
 
           <NameForm />
+
+          <TurnNotifications />
 
           <div className="grid grid-cols-2 gap-2">
             <Button

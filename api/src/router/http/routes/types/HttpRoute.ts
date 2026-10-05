@@ -12,6 +12,8 @@ export const HTTP_ROUTES = [
   "GET /api/data",
   "PUT /api/data",
   "POST /api/rooms",
+  "PUT /api/push-subscription",
+  "DELETE /api/push-subscription",
   "DELETE /api/account",
 ] as const;
 

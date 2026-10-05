@@ -5,4 +5,6 @@
 export const environment = {
   /** Comma-separated origins allowed to call the API with credentials: the site, and the local dev server. */
   allowedOrigins: process.env["SITE_ORIGINS"] ?? "https://janggi.neilarmstrong.dev,http://localhost:3000",
+  /** The address a push service may reach the operator on, which every web push names (RFC 8292): an https or `mailto:` address. */
+  vapidSubject: process.env["VAPID_SUBJECT"] ?? "https://janggi.neilarmstrong.dev",
 };

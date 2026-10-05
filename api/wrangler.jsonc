@@ -27,6 +27,8 @@
   "migrations": [{"tag": "v1", "new_sqlite_classes": ["GameRoom"]}],
   "vars": {
     "ALLOWED_ORIGINS": "https://janggi.neilarmstrong.dev,http://localhost:3000",
+    // Whom a push service may contact about the turn notifications this Worker sends (RFC 8292).
+    "VAPID_SUBJECT": "https://janggi.neilarmstrong.dev",
   },
-  // Secrets, set with `wrangler secret put` (or in .dev.vars locally): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET.
+  // Secrets, set with `wrangler secret put` (or in .dev.vars locally): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and VAPID_PRIVATE_KEY for turn notifications.
 }

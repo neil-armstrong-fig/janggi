@@ -256,3 +256,34 @@ it("introduces the player in the look they wear now when it comes back after a d
     JSON.stringify({kind: "introduce", introduction: {displayName: "Kim", boardKey: "new"}}),
   ]);
 });
+
+it("tries the room again at once when told to, rather than waiting out the pause after a drop", () => {
+  connection.open(COMING_BACK, handlers);
+  sockets[0]?.drops();
+  vi.advanceTimersByTime(250);
+  sockets[1]?.drops();
+
+  connection.retryNow();
+
+  expect(sockets).toHaveLength(3);
+});
+
+it("does not try again a second time when the pause it cut short runs out", () => {
+  connection.open(COMING_BACK, handlers);
+  sockets[0]?.drops();
+
+  connection.retryNow();
+  vi.advanceTimersByTime(15_000);
+
+  expect(sockets).toHaveLength(2);
+});
+
+it("leaves a socket that is up alone when told to try again", () => {
+  connection.open(FIRST_TRY, handlers);
+  sockets[0]?.opens();
+  sockets[0]?.says(WAITING);
+
+  connection.retryNow();
+
+  expect(sockets).toHaveLength(1);
+});

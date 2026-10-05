@@ -13,12 +13,12 @@ export default defineConfig<AcceptanceTestOptions>({
     {
       name: "desktop-pwa",
       testMatch: PWA_SPECS,
-      use: {...devices["Desktop Chrome"], reducedMotion: "reduce", effects: "Reduced"},
+      use: {...devices["Desktop Chrome"], channel: "chromium", reducedMotion: "reduce", effects: "Reduced"},
     },
     {
       name: "mobile-pwa",
       testMatch: PWA_SPECS,
-      use: {...devices["Pixel 5"], reducedMotion: "reduce", effects: "Reduced"},
+      use: {...devices["Pixel 5"], channel: "chromium", reducedMotion: "reduce", effects: "Reduced"},
     },
   ],
 });

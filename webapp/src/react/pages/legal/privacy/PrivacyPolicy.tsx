@@ -29,6 +29,15 @@ export function PrivacyPolicy(): React.JSX.Element {
         </p>
 
         <p>
+          If you turn on <strong>Tell me when it is my turn</strong> in Settings, your browser gives Janggi an address
+          at its own push service, and the keys needed to send to it, for that device. The account service keeps them
+          with your account so it can send a notification when your friend has moved. Each notification carries your
+          friend&apos;s display name, encrypted so that only your device can read it; the push service that delivers it
+          (Google, Mozilla or Apple, depending on your browser) sees the address and that a message was sent, but not
+          what it says. Turning the setting off, signing out or deleting the account removes the address.
+        </p>
+
+        <p>
           Cloudflare also processes connection information such as your IP address to deliver requests, limit sign-in
           attempts and writes, protect the service from abuse and produce operational logs when something fails.
         </p>
@@ -88,7 +97,8 @@ export function PrivacyPolicy(): React.JSX.Element {
         <p>
           Browser data remains on your device until you clear it. Account and synced data remain until you choose
           <strong> Delete my account</strong> in Settings or ask for deletion. That action deletes the live account,
-          synced data and its sessions. It does not erase the copies already held on your own devices.
+          synced data, its sessions and the notification addresses of its devices. It does not erase the copies already
+          held on your own devices.
         </p>
 
         <p>

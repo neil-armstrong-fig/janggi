@@ -6,9 +6,12 @@ import {databaseContract} from "@src/database/testing/DatabaseContract";
 import {deleteSession} from "@src/database/sessions/DeleteSession";
 import {findOrCreateAccount} from "@src/database/accounts/FindOrCreateAccount";
 import {openRoomRecord} from "@src/database/rooms/OpenRoomRecord";
+import {pushSubscriptionsOf} from "@src/database/push/PushSubscriptionsOf";
 import {readPlayerData} from "@src/database/data/ReadPlayerData";
 import {removeAccount} from "@src/database/accounts/RemoveAccount";
+import {removePushSubscription} from "@src/database/push/RemovePushSubscription";
 import {renameAccount} from "@src/database/accounts/RenameAccount";
+import {savePushSubscription} from "@src/database/push/SavePushSubscription";
 import {writePlayerData} from "@src/database/data/WritePlayerData";
 
 /**
@@ -28,6 +31,9 @@ vi.unmock("@src/database/data/ReadPlayerData");
 vi.unmock("@src/database/data/WritePlayerData");
 vi.unmock("@src/database/rooms/OpenRoomRecord");
 vi.unmock("@src/database/rooms/CloseRoomRecord");
+vi.unmock("@src/database/push/SavePushSubscription");
+vi.unmock("@src/database/push/RemovePushSubscription");
+vi.unmock("@src/database/push/PushSubscriptionsOf");
 
 const local = vi.hoisted(() => ({
   platform: undefined as undefined | {env: {DB: D1Database}; dispose: () => Promise<void>},
@@ -72,5 +78,8 @@ databaseContract(async () => {
     removeAccount,
     openRoomRecord,
     closeRoomRecord,
+    savePushSubscription,
+    removePushSubscription,
+    pushSubscriptionsOf,
   };
 });

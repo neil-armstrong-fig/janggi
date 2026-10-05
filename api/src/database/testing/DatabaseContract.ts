@@ -158,6 +158,64 @@ export function databaseContract(makeStore: () => Promise<DatabaseFunctions>): v
     expect((await store.findOrCreateAccount("google-1", account("user-9", "Fresh"))).id).toBe("user-9");
   });
 
+  describe("push subscriptions", () => {
+    const phone = {endpoint: "https://push.example/phone", p256dh: "phone-key", auth: "phone-auth"};
+    const laptop = {endpoint: "https://push.example/laptop", p256dh: "laptop-key", auth: "laptop-auth"};
+
+    beforeEach(async () => {
+      await store.findOrCreateAccount("google-1", account("user-1"));
+      await store.findOrCreateAccount("google-2", account("user-2"));
+    });
+
+    it("keeps every device an account subscribes, and no one else's", async () => {
+      await store.savePushSubscription({userId: "user-1", subscription: phone, now: NOW});
+      await store.savePushSubscription({userId: "user-1", subscription: laptop, now: NOW});
+
+      expect(await store.pushSubscriptionsOf("user-1")).toHaveLength(2);
+      expect(await store.pushSubscriptionsOf("user-2")).toEqual([]);
+    });
+
+    it("replaces a device's keys when it subscribes again, rather than keeping two", async () => {
+      await store.savePushSubscription({userId: "user-1", subscription: phone, now: NOW});
+      await store.savePushSubscription({userId: "user-1", subscription: {...phone, auth: "new-auth"}, now: LATER});
+
+      expect(await store.pushSubscriptionsOf("user-1")).toEqual([{...phone, auth: "new-auth"}]);
+    });
+
+    it("gives a device to whoever signed in on it last", async () => {
+      await store.savePushSubscription({userId: "user-1", subscription: phone, now: NOW});
+      await store.savePushSubscription({userId: "user-2", subscription: phone, now: LATER});
+
+      expect(await store.pushSubscriptionsOf("user-1")).toEqual([]);
+      expect(await store.pushSubscriptionsOf("user-2")).toEqual([phone]);
+    });
+
+    it("lets an account remove its own device and leaves its others", async () => {
+      await store.savePushSubscription({userId: "user-1", subscription: phone, now: NOW});
+      await store.savePushSubscription({userId: "user-1", subscription: laptop, now: NOW});
+
+      await store.removePushSubscription({userId: "user-1", endpoint: phone.endpoint});
+
+      expect(await store.pushSubscriptionsOf("user-1")).toEqual([laptop]);
+    });
+
+    it("does not let an account remove a device that is another's", async () => {
+      await store.savePushSubscription({userId: "user-1", subscription: phone, now: NOW});
+
+      await store.removePushSubscription({userId: "user-2", endpoint: phone.endpoint});
+
+      expect(await store.pushSubscriptionsOf("user-1")).toEqual([phone]);
+    });
+
+    it("deletes an account's devices with the account", async () => {
+      await store.savePushSubscription({userId: "user-1", subscription: phone, now: NOW});
+
+      await store.removeAccount("user-1");
+
+      expect(await store.pushSubscriptionsOf("user-1")).toEqual([]);
+    });
+  });
+
   describe("rooms", () => {
     const DAY = 24 * 3_600_000;
     const room = (code: string, hostId: string, now = NOW, limit = 10): RoomToOpen => ({

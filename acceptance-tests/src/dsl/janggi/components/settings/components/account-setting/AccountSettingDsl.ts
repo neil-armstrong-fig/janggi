@@ -1,6 +1,7 @@
 import type {Page} from "@playwright/test";
 import {AccountSettingPlaywright} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/AccountSettingPlaywright";
 import type {RoomAsked} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
+import type {TurnNotificationsState} from "@janggi/shared/janggi/online/TurnNotificationsState";
 import {DslError} from "@src/dsl/errors/DslError";
 
 /**
@@ -117,6 +118,41 @@ export class AccountSettingDsl {
       this.account.dropTheFriendConnection();
     } catch (error) {
       throw new DslError("Failed to drop the connection to the friend's game", error);
+    }
+  }
+
+  /** Asks to be told, by a notification, when it is this player's turn, and waits for it to be on. */
+  async turnOnTurnNotifications(): Promise<void> {
+    try {
+      await this.account.turnOnTurnNotifications();
+    } catch (error) {
+      throw new DslError("Failed to turn on notifications of the player's turn", error);
+    }
+  }
+
+  async turnOffTurnNotifications(): Promise<void> {
+    try {
+      await this.account.turnOffTurnNotifications();
+    } catch (error) {
+      throw new DslError("Failed to turn off notifications of the player's turn", error);
+    }
+  }
+
+  /** Where this device stands on being told of the player's turns: on, off, blocked by the browser, or not offered (signed out, or not possible here). */
+  async getTurnNotifications(): Promise<TurnNotificationsState> {
+    try {
+      return await this.account.getTurnNotifications();
+    } catch (error) {
+      throw new DslError("Failed to read where notifications of the player's turn stand", error);
+    }
+  }
+
+  /** How many devices the server has been asked to tell, by a notification, of the signed-in player's turns. */
+  async getDevicesToBeToldItsTheirTurn(): Promise<number> {
+    try {
+      return this.account.getDevicesToBeToldItsTheirTurn();
+    } catch (error) {
+      throw new DslError("Failed to read the devices to be told of the player's turns", error);
     }
   }
 

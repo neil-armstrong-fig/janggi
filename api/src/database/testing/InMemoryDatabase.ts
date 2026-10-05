@@ -4,8 +4,11 @@ import type {DataWrite} from "@src/database/types/DataWrite";
 import type {NewAccount} from "@src/database/types/NewAccount";
 import type {NewSession} from "@src/database/types/NewSession";
 import type {PlayerData} from "@src/database/types/PlayerData";
+import type {PushSubscription} from "@src/database/types/PushSubscription";
 import type {RoomOpening} from "@src/database/types/RoomOpening";
 import type {RoomToOpen} from "@src/database/types/RoomToOpen";
+import type {SubscriptionToRemove} from "@src/database/types/SubscriptionToRemove";
+import type {SubscriptionToSave} from "@src/database/types/SubscriptionToSave";
 
 /**
  * The database's functions, in memory, for the tests of what the routes decide: a class because it holds state — the accounts,
@@ -21,6 +24,10 @@ export class InMemoryDatabase {
   private readonly sessions = new Map<string, NewSession>();
   private readonly data = new Map<string, PlayerData>();
   private readonly rooms = new Map<string, {readonly hostId: string; readonly createdAt: Date}>();
+  private readonly subscriptions = new Map<
+    string,
+    {readonly userId: string; readonly subscription: PushSubscription}
+  >();
 
   findOrCreateAccount = (googleSub: string, newAccount: NewAccount): Promise<Account> => {
     const known = this.accountBySub.get(googleSub);
@@ -78,6 +85,9 @@ export class InMemoryDatabase {
   removeAccount = (userId: string): Promise<void> => {
     this.accounts.delete(userId);
     this.data.delete(userId);
+    [...this.subscriptions].forEach(([endpoint, held]) => {
+      if (held.userId === userId) this.subscriptions.delete(endpoint);
+    });
     [...this.rooms].forEach(([code, room]) => {
       if (room.hostId === userId) this.rooms.delete(code);
     });
@@ -112,6 +122,24 @@ export class InMemoryDatabase {
     return Promise.resolve();
   };
 
+  savePushSubscription = ({userId, subscription}: SubscriptionToSave): Promise<void> => {
+    this.subscriptions.set(subscription.endpoint, {userId, subscription});
+
+    return Promise.resolve();
+  };
+
+  removePushSubscription = ({userId, endpoint}: SubscriptionToRemove): Promise<void> => {
+    if (this.subscriptions.get(endpoint)?.userId === userId) this.subscriptions.delete(endpoint);
+
+    return Promise.resolve();
+  };
+
+  pushSubscriptionsOf = (userId: string): Promise<readonly PushSubscription[]> => {
+    const held = [...this.subscriptions.values()].filter(each => each.userId === userId);
+
+    return Promise.resolve(held.map(each => each.subscription));
+  };
+
   /** Forgets everything: each test starts from an empty database. */
   reset = (): void => {
     this.accounts.clear();
@@ -119,5 +147,6 @@ export class InMemoryDatabase {
     this.sessions.clear();
     this.data.clear();
     this.rooms.clear();
+    this.subscriptions.clear();
   };
 }

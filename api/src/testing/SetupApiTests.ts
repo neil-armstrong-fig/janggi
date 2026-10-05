@@ -43,6 +43,15 @@ vi.mock("@src/database/rooms/OpenRoomRecord", async () => ({
 vi.mock("@src/database/rooms/CloseRoomRecord", async () => ({
   closeRoomRecord: (await import("@src/database/testing/TestDatabase")).testDatabase.closeRoomRecord,
 }));
+vi.mock("@src/database/push/SavePushSubscription", async () => ({
+  savePushSubscription: (await import("@src/database/testing/TestDatabase")).testDatabase.savePushSubscription,
+}));
+vi.mock("@src/database/push/RemovePushSubscription", async () => ({
+  removePushSubscription: (await import("@src/database/testing/TestDatabase")).testDatabase.removePushSubscription,
+}));
+vi.mock("@src/database/push/PushSubscriptionsOf", async () => ({
+  pushSubscriptionsOf: (await import("@src/database/testing/TestDatabase")).testDatabase.pushSubscriptionsOf,
+}));
 vi.mock("@src/router/http/routes/sign-in/google/GoogleAuthorizationUrl", async () => ({
   googleAuthorizationUrl: (await import("@src/router/http/routes/sign-in/google/testing/TestGoogle")).testGoogle
     .authorizationUrl,

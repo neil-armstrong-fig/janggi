@@ -4,11 +4,13 @@ import type {FriendConnectionStatus} from "@janggi/shared/janggi/online/FriendCo
 import {FRIEND_GAME_STATES} from "@janggi/shared/janggi/online/FriendGameState";
 import type {FriendGameState} from "@janggi/shared/janggi/online/FriendGameState";
 import {JOIN_QUERY_PARAMETER} from "@janggi/shared/janggi/online/friend-code/JoinLink";
+import type {BrowserNotifications} from "@src/dsl/janggi/components/play-a-friend/playwright/types/BrowserNotifications";
 import type {Locator, Page} from "@playwright/test";
 import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
+import {ServerPush} from "@src/dsl/janggi/components/play-a-friend/playwright/server-push/ServerPush";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
@@ -40,6 +42,7 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
   private readonly resignButton: Locator;
   private readonly leaveButton: Locator;
   private readonly closeButton: Locator;
+  private readonly serverPush: ServerPush;
 
   constructor(page: Page) {
     super(page);
@@ -70,6 +73,7 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
     this.resignButton = page.getByTestId("friend-resign");
     this.leaveButton = page.getByTestId("friend-leave-game");
     this.closeButton = page.getByTestId("friend-close");
+    this.serverPush = new ServerPush(page);
   }
 
   /** Whether an entry to it is drawn anywhere but in the settings. */
@@ -209,6 +213,83 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
     const connection = await this.connection.getAttribute("data-connection");
 
     return FRIEND_CONNECTION_STATUSES.find(known => known === connection) ?? "connecting";
+  }
+
+  /**
+   * Makes this browser say what a real one would about notifications, now and after every reload: a push service cannot be reached from a
+   * test, so the registration's push manager and the permission are stood in for, and a subscription is kept the way a browser keeps one.
+   */
+  async standInForTheBrowser(notifications: BrowserNotifications): Promise<void> {
+    const install = (kind: BrowserNotifications): void => {
+      const scope = globalThis as unknown as Record<string, unknown>;
+      if (kind === "has-none") {
+        Reflect.deleteProperty(scope, "PushManager");
+        return;
+      }
+
+      const granted = "dsl.notifications-granted";
+      const subscribed = "dsl.push-endpoint";
+      const permission = (): NotificationPermission => {
+        if (kind === "blocks") return "denied";
+        if (localStorage.getItem(granted) === null) return "default";
+
+        return "granted";
+      };
+      Object.defineProperty(Notification, "permission", {configurable: true, get: permission});
+      Notification.requestPermission = (): Promise<NotificationPermission> => {
+        if (kind === "accepts") localStorage.setItem(granted, "true");
+
+        return Promise.resolve(permission());
+      };
+
+      const subscription = (): unknown => {
+        const endpoint = localStorage.getItem(subscribed);
+        if (endpoint === null) return null;
+
+        return {
+          endpoint,
+          toJSON: () => ({endpoint, keys: {p256dh: "BKey_1-a", auth: "auth_1-a"}}),
+          unsubscribe: () => {
+            localStorage.removeItem(subscribed);
+
+            return Promise.resolve(true);
+          },
+        };
+      };
+      const pushManager = {
+        getSubscription: () => Promise.resolve(subscription()),
+        subscribe: () => {
+          localStorage.setItem(subscribed, `https://push.example/${crypto.randomUUID()}`);
+
+          return Promise.resolve(subscription());
+        },
+      };
+      navigator.serviceWorker.getRegistration = () =>
+        Promise.resolve({pushManager} as unknown as ServiceWorkerRegistration);
+    };
+
+    await this.page.addInitScript(install, notifications);
+    await this.page.evaluate(install, notifications);
+  }
+
+  /** Lets the app show notifications, as a player who said yes to the browser's question has. */
+  async allowTheBrowserToShowNotifications(): Promise<void> {
+    await this.serverPush.allowNotifications();
+  }
+
+  /** The server tells this device that the friend `opponent` has moved and it is the player's turn. */
+  async receiveATurnPush(opponent: string): Promise<void> {
+    await this.serverPush.receive(JSON.stringify({opponent}));
+  }
+
+  /** The server pushes to this device a message the app cannot read. */
+  async receiveAnUnreadablePush(): Promise<void> {
+    await this.serverPush.receive("not what the server sends");
+  }
+
+  /** What each notification the app is showing says. */
+  async getNotificationsShown(): Promise<readonly string[]> {
+    return this.serverPush.getNotificationsShown();
   }
 
   /** Whether the last code tried was turned away — a code no room has, or one that is not a code. */

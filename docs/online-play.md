@@ -313,13 +313,52 @@ player can switch between them, and room events continue to update the parked
 friend game. Device storage keeps the player's own game and only the friend
 code, not the reconstructed online game.
 
+## Telling a player it is their turn
+
+A player who has put the phone away learns nothing from a socket the OS has closed, so the room sends a **web push** to the player a
+move has just passed the turn to. The text is "<name> has moved. It's your turn." (or its Korean, `TURN_NOTIFICATION_WORDS`; the worker cannot read the store, so the page leaves its language in a cache, `keepLanguageForWorker`, which the worker reads when a push arrives, English if there is none); tapping it brings the app to the front, and the
+page finds its room again from the kept code, trying at once rather than after the pause a drop sets (`FriendConnection.retryNow`).
+
+```mermaid
+sequenceDiagram
+  participant A as Mover's PWA
+  participant R as GameRoom
+  participant D as D1
+  participant S as Push service
+  participant W as Away player's service worker
+  A->>R: act {move}
+  R->>R: accepted; turn passes; recipient has no socket
+  R->>D: push subscriptions of the recipient
+  R->>S: POST endpoint, VAPID Authorization, aes128gcm body {opponent}
+  S-->>W: push
+  W->>W: showNotification, tag "turn"
+  Note over W: Tap: focus a window or open the app
+```
+
+- **Opt-in, per device.** The switch in the You tab's account card (shown only when signed in, since it means nothing offline) asks the browser's permission (from a tap: iOS requires one), subscribes
+  with the public VAPID key and `PUT`s `{endpoint, keys}` to the API. Turning it off, signing out or deleting the account removes the
+  row, and a push service answering 404/410 does too. Where the browser has no push (an iPhone outside the Home Screen app) the switch
+  is not shown; where the player has blocked notifications it says so.
+- **Who is told is the server's decision** (`turnNotificationFor`): the player whose turn it now is, after an accepted action that
+  leaves the game going, **and only if their socket has closed** (`goneSince`). A connected player is looking at the board. The service
+  worker never decides: it shows every push, because Safari and Chrome revoke a subscription that is pushed to and shows nothing.
+- **Encrypted, with the name inside.** A payload-less push could only say "your turn"; the name needs RFC 8291 encryption. It is about
+  eighty lines of Web Crypto (ECDH, HKDF, AES-GCM), tested against the RFC's own example, so no library or dependency is added. The push
+  service sees the endpoint and that something was sent, not the name. `Topic: turn` and the notification's own `tag` keep a player
+  who was away for two moves down to one notification; the TTL is a day.
+- **Keys.** VAPID key pair: public half `VAPID_PUBLIC_KEY` in `@janggi/shared`, private half the Worker secret `VAPID_PRIVATE_KEY`
+  (`MANUAL-SETUP-STEPS.md` 7b). Without it the Worker simply sends nothing.
+- **Best effort.** It runs under `ctx.waitUntil` after the room has answered, swallows its own failures, and the game never depends on
+  it. A phone whose socket the OS has not yet closed is "connected" and gets nothing until it is; the player sees the move when they
+  next open the app regardless.
+
 ## Where state lives
 
 | Location               | PVP-relevant data                                                                                                               | Lifetime                                                                          |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | Browser `localStorage` | Account status, the room code, and the player's own local game.                                                                 | Account and local game persist; the code clears on leave, sign-out, or room gone. |
 | Browser Redux          | Connection state, seat, opponent, reconstructed friend game, and parked local game.                                             | Current page; rebuilt from the kept code and room snapshot.                       |
-| D1                     | Account, session hash, sync blob, and open-room index.                                                                          | Account/session policy; index until finish, teardown, cascade, or stale recovery. |
+| D1                     | Account, session hash, sync blob, open-room index, and each notifying device's push address and keys.                           | Account/session policy; index until finish, teardown, cascade, or stale recovery; a device until it is turned off, goes dead or the account goes. |
 | Durable Object storage | Code and complete `RoomState`: seats, introductions, setups, current engine state, history, draw offer, result, and timestamps. | Until the room alarm tears it down.                                               |
 | WebSocket tags         | Authenticated account ID for delivery and reconnection replacement.                                                             | The accepted socket's lifetime.                                                   |
 
@@ -441,6 +480,10 @@ its peer requirements target Vitest 4 while this workspace uses Vitest 5.
   account (`infra/AGENTS.md`).
 - Cloudflare dashboard usage after a few real games, against the limits above.
 - A game by hand between two real devices; it has been automated so far.
+- A real turn notification, end to end: `pnpm api:dev` with the VAPID keys in `api/.dev.vars`, two profiles, one backgrounded or its socket
+  closed, a move in the other. On Chrome for Android, an iPhone Home Screen app and a desktop browser. Tapping it, which no automated test
+  can do, and a dead device (uninstall the app) pruned on the next send. The worker's `push` handler is run by `pwa/BeingToldItsYourTurn…`, with the event
+  dispatched in it rather than delivered by a push service, and the sending and encryption by unit tests.
 - The room alarm after days; a day is the shortest the API accepts, and only the pure
   alarm decision is covered automatically.
 - Deleting an account while it is in a room leaves that Durable Object to

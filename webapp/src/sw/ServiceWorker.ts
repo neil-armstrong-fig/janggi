@@ -1,7 +1,12 @@
 import {addPlugins, cleanupOutdatedCaches, precacheAndRoute} from "workbox-precaching";
 import type {PrecacheEntry} from "workbox-precaching";
+import type {AppWindows} from "@src/sw/notifying/types/AppWindows";
+import {keptLanguage} from "@src/sw/notifying/KeptLanguage";
+import {showTheApp} from "@src/sw/notifying/ShowTheApp";
+import type {TurnNotification} from "@src/sw/notifying/types/TurnNotification";
 import {serverOrigin} from "@src/redux/account/server/ServerOrigin";
 import {setDefaultHandler} from "workbox-routing";
+import {turnNotificationOf} from "@src/sw/notifying/TurnNotificationOf";
 
 /** An activate event, which can hold the worker in that phase until a promise settles. */
 interface LifecycleEvent extends Event {
@@ -24,9 +29,25 @@ interface FetchRequestEvent extends Event {
   readonly stopImmediatePropagation: () => void;
 }
 
+/** A push the server sent: what it carried, if anything. */
+interface PushMessageEvent extends LifecycleEvent {
+  readonly data: {readonly text: () => string} | null;
+}
+
+/** A tap on a notification this worker showed. */
+interface NotificationTapEvent extends LifecycleEvent {
+  readonly notification: {readonly close: () => void};
+}
+
 /** The pages this worker serves. */
-interface WorkerClients {
+interface WorkerClients extends AppWindows {
   readonly claim: () => Promise<void>;
+}
+
+/** What shows notifications for this worker's pages, and where the app is served from. */
+interface WorkerRegistration {
+  readonly scope: string;
+  readonly showNotification: (title: string, options: TurnNotification["options"]) => Promise<void>;
 }
 
 /**
@@ -37,11 +58,15 @@ interface WorkerClients {
 interface WorkerScope {
   readonly __WB_MANIFEST: (string | PrecacheEntry)[];
   readonly clients: WorkerClients;
+  readonly registration: WorkerRegistration;
+  readonly caches: Parameters<typeof keptLanguage>[0];
   readonly skipWaiting: () => Promise<void>;
   readonly addEventListener: {
     (type: "activate", listener: (event: LifecycleEvent) => void): void;
     (type: "message", listener: (event: WorkerMessageEvent) => void): void;
     (type: "fetch", listener: (event: FetchRequestEvent) => void): void;
+    (type: "push", listener: (event: PushMessageEvent) => void): void;
+    (type: "notificationclick", listener: (event: NotificationTapEvent) => void): void;
   };
 }
 
@@ -62,6 +87,10 @@ declare const self: WorkerScope;
  * need none of the isolation headers, so the worker has no business in them — and one that handled them would put a
  * worker between the app and its server, making sync depend on it and hiding the calls from the acceptance tests'
  * stand-in for the API, which can only see what the browser sends itself.
+ *
+ * It also shows the "it's your turn" notification the API pushes when a friend has moved and the player is away, and brings the
+ * app to the front when it is tapped (`docs/online-play.md`). Every push is shown: a browser takes back the subscription of a worker
+ * that receives pushes and shows nothing, so deciding whom to tell is the server's, never this worker's.
  */
 // First, and before anything of Workbox's is registered: a listener that stops the event reaching the others and does not
 // answer it leaves the request to the browser, which is the only way to decline one the default handler would take.
@@ -75,6 +104,15 @@ self.addEventListener("message", event => {
 
 self.addEventListener("activate", event => {
   event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener("push", event => {
+  event.waitUntil(showTurnNotification(event.data?.text()));
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  event.waitUntil(showTheApp(self.clients, self.registration.scope));
 });
 
 addPlugins([{handlerWillRespond: ({response}) => Promise.resolve(isolated(response))}]);
@@ -95,6 +133,14 @@ function isolated(response: Response): Response {
   headers.set("Cross-Origin-Embedder-Policy", "require-corp");
 
   return new Response(response.body, {status: response.status, statusText: response.statusText, headers});
+}
+
+/** Shows what a push says, in the language the page last said the game is read in. Always shows something. */
+async function showTurnNotification(pushed: string | undefined): Promise<void> {
+  const language = await keptLanguage(self.caches, self.registration.scope);
+  const notification = turnNotificationOf(pushed, language);
+
+  await self.registration.showNotification(notification.title, notification.options);
 }
 
 function isSkipWaitingMessage(message: unknown): message is SkipWaitingMessage {

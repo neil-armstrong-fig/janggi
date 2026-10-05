@@ -15,6 +15,11 @@ interface ApiWorkerEnv {
   // Secrets: set with `wrangler secret put`, or in .dev.vars locally. Never committed.
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  // Turn notifications (web push): the private half of the VAPID pair (the public half is `VAPID_PUBLIC_KEY` in `@janggi/shared`),
+  // as the unpadded base64url scalar a generator prints, and a `mailto:` or https address a push service may reach the operator on.
+  // With either unset nobody is notified and nothing else changes. See MANUAL-SETUP-STEPS.md.
+  VAPID_PRIVATE_KEY?: string;
+  VAPID_SUBJECT?: string;
   // Only for local dev, in `.dev.vars`: `wrangler dev` reports the custom domain as the request's host, so the callback
   // address cannot be worked out from the request there and is given outright, as `http://localhost:8787/api/auth/google/callback`.
   GOOGLE_REDIRECT_URI?: string;

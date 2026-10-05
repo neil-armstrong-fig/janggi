@@ -4,6 +4,8 @@ import {finishSignIn} from "@src/router/http/routes/sign-in/finish/FinishSignIn"
 import {forSignedInPlayer} from "@src/router/http/routes/signed-in-player/ForSignedInPlayer";
 import {logOut} from "@src/router/http/routes/log-out/LogOut";
 import {openRoom} from "@src/router/http/routes/open-room/OpenRoom";
+import {subscribeToPush} from "@src/router/http/routes/push-subscription/SubscribeToPush";
+import {unsubscribeFromPush} from "@src/router/http/routes/push-subscription/UnsubscribeFromPush";
 import {readData} from "@src/router/http/routes/read-data/ReadData";
 import {readMe} from "@src/router/http/routes/read-me/ReadMe";
 import {renameMe} from "@src/router/http/routes/rename-me/RenameMe";
@@ -34,6 +36,10 @@ export function answerHttpRoute(route: HttpRoute, request: Request): Promise<Res
       return forSignedInPlayer(request, account => writeData(request, account));
     case "POST /api/rooms":
       return forSignedInPlayer(request, account => openRoom(request, account));
+    case "PUT /api/push-subscription":
+      return forSignedInPlayer(request, account => subscribeToPush(request, account));
+    case "DELETE /api/push-subscription":
+      return forSignedInPlayer(request, account => unsubscribeFromPush(request, account));
     case "DELETE /api/account":
       return forSignedInPlayer(request, account => deleteAccount(account));
   }

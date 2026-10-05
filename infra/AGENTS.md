@@ -40,6 +40,7 @@ Set these in the environment (`secrets/required-environment/` names everything m
 | `CLOUDFLARE_API_TOKEN`                     | A token for the account; `pnpm --filter @janggi/infra exec alchemy util create-cloudflare-token` makes one   |
 | `CLOUDFLARE_ACCOUNT_ID`                    | Only if the token reaches more than one account                                                              |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | The OAuth client's; stored as Worker secrets                                                                 |
+| `VAPID_PRIVATE_KEY`                        | The private half of the key turn notifications are signed with (`MANUAL-SETUP-STEPS.md` 7b); a Worker secret |
 | `ALCHEMY_PASSWORD`                         | Any long random string; encrypts the secrets in Alchemy's state                                              |
 | `SITE_ORIGINS`                             | Optional: comma-separated origins allowed to call the API; defaults to this game's site and `localhost:3000` |
 

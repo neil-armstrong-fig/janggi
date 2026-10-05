@@ -1,5 +1,6 @@
 import {enterFriendRoom} from "@src/redux/online/actions/entering/EnterFriendRoom";
 import {addressWithoutLink} from "@src/react/pages/game/hooks/use-friend-room/utils/AddressWithoutLink";
+import {friendRoom} from "@src/redux/online/FriendRoom";
 import {friendArrivalFor} from "@src/react/pages/game/hooks/use-friend-room/utils/FriendArrivalFor";
 import {leaveFriendRoom} from "@src/redux/online/actions/LeaveFriendRoom";
 import {shareLookWithFriendRoom} from "@src/redux/online/actions/playing/ShareLookWithFriendRoom";
@@ -11,7 +12,8 @@ import {useIntroduction} from "@src/react/pages/game/hooks/use-introduction/UseI
 /**
  * Keeps a signed-in player in the room they are in: takes them into the room a `?join=` link names as the page opens,
  * puts them back in the one whose code the device kept, lets go of it if they sign out, tells the room when they change their
- * board or pieces, and closes the sheet as the game begins.
+ * board or pieces, tries the room again at once when the app comes back to the front (a tap on a notification, say, should not wait out
+ * a pause that grew while the phone was away), and closes the sheet as the game begins.
  *
  * **A player who is not signed in is left alone** — no call to the API, whatever the address says (`FriendSignIn` is what offers them the way in) — which is the opt-in the
  * whole account feature stands on. The link is taken off the address once it is read, so reloading is the stored code's job
@@ -76,4 +78,14 @@ export function useFriendRoom(): void {
   useEffect(() => {
     if (friendState === "playing" && openSheet === "friend") closeSheet();
   }, [friendState, openSheet]);
+
+  useEffect(() => {
+    const comeBack = (): void => {
+      if (document.visibilityState === "visible") friendRoom.retryNow();
+    };
+
+    document.addEventListener("visibilitychange", comeBack);
+
+    return () => document.removeEventListener("visibilitychange", comeBack);
+  }, []);
 }

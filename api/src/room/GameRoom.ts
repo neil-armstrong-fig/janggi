@@ -9,7 +9,9 @@ import {alarmPlanForRoom} from "@src/room/alarm/AlarmPlanForRoom";
 import {answerFrame} from "@src/room/answering/AnswerFrame";
 import {closedSocket} from "@src/room/leaving/ClosedSocket";
 import {newRoom} from "@src/room/opening/NewRoom";
+import {notifyTurn} from "@src/push/NotifyTurn";
 import {roomRequestFrom} from "@src/room/request/RoomRequestFrom";
+import {turnNotificationFor} from "@src/room/notifying/TurnNotificationFor";
 
 const STORED_ROOM = "room";
 const STORED_CODE = "code";
@@ -47,7 +49,10 @@ export class GameRoom extends DurableObject {
     const room = await this.stored();
 
     if (accountId !== undefined && room !== undefined) {
-      await this.apply(answerFrame(room, {accountId, data, now: Date.now()}));
+      const step = answerFrame(room, {accountId, data, now: Date.now()});
+
+      await this.apply(step);
+      this.tellWhoseTurn(room, step.state);
     }
   }
 
@@ -119,6 +124,18 @@ export class GameRoom extends DurableObject {
       const stillConnected = this.ctx.getWebSockets(accountId).some(other => other !== socket);
 
       await this.apply(closedSocket({room, accountId, stillConnected, now: Date.now()}));
+    }
+  }
+
+  /**
+   * Tells the player a move passed the turn to, if they are away, by a push to their devices. Let run on after the move has been
+   * answered: the players have what they were waiting for, and a push service that is slow costs them nothing.
+   */
+  private tellWhoseTurn(before: RoomState, after: RoomState): void {
+    const notification = turnNotificationFor(before, after);
+
+    if (notification !== undefined) {
+      this.ctx.waitUntil(notifyTurn(notification));
     }
   }
 

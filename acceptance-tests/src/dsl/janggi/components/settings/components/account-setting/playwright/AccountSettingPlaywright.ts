@@ -1,3 +1,5 @@
+import {TURN_NOTIFICATIONS_STATES} from "@janggi/shared/janggi/online/TurnNotificationsState";
+import type {TurnNotificationsState} from "@janggi/shared/janggi/online/TurnNotificationsState";
 import type {Locator, Page} from "@playwright/test";
 import {API_ORIGIN} from "@janggi/shared/janggi/account/ApiOrigin";
 import type {RoomAsked} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
@@ -29,6 +31,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   private readonly nameMessage: Locator;
   private readonly syncState: Locator;
   private readonly replay: Locator;
+  private readonly turnNotifications: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -46,6 +49,7 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
     this.nameMessage = page.getByTestId("account-name-message");
     this.syncState = page.getByTestId("account-sync-state");
     this.replay = page.getByTestId("tour-replay");
+    this.turnNotifications = page.getByTestId("account-turn-notifications");
   }
 
   /**
@@ -76,12 +80,48 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
     return this.api.getRoomsAsked();
   }
 
+  getDevicesToBeToldItsTheirTurn(): number {
+    return this.api.getPushEndpointCount(this);
+  }
+
   letGoOfTheRooms(): void {
     this.api.letGoOfRooms();
   }
 
   restoreTheFriendConnection(): void {
     this.api.restoreRoomSockets(this);
+  }
+
+  /** Taps the switch in the account card that says the player is to be told when it is their turn, and waits for it to be on. */
+  async turnOnTurnNotifications(): Promise<void> {
+    await this.inSheet(this.turnNotifications, async () => {
+      await this.turnNotifications.getByRole("switch").click();
+      await this.turnNotifications.and(this.page.locator('[data-state="on"]')).waitFor({state: "attached"});
+    });
+  }
+
+  async turnOffTurnNotifications(): Promise<void> {
+    await this.inSheet(this.turnNotifications, async () => {
+      await this.turnNotifications.getByRole("switch").click();
+      await this.turnNotifications.and(this.page.locator('[data-state="off"]')).waitFor({state: "attached"});
+    });
+  }
+
+  /** Where this device stands on being told of the player's turns, once the page has found out; "unavailable" where the account card is not showing it (signed out). */
+  async getTurnNotifications(): Promise<TurnNotificationsState> {
+    let state: TurnNotificationsState = "unavailable";
+
+    await this.withSheetOpen(async () => {
+      await this.tabNamed("You").click();
+      if ((await this.turnNotifications.count()) === 0) return;
+
+      await this.turnNotifications.and(this.page.locator(':not([data-state="checking"])')).waitFor({state: "attached"});
+      const found = await this.turnNotifications.getAttribute("data-state");
+
+      state = TURN_NOTIFICATIONS_STATES.find(known => known === found) ?? "checking";
+    });
+
+    return state;
   }
 
   async signInWithGoogle(player?: GooglePlayer): Promise<void> {

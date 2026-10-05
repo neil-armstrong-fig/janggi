@@ -10,7 +10,7 @@ import {environment} from "@src/api-worker/settings/Environment";
 import {secrets} from "@src/secrets/Secrets";
 
 /**
- * The API's Worker, bound to the database it is given, to the three rate limiters it makes for itself (`rate-limiters/`), to the Durable Object namespace for the friend-code rooms (`game-rooms/`) and to the Google client's secrets. Given
+ * The API's Worker, bound to the database it is given, to the three rate limiters it makes for itself (`rate-limiters/`), to the Durable Object namespace for the friend-code rooms (`game-rooms/`) to the Google client's secrets and to the key its turn notifications are signed with. Given
  * its own `workers.dev` address (`janggi-api.<account>.workers.dev`); the custom domain is the owner's to attach by hand.
  * Adopted by name where it already exists.
  *
@@ -32,6 +32,8 @@ export async function buildApiWorker(database: D1Database): ReturnType<typeof Wo
       ALLOWED_ORIGINS: environment.allowedOrigins,
       GOOGLE_CLIENT_ID: alchemy.secret(secrets.GOOGLE_CLIENT_ID),
       GOOGLE_CLIENT_SECRET: alchemy.secret(secrets.GOOGLE_CLIENT_SECRET),
+      VAPID_PRIVATE_KEY: alchemy.secret(secrets.VAPID_PRIVATE_KEY),
+      VAPID_SUBJECT: environment.vapidSubject,
     },
   });
 }

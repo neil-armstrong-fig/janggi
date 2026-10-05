@@ -138,7 +138,7 @@ rather than rely on it. Reviewer changes go into `Korean.ts` only; the types and
 
 1. The match-format explanation and the flip-board help sentence.
 2. Board and piece style names and the styles sheet.
-3. The You tab apart from the picker, and the Play a friend sheets.
+3. The You tab apart from the picker, and the Play a friend sheets and the "Tell me when it is my turn" switch.
 4. Toasts and errors, including the rename messages built in `redux/`.
 5. Piece `aria-label`s (`pieceName`), which a screen reader reads in English.
 6. The "bot is Fairy-Stockfish" footer on the record sheet.

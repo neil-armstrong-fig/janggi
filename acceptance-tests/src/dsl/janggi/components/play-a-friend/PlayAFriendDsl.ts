@@ -82,6 +82,69 @@ export class PlayAFriendDsl {
     }
   }
 
+  /** From now on this browser lets the app ask to be allowed to notify, and says yes, as a phone with the app installed does. */
+  async useABrowserThatCanBeNotified(): Promise<void> {
+    try {
+      await this.friend.standInForTheBrowser("accepts");
+    } catch (error) {
+      throw new DslError("Failed to make the browser one that can be sent notifications", error);
+    }
+  }
+
+  /** From now on this browser has notifications blocked by its player, so the app may not ask. */
+  async useABrowserThatBlocksNotifications(): Promise<void> {
+    try {
+      await this.friend.standInForTheBrowser("blocks");
+    } catch (error) {
+      throw new DslError("Failed to make the browser one that blocks notifications", error);
+    }
+  }
+
+  /** From now on this browser has no push at all, as an iPhone's does until the app is on its Home Screen. */
+  async useABrowserWithoutNotifications(): Promise<void> {
+    try {
+      await this.friend.standInForTheBrowser("has-none");
+    } catch (error) {
+      throw new DslError("Failed to make the browser one that has no notifications", error);
+    }
+  }
+
+  /** Lets the app show notifications, as a player who said yes to the browser's question has. */
+  async allowTheBrowserToShowNotifications(): Promise<void> {
+    try {
+      await this.friend.allowTheBrowserToShowNotifications();
+    } catch (error) {
+      throw new DslError("Failed to let the browser show notifications", error);
+    }
+  }
+
+  /** The server tells this device that the friend `opponent` has moved, so it is the player's turn. */
+  async receiveATurnPush(opponent: string): Promise<void> {
+    try {
+      await this.friend.receiveATurnPush(opponent);
+    } catch (error) {
+      throw new DslError(`Failed to deliver the server's push that ${opponent} has moved`, error);
+    }
+  }
+
+  /** The server pushes this device something the app cannot read. */
+  async receiveAnUnreadablePush(): Promise<void> {
+    try {
+      await this.friend.receiveAnUnreadablePush();
+    } catch (error) {
+      throw new DslError("Failed to deliver an unreadable push", error);
+    }
+  }
+
+  /** What each notification the app is showing says, in the order the browser lists them. */
+  async getNotificationsShown(): Promise<readonly string[]> {
+    try {
+      return await this.friend.getNotificationsShown();
+    } catch (error) {
+      throw new DslError("Failed to read the notifications being shown", error);
+    }
+  }
+
   /** Types what a friend gave — a code, as typed or pasted — and asks to join. */
   async joinWithCode(text: string): Promise<void> {
     try {

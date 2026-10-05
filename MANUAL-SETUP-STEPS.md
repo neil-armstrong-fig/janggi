@@ -115,7 +115,7 @@ is attached by hand (step 6), so the token never touches DNS.
 
 From a machine, with these set in the environment (`infra/AGENTS.md` says what
 each is): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (your `<account-id>`),
-`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ALCHEMY_PASSWORD` (any long random
+`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `VAPID_PRIVATE_KEY` (step 7b), `ALCHEMY_PASSWORD` (any long random
 string, e.g. `openssl rand -base64 32`; keep it, CI needs the same one), and
 optionally `SITE_ORIGINS`.
 
@@ -150,15 +150,33 @@ a site and an API under one domain.
 
 `https://github.com/<owner>/<repo>/settings/secrets/actions`:
 `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `ALCHEMY_PASSWORD`,
-`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. From then on every green `main`
+`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `VAPID_PRIVATE_KEY`. From then on every green `main`
 runs `deploy-api` in `.github/workflows/ci.yml`, which re-runs the same
 `provision`. Until `CLOUDFLARE_API_TOKEN` exists that job does nothing.
+
+## 7b. The key turn notifications are signed with
+
+A "your turn" push must be signed with a key pair (VAPID, RFC 8292). The public
+half is in the repository, as `VAPID_PUBLIC_KEY` in
+`shared/src/janggi/online/VapidPublicKey.ts`; the private half is a secret,
+`VAPID_PRIVATE_KEY`, in the environment for step 5 and in the GitHub secrets
+for step 7. To make a pair (a fork, or a rotation):
+
+```bash
+node -e 'const {generateKeyPairSync}=require("crypto");const j=generateKeyPairSync("ec",{namedCurve:"P-256"}).privateKey.export({format:"jwk"});const b=s=>Buffer.from(s,"base64url");console.log("PUBLIC ",Buffer.concat([Buffer.from([4]),b(j.x),b(j.y)]).toString("base64url"));console.log("PRIVATE",j.d)'
+```
+
+Put the public one in `VapidPublicKey.ts` and keep the private one as the secret.
+The push services are told the Worker's contact address, `VAPID_SUBJECT`
+(defaults to the site; an https or `mailto:` address). Rotating the pair means
+every device must turn notifications on again.
 
 ## 8. Local development against the real API (optional)
 
 Needs the OAuth client from step 3 with the localhost redirect URI. See
 `api/AGENTS.md`: `api/.dev.vars` (git-ignored) with the client id, secret and
-`GOOGLE_REDIRECT_URI=http://localhost:8787/api/auth/google/callback`, then
+`GOOGLE_REDIRECT_URI=http://localhost:8787/api/auth/google/callback`, and
+`VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` if you want pushes to be sent, then
 `pnpm api:dev` and `VITE_API_ORIGIN=http://localhost:8787 pnpm start`.
 
 ## 9. Search engines, for the Korean page
@@ -181,6 +199,7 @@ Neither step needs a secret in the repository.
 
 - **A leaked Cloudflare token:** roll it in the dashboard, then update the
   GitHub secret and your local environment.
+- **A rotated VAPID key:** step 7b, then every player turns notifications on again.
 - **A rotated Google client secret:** update `GOOGLE_CLIENT_SECRET` in GitHub
   and re-run `provision` (or push to `main`); it is stored as a Worker secret.
 - **Tearing it down:** `pnpm --filter @janggi/infra destroy`, then delete the

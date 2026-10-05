@@ -1,5 +1,6 @@
 import type {ApiRequest} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/types/ApiRequest";
 import type {GooglePlayer} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/types/GooglePlayer";
+import type {PushSubscriptionRequest} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/types/PushSubscriptionRequest";
 import type {RoomRequest} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/types/RoomRequest";
 import type {SignedInRequest} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/types/SignedInRequest";
 import type {StoredAccount} from "@src/dsl/janggi/components/settings/components/account-setting/playwright/fake-api/types/StoredAccount";
@@ -34,6 +35,8 @@ export class FakeApi {
   private readonly sessions = new Map<object, GooglePlayer>();
   /** Who a device's next sign-in is as; nobody named means the usual player. */
   private readonly signingInAs = new Map<object, GooglePlayer>();
+  /** Whom each device last signed in as, which outlasts the session: what the server holds for them is theirs still after they sign out. */
+  private readonly lastPlayers = new Map<object, GooglePlayer>();
   private readonly accounts = new Map<GooglePlayer, StoredAccount>();
   private readonly rooms = new FakeRooms();
   private down = false;
@@ -85,6 +88,14 @@ export class FakeApi {
     return this.rooms.asked;
   }
 
+  /** How many devices the account a device last signed in as has asked to be told of its turns on. */
+  getPushEndpointCount(device: object): number {
+    const player = this.lastPlayers.get(device);
+    if (player === undefined) return 0;
+
+    return this.accountOf(player).pushEndpoints.size;
+  }
+
   /** Lets go of every room, as the real one does once both players have been away long enough. */
   letGoOfRooms(): void {
     this.rooms.letGoOfAll();
@@ -122,6 +133,7 @@ export class FakeApi {
       const account = this.accountOf(player);
 
       this.sessions.set(device, player);
+      this.lastPlayers.set(device, player);
       account.displayName ??= FIRST_NAMES[player];
       await route.fulfill({status: 302, headers: {Location: this.returnAddress(url, siteOrigin)}});
       return;
@@ -153,7 +165,7 @@ export class FakeApi {
   }
 
   private accountOf(player: GooglePlayer): StoredAccount {
-    const kept = this.accounts.get(player) ?? {displayName: undefined, data: undefined};
+    const kept = this.accounts.get(player) ?? {displayName: undefined, data: undefined, pushEndpoints: new Set()};
     this.accounts.set(player, kept);
 
     return kept;
@@ -173,6 +185,8 @@ export class FakeApi {
         headers,
         json: {version: account.data?.version ?? 0, blob: account.data?.blob ?? null},
       });
+    } else if (path === "/api/push-subscription" && (method === "PUT" || method === "DELETE")) {
+      await this.keepPushSubscription({route, headers, account});
     } else if (method === "POST" && path === "/api/rooms") {
       await this.createRoom({route, headers, host: account});
     } else if (method === "PUT" && path === "/api/data") {
@@ -184,10 +198,24 @@ export class FakeApi {
       this.sessions.delete(device);
       account.data = undefined;
       account.displayName = undefined;
+      account.pushEndpoints.clear();
       await route.fulfill({status: 204, headers});
     } else {
       await route.fulfill({status: 404, headers});
     }
+  }
+
+  private async keepPushSubscription({route, headers, account}: PushSubscriptionRequest): Promise<void> {
+    const request = route.request();
+    const {endpoint} = request.postDataJSON() as {endpoint: string};
+
+    if (request.method() === "PUT") {
+      account.pushEndpoints.add(endpoint);
+    } else {
+      account.pushEndpoints.delete(endpoint);
+    }
+
+    await route.fulfill({status: 204, headers});
   }
 
   private async createRoom({route, headers, host}: RoomRequest): Promise<void> {

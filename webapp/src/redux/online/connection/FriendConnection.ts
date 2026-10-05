@@ -70,6 +70,19 @@ export class FriendConnection {
     this.send({kind: "update-look", look});
   }
 
+  /**
+   * Tries the room again now, without waiting out the pause a drop set, if the socket is down and a try is only waiting its turn.
+   * For a player who has just come back to the app — from a notification, say — and should not sit through a wait that grew while
+   * the phone was away. A socket that is up, or no room, is left alone.
+   */
+  retryNow(): void {
+    if (this.retryTimer === undefined) return;
+
+    clearTimeout(this.retryTimer);
+    this.retryTimer = undefined;
+    this.connect();
+  }
+
   /** Lets go of the room, and does not come back to it. */
   close(): void {
     clearTimeout(this.retryTimer);
