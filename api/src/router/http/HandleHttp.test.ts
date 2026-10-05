@@ -1,4 +1,5 @@
 import {ApiHarness} from "@src/router/testing/ApiHarness";
+import {logApiEvent} from "@src/observability/LogApiEvent";
 import {SITE} from "@src/router/testing/SiteOrigin";
 
 let api: ApiHarness;
@@ -15,6 +16,19 @@ it("the API answers a preflight for the site, allowing what the app sends", asyn
   expect(response.headers.get("Access-Control-Allow-Credentials")).toBe("true");
   expect(response.headers.get("Access-Control-Allow-Methods")).toContain("PATCH");
   expect(response.headers.get("Access-Control-Allow-Headers")).toContain("If-Match");
+});
+
+it("logs a preflight exactly once without its URL", async () => {
+  await api.send("OPTIONS", "/api/data?token=secret-token");
+
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "preflight",
+    transport: "http",
+    outcome: "preflight",
+    status: 204,
+  });
+  expect(JSON.stringify(vi.mocked(logApiEvent).mock.calls)).not.toContain("secret-token");
 });
 
 it("the API lets the browser remember a preflight, so it is not asked again for every write", async () => {
@@ -63,6 +77,57 @@ it("the API does not act on a refused change", async () => {
 
 it("the API has nothing at a path it does not serve", async () => {
   expect((await api.send("GET", "/api/nothing")).status).toBe(404);
+});
+
+it("logs an unknown HTTP route exactly once without its path", async () => {
+  await api.send("GET", "/api/secret-path?token=secret-token");
+
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "unknown",
+    transport: "http",
+    outcome: "unknown_route",
+    status: 404,
+  });
+  expect(JSON.stringify(vi.mocked(logApiEvent).mock.calls)).not.toContain("secret-path");
+  expect(JSON.stringify(vi.mocked(logApiEvent).mock.calls)).not.toContain("secret-token");
+});
+
+it("logs a forged change exactly once without its origin", async () => {
+  await api.send("DELETE", "/api/account", {origin: "https://secret-origin.example"});
+
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "DELETE /api/account",
+    transport: "http",
+    outcome: "forged_change",
+    status: 403,
+  });
+  expect(JSON.stringify(vi.mocked(logApiEvent).mock.calls)).not.toContain("secret-origin");
+});
+
+it("logs a routed success exactly once", async () => {
+  await api.send("POST", "/api/auth/logout");
+
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "POST /api/auth/logout",
+    transport: "http",
+    outcome: "succeeded",
+    status: 204,
+  });
+});
+
+it("logs a routed rejection exactly once", async () => {
+  await api.send("GET", "/api/me");
+
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "GET /api/me",
+    transport: "http",
+    outcome: "rejected",
+    status: 401,
+  });
 });
 
 it("the API says 404 to a route it does not serve even where the request is a forged change, and still lets the site read it", async () => {

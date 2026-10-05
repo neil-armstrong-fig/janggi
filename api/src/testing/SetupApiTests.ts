@@ -72,6 +72,7 @@ vi.mock("@src/router/http/routes/rate-limit/RoomOpeningAllowed", async () => ({
     "room",
   ),
 }));
+vi.mock("@src/observability/LogApiEvent");
 
 beforeEach(() => {
   testDatabase.reset();

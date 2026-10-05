@@ -23,6 +23,13 @@ export async function buildApiWorker(database: D1Database): ReturnType<typeof Wo
     compatibilityDate: "2026-09-01",
     adopt: true,
     url: true,
+    // Persist only the closed, privacy-safe application events emitted by the API. Cloudflare's automatic invocation logs and
+    // traces carry request metadata this Worker deliberately does not retain.
+    observability: {
+      enabled: true,
+      logs: {enabled: true, headSamplingRate: 1, invocationLogs: false, persist: true},
+      traces: {enabled: false},
+    },
     bindings: {
       DB: database,
       LOGIN_LIMITER: buildLoginLimiter(),

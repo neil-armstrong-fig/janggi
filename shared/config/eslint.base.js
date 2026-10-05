@@ -53,8 +53,9 @@ export function restrictedImports({allowedPackages = [], paths = [], patterns = 
  * @param tsconfigRootDir always `import.meta.dirname` — the directory of the calling
  *   `eslint.config.js`. See the note above `assertTsconfigRootDir` for why this is not optional.
  * @param allowedPackages passed through to `restrictedImports`.
+ * @param allowedConsoleMethods console methods deliberate runtime edges may use.
  */
-export function baseConfig({tsconfigRootDir, allowedPackages = []} = {}) {
+export function baseConfig({tsconfigRootDir, allowedPackages = [], allowedConsoleMethods = ["warn", "error"]} = {}) {
   assertTsconfigRootDir(tsconfigRootDir);
 
   return tseslint.config(
@@ -74,7 +75,7 @@ export function baseConfig({tsconfigRootDir, allowedPackages = []} = {}) {
       rules: {
         eqeqeq: ["error", "smart"],
         "no-multiple-empty-lines": ["error", {max: 1}],
-        "no-console": ["warn", {allow: ["warn", "error"]}],
+        "no-console": ["warn", {allow: allowedConsoleMethods}],
         "@typescript-eslint/consistent-type-imports": "error",
         "@typescript-eslint/explicit-function-return-type": ["error", {allowExpressions: true}],
         "@typescript-eslint/explicit-module-boundary-types": ["error", {allowArgumentsExplicitlyTypedAsAny: true}],

@@ -5,7 +5,11 @@ const allowedPackages = ["@janggi/shared", "@janggi/engine"];
 // The Worker may import the janggi vocabulary from `@janggi/shared` and run the rules from `@janggi/engine`, and nothing else in the workspace.
 // The webapp may not import this package at all — it is denied by default, there is no allow-list entry for it.
 export default [
-  ...baseConfig({tsconfigRootDir: import.meta.dirname, allowedPackages}),
+  ...baseConfig({
+    tsconfigRootDir: import.meta.dirname,
+    allowedPackages,
+    allowedConsoleMethods: ["info", "warn", "error"],
+  }),
   {
     // No ternaries in the Worker: a guard that returns early reads one condition at a time (`AGENTS.md`).
     rules: {"no-ternary": "error"},

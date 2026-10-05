@@ -10,6 +10,9 @@ import {answerFrame} from "@src/room/answering/AnswerFrame";
 import {closedSocket} from "@src/room/leaving/ClosedSocket";
 import {newRoom} from "@src/room/opening/NewRoom";
 import {notifyTurn} from "@src/push/NotifyTurn";
+import {errorNameOf} from "@src/observability/ErrorNameOf";
+import {logApiEvent} from "@src/observability/LogApiEvent";
+import {observeGameRoomOperation} from "@src/room/observability/ObserveGameRoomOperation";
 import {roomRequestFrom} from "@src/room/request/RoomRequestFrom";
 import {turnNotificationFor} from "@src/room/notifying/TurnNotificationFor";
 
@@ -26,10 +29,44 @@ const STORED_CODE = "code";
  * Each player's sockets are tagged with their account, which is how a delivery finds them and a reconnection is recognised.
  * The Worker has already checked who is calling and from where, and no one but the Worker can reach this object.
  *
- * Untested, being only the runtime: the whole is played by hand under `pnpm api:dev`.
+ * Its observability boundaries are tested with a minimal runtime stand-in; the whole game is played by hand under `pnpm api:dev`.
  */
 export class GameRoom extends DurableObject {
-  override async fetch(request: Request): Promise<Response> {
+  private readonly context: DurableObjectState;
+
+  constructor(context: DurableObjectState, environment: Cloudflare.Env) {
+    super(context, environment);
+    this.context = context;
+  }
+
+  override fetch(request: Request): Promise<Response> {
+    return observeGameRoomOperation("fetch", () => this.answerRequest(request));
+  }
+
+  override webSocketMessage(socket: WebSocket, data: string | ArrayBuffer): Promise<void> {
+    return observeGameRoomOperation("websocket_message", () => this.answerMessage(socket, data));
+  }
+
+  override webSocketClose(socket: WebSocket): Promise<void> {
+    return observeGameRoomOperation("websocket_close", () => this.left(socket));
+  }
+
+  override async webSocketError(socket: WebSocket, error: unknown): Promise<void> {
+    logApiEvent({
+      event: "game_room",
+      outcome: "unexpected_failure",
+      operation: "websocket_error",
+      errorName: errorNameOf(error),
+    });
+
+    await this.left(socket);
+  }
+
+  override alarm(): Promise<void> {
+    return observeGameRoomOperation("alarm", () => this.answerAlarm());
+  }
+
+  private async answerRequest(request: Request): Promise<Response> {
     const asked = await roomRequestFrom(request);
 
     switch (asked.kind) {
@@ -37,14 +74,18 @@ export class GameRoom extends DurableObject {
         return this.open(newRoom(asked.hostSide, Date.now(), asked.awayDays), asked.code);
       case "socket":
         return this.accept(asked.accountId);
-      case "malformed":
+      case "malformed": {
+        logApiEvent({event: "game_room", outcome: "malformed_request", status: 400});
         return new Response(null, {status: 400});
-      case "unknown":
+      }
+      case "unknown": {
+        logApiEvent({event: "game_room", outcome: "unknown_request", status: 404});
         return new Response(null, {status: 404});
+      }
     }
   }
 
-  override async webSocketMessage(socket: WebSocket, data: string | ArrayBuffer): Promise<void> {
+  private async answerMessage(socket: WebSocket, data: string | ArrayBuffer): Promise<void> {
     const accountId = this.accountOf(socket);
     const room = await this.stored();
 
@@ -56,15 +97,7 @@ export class GameRoom extends DurableObject {
     }
   }
 
-  override async webSocketClose(socket: WebSocket): Promise<void> {
-    await this.left(socket);
-  }
-
-  override async webSocketError(socket: WebSocket): Promise<void> {
-    await this.left(socket);
-  }
-
-  override async alarm(): Promise<void> {
+  private async answerAlarm(): Promise<void> {
     const room = await this.stored();
     if (room === undefined) {
       return;
@@ -83,11 +116,13 @@ export class GameRoom extends DurableObject {
     // The Worker only opens a code the database has just recorded as new; a second open of one that is here is a bug, and must
     // not overwrite a game.
     if ((await this.stored()) !== undefined) {
+      logApiEvent({event: "game_room", outcome: "duplicate_open", status: 409});
       return new Response(null, {status: 409});
     }
 
-    await this.ctx.storage.put({[STORED_CODE]: code, [STORED_ROOM]: room});
+    await this.context.storage.put({[STORED_CODE]: code, [STORED_ROOM]: room});
     await this.setAlarm(alarmPlanForRoom(room, Date.now()));
+    logApiEvent({event: "game_room", outcome: "opened"});
 
     return new Response(null, {status: 204});
   }
@@ -100,10 +135,10 @@ export class GameRoom extends DurableObject {
     }
 
     // A reconnection arrives before the old socket is seen to close: the old one is let go, and its close is ignored.
-    this.ctx.getWebSockets(accountId).forEach(old => old.close(1000, "Replaced by a newer connection"));
+    this.context.getWebSockets(accountId).forEach(old => old.close(1000, "Replaced by a newer connection"));
 
     const {0: client, 1: server} = new WebSocketPair();
-    this.ctx.acceptWebSocket(server, [accountId]);
+    this.context.acceptWebSocket(server, [accountId]);
 
     return new Response(null, {status: 101, webSocket: client});
   }
@@ -112,8 +147,10 @@ export class GameRoom extends DurableObject {
     const {0: client, 1: server} = new WebSocketPair();
     server.accept();
     server.close(ROOM_GONE_CLOSE_CODE, "There is no such room");
+    const response = new Response(null, {status: 101, webSocket: client});
 
-    return new Response(null, {status: 101, webSocket: client});
+    logApiEvent({event: "game_room", outcome: "socket_refused_missing_room"});
+    return response;
   }
 
   private async left(socket: WebSocket): Promise<void> {
@@ -121,7 +158,7 @@ export class GameRoom extends DurableObject {
     const room = await this.stored();
 
     if (accountId !== undefined && room !== undefined) {
-      const stillConnected = this.ctx.getWebSockets(accountId).some(other => other !== socket);
+      const stillConnected = this.context.getWebSockets(accountId).some(other => other !== socket);
 
       await this.apply(closedSocket({room, accountId, stillConnected, now: Date.now()}));
     }
@@ -135,16 +172,16 @@ export class GameRoom extends DurableObject {
     const notification = turnNotificationFor(before, after);
 
     if (notification !== undefined) {
-      this.ctx.waitUntil(notifyTurn(notification));
+      this.context.waitUntil(notifyTurn(notification));
     }
   }
 
   /** Stores the room a step made, sends what it says, and sets the alarm for whatever the room is now waiting on. */
   private async apply(step: RoomStep): Promise<void> {
-    await this.ctx.storage.put(STORED_ROOM, step.state);
+    await this.context.storage.put(STORED_ROOM, step.state);
 
     for (const {to, message} of step.deliveries) {
-      this.ctx.getWebSockets(to).forEach(socket => socket.send(JSON.stringify(message)));
+      this.context.getWebSockets(to).forEach(socket => socket.send(JSON.stringify(message)));
     }
 
     await this.setAlarm(alarmPlanForRoom(step.state, Date.now()));
@@ -158,7 +195,7 @@ export class GameRoom extends DurableObject {
   private async releaseHost(room: RoomState): Promise<void> {
     if (room.finishedAt === undefined) return;
 
-    const code = await this.ctx.storage.get<string>(STORED_CODE);
+    const code = await this.context.storage.get<string>(STORED_CODE);
     if (code === undefined) return;
 
     await closeRoomRecord(code);
@@ -166,30 +203,31 @@ export class GameRoom extends DurableObject {
 
   private async setAlarm(plan: AlarmPlan): Promise<void> {
     if (plan.kind === "ring-at") {
-      await this.ctx.storage.setAlarm(plan.at);
+      await this.context.storage.setAlarm(plan.at);
     } else {
-      await this.ctx.storage.deleteAlarm();
+      await this.context.storage.deleteAlarm();
     }
   }
 
   /** The room is over: its sockets are closed, its record in the database cleared so the host may open another, and its storage emptied. */
   private async teardown(): Promise<void> {
-    const code = await this.ctx.storage.get<string>(STORED_CODE);
+    const code = await this.context.storage.get<string>(STORED_CODE);
 
-    this.ctx.getWebSockets().forEach(socket => socket.close(ROOM_GONE_CLOSE_CODE, "The room has closed"));
+    this.context.getWebSockets().forEach(socket => socket.close(ROOM_GONE_CLOSE_CODE, "The room has closed"));
     if (code !== undefined) {
       await closeRoomRecord(code);
     }
 
-    await this.ctx.storage.deleteAlarm();
-    await this.ctx.storage.deleteAll();
+    await this.context.storage.deleteAlarm();
+    await this.context.storage.deleteAll();
+    logApiEvent({event: "game_room", outcome: "deleted"});
   }
 
   private async stored(): Promise<RoomState | undefined> {
-    return this.ctx.storage.get<RoomState>(STORED_ROOM);
+    return this.context.storage.get<RoomState>(STORED_ROOM);
   }
 
   private accountOf(socket: WebSocket): string | undefined {
-    return this.ctx.getTags(socket)[0];
+    return this.context.getTags(socket)[0];
   }
 }

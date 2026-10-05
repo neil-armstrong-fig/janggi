@@ -128,6 +128,25 @@ Worker, and prints the Worker's `workers.dev` address. The names are fixed, so
 there is one of each per Cloudflare account. The script is called `provision`
 because `pnpm deploy` is a built-in pnpm command.
 
+The Worker is also configured for persistent Workers Logs at 100% sampling.
+It retains only the API's structured `api_request` and `game_room` events;
+Cloudflare's automatic invocation logs and traces are disabled. This does not
+enable Workers Paid.
+
+After the first deployment, make a few requests containing distinctive,
+non-secret sample values: an unknown path with a query string, the Google
+callback with an error query, and a WebSocket upgrade with a made-up room code
+and origin. In the Worker's *Observability* → *Logs* page:
+
+1. Check that the corresponding structured events contain only the documented
+   route, transport, outcome, status, operation and exception-name fields.
+2. Search for every sample path, query value, callback value, room code and
+   origin; none should be present.
+3. Check that there are no automatic invocation-log entries or traces.
+
+The first real deployment is the infrastructure test for this setting. Do not
+put a real session token, Google code, player value or secret into a probe.
+
 ## 6. The Worker's custom domain
 
 By hand, because whose domain it is, and where its DNS lives, is the owner's.

@@ -1,4 +1,5 @@
 import type {HttpRoute} from "@src/router/http/routes/types/HttpRoute";
+import type {HttpRouteAnswer} from "@src/router/http/routes/types/HttpRouteAnswer";
 import {deleteAccount} from "@src/router/http/routes/delete-account/DeleteAccount";
 import {finishSignIn} from "@src/router/http/routes/sign-in/finish/FinishSignIn";
 import {forSignedInPlayer} from "@src/router/http/routes/signed-in-player/ForSignedInPlayer";
@@ -11,6 +12,7 @@ import {readMe} from "@src/router/http/routes/read-me/ReadMe";
 import {renameMe} from "@src/router/http/routes/rename-me/RenameMe";
 import {startSignIn} from "@src/router/http/routes/sign-in/start/StartSignIn";
 import {writeData} from "@src/router/http/routes/write-data/WriteData";
+import {httpRouteAnswerFor} from "@src/router/http/routes/answer/HttpRouteAnswerFor";
 
 /**
  * One route to one handler, each named in full: the whole of what the API answers over HTTP, in one place. The ones that are a
@@ -18,29 +20,29 @@ import {writeData} from "@src/router/http/routes/write-data/WriteData";
  * own case, reached by that route and no other. A route added to `HTTP_ROUTES` with no case here is a compile error, and one not in
  * the list is never matched (`httpRouteOf`), so nothing falls through to a handler by being the last.
  */
-export function answerHttpRoute(route: HttpRoute, request: Request): Promise<Response> {
+export async function answerHttpRoute(route: HttpRoute, request: Request): Promise<HttpRouteAnswer> {
   switch (route) {
     case "GET /api/auth/google":
-      return startSignIn(request);
+      return httpRouteAnswerFor(await startSignIn(request));
     case "GET /api/auth/google/callback":
       return finishSignIn(request);
     case "POST /api/auth/logout":
-      return logOut(request);
+      return httpRouteAnswerFor(await logOut(request));
     case "GET /api/me":
-      return forSignedInPlayer(request, account => Promise.resolve(readMe(account)));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => Promise.resolve(readMe(account))));
     case "PATCH /api/me":
-      return forSignedInPlayer(request, account => renameMe(request, account));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => renameMe(request, account)));
     case "GET /api/data":
-      return forSignedInPlayer(request, account => readData(account));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => readData(account)));
     case "PUT /api/data":
-      return forSignedInPlayer(request, account => writeData(request, account));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => writeData(request, account)));
     case "POST /api/rooms":
-      return forSignedInPlayer(request, account => openRoom(request, account));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => openRoom(request, account)));
     case "PUT /api/push-subscription":
-      return forSignedInPlayer(request, account => subscribeToPush(request, account));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => subscribeToPush(request, account)));
     case "DELETE /api/push-subscription":
-      return forSignedInPlayer(request, account => unsubscribeFromPush(request, account));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => unsubscribeFromPush(request, account)));
     case "DELETE /api/account":
-      return forSignedInPlayer(request, account => deleteAccount(account));
+      return httpRouteAnswerFor(await forSignedInPlayer(request, account => deleteAccount(account)));
   }
 }

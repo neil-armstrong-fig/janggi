@@ -3,6 +3,7 @@ import {MAX_OPEN_ROOMS} from "@src/router/http/routes/open-room/limits/MaxOpenRo
 import {beforeEach, afterEach, expect, it, vi} from "vitest";
 import {gameRoomsStub} from "@src/router/testing/GameRoomsStub";
 import {jsonOf} from "@src/router/testing/JsonOf";
+import {logApiEvent} from "@src/observability/LogApiEvent";
 import {mintFriendCode} from "@src/router/http/routes/open-room/friend-code/MintFriendCode";
 import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
 import {workerEnvironment} from "@src/env/WorkerEnvironment";
@@ -148,8 +149,18 @@ it("opening a room is refused once there are as many open as there may be", asyn
     });
   }
   const cookie = await api.signIn("google-1");
+  vi.mocked(logApiEvent).mockClear();
 
-  expect((await api.send("POST", "/api/rooms", {cookie, body: {side: "han"}})).status).toBe(503);
+  const response = await api.send("POST", "/api/rooms", {cookie, body: {side: "han"}});
+
+  expect(response.status).toBe(503);
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "POST /api/rooms",
+    transport: "http",
+    outcome: "failed",
+    status: 503,
+  });
 });
 
 it("opening a room is rate-limited by account", async () => {

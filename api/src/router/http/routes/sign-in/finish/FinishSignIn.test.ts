@@ -1,9 +1,9 @@
 import {API} from "@src/router/testing/ApiOrigin";
-import {afterEach, vi} from "vitest";
 import {ApiHarness} from "@src/router/testing/ApiHarness";
 import {SITE} from "@src/router/testing/SiteOrigin";
 import {cookieOf} from "@src/router/testing/CookieOf";
 import {jsonOf} from "@src/router/testing/JsonOf";
+import {logApiEvent} from "@src/observability/LogApiEvent";
 
 let api: ApiHarness;
 
@@ -136,43 +136,57 @@ it("finishing a sign-in will not finish an attempt for a player who has used up 
   expect((await api.send("GET", "/api/auth/google/callback?code=x&state=y", {origin: null})).status).toBe(429);
 });
 
-describe("logging why a sign-in did not complete", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
+it("logs Google's refusal safely as a failed sign-in", async () => {
+  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
+  vi.mocked(logApiEvent).mockClear();
+
+  await api.send("GET", `/api/auth/google/callback?code=forged&state=${state}`, {
+    origin: null,
+    cookie: cookieOf(started, "oauth"),
   });
 
-  it("says in the log why Google refused the code", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    const started = await api.send("GET", "/api/auth/google", {origin: null});
-    const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "GET /api/auth/google/callback",
+    transport: "http",
+    outcome: "sign_in_failed",
+    status: 302,
+    errorName: "Error",
+  });
+  expect(JSON.stringify(vi.mocked(logApiEvent).mock.calls)).not.toContain("Google refused the code");
+});
 
-    await api.send("GET", `/api/auth/google/callback?code=forged&state=${state}`, {
-      origin: null,
-      cookie: cookieOf(started, "oauth"),
-    });
+it("logs a callback with no attempt cookie as a refusal", async () => {
+  await api.send("GET", "/api/auth/google/callback?code=x&state=y", {origin: null});
 
-    expect(log).toHaveBeenCalledWith("Sign-in failed:", expect.any(Error));
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "GET /api/auth/google/callback",
+    transport: "http",
+    outcome: "sign_in_refused",
+    status: 400,
+  });
+  expect(JSON.stringify(vi.mocked(logApiEvent).mock.calls)).not.toContain("state=y");
+});
+
+it("logs a callback with no code without Google's callback value", async () => {
+  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  vi.mocked(logApiEvent).mockClear();
+
+  await api.send("GET", "/api/auth/google/callback?error=access_denied", {
+    origin: null,
+    cookie: cookieOf(started, "oauth"),
   });
 
-  it("says in the log that the callback carried no attempt cookie", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
-
-    await api.send("GET", "/api/auth/google/callback?code=x&state=y", {origin: null});
-
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("no attempt cookie"));
+  expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "api_request",
+    route: "GET /api/auth/google/callback",
+    transport: "http",
+    outcome: "sign_in_refused",
+    status: 302,
   });
-
-  it("says in the log that Google sent no code, and what it said instead", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    const started = await api.send("GET", "/api/auth/google", {origin: null});
-
-    await api.send("GET", "/api/auth/google/callback?error=access_denied", {
-      origin: null,
-      cookie: cookieOf(started, "oauth"),
-    });
-
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("access_denied"));
-  });
+  expect(JSON.stringify(vi.mocked(logApiEvent).mock.calls)).not.toContain("access_denied");
 });
 
 it("finishing a sign-in gives Google the code, the attempt's state and verifier, and the callback address it was sent to", async () => {

@@ -37,10 +37,15 @@ Import with the `@src/*` alias.
   `workerEnvironment` and removes it after (`router/testing/GameRoomsStub.ts`). A pure helper (`corsHeadersFor`) takes its values as
   arguments. `@cloudflare/vitest-pool-workers` is not used: it peers on vitest 4 and the workspace is on 5.
 - **Tests mock the modules that reach out, and the setup does it once.** `src/testing/SetupApiTests.ts` (a vitest `setupFile`) `vi.mock`s
-  every database function, the two Google functions and the three `*Allowed` rate limits with the in-memory doubles, resets them, stops
+  every database function, the two Google functions, the three `*Allowed` rate limits and the structured event logger, resets them, stops
   time (`vi.setSystemTime`) and fixes `Math.random`, so a route test runs the real route over a world it controls. A test of one of those
   functions themselves puts the real one back with `vi.unmock`, and for the database also replaces `database/Database.ts` with a client
   over its own local D1 (`database/testing/RealDatabase.test.ts`).
+- **Persistent logs contain closed application events, never request data.** Emit through `logApiEvent`, whose discriminated input and
+  reconstructed output admit only the allow-listed route, transport, outcome, status, operation and exception class fields. Never add a
+  URL, path, query, origin, header, cookie, account, room code, player data, message, stack or arbitrary context. HTTP and WebSocket
+  handlers emit exactly once after answering; the top-level boundary covers missing configuration and thrown failures; a room emits only
+  operational failures and the few lifecycle transitions already named by the logger. `console.*` belongs only inside that logger.
 - **Everything that touches the database is in `src/database/`, and it reaches into almost nothing else.** The rest of the Worker imports
   from it; it may import only itself and the Worker's environment (its D1 binding) — a lint rule (`eslint.config.js`) says so. What it
   takes in and gives back is spelled out in its own `types/`. It holds the schema (`schema/`, one table per file), one function per
@@ -67,7 +72,7 @@ Import with the `@src/*` alias.
 
 ## The API
 
-**The flow is the folder tree.** `ApiWorker.ts` checks the secrets, then hands the request to
+**The flow is the folder tree.** `ApiWorker.ts` hands the request to `HandleApiRequest.ts`, which checks the secrets and then hands it to
 `router/RouteRequest.ts`, whose one decision is whether it asks to become a WebSocket (`Upgrade: websocket`):
 
 ```
@@ -108,18 +113,18 @@ stand-in for Google's token endpoint (the real exchange, the ID token's issuer, 
 RFC 7636's own example).
 
 **Friend-code rooms** (`docs/online-play.md`). `room/` is the decisions, all pure and tested, and **its folders are its call
-tree**: `GameRoom.ts` (the Durable Object, wiring only, untested like `ApiWorker.ts`) calls what sits in a folder beneath it, and each of
+tree**: `GameRoom.ts` (the Durable Object runtime; only its observability boundaries are unit tested) calls what sits in a folder beneath it, and each of
 those owns its helpers in folders beneath it in turn — `request/` (`roomRequestFrom`, and `ROOM_OBJECT_CALL`, the Worker's half of the
 call too), `answering/` (`answerFrame`: `parsing/` reads the frame, `reducing/` holds `reduceRoom` with `seating/` and `acting/`
 beneath it), `leaving/` (`closedSocket`), `alarm/` (`alarmDecisionFor`, `alarmPlanForRoom` and their timings), `opening/` (`newRoom`),
 `seats/` (the lookups `seating/`, `acting/` and `leaving/` share, so at their common ancestor) and `types/`. `mintFriendCode` is under
-`router/http/routes/open-room/`, which alone uses it. `room/GameRoom.ts` is the Durable Object that runs them — wiring, untested like `ApiWorker.ts`, and
+`router/http/routes/open-room/`, which alone uses it. `room/GameRoom.ts` is the Durable Object that runs them — wiring apart from its tested event boundaries, and
 **nothing in a field**, since it hibernates: the room is read from storage per message. Who is in which room, one open per
 account and a ceiling overall, is the `rooms` table behind `openRoomRecord`/`closeRoomRecord`; the object clears its row when the game finishes, and on
 teardown. The room is exercised whole only by hand (`pnpm api:dev`, two browsers).
 
 **Turn notifications** (`docs/online-play.md`). After a move the room asks `turnNotificationFor` (`room/notifying/`, pure) whom the turn
-has passed to and whether they are away, and `GameRoom` hands the answer to `notifyTurn` (`push/`) under `ctx.waitUntil`, so a slow push service
+has passed to and whether they are away, and `GameRoom` hands the answer to `notifyTurn` (`push/`) under `context.waitUntil`, so a slow push service
 never holds a game. `push/` is plain Web Crypto, no library: `encrypting/` is RFC 8291 `aes128gcm` (tested against the RFC's own example) and
 `vapid/` the RFC 8292 `Authorization` header. The public VAPID key is `VAPID_PUBLIC_KEY` in `@janggi/shared` (the app subscribes with it); the
 private key and the contact subject are `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT`, and with either unset nothing is sent. A subscription a push
