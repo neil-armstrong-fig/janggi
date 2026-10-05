@@ -1,4 +1,5 @@
 import {LANGUAGE_NAMES} from "@janggi/shared/janggi/settings/LanguageName";
+import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import {PREFERENCES_STORAGE_KEY} from "@src/redux/preferences/storage/PreferencesStorageKey";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
 import {isAmong} from "@src/redux/untrusted/IsAmong";
@@ -12,13 +13,19 @@ import {storedPreferencesFrom} from "@src/redux/preferences/preferences-from/Sto
  *
  * Where no language has been chosen yet, the browser's own preference stands in for it — a first visit from
  * a Korean browser is read in Korean — and from the first choice on, the choice is what is kept.
+ *
+ * A page whose address names a language (`/ko/`) is read in it, over the choice and the browser alike: the
+ * address is what a link, a search result and a reload all say, so it is the one thing that cannot be argued with.
  */
 export function loadPreferences(
   storage: Pick<Storage, "getItem"> | undefined,
   browserLanguages: readonly string[] = [],
+  addressLanguage?: LanguageName,
 ): PreferencesSliceState {
   const stored = readJson(storage, PREFERENCES_STORAGE_KEY);
   const preferences = storedPreferencesFrom(stored);
+  if (addressLanguage) return {...preferences, language: addressLanguage};
+
   if (isObject(stored) && isAmong(LANGUAGE_NAMES, stored.language)) return preferences;
 
   return {...preferences, language: languageOfBrowser(browserLanguages)};

@@ -161,6 +161,22 @@ Needs the OAuth client from step 3 with the localhost redirect URI. See
 `GOOGLE_REDIRECT_URI=http://localhost:8787/api/auth/google/callback`, then
 `pnpm api:dev` and `VITE_API_ORIGIN=http://localhost:8787 pnpm start`.
 
+## 9. Search engines, for the Korean page
+
+Once `/ko/` is deployed (see `docs/seo.md`), tell the search engines about it.
+Neither step needs a secret in the repository.
+
+- **Google Search Console.** Add the site (a domain property verified by a DNS
+  TXT record on the `neilarmstrong.dev` zone, or the URL prefix), submit
+  `https://janggi.neilarmstrong.dev/sitemap.xml`, and use URL Inspection on `/`
+  and `/ko/`. Check that Google reports the two as alternates.
+- **Naver Search Advisor** (`searchadvisor.naver.com`, the leading search
+  engine in Korea). Register the site and verify ownership with the HTML tag or
+  file it offers: add it to the head of `webapp/index.html` and
+  `webapp/ko/index.html` (or the file to `webapp/public/`), then submit the
+  sitemap. Record here only that it was done, never the token.
+- **Bing Webmaster Tools** is optional and can import the Search Console site.
+
 ## Rotating or removing
 
 - **A leaked Cloudflare token:** roll it in the dashboard, then update the
@@ -169,7 +185,8 @@ Needs the OAuth client from step 3 with the localhost redirect URI. See
   and re-run `provision` (or push to `main`); it is stored as a Worker secret.
 - **Tearing it down:** `pnpm --filter @janggi/infra destroy`, then delete the
   custom domain (step 6), the Google OAuth client and project (step 3), the
-  routing rule (step 2) and the GitHub secrets (step 7).
+  routing rule (step 2), the GitHub secrets (step 7) and the search-engine
+  registrations (step 9).
 
 ## This repository's own setup
 

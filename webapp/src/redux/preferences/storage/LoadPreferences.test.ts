@@ -140,3 +140,15 @@ it("reads a visit that kept preferences but no language in the browser's languag
 it("keeps the language a player chose over the browser's", () => {
   expect(loadPreferences(storageHolding({...chosen, language: "en"}), ["ko"]).language).toBe("en");
 });
+
+it("reads a page whose address names a language in it, over a language the player chose", () => {
+  expect(loadPreferences(storageHolding({...chosen, language: "en"}), [], "ko").language).toBe("ko");
+});
+
+it("reads a page whose address names a language in it, over the browser's", () => {
+  expect(loadPreferences({getItem: () => null}, ["en-GB"], "ko").language).toBe("ko");
+});
+
+it("keeps the rest of what the player chose on a page whose address names a language", () => {
+  expect(loadPreferences(storageHolding({...chosen, language: "en"}), [], "ko")).toEqual(chosen);
+});

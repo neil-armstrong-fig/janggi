@@ -12,6 +12,8 @@ import {useBotEngine} from "@src/react/pages/game/hooks/use-bot-engine/UseBotEng
 import {useBotOpponent} from "@src/react/pages/game/hooks/use-bot-opponent/UseBotOpponent";
 import {FriendSignIn} from "@src/react/pages/game/components/friend-sign-in/FriendSignIn";
 import {useDocumentLanguage} from "@src/react/pages/game/hooks/use-document-language/UseDocumentLanguage";
+import {useLanguageAddress} from "@src/react/pages/game/hooks/use-language-address/UseLanguageAddress";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useFriendRoom} from "@src/react/pages/game/hooks/use-friend-room/UseFriendRoom";
 import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAudio";
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
@@ -62,19 +64,22 @@ export function GamePage(): React.JSX.Element {
   const [engine] = useState(() => createFairyStockfish(`${import.meta.env.BASE_URL}engine/`));
   const played = useAppSelector(state => state.game.played);
   const {effects, soundEffectsVolume, musicVolume} = usePreferences();
+  const language = useAppSelector(state => state.preferences.language);
+  const messages = useMessages();
   const moment = useGameMoment(played);
 
   const sound = useGameAudio({played, moment, soundEffectsVolume, musicVolume});
   useHaptics(played, moment, effects.full);
   useBotEngine(engine);
   useDocumentLanguage();
+  useLanguageAddress(language);
   useBotOpponent(engine);
   useRatedGame(moment);
   useFriendRoom();
 
   return (
     <main className="flex h-full w-full flex-col bg-ground p-2">
-      <h1 className="sr-only">Janggi: Korean Chess</h1>
+      <h1 className="sr-only">{messages.heading}</h1>
 
       <FriendStrip />
 

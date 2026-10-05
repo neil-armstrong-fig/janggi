@@ -29,6 +29,10 @@ given("a player opens the game", () => {
       expect(await janggi.getPageLanguage()).toBe("ko");
     });
 
+    then("the address is the game's Korean page", async ({janggi}) => {
+      expect(await janggi.getAddressPath()).toBe("/ko/");
+    });
+
     then("they are told, in Korean and in English, that the Korean is a work in progress", async ({janggi}) => {
       const words = await janggi.languageNotice.getWords();
 
@@ -174,6 +178,42 @@ given("a player opens the game", () => {
     then("it is read in English", async ({janggi}) => {
       expect(await janggi.getPageLanguage()).toBe("en");
       expect(await janggi.status.getControlLabel("pass")).toBe("Pass");
+    });
+
+    then("the address is the game's English page", async ({janggi}) => {
+      expect(await janggi.getAddressPath()).toBe("/");
+    });
+
+    when("they come back later", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.reload();
+      });
+
+      then("it is still read in English", async ({janggi}) => {
+        expect(await janggi.getPageLanguage()).toBe("en");
+      });
+    });
+  });
+
+  when("they open the Korean page and choose English", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.visitKoreanGame();
+      await janggi.settings.language.setTo("en");
+    });
+
+    then("it is read in English at the English page's address", async ({janggi}) => {
+      expect(await janggi.getPageLanguage()).toBe("en");
+      expect(await janggi.getAddressPath()).toBe("/");
+    });
+
+    when("they come back later", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.reload();
+      });
+
+      then("it is still read in English", async ({janggi}) => {
+        expect(await janggi.getPageLanguage()).toBe("en");
+      });
     });
   });
 });

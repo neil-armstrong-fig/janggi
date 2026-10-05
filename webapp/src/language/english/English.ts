@@ -3,6 +3,7 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /** The game in English, which every other language is checked against and which a player is read to until they choose another. */
 export const ENGLISH: Messages = {
+  heading: "Janggi: Korean Chess",
   tabs: {Play: "Play", Look: "Look", Sound: "Sound", You: "You"},
   controls: {
     pass: "Pass",

@@ -45,6 +45,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         game: join(import.meta.dirname, "index.html"),
+        koreanGame: join(import.meta.dirname, "ko", "index.html"),
         guide: join(import.meta.dirname, "learn.html"),
         privacy: join(import.meta.dirname, "privacy.html"),
         references: join(import.meta.dirname, "references.html"),

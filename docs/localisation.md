@@ -51,16 +51,21 @@ English can play a game from the first screen to the result.
 
 ## Choosing the language
 
-1. A language the player chose is kept and always wins.
-2. Otherwise the first of `navigator.languages` the game has, by primary subtag
+1. A page whose address names a language (`/ko/`) is read in it, over everything
+   below: `language/address/LanguageOfAddress.ts`, applied by `loadPreferences`.
+2. A language the player chose is kept and wins.
+3. Otherwise the first of `navigator.languages` the game has, by primary subtag
    (`ko-KR` is Korean): `redux/preferences/language/LanguageOfBrowser.ts`,
    applied by `loadPreferences`.
-3. Otherwise English.
+4. Otherwise English.
 
-`<html lang>` follows the choice (`useDocumentLanguage`). The picker is the
+`<html lang>` follows the choice (`useDocumentLanguage`), and so does the
+address bar (`useLanguageAddress`: `/` or `/ko/`, rewritten in place with no
+reload; see `docs/seo.md`). The picker is the
 first row of the You tab and the first row of the welcome's second screen, each
 language named in itself (English, 한국어) so a player who cannot read the rest can
-find theirs. There is no forced redirect anywhere.
+find theirs. There is no forced redirect anywhere: the address is only rewritten
+in place.
 
 ## The work-in-progress note
 
@@ -140,7 +145,7 @@ rather than rely on it. Reviewer changes go into `Korean.ts` only; the types and
 7. Number formatting hard-coded to `"en"` (`PlayerPlaque`, `Progress`,
    `LockBehindXp`, `StyleStarter`): identical for small numbers, but the compact
    form ("1M") differs in Korean. Use the chosen language when this is done.
-8. The extra pages, `index.html` and the manifest: see `docs/seo.md`.
+8. The extra pages (guide, references, legal) and the manifest, which stay English by decision; the game's own Korean page, `/ko/`, is built: see `docs/seo.md`.
 
 ## Adding a language, or changing a string
 

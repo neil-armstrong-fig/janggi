@@ -4,6 +4,7 @@ import {BasePage} from "@src/dsl/playwright/BasePage";
 import type {InstallationAppearance, InstallationIcon} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {OnboardingKept} from "@src/dsl/janggi/playwright/types/OnboardingKept";
 import type {InstallationManifest} from "@src/dsl/janggi/types/InstallationManifest";
+import type {LanguageAlternates} from "@src/dsl/janggi/types/LanguageAlternates";
 import type {SearchData} from "@src/dsl/janggi/types/SearchData";
 import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
@@ -91,6 +92,12 @@ export class JanggiPlaywright extends BasePage {
    */
   async open(): Promise<void> {
     await this.page.goto("./");
+    await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
+  }
+
+  /** Goes to the game's Korean page, and waits as `open` does. */
+  async visitKoreanGame(): Promise<void> {
+    await this.page.goto(new URL("ko/", this.page.url()).href);
     await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
   }
 
@@ -240,6 +247,46 @@ export class JanggiPlaywright extends BasePage {
     return (await this.page.locator("link[rel='canonical']").getAttribute("href")) ?? "";
   }
 
+  /** Where in the site the page is, as the address bar shows it. */
+  async getAddressPath(): Promise<string> {
+    return new URL(this.page.url()).pathname;
+  }
+
+  /** The twins the page names in its head, by `hreflang`. */
+  async getLanguageAlternates(): Promise<LanguageAlternates> {
+    return await this.page.evaluate(() => {
+      const links = Array.from(document.querySelectorAll("link[rel='alternate'][hreflang]"));
+
+      return Object.fromEntries(
+        links.map(link => [link.getAttribute("hreflang") ?? "", link.getAttribute("href") ?? ""]),
+      );
+    });
+  }
+
+  /** The twins the sitemap names for the Korean page, by `hreflang`. */
+  async getSitemapLanguageAlternatesOfTheKoreanGame(): Promise<LanguageAlternates> {
+    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
+
+    return await this.page.evaluate(async address => {
+      const response = await fetch(address);
+      if (!response.ok) return {};
+
+      const sitemap = new DOMParser().parseFromString(await response.text(), "application/xml");
+      const entry = Array.from(sitemap.getElementsByTagNameNS("*", "url")).find(candidate =>
+        candidate.getElementsByTagNameNS("*", "loc")[0]?.textContent?.endsWith("/ko/"),
+      );
+      const links = Array.from(entry?.getElementsByTagNameNS("*", "link") ?? []);
+
+      return Object.fromEntries(
+        links.map(link => [link.getAttribute("hreflang") ?? "", link.getAttribute("href") ?? ""]),
+      );
+    }, sitemapAddress);
+  }
+
+  async getSocialImageAddress(): Promise<string> {
+    return (await this.page.locator("meta[property='og:image']").getAttribute("content")) ?? "";
+  }
+
   async getMainHeading(): Promise<string> {
     return await this.page.locator("h1").innerText();
   }
@@ -259,6 +306,13 @@ export class JanggiPlaywright extends BasePage {
     const root = await this.getRootServedToSearchEngines();
 
     return /<a[^>]+href="learn\.html"/.test(root);
+  }
+
+  /** Where the guide link in the page served to search engines goes, or an empty string if there is none. */
+  async getGuideAddressInPageServedToSearchEngines(): Promise<string> {
+    const root = await this.getRootServedToSearchEngines();
+
+    return /<a[^>]+href="([^"]*learn\.html)"/.exec(root)?.[1] ?? "";
   }
 
   async isEachPolicyLinkedInPageServedToSearchEngines(): Promise<boolean> {
@@ -289,6 +343,20 @@ export class JanggiPlaywright extends BasePage {
       searchData.offers?.price === "0" &&
       searchData.offers.priceCurrency === "USD"
     );
+  }
+
+  async getSearchDataLanguage(): Promise<unknown> {
+    return (await this.getSearchData()).inLanguage;
+  }
+
+  async getSearchDataName(): Promise<unknown> {
+    return (await this.getSearchData()).name;
+  }
+
+  private async getSearchData(): Promise<SearchData> {
+    const content = await this.page.locator("script[type='application/ld+json']").textContent();
+
+    return JSON.parse(content ?? "{}") as SearchData;
   }
 
   async isSitemapAdvertisedToCrawlers(): Promise<boolean> {

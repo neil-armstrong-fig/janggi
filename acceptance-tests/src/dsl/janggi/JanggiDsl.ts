@@ -8,6 +8,7 @@ import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import {LegalDsl} from "@src/dsl/janggi/components/legal/LegalDsl";
 import {OnboardingDsl} from "@src/dsl/janggi/components/onboarding/OnboardingDsl";
 import {PlayAFriendDsl} from "@src/dsl/janggi/components/play-a-friend/PlayAFriendDsl";
+import type {LanguageAlternates} from "@src/dsl/janggi/types/LanguageAlternates";
 import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
@@ -249,6 +250,70 @@ export class JanggiDsl {
       return await this.janggi.getCanonicalAddress();
     } catch (error) {
       throw new DslError("Failed to read the game's canonical address", error);
+    }
+  }
+
+  async visitKoreanGame(): Promise<void> {
+    try {
+      await this.janggi.visitKoreanGame();
+    } catch (error) {
+      throw new DslError("Failed to visit the game's Korean page", error);
+    }
+  }
+
+  async getAddressPath(): Promise<string> {
+    try {
+      return await this.janggi.getAddressPath();
+    } catch (error) {
+      throw new DslError("Failed to read where in the site the page is", error);
+    }
+  }
+
+  async getLanguageAlternates(): Promise<LanguageAlternates> {
+    try {
+      return await this.janggi.getLanguageAlternates();
+    } catch (error) {
+      throw new DslError("Failed to read the page's language alternates", error);
+    }
+  }
+
+  async getSitemapLanguageAlternatesOfTheKoreanGame(): Promise<LanguageAlternates> {
+    try {
+      return await this.janggi.getSitemapLanguageAlternatesOfTheKoreanGame();
+    } catch (error) {
+      throw new DslError("Failed to read the sitemap's language alternates for the Korean game", error);
+    }
+  }
+
+  async getSocialImageAddress(): Promise<string> {
+    try {
+      return await this.janggi.getSocialImageAddress();
+    } catch (error) {
+      throw new DslError("Failed to read the game's social card address", error);
+    }
+  }
+
+  async getGuideAddressInPageServedToSearchEngines(): Promise<string> {
+    try {
+      return await this.janggi.getGuideAddressInPageServedToSearchEngines();
+    } catch (error) {
+      throw new DslError("Failed to read where the guide link goes in the page served to search engines", error);
+    }
+  }
+
+  async getSearchDataLanguage(): Promise<unknown> {
+    try {
+      return await this.janggi.getSearchDataLanguage();
+    } catch (error) {
+      throw new DslError("Failed to read the language the game's search data declares", error);
+    }
+  }
+
+  async getSearchDataName(): Promise<unknown> {
+    try {
+      return await this.janggi.getSearchDataName();
+    } catch (error) {
+      throw new DslError("Failed to read the name in the game's search data", error);
     }
   }
 

@@ -51,6 +51,8 @@ import {FRIEND_STORAGE_KEY} from "@src/redux/online/storage/FriendStorageKey";
 import {loadFriend} from "@src/redux/online/storage/LoadFriend";
 import {restoredRatings} from "@src/redux/restored-ratings/RestoredRatings";
 import {saveJson} from "@src/redux/device-storage/SaveJson";
+import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
+import {languageOfAddress} from "@src/language/address/LanguageOfAddress";
 
 export const store = createStore(deviceStorage());
 
@@ -132,7 +134,7 @@ export function createStore(storage?: Storage): AppStore {
     },
     preloadedState: {
       game,
-      preferences: loadPreferences(storage, globalThis.navigator?.languages ?? []),
+      preferences: loadPreferences(storage, globalThis.navigator?.languages ?? [], languageOfThePage()),
       ratings: restoredRatings(ratings, game, new Date().toISOString()),
       progress,
       customStyles: loadCustomStyles(storage),
@@ -240,4 +242,12 @@ function deviceStorage(): Storage | undefined {
   } catch {
     return undefined;
   }
+}
+
+/** The language the address of the page being opened names (`/ko/`), where it names one. */
+function languageOfThePage(): LanguageName | undefined {
+  const pathname = globalThis.location?.pathname;
+  if (pathname === undefined) return undefined;
+
+  return languageOfAddress(pathname, import.meta.env.BASE_URL);
 }

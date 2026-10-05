@@ -1,6 +1,7 @@
 export interface SearchData {
   readonly "@type"?: unknown;
   readonly name?: unknown;
+  readonly inLanguage?: unknown;
   readonly applicationCategory?: unknown;
   readonly offers?: OfferData;
 }

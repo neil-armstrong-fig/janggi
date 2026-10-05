@@ -23,6 +23,8 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
  * can order and inflect it as it needs to rather than have a part spliced into English word order.
  */
 export interface Messages {
+  /** The page's main heading, which only a screen reader or a search engine reads. */
+  readonly heading: string;
   /** What each settings tab says, on its face and to a screen reader. */
   readonly tabs: Record<SettingsTabName, string>;
   readonly controls: ControlMessages;

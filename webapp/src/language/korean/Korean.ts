@@ -8,6 +8,7 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
  * not know yet.
  */
 export const KOREAN: Messages = {
+  heading: "장기 온라인 게임",
   tabs: {Play: "게임", Look: "화면", Sound: "소리", You: "내 정보"},
   controls: {
     pass: "한수쉼",
