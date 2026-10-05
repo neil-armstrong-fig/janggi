@@ -1,4 +1,5 @@
 import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Calls the bikjang — 빅장, the two generals come to face each other down an open file and either
@@ -19,7 +20,9 @@ interface Props {
 }
 
 export function BikjangButton({enabled, onCall}: Props): React.JSX.Element {
-  return <ControlButton testId="bikjang" label="Bikjang" icon={FACING} enabled={enabled} onPress={onCall} />;
+  const {controls} = useMessages();
+
+  return <ControlButton testId="bikjang" label={controls.bikjang} icon={FACING} enabled={enabled} onPress={onCall} />;
 }
 
 /** Two generals at either end of one open file — the position being called. */

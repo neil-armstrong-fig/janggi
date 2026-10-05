@@ -1,3 +1,4 @@
+import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
 import {Button} from "@src/react/pages/game/components/button/Button";
 import {useState} from "react";
 
@@ -27,6 +28,7 @@ export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
     <div className="flex flex-col gap-1.5">
       <Button
         variant="secondary"
+        className="flex items-center justify-center gap-2"
         data-testid={`${id}-copy`}
         onClick={() => {
           const key = keyOf();
@@ -35,6 +37,11 @@ export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
           void copiedToClipboard(key).then(setCopied);
         }}
       >
+        <SvgIcon className="h-4 w-4">
+          <rect x="9" y="9" width="11" height="11" rx="2" />
+
+          <path d="M5 15V6a2 2 0 0 1 2-2h8" />
+        </SvgIcon>
         {label}
       </Button>
 

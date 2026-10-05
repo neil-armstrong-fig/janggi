@@ -1,6 +1,6 @@
 import {settingsTabSelected, sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {TOUR_STEPS} from "@src/react/pages/game/components/onboarding/components/tour/tour-steps/TourSteps";
-import {TOUR_STEP_NAMES} from "@src/redux/onboarding/touring/TourStepName";
+import {TOUR_STEP_NAMES} from "@janggi/shared/janggi/onboarding/TourStepName";
 import {stepsSkipped} from "@src/react/pages/game/components/onboarding/components/tour/tour-steps/steps-skipped/StepsSkipped";
 import {TourCard} from "@src/react/pages/game/components/onboarding/components/tour/components/tour-card/TourCard";
 import {TourSpotlight} from "@src/react/pages/game/components/onboarding/components/tour/components/tour-spotlight/TourSpotlight";
@@ -12,6 +12,8 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffectEvent, useLayoutEffect} from "react";
 import {useEscapeKey} from "@src/react/pages/game/components/onboarding/hooks/use-escape-key/UseEscapeKey";
 import {useTargetRect} from "@src/react/pages/game/components/onboarding/hooks/use-target-rect/UseTargetRect";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
 
 /**
  * The tour over the real page, one card at a time. Which step is up is the store's, kept on the device,
@@ -24,6 +26,7 @@ import {useTargetRect} from "@src/react/pages/game/components/onboarding/hooks/u
  */
 export function Tour(): React.JSX.Element {
   const dispatch = useAppDispatch();
+  const {tour} = useMessages();
   const tourStep = useAppSelector(state => state.onboarding.tourStep);
   const moveCount = useAppSelector(state => state.game.played.past.length);
   const signedIn = useAppSelector(state => state.account.status === "signed-in");
@@ -66,6 +69,7 @@ export function Tour(): React.JSX.Element {
 
       <TourCard
         step={step}
+        words={tour.steps(UNLOCK_PRICES.styleEditor)[stepName]}
         number={shown.indexOf(stepName) + 1}
         count={shown.length}
         dock={rect !== undefined && rect.top + rect.height / 2 > window.innerHeight / 2 ? "top" : "bottom"}

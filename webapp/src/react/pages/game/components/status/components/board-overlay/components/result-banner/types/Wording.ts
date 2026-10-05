@@ -1,5 +1,5 @@
-/** A result, named the way the game names it and the way a player new to it would. */
+/** A result, named the way the game names it and then in plain words in the language the game is read in. */
 export interface Wording {
   readonly korean: string;
-  readonly english: string;
+  readonly plain: string;
 }

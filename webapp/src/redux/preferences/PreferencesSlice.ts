@@ -1,6 +1,7 @@
 import type {PayloadAction} from "@reduxjs/toolkit";
 import type {BikjangHintName} from "@janggi/shared/janggi/settings/BikjangHintName";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
+import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {ArmyBoardStyleChoice} from "@src/redux/preferences/types/ArmyBoardStyleChoice";
 import type {ArmyPieceSetChoice} from "@src/redux/preferences/types/ArmyPieceSetChoice";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
@@ -104,6 +105,14 @@ export const preferencesSlice = createSlice({
       ...state,
       sheetOpacity: action.payload,
     }),
+
+    languageChosen: (state, action: PayloadAction<LanguageName>): PreferencesSliceState => ({
+      ...state,
+      language: action.payload,
+      languageNoticeSeen: false,
+    }),
+
+    languageNoticeDismissed: (state): PreferencesSliceState => ({...state, languageNoticeSeen: true}),
   },
   extraReducers: builder => {
     builder.addCase(syncMerged, (state, action): PreferencesSliceState => ({
@@ -128,6 +137,8 @@ export const {
   soundEffectsVolumeChanged,
   musicVolumeChanged,
   sheetOpacityChanged,
+  languageChosen,
+  languageNoticeDismissed,
 } = preferencesSlice.actions;
 
 export const preferencesReducer = preferencesSlice.reducer;

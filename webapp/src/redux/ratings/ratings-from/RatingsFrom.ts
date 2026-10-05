@@ -1,7 +1,7 @@
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import type {FormatRating} from "@src/redux/ratings/types/FormatRating";
-import {GAME_ENDINGS} from "@src/redux/ratings/types/GameEnding";
-import {GAME_RESULTS} from "@src/redux/ratings/types/GameResult";
+import {GAME_ENDINGS} from "@janggi/shared/janggi/results/GameEnding";
+import {GAME_RESULTS} from "@janggi/shared/janggi/results/GameResult";
 import type {GameRecord} from "@src/redux/ratings/types/GameRecord";
 import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";

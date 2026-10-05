@@ -4,6 +4,7 @@ import {onboardingSkipped, tourStarted} from "@src/redux/onboarding/OnboardingSl
 import {useAppDispatch} from "@src/redux/Hooks";
 import {useEscapeKey} from "@src/react/pages/game/components/onboarding/hooks/use-escape-key/UseEscapeKey";
 import {useState} from "react";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * The first thing a new player sees, over a board they have not yet touched: what Janggi is, and then how
@@ -14,6 +15,7 @@ import {useState} from "react";
  */
 export function Welcome(): React.JSX.Element {
   const dispatch = useAppDispatch();
+  const {welcome} = useMessages();
   const [choosing, setChoosing] = useState(false);
   const skip = (): void => {
     dispatch(onboardingSkipped());
@@ -39,7 +41,7 @@ export function Welcome(): React.JSX.Element {
           onClick={skip}
           className="cursor-pointer self-center rounded-lg px-3 py-2 text-sm text-white/60 underline hover:text-white"
         >
-          Skip, just play
+          {welcome.skip}
         </button>
       </section>
     </div>

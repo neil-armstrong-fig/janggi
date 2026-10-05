@@ -3,6 +3,7 @@ import {DRAWN_BY} from "@janggi/shared/janggi/results/DrawnBy";
 import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
+import type {ControlName} from "@src/dsl/janggi/components/status/types/ControlName";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
@@ -51,6 +52,7 @@ export class StatusPlaywright extends BaseComponent {
   private readonly botGoAhead: Locator;
   private readonly botEngineRetry: Locator;
   private readonly repetitionNotice: Locator;
+  private readonly controls: Record<ControlName, Locator>;
 
   constructor(page: Page) {
     super(page);
@@ -78,6 +80,22 @@ export class StatusPlaywright extends BaseComponent {
     this.botGoAhead = page.getByTestId("bot-go-ahead");
     this.botEngineRetry = page.getByTestId("bot-engine-retry");
     this.repetitionNotice = page.getByTestId("repetition-notice");
+    this.controls = {
+      pass: this.passTurn,
+      bikjang: this.bikjang,
+      draw: this.draw,
+      undo: this.takeBack,
+      redo: this.playAgain,
+      settings: page.getByTestId("settings-open"),
+    };
+  }
+
+  /**
+   * The words on a control in the row under the board, as written rather than as the stylesheet shows them
+   * — they are drawn in capitals, which is the page's look and not what it says.
+   */
+  async getControlLabel(control: ControlName): Promise<string> {
+    return ((await this.controls[control].textContent()) ?? "").trim();
   }
 
   /**
@@ -404,6 +422,16 @@ export class StatusPlaywright extends BaseComponent {
     const drawnBy = await this.container.getAttribute("data-drawn");
 
     return DRAWN_BY.find(candidate => candidate === drawnBy);
+  }
+
+  /** What an army is called on its plaque. */
+  async getArmyName(side: Side): Promise<string> {
+    return (await this.page.getByTestId(`plaque-${side}`).getAttribute("aria-label")) ?? "";
+  }
+
+  /** What the question over the board says, once a draw has been offered. */
+  async getDrawOfferLine(): Promise<string> {
+    return ((await this.page.getByTestId("draw-offer-line").textContent()) ?? "").trim();
   }
 
   async offerDraw(): Promise<void> {

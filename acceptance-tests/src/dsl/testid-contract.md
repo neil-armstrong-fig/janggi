@@ -23,7 +23,10 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `opponent-look-toggle` (`aria-pressed`: the "Show opponent's board and pieces" switch, on unless turned off) and
   `opponent-look-explanation` in the Look tab. The three board hints are switches too, in
   the Look tab: `movable-highlight-toggle`, `bikjang-hint-toggle` and `effects-toggle`, each `aria-pressed` when on (marks shown,
-  hint shown, effects full). The styles
+  hint shown, effects full). The language the game is read in is a picker at the top of the You tab: `language-picker` with
+  `language-option-en` and `language-option-ko`, each carrying its code in `data-option` (`aria-pressed` on the chosen one) — never
+  the words on it, which are each language's name in itself. `<html lang>` follows it. A tab and a control under the board are
+  read for their words by `textContent`, since the stylesheet draws the controls in capitals. The styles
   sheet: `styles` (`inert` while closed), `styles-open`, `styles-back`, `styles-close`, `style-import-input`,
   `-submit` and `-message` (`data-accepted`), and starting one of their own: `style-editor-locked` where
   XP has not unlocked it, or `style-editor-kind`, `-from` and `-start` where it has — the editor itself,
@@ -33,7 +36,7 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `data-called-by` for a bikjang). On `pass`, `bikjang`, `draw`, `undo` and `redo` the `disabled` attribute is part of
   the contract: they are disabled rather than hidden. `move-flight` and `impact` are drawn over the
   board only while motion is shown, and only the effects specs look for them. `bot-go-ahead`,
-  `repetition-notice`, `draw-offer` (carrying `data-offered-by`, with `draw-accept` and `draw-decline`
+  `repetition-notice`, `draw-offer` (carrying `data-offered-by`, its question in `draw-offer-line`, with `draw-accept` and `draw-decline`
   inside it) and `draw-declined` (carrying `data-declined-by`) are drawn over the board too, each
   shown only while its own condition holds. `board-bottom-surface` is Cho's half of the surface,
   painted over the board's own; the style editor's preview has no half to draw, so it never renders one.
@@ -43,7 +46,7 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   unlock (the player's own plaque only, and the words are shortened — read the attribute);
   `record-tab-<format>` and `record-row-<elo>`, a row carrying `data-played`,
   `data-won`, `data-drawn` and `data-lost`; and `<id>-picker` with an `<id>-option-<slug>` for each
-  option. The picker ids are `board-style`, `piece-style`,
+  option, a button carrying the option's id in `data-option` — which is what a spec reads to know which is pressed, never the words on it. The picker ids are `board-style`, `piece-style`,
   `match-format`, `opponent`, `bot-strength`, `your-side`, `han-setup` and `cho-setup`.
   `board-style` and `piece-style` can each split apart into one picker per army —
   `han-board-style`/`cho-board-style` and `han-piece-style`/`cho-piece-style` — behind an `<id>-split`
@@ -87,7 +90,7 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
 - **The toast** — `toast`, a brief `role="status"` message over the page, present only for the few seconds it is up.
 - **On the release notice** — `release-update`, `release-update-refresh` and `release-update-later`.
 - **On a settings tab** — the sheet is divided into tabs, each a `settings-tab` carrying `data-tab`
-  with its label and `aria-selected`; the selected one holds `settings-tab-highlight`, whose bounds fill the tab. Each pane is a
+  with its label and `aria-selected`; the selected one holds `settings-tab-highlight`, whose bounds fill the tab. Every tab holds a `settings-tab-icon`, its picture. Each pane is a
   `settings-pane` carrying `data-pane` with the
   same label, `hidden` unless its tab is showing. The tab-switching `inSheet` drives (see the DSL
   `AGENTS.md`) is these two. In the Play pane, `setup-army-han` and `setup-army-cho` are the
@@ -124,7 +127,7 @@ anything. Where that matters, add an `is…Shown()` question beside the value on
 
 - **On the welcome and the tour** — `welcome` is the welcome dialog, drawn only while a player has not been through it;
   in it `welcome-next`, `welcome-skip`, `welcome-start-tour` and one button per answer, spelled
-  `welcome-<choice>-<answer>`: `welcome-music-on|off`, `welcome-sound-effects-on|off`,
+  `welcome-<choice>-<answer>`: `welcome-language-en|ko`, `welcome-music-on|off`, `welcome-sound-effects-on|off`,
   `welcome-animations-full|reduced` and `welcome-movable-highlight-shown|hidden` (the pressed one carries
   `aria-pressed`). `tour` is the card, with `tour-step` carrying `data-step` (from one) and `data-step-count`,
   `tour-title`, `tour-body`, `tour-back` (disabled on the first step), `tour-next`, `tour-skip`, and on the last

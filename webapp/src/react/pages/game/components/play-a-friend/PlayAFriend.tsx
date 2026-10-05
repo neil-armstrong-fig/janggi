@@ -37,6 +37,7 @@ export function PlayAFriend(): React.JSX.Element {
       testId="play-a-friend"
       closeTestId="friend-close"
       title="Play a friend"
+      closeLabel="Close play a friend"
       open={open}
       onClose={onClose}
       backTestId="friend-back"

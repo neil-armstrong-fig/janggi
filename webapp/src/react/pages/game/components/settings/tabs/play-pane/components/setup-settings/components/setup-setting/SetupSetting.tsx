@@ -8,6 +8,7 @@ import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {sideName} from "@src/react/pages/game/utils/SideNames";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * One army's opening arrangement. The two armies get a picker each because they genuinely choose
@@ -31,6 +32,7 @@ export function SetupSetting({side}: Props): React.JSX.Element {
   const {played, phase, opponent} = useAppSelector(state => state.game);
   const withAFriend = useWithAFriend();
   const dispatch = useAppDispatch();
+  const {play} = useMessages();
 
   const laysOutItself =
     opponent.name === "Bot" && phase.format === "Scored" && opponentOf(opponent.playerSide) === side;
@@ -39,10 +41,11 @@ export function SetupSetting({side}: Props): React.JSX.Element {
     <OptionPicker
       id={`${side}-setup`}
       disabled={playHasBegun(played) || withAFriend || laysOutItself || !canPlace(phase, side)}
-      label={`${sideName(side)}'s setup`}
+      label={play.setupOf(side)}
       hideLabel
       ariaLabel={`${sideName(side)}'s opening setup`}
       options={SETUPS}
+      labelOf={option => play.setupNames[option.name]}
       selected={side === "han" ? phase.hanSetup : phase.choSetup}
       onSelect={setup => dispatch(side === "han" ? hanSetupChosen(setup) : choSetupChosen(setup))}
     />

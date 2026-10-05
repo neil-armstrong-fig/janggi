@@ -104,6 +104,15 @@ painted, and say so.
   (`use-game-audio/`) turns the position into a mood — the director only plays what it is handed. A
   new sound for a new rule is a change to `cuesFor` only.
 
+- **Prefer a picture to a word where one will do, so the page can be read without English.** Stroked icons are
+  drawn inside `SvgIcon` (`pages/game/components/svg-icon/`), each glyph beside the one thing that shows it. A
+  control is **icon-only only where the glyph reads the same in any language** — close, back, chevrons, a
+  tick — and then carries an `aria-label` with the words; otherwise it is an icon **and** a short label, and
+  a row of like controls (the ones under the board, the tabs) is all one or all the other. An id that doubles as a label (`SettingsTabName`) keeps being the id: a
+  picture or a translated name is looked up from it (`TabIcon` is `Record<SettingsTabName, …>`), never
+  written over it. A picture drawn inside a button the acceptance tests read the text of carries no text.
+  Build an `aria-label` as a whole string, never by lowercasing and joining words (`Sheet`'s `closeLabel`).
+
 - **A blank line between sibling JSX elements.** Two elements pressed together read as one block; a
   line between them makes the structure visible at a glance. Prettier **preserves** these but will
   never add one, and nothing in the toolchain can insert them — `@eslint-react` has no stylistic

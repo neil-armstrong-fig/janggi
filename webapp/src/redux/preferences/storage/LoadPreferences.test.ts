@@ -21,6 +21,8 @@ const chosen: PreferencesSliceState = {
   soundEffectsVolume: 40,
   musicVolume: 0,
   sheetOpacity: 85,
+  language: "ko",
+  languageNoticeSeen: true,
 };
 
 it("starts from the defaults when nothing has been kept", () => {
@@ -119,4 +121,22 @@ it("takes Han's pieces to be Cho's where none were kept, or what was kept is not
 it("shows the opponent's board and pieces where nothing says otherwise, and not where it was turned off", () => {
   expect(loadPreferences(storageHolding({...chosen, showOpponentLook: "no"})).showOpponentLook).toBe(true);
   expect(loadPreferences(storageHolding({...chosen, showOpponentLook: false})).showOpponentLook).toBe(false);
+});
+
+it("reads a first visit in the browser's language, where the game has it", () => {
+  expect(loadPreferences({getItem: () => null}, ["ko-KR", "en-US"]).language).toBe("ko");
+});
+
+it("reads a visit in English where the browser's languages are ones the game does not have", () => {
+  expect(loadPreferences({getItem: () => null}, ["fr-FR"]).language).toBe("en");
+});
+
+it("reads a visit that kept preferences but no language in the browser's language as well", () => {
+  const {language: _unchosen, ...withoutLanguage} = chosen;
+
+  expect(loadPreferences(storageHolding(withoutLanguage), ["ko"]).language).toBe("ko");
+});
+
+it("keeps the language a player chose over the browser's", () => {
+  expect(loadPreferences(storageHolding({...chosen, language: "en"}), ["ko"]).language).toBe("en");
 });

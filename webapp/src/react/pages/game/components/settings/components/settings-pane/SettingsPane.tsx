@@ -1,4 +1,5 @@
 import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * One tab's worth of the settings sheet: its settings in a column that scrolls if it has to, and
@@ -21,12 +22,14 @@ interface Props {
 }
 
 export function SettingsPane({name, selected, footer, children}: Props): React.JSX.Element {
+  const {tabs} = useMessages();
+
   return (
     <div
       role="tabpanel"
       data-testid="settings-pane"
       data-pane={name}
-      aria-label={name}
+      aria-label={tabs[name]}
       hidden={!selected}
       className="flex min-h-0 flex-1 flex-col"
     >

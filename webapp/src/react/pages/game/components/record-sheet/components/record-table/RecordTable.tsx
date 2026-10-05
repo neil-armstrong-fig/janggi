@@ -1,4 +1,5 @@
 import type {RecordAgainstBot} from "@src/react/pages/game/components/record-sheet/types/RecordAgainstBot";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 interface Props {
   readonly records: readonly RecordAgainstBot[];
@@ -10,22 +11,30 @@ interface Props {
  * apart. Wider than a phone, so it scrolls on its own rather than the page.
  */
 export function RecordTable({records}: Props): React.JSX.Element {
+  const {record, sides} = useMessages();
+
   return (
     <div className="shrink-0 overflow-x-auto">
       <table className="w-full min-w-[22rem] text-left text-sm tabular-nums">
         <thead className="text-xs tracking-wide text-white/50 uppercase">
           <tr>
-            <th className="py-1.5 pr-2 font-medium">Bot</th>
+            <th className="py-1.5 pr-2 font-medium">{record.bot}</th>
 
-            <th className="py-1.5 pr-2 font-medium">Games</th>
+            <th className="py-1.5 pr-2 font-medium">{record.games}</th>
 
-            <th className="py-1.5 pr-2 font-medium">W-D-L</th>
+            <th className="py-1.5 pr-2 font-medium">{record.winsDrawsLosses}</th>
 
-            <th className="py-1.5 pr-2 font-medium">Win</th>
+            <th className="py-1.5 pr-2 font-medium">{record.winRate}</th>
 
-            <th className="py-1.5 pr-2 font-medium text-cho">As Cho</th>
+            <th title={record.winRateAs("cho")} className="py-1.5 pr-2 font-medium text-cho">
+              <span aria-hidden className="mr-1 inline-block size-2 rounded-full bg-cho" />
+              {sides.cho}
+            </th>
 
-            <th className="py-1.5 font-medium text-han">As Han</th>
+            <th title={record.winRateAs("han")} className="py-1.5 font-medium text-han">
+              <span aria-hidden className="mr-1 inline-block size-2 rounded-full bg-han" />
+              {sides.han}
+            </th>
           </tr>
         </thead>
 

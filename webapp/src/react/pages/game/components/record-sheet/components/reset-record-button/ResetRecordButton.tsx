@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 interface Props {
   readonly onReset: () => void;
@@ -13,6 +14,7 @@ interface Props {
  * asking is this button's own state: nothing else needs to know.
  */
 export function ResetRecordButton({onReset}: Props): React.JSX.Element {
+  const {record} = useMessages();
   const [confirming, setConfirming] = useState(false);
 
   return (
@@ -24,19 +26,17 @@ export function ResetRecordButton({onReset}: Props): React.JSX.Element {
           onClick={() => setConfirming(true)}
           className="h-11 cursor-pointer rounded-xl border border-danger/40 text-sm font-semibold tracking-wide text-danger uppercase transition-[transform,background-color] duration-150 hover:bg-danger/10 active:scale-[0.98] motion-reduce:transition-none"
         >
-          Reset record
+          {record.reset}
         </button>
       )}
 
       {confirming && (
         <div
           role="alertdialog"
-          aria-label="Reset your record"
+          aria-label={record.resetLabel}
           className="flex flex-col gap-3 rounded-xl bg-danger/10 p-3"
         >
-          <p className="text-sm text-white/85">
-            Clear your rating and every game, in both formats? This cannot be undone.
-          </p>
+          <p className="text-sm text-white/85">{record.resetQuestion}</p>
 
           <div className="flex gap-2">
             <button
@@ -45,7 +45,7 @@ export function ResetRecordButton({onReset}: Props): React.JSX.Element {
               onClick={() => setConfirming(false)}
               className="h-10 flex-1 cursor-pointer rounded-lg bg-black/25 text-sm font-semibold text-white/80 hover:bg-black/35"
             >
-              Keep it
+              {record.keepIt}
             </button>
 
             <button
@@ -57,7 +57,7 @@ export function ResetRecordButton({onReset}: Props): React.JSX.Element {
               }}
               className="h-10 flex-1 cursor-pointer rounded-lg bg-danger/80 text-sm font-semibold text-white hover:bg-danger"
             >
-              Reset
+              {record.resetConfirm}
             </button>
           </div>
         </div>

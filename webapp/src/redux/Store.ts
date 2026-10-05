@@ -132,7 +132,7 @@ export function createStore(storage?: Storage): AppStore {
     },
     preloadedState: {
       game,
-      preferences: loadPreferences(storage),
+      preferences: loadPreferences(storage, globalThis.navigator?.languages ?? []),
       ratings: restoredRatings(ratings, game, new Date().toISOString()),
       progress,
       customStyles: loadCustomStyles(storage),

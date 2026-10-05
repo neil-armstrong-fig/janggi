@@ -1,6 +1,7 @@
 import {clsx} from "clsx";
 import {useRef} from "react";
 import {useScrolledToTop} from "@src/react/pages/game/hooks/use-scrolled-to-top/UseScrolledToTop";
+import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
 
 /**
  * The bottom sheet the Record, Play a friend and Styles sheets share: a backdrop, a panel that slides up,
@@ -13,6 +14,8 @@ interface Props {
   readonly closeTestId: string;
   readonly backTestId?: string;
   readonly title: string;
+  /** What Close is called for a screen reader, written out whole so it can be said in any language. */
+  readonly closeLabel: string;
   readonly open: boolean;
   readonly onClose: () => void;
   readonly onBack?: () => void;
@@ -26,6 +29,7 @@ export function Sheet({
   closeTestId,
   backTestId,
   title,
+  closeLabel,
   open,
   onClose,
   onBack,
@@ -72,18 +76,9 @@ export function Sheet({
                 onClick={onBack}
                 className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <SvgIcon>
                   <path d="M15 6l-6 6 6 6" />
-                </svg>
+                </SvgIcon>
               </button>
             )}
 
@@ -93,13 +88,13 @@ export function Sheet({
           <button
             type="button"
             data-testid={closeTestId}
-            aria-label={`Close ${title.toLowerCase()}`}
+            aria-label={closeLabel}
             onClick={onClose}
             className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
           >
-            <svg viewBox="0 0 24 24" aria-hidden className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
-            </svg>
+            <SvgIcon>
+              <path d="M6 6l12 12M18 6 6 18" />
+            </SvgIcon>
           </button>
         </header>
 

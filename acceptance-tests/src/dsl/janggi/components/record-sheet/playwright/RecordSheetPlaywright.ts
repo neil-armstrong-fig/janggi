@@ -50,6 +50,16 @@ export class RecordSheetPlaywright extends BaseComponent {
     this.confirmReset = page.getByTestId("record-reset-confirm");
   }
 
+  /** The words on the button that opens the record, as written rather than as the stylesheet draws them. */
+  async getOpenerLabel(): Promise<string> {
+    return ((await this.opener.textContent()) ?? "").trim();
+  }
+
+  /** What the reset button says, as written. */
+  async getResetLabel(): Promise<string> {
+    return ((await this.reset.textContent()) ?? "").trim();
+  }
+
   async openRecord(): Promise<void> {
     await this.settingsOpener.click();
     await this.opener.click();

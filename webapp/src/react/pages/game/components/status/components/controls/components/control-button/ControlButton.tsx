@@ -1,3 +1,4 @@
+import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 
 /**
@@ -32,18 +33,7 @@ export function ControlButton({testId, label, icon, enabled = true, onPress, tou
       onClick={onPress}
       className="flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl bg-white/5 text-white/80 transition-[transform,background-color] duration-150 enabled:cursor-pointer enabled:hover:bg-white/10 enabled:active:scale-95 disabled:opacity-30 motion-reduce:transition-none"
     >
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden
-        className="h-5 w-5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {icon}
-      </svg>
+      <SvgIcon>{icon}</SvgIcon>
 
       <span className="text-[10px] font-medium tracking-wide uppercase">{label}</span>
     </button>

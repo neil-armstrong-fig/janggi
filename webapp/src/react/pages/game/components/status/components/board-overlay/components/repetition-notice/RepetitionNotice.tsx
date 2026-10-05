@@ -1,3 +1,5 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+
 /**
  * A note across the top of the board while the army to move has a move the repetition rule is holding
  * back — "동일한 수를 3회 이상 반복할 수 없다", `docs/rules.md` §6.4.
@@ -10,6 +12,8 @@
  * nothing here takes a tap.
  */
 export function RepetitionNotice(): React.JSX.Element {
+  const {overlays} = useMessages();
+
   return (
     <div
       data-testid="repetition-notice"
@@ -20,8 +24,7 @@ export function RepetitionNotice(): React.JSX.Element {
         <span lang="ko" className="font-semibold text-wood">
           반복 금지
         </span>{" "}
-        · A move that would repeat a position a third time is not allowed. Unlike chess, repeating is no draw: the move
-        is held back and the game carries on.
+        · {overlays.repetitionNotice}
       </p>
     </div>
   );

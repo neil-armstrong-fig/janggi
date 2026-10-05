@@ -19,6 +19,15 @@ export class MatchFormatSettingDsl {
     }
   }
 
+  /** The words on one of the buttons, as the player reads them. */
+  async getOptionLabel(name: MatchFormat): Promise<string> {
+    try {
+      return await this.matchFormat.getOptionLabel(name);
+    } catch (error) {
+      throw new DslError(`Failed to read the label on the "${name}" button`, error);
+    }
+  }
+
   async getSelected(): Promise<MatchFormat | undefined> {
     try {
       return await this.matchFormat.getSelected();

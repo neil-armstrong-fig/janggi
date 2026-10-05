@@ -1,3 +1,4 @@
+import {DEFAULT_LANGUAGE} from "@janggi/shared/janggi/settings/LanguageName";
 import {DEFAULT_OPACITY} from "@janggi/shared/janggi/settings/Opacity";
 import {FULL_VOLUME} from "@janggi/shared/janggi/settings/Volume";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
@@ -20,5 +21,7 @@ export function defaultPreferences(): PreferencesSliceState {
     soundEffectsVolume: FULL_VOLUME,
     musicVolume: FULL_VOLUME,
     sheetOpacity: DEFAULT_OPACITY,
+    language: DEFAULT_LANGUAGE,
+    languageNoticeSeen: false,
   };
 }

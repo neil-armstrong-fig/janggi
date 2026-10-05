@@ -19,6 +19,15 @@ export class OpponentSettingDsl {
     }
   }
 
+  /** The words on one of the buttons, as the player reads them. */
+  async getOptionLabel(name: OpponentName): Promise<string> {
+    try {
+      return await this.opponent.getOptionLabel(name);
+    } catch (error) {
+      throw new DslError(`Failed to read the label on the "${name}" button`, error);
+    }
+  }
+
   async getSelected(): Promise<OpponentName | undefined> {
     try {
       return await this.opponent.getSelected();

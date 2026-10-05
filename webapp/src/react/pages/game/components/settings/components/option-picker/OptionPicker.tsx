@@ -49,6 +49,10 @@ interface Props<Option extends WithName> {
    * option that may. A locked option is still listed, so a player can see what there is to work towards.
    */
   readonly lockedReason?: (option: Option) => string | undefined;
+  /** A picture for an option, drawn before its name where the options are buttons. It must carry no text. */
+  readonly icon?: (option: Option) => React.ReactNode;
+  /** What an option says, where that is not its name — its name stays its id. */
+  readonly labelOf?: (option: Option) => string;
   /** What the options mean, unfolded from a (?) beside the label. */
   readonly explanation?: React.ReactNode;
   readonly onSelect: (option: Option) => void;
@@ -63,6 +67,8 @@ export function OptionPicker<Option extends WithName>({
   selected,
   disabled = false,
   lockedReason,
+  icon,
+  labelOf,
   explanation,
   onSelect,
 }: Props<Option>): React.JSX.Element {
@@ -104,6 +110,8 @@ export function OptionPicker<Option extends WithName>({
                 selected={option.name === selected?.name}
                 disabled={disabled}
                 lockedReason={lockedReason?.(option)}
+                icon={icon?.(option)}
+                label={labelOf?.(option)}
                 onSelect={onSelect}
               />
             ))}
@@ -119,6 +127,7 @@ export function OptionPicker<Option extends WithName>({
               selected={selected}
               disabled={disabled}
               lockedReason={lockedReason}
+              labelOf={labelOf}
               onSelect={onSelect}
             />
           </div>

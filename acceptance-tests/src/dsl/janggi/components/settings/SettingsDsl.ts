@@ -2,6 +2,7 @@ import {GamesSettingDsl} from "@src/dsl/janggi/components/settings/components/ga
 import {OpponentLookSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-look-setting/OpponentLookSettingDsl";
 import {FlipBoardSettingDsl} from "@src/dsl/janggi/components/settings/components/flip-board-setting/FlipBoardSettingDsl";
 import {AccountSettingDsl} from "@src/dsl/janggi/components/settings/components/account-setting/AccountSettingDsl";
+import {LanguageSettingDsl} from "@src/dsl/janggi/components/settings/components/language-setting/LanguageSettingDsl";
 import {BikjangHintSettingDsl} from "@src/dsl/janggi/components/settings/components/bikjang-hint-setting/BikjangHintSettingDsl";
 import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
 import {BotStrengthSettingDsl} from "@src/dsl/janggi/components/settings/components/bot-strength-setting/BotStrengthSettingDsl";
@@ -52,6 +53,7 @@ export class SettingsDsl {
   readonly choSetup: ChoSetupSettingDsl;
   readonly movableHighlight: MovableHighlightSettingDsl;
   readonly bikjangHint: BikjangHintSettingDsl;
+  readonly language: LanguageSettingDsl;
   readonly flipBoard: FlipBoardSettingDsl;
   readonly opponentLook: OpponentLookSettingDsl;
   readonly games: GamesSettingDsl;
@@ -76,6 +78,7 @@ export class SettingsDsl {
     this.choSetup = new ChoSetupSettingDsl(page);
     this.movableHighlight = new MovableHighlightSettingDsl(page);
     this.bikjangHint = new BikjangHintSettingDsl(page);
+    this.language = new LanguageSettingDsl(page);
     this.flipBoard = new FlipBoardSettingDsl(page);
     this.opponentLook = new OpponentLookSettingDsl(page);
     this.games = new GamesSettingDsl(page);
@@ -197,6 +200,33 @@ export class SettingsDsl {
       return await this.settings.isTabSelected(name);
     } catch (error) {
       throw new DslError(`Failed to read whether the "${name}" tab is chosen`, error);
+    }
+  }
+
+  /** The words on the New game button, as the player reads them. */
+  async getNewGameLabel(): Promise<string> {
+    try {
+      return await this.settings.getNewGameLabel();
+    } catch (error) {
+      throw new DslError("Failed to read the label on the New game button", error);
+    }
+  }
+
+  /** The words on a tab, as the player reads them. */
+  async getTabLabel(name: SettingsTabName): Promise<string> {
+    try {
+      return await this.settings.getTabLabel(name);
+    } catch (error) {
+      throw new DslError(`Failed to read the label on the "${name}" tab`, error);
+    }
+  }
+
+  /** Whether a tab draws a picture beside its name. */
+  async isTabIconShown(name: SettingsTabName): Promise<boolean> {
+    try {
+      return await this.settings.isTabIconShown(name);
+    } catch (error) {
+      throw new DslError(`Failed to read whether the "${name}" tab shows an icon`, error);
     }
   }
 

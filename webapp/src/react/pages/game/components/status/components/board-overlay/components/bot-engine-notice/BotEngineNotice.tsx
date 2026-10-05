@@ -1,5 +1,7 @@
 import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSliceState";
 import {clsx} from "clsx";
+import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Over the board while the bot's engine is not up: that it is being loaded, or that it could not be
@@ -19,6 +21,7 @@ interface Props {
 }
 
 export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element {
+  const {overlays} = useMessages();
   const failed = botEngine.status === "failed";
 
   return (
@@ -42,7 +45,7 @@ export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element 
               aria-hidden="true"
               className="size-4 rounded-full border-2 border-wood/30 border-t-wood motion-safe:animate-spin"
             />
-            Waking the bot…
+            {overlays.wakingTheBot}
           </p>
         )}
 
@@ -52,7 +55,7 @@ export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element 
               <span role="img" aria-label="Bot">
                 🤖
               </span>{" "}
-              The bot could not be started
+              {overlays.botCouldNotStart}
             </p>
 
             <p data-testid="bot-engine-reason" className="mt-0.5 max-w-xs text-xs text-white/60">
@@ -63,9 +66,12 @@ export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element 
               type="button"
               data-testid="bot-engine-retry"
               onClick={onRetry}
-              className="mt-3 h-10 w-full cursor-pointer rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
+              className="mt-3 flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
             >
-              Try again
+              <SvgIcon className="h-4 w-4">
+                <path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v5h-5" />
+              </SvgIcon>
+              {overlays.tryAgain}
             </button>
           </>
         )}

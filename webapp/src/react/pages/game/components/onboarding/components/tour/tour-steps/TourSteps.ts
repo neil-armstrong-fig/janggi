@@ -1,9 +1,9 @@
 import type {TourStep} from "@src/react/pages/game/components/onboarding/components/tour/types/TourStep";
-import type {TourStepName} from "@src/redux/onboarding/touring/TourStepName";
-import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
+import type {TourStepName} from "@janggi/shared/janggi/onboarding/TourStepName";
 
 /**
- * What the tour says at each of its steps, and what it does to the page as it says it. A record over the
+ * What the tour does to the page at each of its steps — what it points at, where the sheet goes, what moves it on. What it
+ * says is `Messages.tour`, in the language the game is read in. A record over the
  * store's step names, so a step added there and not here does not compile.
  *
  * The first two are taught by doing — the player picks up a piece and moves it, for real — and the
@@ -12,60 +12,42 @@ import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
  */
 export const TOUR_STEPS: Readonly<Record<TourStepName, TourStep>> = {
   "pick-up": {
-    title: "Pick up a piece",
-    body: "Tap one of your pieces to see everywhere it can go.",
     target: "point",
     sheet: "closed",
     advance: "tap",
   },
   move: {
-    title: "Make a move",
-    body: "Tap a highlighted point to move there. Sliding a soldier sideways is a solid way to open.",
     target: "point",
     sheet: "closed",
     advance: "move",
   },
   controls: {
-    title: "The controls",
-    body: "Under the board, Pass rests your turn, Bikjang calls the generals' face-off, and Draw offers a draw. Undo and Redo take a move back. They are switched off against the bot and are for games between two people.",
     target: "controls",
     sheet: "closed",
   },
   settings: {
-    title: "Settings",
-    body: "Everything else lives in Settings: how the game is played, how it looks, how it sounds, and your progress. Tap it to open.",
     target: "settings",
     sheet: "closed",
     advance: "tap",
   },
   xp: {
-    title: "Earn XP",
-    body: "Playing earns XP, and XP unlocks new boards, new pieces and stronger bots.",
     target: "xp",
     sheet: "You",
   },
   styles: {
-    title: "Make it your own",
-    body: `At ${UNLOCK_PRICES.styleEditor} XP you can design your own board and pieces. Styles other players share are free to import.`,
     target: "styles",
     sheet: "Look",
   },
   account: {
-    title: "Keep it in sync",
-    body: "Signing in with Google is optional: skip it any time and Janggi plays the same. It keeps your XP, unlocks and styles in step across your devices, and it is the only way to play a friend, so sign in first if you want to.",
     target: "account",
     sheet: "You",
   },
   friend: {
-    title: "Play a friend",
-    body: "Tap Online to make a code and send it to a friend, or to enter theirs, and play each other live. You both need to be signed in.",
     target: "friend",
     sheet: "Play",
     needsSignIn: true,
   },
   guide: {
-    title: "New to Janggi?",
-    body: "The guide teaches every piece and the rules in about five minutes. Read it before your first real game.",
     sheet: "closed",
     offersTheGuide: true,
   },

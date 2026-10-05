@@ -49,14 +49,19 @@ export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
     await this.inSheet(this.picker, () => this.options[name].click());
   }
 
-  /** The name on whichever button is pressed, or undefined before anything has rendered. */
+  /** The option on whichever button is pressed — read off `data-option`, not its words — or undefined before anything has rendered. */
   async getSelected(): Promise<MatchFormat | undefined> {
     const pressed = this.picker.locator("[aria-pressed='true']");
     if ((await pressed.count()) === 0) return undefined;
 
-    const name = await pressed.textContent();
+    const name = await pressed.getAttribute("data-option");
 
     return MATCH_FORMATS.find(candidate => candidate === name);
+  }
+
+  /** The words on one of the buttons, as written rather than as the stylesheet draws them. */
+  async getOptionLabel(name: MatchFormat): Promise<string> {
+    return ((await this.options[name].textContent()) ?? "").trim();
   }
 
   /** Whether the format may still be chosen, which the buttons say by being enabled or not. */

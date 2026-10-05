@@ -1,8 +1,10 @@
 import {DslError} from "@src/dsl/errors/DslError";
 import {OnboardingPlaywright} from "@src/dsl/janggi/components/onboarding/playwright/OnboardingPlaywright";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
+import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {Page} from "@playwright/test";
+import type {TourButtonName} from "@src/dsl/janggi/components/onboarding/types/TourButtonName";
 import type {SpotlightedPoint} from "@src/dsl/janggi/components/onboarding/types/SpotlightedPoint";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 import type {SoundChoiceName} from "@janggi/shared/janggi/onboarding/SoundChoiceName";
@@ -68,6 +70,14 @@ export class OnboardingDsl {
     }
   }
 
+  async setWelcomeLanguageTo(name: LanguageName): Promise<void> {
+    try {
+      await this.onboarding.setWelcomeLanguageTo(name);
+    } catch (error) {
+      throw new DslError(`Failed to set the language to ${name} in the welcome`, error);
+    }
+  }
+
   async setWelcomeAnimationsTo(name: EffectsName): Promise<void> {
     try {
       await this.onboarding.setWelcomeAnimationsTo(name);
@@ -129,6 +139,14 @@ export class OnboardingDsl {
       return await this.onboarding.canGoBackInTheTour();
     } catch (error) {
       throw new DslError("Failed to check whether the tour can go back", error);
+    }
+  }
+
+  async isTourButtonNamed(name: TourButtonName): Promise<boolean> {
+    try {
+      return await this.onboarding.isTourButtonNamed(name);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the tour has a "${name}" button`, error);
     }
   }
 

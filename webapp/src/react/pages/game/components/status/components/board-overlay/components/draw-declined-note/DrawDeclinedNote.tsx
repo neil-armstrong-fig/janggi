@@ -1,5 +1,5 @@
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * A note across the top of the board saying the draw on offer was turned down — for as long as it is
@@ -16,7 +16,8 @@ interface Props {
 }
 
 export function DrawDeclinedNote({decliner, botSide}: Props): React.JSX.Element {
-  const who = decliner === botSide ? "The bot" : sideName(decliner);
+  const {overlays, sides} = useMessages();
+  const who = decliner === botSide ? overlays.theBot : sides[decliner];
 
   return (
     <div
@@ -26,7 +27,7 @@ export function DrawDeclinedNote({decliner, botSide}: Props): React.JSX.Element 
       className="pointer-events-none absolute inset-x-2 top-2 z-20 flex justify-center"
     >
       <p className="max-w-sm rounded-xl border border-white/15 bg-ground/85 px-3 py-1.5 text-center text-xs leading-snug text-white/80 shadow-lg shadow-black backdrop-blur-sm">
-        {who} declined the draw. The game carries on.
+        {overlays.drawDeclined(who)}
       </p>
     </div>
   );

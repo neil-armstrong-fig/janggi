@@ -2,6 +2,7 @@ import {Account} from "@src/react/pages/game/components/settings/tabs/you-pane/c
 import {DeveloperWebsiteLink} from "@src/react/pages/game/components/settings/tabs/you-pane/components/developer-website-link/DeveloperWebsiteLink";
 import {GuideLink} from "@src/react/pages/game/components/settings/tabs/you-pane/components/guide-link/GuideLink";
 import {InstallButton} from "@src/react/pages/game/components/settings/tabs/you-pane/components/install-button/InstallButton";
+import {LanguageSetting} from "@src/react/pages/game/components/settings/tabs/you-pane/components/language-setting/LanguageSetting";
 import {Progress} from "@src/react/pages/game/components/settings/tabs/you-pane/components/progress/Progress";
 import {ReferencesLink} from "@src/react/pages/game/components/settings/tabs/you-pane/components/references-link/ReferencesLink";
 import {ReplayTourButton} from "@src/react/pages/game/components/settings/tabs/you-pane/components/replay-tour-button/ReplayTourButton";
@@ -10,7 +11,7 @@ import {SaveTransfer} from "@src/react/pages/game/components/settings/tabs/you-p
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
 
 /**
- * The You tab: the player rather than a game — their XP and next unlock, optional Google sign-in, the
+ * The You tab: the player rather than a game — the language they read it in, their XP and next unlock, optional Google sign-in, the
  * app, help and reading links, then — folded away, being rarely wanted — the save key that carries progress to another
  * device without an account. The pane scrolls as one column on a phone.
  *
@@ -24,6 +25,8 @@ interface Props {
 export function YouPane({selected}: Props): React.JSX.Element {
   return (
     <SettingsPane name="You" selected={selected}>
+      <LanguageSetting />
+
       <Progress />
 
       <Account />

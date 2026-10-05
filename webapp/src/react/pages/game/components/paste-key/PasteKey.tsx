@@ -1,3 +1,4 @@
+import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
 import {Button} from "@src/react/pages/game/components/button/Button";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {clsx} from "clsx";
@@ -42,6 +43,7 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
 
       <Button
         variant="secondary"
+        className="flex items-center justify-center gap-2"
         data-testid={`${id}-submit`}
         disabled={text.trim() === ""}
         onClick={() => {
@@ -50,6 +52,11 @@ export function PasteKey({id, label, placeholder, onSubmit}: Props): React.JSX.E
           if (submitted.accepted) setText("");
         }}
       >
+        <SvgIcon className="h-4 w-4">
+          <rect x="6" y="5" width="12" height="16" rx="2" />
+
+          <path d="M9 5.5V4h6v1.5M9.5 12h5M9.5 16h5" />
+        </SvgIcon>
         {label}
       </Button>
 

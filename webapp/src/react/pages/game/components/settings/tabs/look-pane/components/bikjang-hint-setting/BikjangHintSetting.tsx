@@ -3,6 +3,7 @@ import {Switch} from "@src/react/pages/game/components/settings/components/switc
 import {bikjangHintChosen} from "@src/redux/preferences/PreferencesSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Whether a move that would leave the opponent a bikjang to call is labelled on the board.
@@ -15,23 +16,21 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
 export function BikjangHintSetting(): React.JSX.Element {
   const {bikjangHint} = usePreferences();
   const dispatch = useAppDispatch();
+  const {look} = useMessages();
 
   return (
     <div className="flex flex-col gap-0.5">
       <Switch
         testId="bikjang-hint-toggle"
         on={bikjangHint.shown}
-        label="Label moves that allow a bikjang"
+        label={look.labelBikjang}
         onToggle={() => {
           const other = BIKJANG_HINTS.find(option => option.shown !== bikjangHint.shown);
           if (other) dispatch(bikjangHintChosen(other.name));
         }}
       />
 
-      <p className="px-2 text-xs text-white/40">
-        Writes 빅장 on a move that would leave the generals facing each other. Offered against a person at the same
-        device and the 800 and 1000 bots only.
-      </p>
+      <p className="px-2 text-xs text-white/40">{look.bikjangHintNote}</p>
     </div>
   );
 }

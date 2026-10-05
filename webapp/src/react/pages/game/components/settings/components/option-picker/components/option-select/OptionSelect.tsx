@@ -27,6 +27,8 @@ interface Props<Option extends WithName> {
   readonly selected: Option | undefined;
   readonly disabled: boolean;
   readonly lockedReason: ((option: Option) => string | undefined) | undefined;
+  /** What an option says, where that is not its name; its `value` stays the name. */
+  readonly labelOf: ((option: Option) => string) | undefined;
   readonly onSelect: (option: Option) => void;
 }
 
@@ -37,6 +39,7 @@ export function OptionSelect<Option extends WithName>({
   selected,
   disabled,
   lockedReason,
+  labelOf,
   onSelect,
 }: Props<Option>): React.JSX.Element {
   return (
@@ -59,6 +62,7 @@ export function OptionSelect<Option extends WithName>({
 
       {options.map(option => {
         const reason = lockedReason?.(option);
+        const words = labelOf?.(option) ?? option.name;
 
         return (
           <option
@@ -69,7 +73,7 @@ export function OptionSelect<Option extends WithName>({
             disabled={reason !== undefined}
             className="bg-ground-raised"
           >
-            {reason === undefined ? option.name : `${option.name} — 🔒 ${reason}`}
+            {reason === undefined ? words : `${words} — 🔒 ${reason}`}
           </option>
         );
       })}

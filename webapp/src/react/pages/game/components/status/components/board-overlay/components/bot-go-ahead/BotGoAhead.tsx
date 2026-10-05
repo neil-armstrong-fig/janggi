@@ -1,5 +1,5 @@
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Over the board while the bot holds the game's first move: that the bot's army moves first, that
@@ -14,6 +14,8 @@ interface Props {
 }
 
 export function BotGoAhead({botSide, onGoAhead}: Props): React.JSX.Element {
+  const {overlays} = useMessages();
+
   return (
     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
       <div className="rounded-2xl border border-wood/40 bg-ground/85 px-6 py-3 text-center shadow-2xl shadow-black backdrop-blur-sm">
@@ -21,10 +23,10 @@ export function BotGoAhead({botSide, onGoAhead}: Props): React.JSX.Element {
           <span role="img" aria-label="Bot">
             🤖
           </span>{" "}
-          The bot plays {sideName(botSide)}, which moves first
+          {overlays.botPlays(botSide)}
         </p>
 
-        <p className="mt-0.5 text-xs text-white/60">The settings stay open until it does.</p>
+        <p className="mt-0.5 text-xs text-white/60">{overlays.settingsStayOpen}</p>
 
         <button
           type="button"
@@ -32,7 +34,7 @@ export function BotGoAhead({botSide, onGoAhead}: Props): React.JSX.Element {
           onClick={onGoAhead}
           className="pointer-events-auto mt-3 h-10 w-full cursor-pointer rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
         >
-          Let the bot start
+          {overlays.letTheBotStart}
         </button>
       </div>
     </div>

@@ -6,6 +6,7 @@ import {OptionPicker} from "@src/react/pages/game/components/settings/components
 import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {strengthToFallBackTo} from "@src/react/pages/game/components/settings/tabs/play-pane/locks/StrengthToFallBackTo";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Which of janggi's two games is being played.
@@ -24,14 +25,16 @@ export function MatchFormatSetting(): React.JSX.Element {
   const withAFriend = useWithAFriend();
   const beaten = useAppSelector(state => state.progress.beaten);
   const dispatch = useAppDispatch();
+  const {play} = useMessages();
 
   return (
     <OptionPicker
       id="match-format"
       disabled={playHasBegun(played) || withAFriend}
-      label="Format"
+      label={play.format}
       ariaLabel="Which of janggi's two games is being played"
       options={MATCH_FORMAT_OPTIONS}
+      labelOf={option => play.formatNames[option.name]}
       selected={{name: phase.format}}
       explanation={<MatchFormatExplanation />}
       onSelect={option => {

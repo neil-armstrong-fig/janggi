@@ -3,6 +3,7 @@ import {DslError} from "@src/dsl/errors/DslError";
 import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
+import type {ControlName} from "@src/dsl/janggi/components/status/types/ControlName";
 import {StatusPlaywright} from "@src/dsl/janggi/components/status/playwright/StatusPlaywright";
 
 /**
@@ -17,6 +18,15 @@ export class StatusDsl {
 
   constructor(page: Page) {
     this.status = new StatusPlaywright(page);
+  }
+
+  /** The words on a control in the row under the board, as the player reads them. */
+  async getControlLabel(control: ControlName): Promise<string> {
+    try {
+      return await this.status.getControlLabel(control);
+    } catch (error) {
+      throw new DslError(`Failed to read the label on the ${control} control`, error);
+    }
   }
 
   /**
@@ -116,6 +126,24 @@ export class StatusDsl {
   }
 
   /** Offers the other army a draw, which it may accept or decline. */
+  /** What an army is called on its plaque. */
+  async getArmyName(side: Side): Promise<string> {
+    try {
+      return await this.status.getArmyName(side);
+    } catch (error) {
+      throw new DslError(`Failed to read what ${side} is called`, error);
+    }
+  }
+
+  /** What the question over the board says, once a draw has been offered. */
+  async getDrawOfferLine(): Promise<string> {
+    try {
+      return await this.status.getDrawOfferLine();
+    } catch (error) {
+      throw new DslError("Failed to read what the draw offer says", error);
+    }
+  }
+
   async offerDraw(): Promise<void> {
     try {
       await this.status.offerDraw();

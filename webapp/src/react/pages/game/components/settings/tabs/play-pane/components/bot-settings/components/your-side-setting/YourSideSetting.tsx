@@ -5,6 +5,7 @@ import {SIDE_CHOICE_OPTIONS} from "@src/react/pages/game/components/settings/tab
 import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {strengthToFallBackTo} from "@src/react/pages/game/components/settings/tabs/play-pane/locks/StrengthToFallBackTo";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Which army the player takes against the bot: Cho, Han, or Random, settled when the game is dealt.
@@ -18,14 +19,16 @@ export function YourSideSetting(): React.JSX.Element {
   const withAFriend = useWithAFriend();
   const beaten = useAppSelector(state => state.progress.beaten);
   const dispatch = useAppDispatch();
+  const {play} = useMessages();
 
   return (
     <OptionPicker
       id="your-side"
       disabled={playHasBegun(played) || withAFriend || opponent.name !== "Bot"}
-      label="Your side"
+      label={play.yourSide}
       ariaLabel="Which army you play against the bot"
       options={SIDE_CHOICE_OPTIONS}
+      labelOf={option => play.sideChoiceNames[option.name]}
       selected={{name: opponent.sideChoice}}
       onSelect={option => {
         const fallBackTo = strengthToFallBackTo({

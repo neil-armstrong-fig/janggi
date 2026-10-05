@@ -12,6 +12,8 @@ import {
   pieceSetSplit,
   preferencesReducer,
   sheetOpacityChanged,
+  languageChosen,
+  languageNoticeDismissed,
   showOpponentLookChosen,
   soundEffectsVolumeChanged,
 } from "@src/redux/preferences/PreferencesSlice";
@@ -32,6 +34,8 @@ it("starts on the classic board and the modern set, with every mark, motion and 
     soundEffectsVolume: 100,
     musicVolume: 100,
     sheetOpacity: 90,
+    language: "en",
+    languageNoticeSeen: false,
   });
 });
 
@@ -170,4 +174,18 @@ it("turns showing the opponent's board and pieces off and on", () => {
 
   expect(off.showOpponentLook).toBe(false);
   expect(preferencesReducer(off, showOpponentLookChosen(true)).showOpponentLook).toBe(true);
+});
+
+it("is read in the language chosen, and the note about the Korean is unread", () => {
+  expect(preferencesReducer(initial(), languageChosen("ko"))).toEqual({...initial(), language: "ko"});
+});
+
+it("keeps the note about the Korean as read until Korean is chosen again", () => {
+  const read = preferencesReducer(preferencesReducer(initial(), languageChosen("ko")), languageNoticeDismissed());
+
+  expect(read.languageNoticeSeen).toBe(true);
+  expect(preferencesReducer(read, languageChosen("en")).languageNoticeSeen).toBe(false);
+  expect(
+    preferencesReducer(preferencesReducer(read, languageChosen("en")), languageChosen("ko")).languageNoticeSeen,
+  ).toBe(false);
 });

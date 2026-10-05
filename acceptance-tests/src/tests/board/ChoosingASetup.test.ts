@@ -95,24 +95,35 @@ given("the two armies are arranged separately", () => {
 
 /**
  * The two armies choose separately but share one place in the sheet — two grids of setups would not
- * fit a phone — so a switch says whose are showing. It starts on the army whose turn it is to lay out.
+ * fit a phone — so a switch says whose are showing. It starts on cho, the switch's first army, unless a scored game still waits on han to lay out.
  */
 given("the two armies' setups share one place in the sheet", () => {
   when("nothing has been chosen yet", () => {
-    then("han's setups are showing and cho's are put away", async ({janggi}) => {
+    then("cho's setups are showing and han's are put away, cho being the switch's first army", async ({janggi}) => {
+      expect(await janggi.settings.choSetup.isShown()).toBe(true);
+      expect(await janggi.settings.hanSetup.isShown()).toBe(false);
+    });
+  });
+
+  when("they play a scored game and nothing has been chosen yet", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.matchFormat.setTo("Scored");
+    });
+
+    then("han's setups are showing and cho's are put away, han having to lay out first", async ({janggi}) => {
       expect(await janggi.settings.hanSetup.isShown()).toBe(true);
       expect(await janggi.settings.choSetup.isShown()).toBe(false);
     });
   });
 
-  when("they turn to cho's army", () => {
+  when("they turn to han's army", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.choSetup.show();
+      await janggi.settings.hanSetup.show();
     });
 
-    then("cho's setups are showing and han's are put away", async ({janggi}) => {
-      expect(await janggi.settings.choSetup.isShown()).toBe(true);
-      expect(await janggi.settings.hanSetup.isShown()).toBe(false);
+    then("han's setups are showing and cho's are put away", async ({janggi}) => {
+      expect(await janggi.settings.hanSetup.isShown()).toBe(true);
+      expect(await janggi.settings.choSetup.isShown()).toBe(false);
     });
 
     then("nothing about either army's arrangement has changed", async ({janggi}) => {

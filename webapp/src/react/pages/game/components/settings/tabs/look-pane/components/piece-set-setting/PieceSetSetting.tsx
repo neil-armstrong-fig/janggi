@@ -6,9 +6,9 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {armyPieceSetChosen, pieceSetChosen, pieceSetSplit} from "@src/redux/preferences/PreferencesSlice";
 import {lockBehindXp} from "@src/react/pages/game/components/settings/tabs/look-pane/locks/LockBehindXp";
 import {pieceSetPrice} from "@src/redux/progress/unlocks/PieceSetPrice";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useOwnPreferences} from "@src/react/pages/game/hooks/use-own-preferences/UseOwnPreferences";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * The pieces the game is drawn with. A preference rather than part of the game, so a choice is worn at
@@ -27,6 +27,7 @@ export function PieceSetSetting(): React.JSX.Element {
   const split = useAppSelector(state => state.preferences.hanPieceSet !== undefined);
   const {armyPieceSets} = useOwnPreferences();
   const dispatch = useAppDispatch();
+  const {look} = useMessages();
 
   const optionsPieceSetStyles = [...BUILT_IN_PIECE_STYLES, ...pieceSets];
   const lockedReason = (pieceSetStyle: PieceSetStyle): string | undefined => {
@@ -38,7 +39,7 @@ export function PieceSetSetting(): React.JSX.Element {
       {!split && (
         <OptionPicker
           id="piece-style"
-          label="Pieces"
+          label={look.pieces}
           options={optionsPieceSetStyles}
           selected={armyPieceSets.cho}
           lockedReason={lockedReason}
@@ -51,7 +52,7 @@ export function PieceSetSetting(): React.JSX.Element {
           <OptionPicker
             key={side}
             id={`${side}-piece-style`}
-            label={`${sideName(side)}'s pieces`}
+            label={look.piecesOf(side)}
             options={optionsPieceSetStyles}
             selected={armyPieceSets[side]}
             lockedReason={lockedReason}
@@ -62,7 +63,7 @@ export function PieceSetSetting(): React.JSX.Element {
       <Switch
         testId="piece-style-split"
         on={split}
-        label="Different pieces for each army"
+        label={look.differentPieces}
         onToggle={() => dispatch(split ? pieceSetChosen(armyPieceSets.cho.name) : pieceSetSplit())}
       />
     </div>

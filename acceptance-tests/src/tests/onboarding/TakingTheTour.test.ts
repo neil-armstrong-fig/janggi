@@ -36,6 +36,11 @@ given("a player who has started the tour from the welcome", () => {
     then("there is nowhere to go back to", async ({janggi}) => {
       expect(await janggi.onboarding.canGoBackInTheTour()).toBe(false);
     });
+
+    then("Back and Next are named for a screen reader, whatever they draw", async ({janggi}) => {
+      expect(await janggi.onboarding.isTourButtonNamed("Back")).toBe(true);
+      expect(await janggi.onboarding.isTourButtonNamed("Next")).toBe(true);
+    });
   });
 
   when("they go on", () => {
@@ -72,6 +77,10 @@ given("a player who has started the tour from the welcome", () => {
     then("it offers to finish", async ({janggi}) => {
       expect(await janggi.onboarding.getTourStep()).toBe(STEPS_IN_THE_TOUR);
       expect(await janggi.onboarding.isFinishOffered()).toBe(true);
+    });
+
+    then("Finish is named for a screen reader, whatever it draws", async ({janggi}) => {
+      expect(await janggi.onboarding.isTourButtonNamed("Finish")).toBe(true);
     });
 
     when("they finish", () => {

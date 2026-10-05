@@ -1,4 +1,5 @@
 import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Plays again the turn most recently taken back.
@@ -15,7 +16,9 @@ interface Props {
 }
 
 export function RedoButton({enabled, onRedo}: Props): React.JSX.Element {
-  return <ControlButton testId="redo" label="Redo" icon={FORWARD} enabled={enabled} onPress={onRedo} />;
+  const {controls} = useMessages();
+
+  return <ControlButton testId="redo" label={controls.redo} icon={FORWARD} enabled={enabled} onPress={onRedo} />;
 }
 
 const FORWARD = (

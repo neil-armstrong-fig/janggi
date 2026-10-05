@@ -7,10 +7,8 @@ export type TourSheet = "closed" | SettingsTabName;
 /** What moves a step on by itself: tapping what it points at, or a move being made. */
 export type TourAdvance = "tap" | "move";
 
-/** One card of the tour: what it is called, what it says, and what it does to the page it is over. */
+/** One card of the tour: what it does to the page it is over. What it says is in `Messages`. */
 export interface TourStep {
-  readonly title: string;
-  readonly body: string;
   /** What the spotlight goes round, where there is something to go round. */
   readonly target?: TourTargetName;
   /** What the settings sheet is put to as the step comes up. */

@@ -11,6 +11,7 @@ import {useAppSelector} from "@src/redux/Hooks";
 import {useBotEngine} from "@src/react/pages/game/hooks/use-bot-engine/UseBotEngine";
 import {useBotOpponent} from "@src/react/pages/game/hooks/use-bot-opponent/UseBotOpponent";
 import {FriendSignIn} from "@src/react/pages/game/components/friend-sign-in/FriendSignIn";
+import {useDocumentLanguage} from "@src/react/pages/game/hooks/use-document-language/UseDocumentLanguage";
 import {useFriendRoom} from "@src/react/pages/game/hooks/use-friend-room/UseFriendRoom";
 import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAudio";
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
@@ -18,6 +19,7 @@ import {useHaptics} from "@src/react/pages/game/hooks/use-haptics/UseHaptics";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useRatedGame} from "@src/react/pages/game/hooks/use-rated-game/UseRatedGame";
 import {useState} from "react";
+import {LanguageNotice} from "@src/react/pages/game/components/language-notice/LanguageNotice";
 
 /**
  * The screen a game is played on, in the four sections the acceptance-test DSL already names:
@@ -65,6 +67,7 @@ export function GamePage(): React.JSX.Element {
   const sound = useGameAudio({played, moment, soundEffectsVolume, musicVolume});
   useHaptics(played, moment, effects.full);
   useBotEngine(engine);
+  useDocumentLanguage();
   useBotOpponent(engine);
   useRatedGame(moment);
   useFriendRoom();
@@ -88,6 +91,8 @@ export function GamePage(): React.JSX.Element {
       <PlayAFriend />
 
       <Onboarding />
+
+      <LanguageNotice />
 
       <FriendSignIn />
     </main>

@@ -26,6 +26,11 @@ export class MusicSettingPlaywright extends SettingsSheetComponent {
     return Number(await this.slider.inputValue());
   }
 
+  /** What the mute is called, for a screen reader. */
+  async getMuteLabel(): Promise<string> {
+    return (await this.mute.getAttribute("aria-label")) ?? "";
+  }
+
   async isMuted(): Promise<boolean> {
     return (await this.mute.getAttribute("aria-pressed")) === "true";
   }

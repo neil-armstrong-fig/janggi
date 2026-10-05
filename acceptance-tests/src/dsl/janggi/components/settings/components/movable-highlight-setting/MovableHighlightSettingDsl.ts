@@ -19,6 +19,15 @@ export class MovableHighlightSettingDsl {
     }
   }
 
+  /** The words beside the switch, as the player reads them. */
+  async getLabel(): Promise<string> {
+    try {
+      return await this.movableHighlight.getLabel();
+    } catch (error) {
+      throw new DslError("Failed to read the words beside the movable-piece switch", error);
+    }
+  }
+
   async getSelected(): Promise<MovableHighlightName | undefined> {
     try {
       return await this.movableHighlight.getSelected();

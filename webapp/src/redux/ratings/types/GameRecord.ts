@@ -1,6 +1,6 @@
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {GameEnding} from "@src/redux/ratings/types/GameEnding";
-import type {GameResult} from "@src/redux/ratings/types/GameResult";
+import type {GameEnding} from "@janggi/shared/janggi/results/GameEnding";
+import type {GameResult} from "@janggi/shared/janggi/results/GameResult";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 

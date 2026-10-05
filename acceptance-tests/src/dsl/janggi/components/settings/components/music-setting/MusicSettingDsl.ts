@@ -35,6 +35,15 @@ export class MusicSettingDsl {
     }
   }
 
+  /** What the mute is called, for a screen reader. */
+  async getMuteLabel(): Promise<string> {
+    try {
+      return await this.music.getMuteLabel();
+    } catch (error) {
+      throw new DslError("Failed to read what the music's mute is called", error);
+    }
+  }
+
   async isMuted(): Promise<boolean> {
     try {
       return await this.music.isMuted();

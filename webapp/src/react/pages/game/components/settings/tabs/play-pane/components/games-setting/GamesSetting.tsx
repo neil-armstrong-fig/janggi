@@ -2,11 +2,11 @@ import {chooseGame} from "@src/redux/online/actions/ChooseGame";
 import {clsx} from "clsx";
 import {friendGameOf} from "@src/redux/online/selecting/FriendGameOf";
 import {GAMES_SHOWN} from "@janggi/shared/janggi/online/GameShown";
-import type {GameShown} from "@janggi/shared/janggi/online/GameShown";
 import {inFriendRoom} from "@src/redux/online/selecting/InFriendRoom";
 import {mayActInFriendGame} from "@src/redux/online/selecting/MayActInFriendGame";
 import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Which game is on the board: the player's own — against the bot, or at the one device — or the friend's. Always
@@ -18,6 +18,7 @@ export function GamesSetting(): React.JSX.Element {
   const friend = useAppSelector(state => state.friend);
   const game = useAppSelector(state => state.game);
   const dispatch = useAppDispatch();
+  const {play} = useMessages();
 
   // With no game with a friend, `viewing` is only its initial value: the board is the player's own.
   const onTheBoard = inFriendRoom(friend) ? friend.viewing : "local";
@@ -26,7 +27,7 @@ export function GamesSetting(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-2" {...tourTarget("friend")}>
       <div className="flex items-center gap-3">
-        <span className="text-xs font-medium text-white/60">Games</span>
+        <span className="text-xs font-medium text-white/60">{play.games}</span>
 
         <div data-testid="games-picker" role="group" aria-label="Which game is on the board" className="flex gap-1">
           {GAMES_SHOWN.map(shown => (
@@ -44,8 +45,8 @@ export function GamesSetting(): React.JSX.Element {
                 onTheBoard !== shown && "text-white/60 hover:bg-white/10",
               )}
             >
-              {LABELS[shown]}
-              {shown === "friend" && yourMove && " · your move"}
+              {play.gameNames[shown]}
+              {shown === "friend" && yourMove && play.yourMove}
             </button>
           ))}
         </div>
@@ -53,5 +54,3 @@ export function GamesSetting(): React.JSX.Element {
     </div>
   );
 }
-
-const LABELS: Record<GameShown, string> = {local: "Local", friend: "Online"};

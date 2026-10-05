@@ -1,4 +1,4 @@
-import type {GameResult} from "@src/redux/ratings/types/GameResult";
+import type {GameResult} from "@janggi/shared/janggi/results/GameResult";
 
 /** One finished game, from the rating's point of view: where it stood, how settled it is, and how it went. */
 export interface EloChange {

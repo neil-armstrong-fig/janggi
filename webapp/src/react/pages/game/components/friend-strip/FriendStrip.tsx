@@ -9,9 +9,7 @@ import {leaveFriendRoom} from "@src/redux/online/actions/LeaveFriendRoom";
 import {sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import type {FriendGameState} from "@janggi/shared/janggi/online/FriendGameState";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
-
-const SIDE_WORDS: Record<Side, string> = {han: "Han", cho: "Cho"};
+import {sideName} from "@src/react/pages/game/utils/SideNames";
 
 const CONNECTION_WORDS: Record<FriendConnectionStatus, string> = {
   connecting: "Connecting…",
@@ -84,7 +82,7 @@ export function FriendStrip(): React.JSX.Element | null {
 
       {friend.ownSide !== undefined && (
         <span data-testid="friend-own-side" data-side={friend.ownSide} className="sr-only">
-          You are {SIDE_WORDS[friend.ownSide]}
+          You are {sideName(friend.ownSide)}
         </span>
       )}
 

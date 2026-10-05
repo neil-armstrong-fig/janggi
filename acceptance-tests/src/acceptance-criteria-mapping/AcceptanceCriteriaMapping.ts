@@ -83,6 +83,11 @@ export function useFreshPlayer(): void {
   test.use({freshPlayer: true});
 }
 
+/** Opens the app in a browser whose preferred language is Korean, for a spec about the game being read in it from the first visit. */
+export function useKoreanBrowser(): void {
+  test.use({locale: "ko-KR"});
+}
+
 export {expect} from "@src/acceptance-criteria-mapping/AcceptanceTestFixtures";
 
 function suite(prefix: string): Suite {

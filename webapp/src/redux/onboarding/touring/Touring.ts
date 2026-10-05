@@ -1,6 +1,6 @@
 import type {OnboardingSliceState} from "@src/redux/onboarding/types/OnboardingSliceState";
 import type {TourStepsSkipped} from "@src/redux/onboarding/touring/types/TourStepsSkipped";
-import {TOUR_STEP_NAMES} from "@src/redux/onboarding/touring/TourStepName";
+import {TOUR_STEP_NAMES} from "@janggi/shared/janggi/onboarding/TourStepName";
 
 /** The tour, at its first step. */
 export function tourBegun(): OnboardingSliceState {

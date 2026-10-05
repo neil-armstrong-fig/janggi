@@ -57,6 +57,7 @@ export function preferencesFrom(
     flipBoardForHan: names.flipBoardForHan,
     effects: namedIn(EFFECTS, names.effects),
     soundEffectsVolume: names.soundEffectsVolume,
+    language: names.language,
     musicVolume: names.musicVolume,
     sheetOpacity: names.sheetOpacity,
   };

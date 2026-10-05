@@ -14,13 +14,14 @@ import {useState} from "react";
  * So only one grid shows at a time. **Both stay in the page**, the other only hidden, so each army's
  * chosen setup and whether it may still be chosen are read the same whichever is showing.
  *
- * **It starts on the army whose turn it is to lay out** — Han's, and in a scored game Cho's once Han
- * has chosen, since Cho answers Han's arrangement (`canPlace`). A player who presses the switch is
+ * **It starts on Cho**, the switch's first army, so the left-hand button is the one pressed — except in
+ * a scored game still waiting on Han, who must lay out first and Cho only answers (`canPlace`), when
+ * it starts on Han's. Once Han has chosen, it is Cho's again. A player who presses the switch is
  * shown what they asked for, until the game moves on to the other army and the switch follows.
  */
 export function SetupSettings(): React.JSX.Element {
   const phase = useAppSelector(state => state.game.phase);
-  const nextToLayOut: Side = canPlace(phase, "han") ? "han" : "cho";
+  const nextToLayOut: Side = canPlace(phase, "cho") ? "cho" : "han";
   const [asked, setAsked] = useState<Side | undefined>(undefined);
   const [followed, setFollowed] = useState<Side>(nextToLayOut);
 

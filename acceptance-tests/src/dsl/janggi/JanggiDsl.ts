@@ -11,6 +11,7 @@ import {PlayAFriendDsl} from "@src/dsl/janggi/components/play-a-friend/PlayAFrie
 import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
+import {LanguageNoticeDsl} from "@src/dsl/janggi/components/language-notice/LanguageNoticeDsl";
 import {ToastDsl} from "@src/dsl/janggi/components/toast/ToastDsl";
 import {ReleaseUpdateDsl} from "@src/dsl/janggi/components/release-update/ReleaseUpdateDsl";
 import {ReferencesDsl} from "@src/dsl/janggi/components/references/ReferencesDsl";
@@ -55,6 +56,7 @@ export class JanggiDsl {
   readonly references: ReferencesDsl;
   readonly releaseUpdate: ReleaseUpdateDsl;
   readonly toast: ToastDsl;
+  readonly languageNotice: LanguageNoticeDsl;
   readonly stylesSheet: StylesSheetDsl;
   readonly debug: DebugDsl;
 
@@ -75,6 +77,7 @@ export class JanggiDsl {
     this.references = new ReferencesDsl(page);
     this.releaseUpdate = new ReleaseUpdateDsl(page);
     this.toast = new ToastDsl(page);
+    this.languageNotice = new LanguageNoticeDsl(page);
     this.stylesSheet = new StylesSheetDsl(page);
     this.debug = new DebugDsl(page);
   }
@@ -206,6 +209,14 @@ export class JanggiDsl {
       return await this.janggi.wasInstallationPrompted();
     } catch (error) {
       throw new DslError("Failed to check whether the browser offered to save Janggi", error);
+    }
+  }
+
+  async getPageLanguage(): Promise<string> {
+    try {
+      return await this.janggi.getPageLanguage();
+    } catch (error) {
+      throw new DslError("Failed to read the language the page declares", error);
     }
   }
 

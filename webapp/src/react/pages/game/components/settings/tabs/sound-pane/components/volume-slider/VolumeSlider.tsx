@@ -3,6 +3,7 @@ import {SpeakerIcon} from "@src/react/pages/game/components/settings/tabs/sound-
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
 import {clsx} from "clsx";
 import {useState} from "react";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * How loud one kind of sound is: a slider from muted to full, with a speaker beside it that mutes
@@ -22,12 +23,15 @@ interface Props {
   /** Prefixes the `data-testid` of the slider and of its mute. */
   readonly id: string;
   readonly label: string;
+  /** What the speaker is called for a screen reader, written out whole so it can be said in any language. */
+  readonly muteLabel: string;
   readonly volume: Volume;
   readonly onChange: (volume: Volume) => void;
 }
 
-export function VolumeSlider({id, label, volume, onChange}: Props): React.JSX.Element {
+export function VolumeSlider({id, label, muteLabel, volume, onChange}: Props): React.JSX.Element {
   const [unmuteTo, setUnmuteTo] = useState<Volume>(FULL_VOLUME);
+  const {sound} = useMessages();
   const muted = volume === MUTED_VOLUME;
 
   const toggleMute = (): void => {
@@ -48,7 +52,7 @@ export function VolumeSlider({id, label, volume, onChange}: Props): React.JSX.El
         </label>
 
         <span aria-hidden className={clsx("text-xs tabular-nums", muted && "text-danger", !muted && "text-white/40")}>
-          {muted ? "Muted" : `${volume}%`}
+          {muted ? sound.muted : `${volume}%`}
         </span>
       </div>
 
@@ -56,7 +60,7 @@ export function VolumeSlider({id, label, volume, onChange}: Props): React.JSX.El
         <button
           type="button"
           data-testid={`${id}-mute`}
-          aria-label={`Mute ${label.toLowerCase()}`}
+          aria-label={muteLabel}
           aria-pressed={muted}
           onClick={toggleMute}
           className={clsx(

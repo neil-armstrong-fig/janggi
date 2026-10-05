@@ -77,6 +77,11 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   }
 
   /** Only opens the sheet: dealing a new game closes it, so the player is looking at the new board. */
+  /** The words on the New game button, as written rather than as the stylesheet draws them. */
+  async getNewGameLabel(): Promise<string> {
+    return ((await this.newGame.textContent()) ?? "").trim();
+  }
+
   async startNewGame(): Promise<void> {
     await this.openSheet(this.newGame);
     await this.newGame.click();
@@ -103,6 +108,16 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   /** Whether a tab is marked as the one chosen, read off its `aria-selected`. */
   async isTabSelected(name: SettingsTabName): Promise<boolean> {
     return (await this.tabNamed(name).getAttribute("aria-selected")) === "true";
+  }
+
+  /** The words on a tab, as the player reads them. */
+  async getTabLabel(name: SettingsTabName): Promise<string> {
+    return ((await this.tabNamed(name).textContent()) ?? "").trim();
+  }
+
+  /** Whether a tab draws a picture beside its name, so it can be told apart without reading it. */
+  async isTabIconShown(name: SettingsTabName): Promise<boolean> {
+    return await this.tabNamed(name).getByTestId("settings-tab-icon").isVisible();
   }
 
   /** The selected layer has exactly the tab button's bounds, so no inset or stale column width remains. */

@@ -2,6 +2,7 @@ import type {ArmyBoardStyles} from "@src/styles/board-halves/types/ArmyBoardStyl
 import type {ArmyPieceSets} from "@src/styles/piece-sets/types/ArmyPieceSets";
 import type {BikjangHint} from "@src/react/pages/game/types/BikjangHint";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
+import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {Effects} from "@src/react/pages/game/types/Effects";
 import type {MovableHighlight} from "@src/react/pages/game/types/MovableHighlight";
 import type {Opacity} from "@janggi/shared/janggi/settings/Opacity";
@@ -29,6 +30,7 @@ export interface Preferences {
   readonly flipBoardForHan: boolean;
   readonly effects: Effects;
   readonly soundEffectsVolume: Volume;
+  readonly language: LanguageName;
   readonly musicVolume: Volume;
   readonly sheetOpacity: Opacity;
 }

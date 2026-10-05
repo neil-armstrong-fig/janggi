@@ -29,6 +29,28 @@ given("a player at the welcome, who has read what Janggi is", () => {
     });
   });
 
+  when("they choose Korean", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.onboarding.setWelcomeLanguageTo("ko");
+    });
+
+    then("the welcome goes on in Korean", async ({janggi}) => {
+      expect(await janggi.onboarding.getWelcomeText()).toContain("취향에 맞게 설정");
+    });
+
+    when("they start the tour", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.onboarding.startTheTour();
+        await janggi.onboarding.skipTheTour();
+      });
+
+      then("the game is read in Korean from then on", async ({janggi}) => {
+        expect(await janggi.settings.language.getSelected()).toBe("ko");
+        expect(await janggi.status.getControlLabel("pass")).toBe("한수쉼");
+      });
+    });
+  });
+
   when("they start the tour without changing anything", () => {
     beforeEach(async ({janggi}) => {
       await janggi.onboarding.startTheTour();

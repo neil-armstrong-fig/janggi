@@ -1,4 +1,5 @@
 import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Offers the other army a draw — 합의 무승부, which friendly janggi allows and a tournament does not.
@@ -18,7 +19,9 @@ interface Props {
 }
 
 export function DrawButton({enabled, onOffer}: Props): React.JSX.Element {
-  return <ControlButton testId="draw" label="Draw" icon={EQUAL} enabled={enabled} onPress={onOffer} />;
+  const {controls} = useMessages();
+
+  return <ControlButton testId="draw" label={controls.draw} icon={EQUAL} enabled={enabled} onPress={onOffer} />;
 }
 
 /** Two equal bars: nobody ahead. */

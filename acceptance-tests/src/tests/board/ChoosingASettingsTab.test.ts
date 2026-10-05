@@ -1,3 +1,4 @@
+import {SETTINGS_TAB_NAMES} from "@janggi/shared/janggi/settings/SettingsTabName";
 import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-mapping/AcceptanceCriteriaMapping";
 
 /**
@@ -58,6 +59,20 @@ given("a player opens the settings", () => {
       expect(await janggi.settings.isTabShowing("Play")).toBe(true);
     });
   });
+
+  when.each(
+    SETTINGS_TAB_NAMES,
+    name => `they look at the ${name} tab`,
+    name => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+      });
+
+      then("it shows a picture as well as its name, so it can be told apart without reading", async ({janggi}) => {
+        expect(await janggi.settings.isTabIconShown(name)).toBe(true);
+      });
+    },
+  );
 
   when("they open the settings on a narrow phone", () => {
     beforeEach(async ({janggi}) => {

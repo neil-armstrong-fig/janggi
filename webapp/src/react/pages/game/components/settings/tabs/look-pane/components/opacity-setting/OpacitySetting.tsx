@@ -2,6 +2,7 @@ import {FULL_OPACITY, MINIMUM_OPACITY} from "@janggi/shared/janggi/settings/Opac
 import {sheetOpacityChanged} from "@src/redux/preferences/PreferencesSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * How see-through the settings sheet's own panel is, from the floor a phone still reads it clearly
@@ -10,12 +11,13 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
 export function OpacitySetting(): React.JSX.Element {
   const {sheetOpacity} = usePreferences();
   const dispatch = useAppDispatch();
+  const {look} = useMessages();
 
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-baseline justify-between">
         <label htmlFor="sheet-opacity" className="text-xs font-medium text-white/60">
-          Settings transparency
+          {look.transparency}
         </label>
 
         <span aria-hidden className="text-xs tabular-nums text-white/40">

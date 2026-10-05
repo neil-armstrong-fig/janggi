@@ -1,4 +1,5 @@
 import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Opens the settings sheet.
@@ -12,8 +13,16 @@ interface Props {
 }
 
 export function SettingsButton({onOpen}: Props): React.JSX.Element {
+  const {controls} = useMessages();
+
   return (
-    <ControlButton testId="settings-open" label="Settings" icon={SLIDERS} tourTarget="settings" onPress={onOpen} />
+    <ControlButton
+      testId="settings-open"
+      label={controls.settings}
+      icon={SLIDERS}
+      tourTarget="settings"
+      onPress={onOpen}
+    />
   );
 }
 

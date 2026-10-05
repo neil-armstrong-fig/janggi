@@ -16,6 +16,24 @@ export class RecordSheetDsl {
     this.record = new RecordSheetPlaywright(page);
   }
 
+  /** The words on the button that opens the record, as the player reads them. */
+  async getOpenerLabel(): Promise<string> {
+    try {
+      return await this.record.getOpenerLabel();
+    } catch (error) {
+      throw new DslError("Failed to read the label on the button that opens the record", error);
+    }
+  }
+
+  /** What the reset button says, as the player reads it. */
+  async getResetLabel(): Promise<string> {
+    try {
+      return await this.record.getResetLabel();
+    } catch (error) {
+      throw new DslError("Failed to read the label on the record's reset button", error);
+    }
+  }
+
   async openRecord(): Promise<void> {
     try {
       await this.record.openRecord();

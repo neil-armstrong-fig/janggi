@@ -1,5 +1,6 @@
 import type {BikjangHintName} from "@janggi/shared/janggi/settings/BikjangHintName";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
+import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {Opacity} from "@janggi/shared/janggi/settings/Opacity";
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
@@ -51,4 +52,11 @@ export interface PreferencesSliceState {
   readonly soundEffectsVolume: Volume;
   readonly musicVolume: Volume;
   readonly sheetOpacity: Opacity;
+  /** What the game is read in. Kept on the device, not synced: a phone may be read in one language and a laptop in another. */
+  readonly language: LanguageName;
+  /**
+   * Whether the player has read that the Korean is still being written. Choosing Korean puts it back to
+   * unread, so the note is told again each time; English never asks. Kept on the device, with the language.
+   */
+  readonly languageNoticeSeen: boolean;
 }

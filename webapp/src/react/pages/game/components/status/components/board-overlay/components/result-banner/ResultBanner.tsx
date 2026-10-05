@@ -4,13 +4,15 @@ import type {Reward} from "@src/react/pages/game/components/status/components/bo
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
+import type {Messages} from "@src/language/types/Messages";
+import type {ResultMessages} from "@src/language/types/ResultMessages";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {XpBar} from "@src/react/pages/game/components/xp-bar/XpBar";
 import type {Wording} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/types/Wording";
 
 /**
  * The end of a game, announced over the board: the result's name in Korean — 외통, 점수승, 빅장 — and
- * in plain English beneath it, with both scores where it was settled on points, and New game.
+ * in plain words beneath it, in the language the game is read in, with both scores where it was settled on points, and New game.
  *
  * Over the board rather than in the herald's line because it is the one moment everyone at the table
  * needs to take in at once. **New game is offered here** because the end of a game is exactly when a
@@ -72,7 +74,9 @@ export function ResultBanner({
   onStartNewGame,
   onStartNewGameAtBotElo,
 }: Props): React.JSX.Element | null {
-  const wording = wordingOf(status);
+  const messages = useMessages();
+  const {result, sides} = messages;
+  const wording = wordingOf(status, result);
   if (!wording) return null;
 
   return (
@@ -93,11 +97,11 @@ export function ResultBanner({
           {wording.korean}
         </p>
 
-        <p className="mt-0.5 text-sm font-semibold tracking-wide text-white/90 uppercase">{wording.english}</p>
+        <p className="mt-0.5 text-sm font-semibold tracking-wide text-white/90 uppercase">{wording.plain}</p>
 
         {status.kind === "wonOnPoints" && (
           <p className="mt-1 text-xs text-white/60 tabular-nums">
-            {sideName("cho")} {scores.cho} · {sideName("han")} {scores.han}
+            {sides.cho} {scores.cho} · {sides.han} {scores.han}
           </p>
         )}
 
@@ -107,13 +111,13 @@ export function ResultBanner({
             data-called-by={bikjangCalledBy}
             className="mx-auto mt-2 max-w-64 text-xs leading-snug text-white/70"
           >
-            {bikjangExplanationOf(status, bikjangCalledBy, botSide)}
+            {messages.result.bikjangExplanation(callerOf(bikjangCalledBy, botSide, messages), status.kind === "drawn")}
           </p>
         )}
 
         {repetitionEndedIt && (
           <p data-testid="result-explanation" className="mx-auto mt-2 max-w-64 text-xs leading-snug text-white/70">
-            {repetitionExplanationOf(status)}
+            {result.repetitionExplanation(status.kind === "drawn")}
           </p>
         )}
 
@@ -143,7 +147,7 @@ export function ResultBanner({
           onClick={onStartNewGame}
           className="pointer-events-auto mt-3 h-10 w-full cursor-pointer rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
         >
-          New game
+          {result.newGame}
         </button>
 
         <button
@@ -152,7 +156,7 @@ export function ResultBanner({
           onClick={onShowBoard}
           className="pointer-events-auto mt-2 h-10 w-full cursor-pointer rounded-xl bg-black/25 px-5 text-sm font-semibold tracking-wide text-white/80 uppercase transition-[transform,background-color] duration-150 hover:bg-black/35 active:scale-[0.97] motion-reduce:transition-none"
         >
-          Show board
+          {result.showBoard}
         </button>
 
         {nextBotElo !== undefined && (
@@ -162,7 +166,7 @@ export function ResultBanner({
             onClick={() => onStartNewGameAtBotElo(nextBotElo)}
             className="pointer-events-auto mt-2 h-10 w-full cursor-pointer rounded-xl bg-gold px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-gold/90 active:scale-[0.97] motion-reduce:transition-none"
           >
-            New game at {nextBotElo}
+            {result.newGameAt(nextBotElo)}
           </button>
         )}
       </div>
@@ -170,14 +174,14 @@ export function ResultBanner({
   );
 }
 
-function wordingOf(status: GameStatus): Wording | undefined {
+function wordingOf(status: GameStatus, result: ResultMessages): Wording | undefined {
   switch (status.kind) {
     case "won":
-      return {korean: "외통", english: `${sideName(status.by)} wins by checkmate`};
+      return {korean: "외통", plain: result.won(status.by)};
     case "wonOnPoints":
-      return {korean: "점수승", english: `${sideName(status.by)} wins on points`};
+      return {korean: "점수승", plain: result.wonOnPoints(status.by)};
     case "drawn":
-      return {korean: status.by === "bikjang" ? "빅장" : "무승부", english: `Drawn by ${status.by}`};
+      return {korean: status.by === "bikjang" ? "빅장" : "무승부", plain: result.drawn[status.by]};
     case "toMove":
     case "inCheck":
     case "layingOut":
@@ -185,33 +189,9 @@ function wordingOf(status: GameStatus): Wording | undefined {
   }
 }
 
-/**
- * A repetition that ended the game, told to someone who expects chess's rule and meets a different one:
- * repeating is barred while an army holds thirty points, and below it nothing bars it, so it is what
- * stops a game with nothing left to play for. What it settles is the format's — a casual game draws,
- * and a scored one has no draw and goes to the points. `docs/rules.md` §6.4.
- */
-function repetitionExplanationOf(status: GameStatus): string {
-  const cause =
-    "The same position stood a third time. With each army under thirty points, repeating is allowed, so nothing else would end it.";
+/** Who called the bikjang that ended the game: the bot, with the army it plays, or the army itself. */
+function callerOf(calledBy: Side, botSide: Side | undefined, {result, sides}: Messages): string {
+  if (calledBy === botSide) return result.botPlaying(calledBy);
 
-  if (status.kind === "drawn") return `${cause} A casual game is drawn.`;
-
-  return `${cause} A scored game has no draw, so it stops and the points decide it.`;
-}
-
-/**
- * A called bikjang, told to someone who has never met one. What it settles is the format's to say —
- * `docs/rules.md` §6.2 — and the result's kind already carries that: a casual call draws, and a scored
- * one goes to the points.
- */
-function bikjangExplanationOf(status: GameStatus, calledBy: Side, botSide: Side | undefined): string {
-  const caller = calledBy === botSide ? `The bot, playing ${sideName(calledBy)},` : sideName(calledBy);
-  const facing = "the two generals stood facing each other down an open file, with nothing between them.";
-
-  if (status.kind === "drawn") {
-    return `${caller} called bikjang: ${facing} Unlike chess, janggi lets the player to move call that a draw, so leaving the generals facing hands the other player the call.`;
-  }
-
-  return `${caller} called bikjang: ${facing} In a scored game that call ends the game, and it is settled on points.`;
+  return sides[calledBy];
 }

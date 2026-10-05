@@ -2,6 +2,7 @@ import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/pla
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {restarted} from "@src/redux/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Deals a fresh game, abandoning whatever was being played.
@@ -25,6 +26,7 @@ export function NewGameButton({onStarted}: Props): React.JSX.Element {
   const {played, opponent} = useAppSelector(state => state.game);
   const withAFriend = useWithAFriend();
   const dispatch = useAppDispatch();
+  const {play} = useMessages();
 
   return (
     <div className="flex flex-1 flex-col gap-1">
@@ -38,11 +40,11 @@ export function NewGameButton({onStarted}: Props): React.JSX.Element {
         }}
         className="h-12 cursor-pointer disabled:cursor-default disabled:opacity-40 rounded-xl border border-wood/40 text-sm font-semibold tracking-wide text-wood uppercase transition-[transform,background-color] duration-150 hover:bg-wood/10 active:scale-[0.98] motion-reduce:transition-none"
       >
-        New game
+        {play.newGame}
       </button>
 
       {opponent.name === "Bot" && playHasBegun(played) && (
-        <p className="text-xs text-white/50">Starting a new game now counts as a loss.</p>
+        <p className="text-xs text-white/50">{play.newGameCostsALoss}</p>
       )}
     </div>
   );

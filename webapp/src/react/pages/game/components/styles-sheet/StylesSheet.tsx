@@ -59,6 +59,7 @@ export function StylesSheet(): React.JSX.Element {
       closeTestId="styles-close"
       backTestId="styles-back"
       title="Your styles"
+      closeLabel="Close your styles"
       open={open}
       onClose={onClose}
       onBack={onBack}

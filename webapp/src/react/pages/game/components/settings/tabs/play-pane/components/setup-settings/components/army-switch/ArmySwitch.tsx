@@ -1,6 +1,6 @@
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Cho | Han, in the order they move: which army's opening setup is showing beneath it.
@@ -15,9 +15,11 @@ interface Props {
 }
 
 export function ArmySwitch({showing, onShow}: Props): React.JSX.Element {
+  const {play, sides} = useMessages();
+
   return (
     <div className="flex items-center gap-3">
-      <span className="w-24 shrink-0 text-xs font-medium text-white/60">Setup</span>
+      <span className="w-24 shrink-0 text-xs font-medium text-white/60">{play.setup}</span>
 
       <div
         role="group"
@@ -37,7 +39,7 @@ export function ArmySwitch({showing, onShow}: Props): React.JSX.Element {
               side !== showing && "text-white/70 hover:bg-white/10",
             )}
           >
-            {sideName(side)}
+            {sides[side]}
           </button>
         ))}
       </div>

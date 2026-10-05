@@ -1,7 +1,8 @@
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
+import type {AnnouncementMessages} from "@src/language/types/AnnouncementMessages";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 
@@ -13,6 +14,8 @@ interface Announcement {
   readonly engineFailed: boolean;
   /** The bot's engine is still being started, and the game is held until it is up. */
   readonly engineLoading: boolean;
+  /** The words to say it in. */
+  readonly words: AnnouncementMessages;
 }
 
 /**
@@ -42,12 +45,13 @@ interface Announcement {
 export function TurnIndicator(): React.JSX.Element {
   const {status, botsTurn, awaitingGoAhead, engineHoldsPlay, botEngine} = useGameStatus();
   const {effects} = usePreferences();
+  const {announcements} = useMessages();
 
   const botToMove = botsTurn && !awaitingGoAhead;
   const engineFailed = engineHoldsPlay && botEngine.status === "failed";
   const engineLoading = engineHoldsPlay && !engineFailed;
   const winner = winnerOf(status);
-  const announcement = announcementFor({status, botToMove, engineFailed, engineLoading});
+  const announcement = announcementFor({status, botToMove, engineFailed, engineLoading, words: announcements});
 
   return (
     <p
@@ -79,39 +83,39 @@ export function TurnIndicator(): React.JSX.Element {
  * What the line says. A bot whose engine is not up comes before whose turn it is: the game is held, and
  * "thinking" would be a lie about a bot that has not been asked.
  */
-function announcementFor({status, botToMove, engineFailed, engineLoading}: Announcement): string {
-  if (engineFailed) return "Bot unavailable";
-  if (engineLoading) return "Bot is loading";
+function announcementFor({status, botToMove, engineFailed, engineLoading, words}: Announcement): string {
+  if (engineFailed) return words.botUnavailable;
+  if (engineLoading) return words.botLoading;
 
   if (botToMove) {
-    return botAnnouncementOf(status);
+    return botAnnouncementOf(status, words);
   }
 
-  return announcementOf(status);
+  return announcementOf(status, words);
 }
 
-function botAnnouncementOf(status: GameStatus): string {
+function botAnnouncementOf(status: GameStatus, words: AnnouncementMessages): string {
   if (status.kind === "layingOut") {
-    return "Bot is laying out";
+    return words.botLayingOut;
   }
 
-  return "Bot is thinking";
+  return words.botThinking;
 }
 
-function announcementOf(status: GameStatus): string {
+function announcementOf(status: GameStatus, words: AnnouncementMessages): string {
   switch (status.kind) {
     case "won":
-      return `${sideName(status.by)} wins`;
+      return words.won(status.by);
     case "wonOnPoints":
-      return `${sideName(status.by)} wins on points`;
+      return words.wonOnPoints(status.by);
     case "drawn":
-      return `Drawn by ${status.by}`;
+      return words.drawn[status.by];
     case "inCheck":
-      return `${sideName(status.side)} is in check`;
+      return words.inCheck(status.side);
     case "toMove":
-      return `${sideName(status.side)} to move`;
+      return words.toMove(status.side);
     case "layingOut":
-      return `${sideName(status.side)} to lay out`;
+      return words.layingOut(status.side);
   }
 }
 

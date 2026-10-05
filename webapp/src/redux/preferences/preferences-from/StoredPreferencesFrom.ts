@@ -2,6 +2,7 @@ import {BIKJANG_HINT_NAMES} from "@janggi/shared/janggi/settings/BikjangHintName
 import {EFFECTS_NAMES} from "@janggi/shared/janggi/settings/EffectsName";
 import {FULL_VOLUME, MUTED_VOLUME} from "@janggi/shared/janggi/settings/Volume";
 import {FULL_OPACITY, MINIMUM_OPACITY} from "@janggi/shared/janggi/settings/Opacity";
+import {LANGUAGE_NAMES} from "@janggi/shared/janggi/settings/LanguageName";
 import {MOVABLE_HIGHLIGHT_NAMES} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
 import type {Volume} from "@janggi/shared/janggi/settings/Volume";
@@ -38,6 +39,8 @@ export function storedPreferencesFrom(stored: unknown): PreferencesSliceState {
     soundEffectsVolume,
     musicVolume,
     sheetOpacity,
+    language,
+    languageNoticeSeen,
   } = stored;
 
   return {
@@ -53,6 +56,8 @@ export function storedPreferencesFrom(stored: unknown): PreferencesSliceState {
     soundEffectsVolume: isVolume(soundEffectsVolume) ? soundEffectsVolume : defaults.soundEffectsVolume,
     musicVolume: isVolume(musicVolume) ? musicVolume : defaults.musicVolume,
     sheetOpacity: isNumberBetween(sheetOpacity, MINIMUM_OPACITY, FULL_OPACITY) ? sheetOpacity : defaults.sheetOpacity,
+    language: isAmong(LANGUAGE_NAMES, language) ? language : defaults.language,
+    languageNoticeSeen: typeof languageNoticeSeen === "boolean" ? languageNoticeSeen : defaults.languageNoticeSeen,
   };
 }
 

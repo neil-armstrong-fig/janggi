@@ -1,3 +1,5 @@
+import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
+import type {TourButtonName} from "@src/dsl/janggi/components/onboarding/types/TourButtonName";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {Locator, Page} from "@playwright/test";
@@ -26,6 +28,7 @@ export class OnboardingPlaywright extends BaseComponent {
   private readonly music: Record<SoundChoiceName, Locator>;
   private readonly soundEffects: Record<SoundChoiceName, Locator>;
   private readonly animations: Record<EffectsName, Locator>;
+  private readonly languages: Record<LanguageName, Locator>;
   private readonly movableHighlight: Record<MovableHighlightName, Locator>;
 
   constructor(page: Page) {
@@ -51,6 +54,7 @@ export class OnboardingPlaywright extends BaseComponent {
       On: page.getByTestId("welcome-sound-effects-on"),
       Off: page.getByTestId("welcome-sound-effects-off"),
     };
+    this.languages = {en: page.getByTestId("welcome-language-en"), ko: page.getByTestId("welcome-language-ko")};
     this.animations = {
       Full: page.getByTestId("welcome-animations-full"),
       Reduced: page.getByTestId("welcome-animations-reduced"),
@@ -85,6 +89,10 @@ export class OnboardingPlaywright extends BaseComponent {
     await this.soundEffects[choice].click();
   }
 
+  async setWelcomeLanguageTo(name: LanguageName): Promise<void> {
+    await this.languages[name].click();
+  }
+
   async setWelcomeAnimationsTo(name: EffectsName): Promise<void> {
     await this.animations[name].click();
   }
@@ -117,6 +125,11 @@ export class OnboardingPlaywright extends BaseComponent {
 
   async canGoBackInTheTour(): Promise<boolean> {
     return await this.tourBack.isEnabled();
+  }
+
+  /** Whether the card has a button with this name for assistive technology, whatever it draws on its face. */
+  async isTourButtonNamed(name: TourButtonName): Promise<boolean> {
+    return (await this.tour.getByRole("button", {name, exact: true}).count()) === 1;
   }
 
   async isFinishOffered(): Promise<boolean> {

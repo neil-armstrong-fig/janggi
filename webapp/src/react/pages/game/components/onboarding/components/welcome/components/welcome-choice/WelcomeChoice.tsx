@@ -8,6 +8,8 @@ interface Props<Name extends string> {
   readonly names: readonly Name[];
   readonly selected: Name;
   readonly onSelect: (name: Name) => void;
+  /** What a button says, where that is not its name — which is its id, and what its test id is built from. */
+  readonly labelOf: (name: Name) => string;
 }
 
 /** One question of the welcome's second screen, answered by pressing one of its named buttons. */
@@ -17,6 +19,7 @@ export function WelcomeChoice<Name extends string>({
   names,
   selected,
   onSelect,
+  labelOf,
 }: Props<Name>): React.JSX.Element {
   return (
     <div role="group" aria-label={label} className="flex items-center justify-between gap-3">
@@ -36,7 +39,7 @@ export function WelcomeChoice<Name extends string>({
               name !== selected && "bg-white/10 text-white/80 hover:bg-white/20",
             )}
           >
-            {name}
+            {labelOf(name)}
           </button>
         ))}
       </div>

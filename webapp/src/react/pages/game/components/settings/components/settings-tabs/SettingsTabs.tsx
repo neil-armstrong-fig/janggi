@@ -1,10 +1,12 @@
 import {SETTINGS_TAB_NAMES} from "@janggi/shared/janggi/settings/SettingsTabName";
 import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
 import {clsx} from "clsx";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+import {TabIcon} from "@src/react/pages/game/components/settings/components/settings-tabs/components/tab-icon/TabIcon";
 
 /**
- * The row along the top of the settings sheet that chooses which pane is showing — Game, Look,
- * Sound, Progress, Account — so the sheet is one short pane at a time instead of one long scroll.
+ * The row along the top of the settings sheet that chooses which pane is showing — Play, Look,
+ * Sound, You — each a picture over its name, so the sheet is one short pane at a time instead of one long scroll.
  *
  * **In the sheet's head, beside Close, and no heading of its own.** A phone's sheet has little height
  * to spare and every row of chrome comes out of the room the settings have, so the tabs are the
@@ -21,6 +23,8 @@ interface Props {
 }
 
 export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
+  const {tabs} = useMessages();
+
   return (
     <div role="tablist" aria-label="Kinds of setting" className="grid min-w-0 flex-1 grid-cols-4 gap-0.5">
       {SETTINGS_TAB_NAMES.map(name => (
@@ -46,7 +50,11 @@ export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
             />
           )}
 
-          <span className="relative">{name}</span>
+          <span className="relative flex flex-col items-center gap-0.5">
+            <TabIcon name={name} />
+
+            <span>{tabs[name]}</span>
+          </span>
         </button>
       ))}
     </div>

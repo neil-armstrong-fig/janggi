@@ -6,9 +6,9 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {armyBoardStyleChosen, boardStyleChosen, boardStyleSplit} from "@src/redux/preferences/PreferencesSlice";
 import {boardStylePrice} from "@src/redux/progress/unlocks/BoardStylePrice";
 import {lockBehindXp} from "@src/react/pages/game/components/settings/tabs/look-pane/locks/LockBehindXp";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useOwnPreferences} from "@src/react/pages/game/hooks/use-own-preferences/UseOwnPreferences";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * The board the game is drawn on. A preference rather than part of the game, so a choice is worn at once
@@ -27,6 +27,7 @@ export function BoardSetting(): React.JSX.Element {
   const split = useAppSelector(state => state.preferences.hanBoardStyle !== undefined);
   const {armyBoardStyles} = useOwnPreferences();
   const dispatch = useAppDispatch();
+  const {look} = useMessages();
 
   const optionsBoardStyles = [...BUILT_IN_STYLES, ...boards];
   const lockedReason = (boardStyle: BoardStyle): string | undefined => {
@@ -38,7 +39,7 @@ export function BoardSetting(): React.JSX.Element {
       {!split && (
         <OptionPicker
           id="board-style"
-          label="Board"
+          label={look.board}
           options={optionsBoardStyles}
           selected={armyBoardStyles.cho}
           lockedReason={lockedReason}
@@ -51,7 +52,7 @@ export function BoardSetting(): React.JSX.Element {
           <OptionPicker
             key={side}
             id={`${side}-board-style`}
-            label={`${sideName(side)}'s board`}
+            label={look.boardOf(side)}
             options={optionsBoardStyles}
             selected={armyBoardStyles[side]}
             lockedReason={lockedReason}
@@ -62,7 +63,7 @@ export function BoardSetting(): React.JSX.Element {
       <Switch
         testId="board-style-split"
         on={split}
-        label="Different board for each army"
+        label={look.differentBoard}
         onToggle={() => dispatch(split ? boardStyleChosen(armyBoardStyles.cho.name) : boardStyleSplit())}
       />
     </div>

@@ -1,4 +1,4 @@
-import type {GameResult} from "@src/redux/ratings/types/GameResult";
+import type {GameResult} from "@janggi/shared/janggi/results/GameResult";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Opponent} from "@src/redux/game/types/Opponent";

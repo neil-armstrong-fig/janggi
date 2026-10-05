@@ -10,6 +10,7 @@ import {recordReset} from "@src/redux/ratings/RatingsSlice";
 import {recordsAgainstBots} from "@src/react/pages/game/components/record-sheet/records-against-bots/RecordsAgainstBots";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useState} from "react";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * The player's record against the bot: their rating in each format, how they have fared against each
@@ -39,13 +40,15 @@ export function RecordSheet(): React.JSX.Element {
   };
   const [format, setFormat] = useState<MatchFormat>(DEFAULT_MATCH_FORMAT);
   const rating = useAppSelector(state => state.ratings.byFormat[format]);
+  const {record, play} = useMessages();
 
   return (
     <Sheet
       testId="record"
       closeTestId="record-close"
       backTestId="record-back"
-      title="Your record"
+      title={record.title}
+      closeLabel={record.closeLabel}
       open={open}
       onClose={onClose}
       onBack={onBack}
@@ -57,7 +60,9 @@ export function RecordSheet(): React.JSX.Element {
         <p data-testid="record-elo" data-elo={rating.elo} className="flex items-baseline gap-2">
           <span className="text-4xl font-semibold text-gold tabular-nums">{rating.elo}</span>
 
-          <span className="text-xs tracking-wide text-white/60 uppercase">{format} Elo</span>
+          <span className="text-xs tracking-wide text-white/60 uppercase">
+            {record.rating(play.formatNames[format])}
+          </span>
         </p>
 
         <RecordTable records={recordsAgainstBots(rating.games)} />

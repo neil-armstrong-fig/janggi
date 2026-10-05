@@ -1,4 +1,4 @@
-import type {GameResult} from "@src/redux/ratings/types/GameResult";
+import type {GameResult} from "@janggi/shared/janggi/results/GameResult";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 
 /**

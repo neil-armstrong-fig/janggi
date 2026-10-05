@@ -181,6 +181,11 @@ export class JanggiPlaywright extends BasePage {
     return await this.page.title();
   }
 
+  /** The language the page declares itself to be written in, read off `<html lang>`. */
+  async getPageLanguage(): Promise<string> {
+    return await this.page.evaluate(() => document.documentElement.lang);
+  }
+
   async getInstallationAppearance(): Promise<InstallationAppearance> {
     const manifestPath = await this.page.locator("link[rel='manifest']").getAttribute("href");
     if (!manifestPath) throw new Error("The page has no web app manifest");

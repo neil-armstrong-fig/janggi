@@ -1,6 +1,7 @@
 import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import {clsx} from "clsx";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 interface Props {
   readonly selected: MatchFormat;
@@ -9,6 +10,8 @@ interface Props {
 
 /** One tab per match format, since each is rated apart. The chosen one is pressed. */
 export function FormatTabs({selected, onSelect}: Props): React.JSX.Element {
+  const {play} = useMessages();
+
   return (
     <nav aria-label="Match format" className="flex shrink-0 gap-1 rounded-xl bg-black/25 p-1">
       {MATCH_FORMATS.map(format => (
@@ -24,7 +27,7 @@ export function FormatTabs({selected, onSelect}: Props): React.JSX.Element {
             format !== selected && "text-white/60 hover:bg-white/5",
           )}
         >
-          {format}
+          {play.formatNames[format]}
         </button>
       ))}
     </nav>

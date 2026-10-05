@@ -1,6 +1,6 @@
 import type {OnboardingSliceState} from "@src/redux/onboarding/types/OnboardingSliceState";
 import type {TourStepsSkipped} from "@src/redux/onboarding/touring/types/TourStepsSkipped";
-import {TOUR_STEP_NAMES} from "@src/redux/onboarding/touring/TourStepName";
+import {TOUR_STEP_NAMES} from "@janggi/shared/janggi/onboarding/TourStepName";
 import {TOUR_STEP_COUNT} from "@src/redux/onboarding/touring/TourStepCount";
 import {expect, it} from "vitest";
 import {tourBegun, tourStepBack, tourStepForward} from "@src/redux/onboarding/touring/Touring";

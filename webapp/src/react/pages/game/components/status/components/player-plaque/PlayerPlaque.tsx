@@ -7,12 +7,12 @@ import {plaquePlayerFor} from "@src/react/pages/game/components/status/component
 import {plaqueStateOf} from "@src/react/pages/game/components/status/components/player-plaque/plaque-state/PlaqueStateOf";
 import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {inFriendGame} from "@src/redux/online/selecting/InFriendGame";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {takenFrom} from "@janggi/engine/scoring/TakenFrom";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useRolledNumber} from "@src/react/pages/game/components/status/components/player-plaque/hooks/use-rolled-number/UseRolledNumber";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * One army's side of the frame: its name in its own colour, the pieces it has lost, and what it is
@@ -56,6 +56,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
   const xp = useAppSelector(state => state.progress.xp);
   const {pieceStyle, effects} = usePreferences();
   const {status} = useGameStatus();
+  const {sides, plaque} = useMessages();
   const ownedByYou = useAppSelector(state => inFriendGame(state.friend) && state.friend.ownSide === side);
 
   const game = played.present;
@@ -69,7 +70,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
       data-testid={`plaque-${side}`}
       data-state={state}
       data-own={ownedByYou ? "" : undefined}
-      aria-label={sideName(side)}
+      aria-label={sides[side]}
       className={clsx(
         "flex h-11 shrink-0 items-center gap-2 rounded-xl border px-3 group-data-[flipped=true]/flip:rotate-180 transition-[background-color,border-color,opacity] duration-300 motion-reduce:transition-none",
         FRAMES[state],
@@ -81,7 +82,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
         className={clsx("h-2.5 w-2.5 shrink-0 rounded-full", DOTS[side], !ON_TURN[state] && "opacity-25")}
       />
 
-      <span className={clsx("shrink-0 text-sm font-semibold tracking-wide", NAMES[side])}>{sideName(side)}</span>
+      <span className={clsx("shrink-0 text-sm font-semibold tracking-wide", NAMES[side])}>{sides[side]}</span>
 
       {player && (
         <span
@@ -90,7 +91,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
           data-elo={player.elo}
           className="flex min-w-0 items-center gap-1 text-xs text-white/60 tabular-nums"
         >
-          <span role="img" aria-label={PLAYER_LABELS[player.kind]}>
+          <span role="img" aria-label={plaque[player.kind]}>
             {PLAYER_EMOJI[player.kind]}
           </span>
 
@@ -138,8 +139,6 @@ function shortened(xp: number): string {
 }
 
 const PLAYER_EMOJI: Record<PlaquePlayer["kind"], string> = {bot: "🤖", player: "🧑"};
-
-const PLAYER_LABELS: Record<PlaquePlayer["kind"], string> = {bot: "Bot", player: "You"};
 
 const FRAMES: Record<PlaqueState, string> = {
   waiting: "border-white/5 bg-white/[0.03] opacity-70",
