@@ -15,6 +15,7 @@ Each has its own `AGENTS.md`, and webapp has one per subfolder besides.
 
 `docs/` holds research a decision in the code rests on, linked from the code it justifies:
 `docs/opening-setups.md`, `docs/rules.md`, `docs/bot.md`, `docs/sound.md`,
+`docs/localisation.md`, `docs/seo.md`,
 `docs/alchemy-state.md`, `docs/online-play.md`. Add a document here only
 when losing the reasoning would mean someone re-deriving it.
 

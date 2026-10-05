@@ -15,7 +15,7 @@ import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabNa
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /**
- * Every word of the game a player has to read to play it, in one language. A language is a value of
+ * Every word of the game a player has to read to play it, in one language (`docs/localisation.md`). A language is a value of
  * this type, so one that leaves a message out does not compile.
  *
  * Whatever a word stands for keeps its English id in the code — `SettingsTabName`, `Side`, `DrawnBy` — and

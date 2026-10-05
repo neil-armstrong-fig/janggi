@@ -10,6 +10,9 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
  * **It says so in both languages at once**, whichever the page is in, since the player who most needs it may
  * not read the other. It sits at the top and dims nothing, so it never stands between the player and the
  * game — Dismiss, or simply playing on, is up to them — and above the welcome, which can open in Korean too.
+ *
+ * Temporary: delete it, with the `languageNoticeSeen` preference, when the translation is accepted
+ * (`docs/localisation.md`).
  */
 export function LanguageNotice(): React.JSX.Element | null {
   const language = useAppSelector(state => state.preferences.language);

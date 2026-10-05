@@ -28,7 +28,8 @@ root `AGENTS.md` — a violation of any of these is a lint error:
   `messagesOf`. It may import `@janggi/shared` and nothing else, so the page and the store can both reach it. Components get
   the words through `useMessages` (`react/pages/game/hooks/`) rather than writing them; an id in the code (a tab, a side, a
   way of drawing) stays English, and what a player reads for it is looked up here. A sentence is a function, so each
-  language orders it for itself. Moved over so far: the tabs, controls, turn line, result banner and its explanations, the Play, Look and Sound tabs, plaques,
+  language orders it for itself. `docs/localisation.md` has the decisions and the backlog (and `docs/seo.md` what a search
+  engine sees). Moved over so far: the tabs, controls, turn line, result banner and its explanations, the Play, Look and Sound tabs, plaques,
   draw offer and bot notices, the repetition note, the record sheet, welcome and tour. Still English: the You tab (but its language
   picker), the styles sheet and style names, playing a friend, toasts, piece names for screen readers, the match-format
   explanation, and the extra pages. The Korean is shown with a note (`LanguageNotice`) that it is a work in progress; take that
