@@ -1,4 +1,5 @@
 import {clsx} from "clsx";
+import {ChevronDownIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-down/ChevronDownIcon";
 import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {SaveBuilder} from "@src/redux/saves/SaveBuilder";
@@ -33,19 +34,12 @@ export function SaveTransfer(): React.JSX.Element {
       >
         <span className="text-xs font-medium text-white/60">Move your progress to another device</span>
 
-        <svg
-          viewBox="0 0 24 24"
-          aria-hidden
+        <ChevronDownIcon
           className={clsx(
             "h-4 w-4 shrink-0 text-white/60 transition-transform duration-150 motion-reduce:transition-none",
             open && "rotate-180",
           )}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        />
       </button>
 
       {open && (

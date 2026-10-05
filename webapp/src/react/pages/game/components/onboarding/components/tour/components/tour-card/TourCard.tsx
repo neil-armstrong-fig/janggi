@@ -1,5 +1,7 @@
 import {clsx} from "clsx";
-import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
+import {CheckIcon} from "@src/react/pages/game/components/svg-icon/icons/check/CheckIcon";
+import {ChevronLeftIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-left/ChevronLeftIcon";
+import {ChevronRightIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-right/ChevronRightIcon";
 import type {TourStepWords} from "@src/language/types/TourStepWords";
 import type {TourStep} from "@src/react/pages/game/components/onboarding/components/tour/types/TourStep";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
@@ -88,9 +90,7 @@ export function TourCard({step, words, number, count, dock, onBack, onNext, onSk
             onClick={onBack}
             className="cursor-pointer rounded-lg bg-white/10 px-3 py-2 text-white/80 hover:bg-white/20 disabled:cursor-default disabled:opacity-40"
           >
-            <SvgIcon>
-              <path d="M15 6l-6 6 6 6" />
-            </SvgIcon>
+            <ChevronLeftIcon />
           </button>
 
           {!last && (
@@ -101,9 +101,7 @@ export function TourCard({step, words, number, count, dock, onBack, onNext, onSk
               onClick={onNext}
               className="cursor-pointer rounded-lg bg-gold px-4 py-2 font-semibold text-ink"
             >
-              <SvgIcon>
-                <path d="M9 6l6 6-6 6" />
-              </SvgIcon>
+              <ChevronRightIcon />
             </button>
           )}
 
@@ -115,9 +113,7 @@ export function TourCard({step, words, number, count, dock, onBack, onNext, onSk
               onClick={onNext}
               className="cursor-pointer rounded-lg bg-gold px-4 py-2 font-semibold text-ink"
             >
-              <SvgIcon>
-                <path d="m5 12.5 4.5 4.5L19 7.5" />
-              </SvgIcon>
+              <CheckIcon />
             </button>
           )}
         </div>

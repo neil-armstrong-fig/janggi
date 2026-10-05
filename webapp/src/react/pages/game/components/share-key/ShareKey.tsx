@@ -1,4 +1,4 @@
-import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
+import {CopyIcon} from "@src/react/pages/game/components/svg-icon/icons/copy/CopyIcon";
 import {Button} from "@src/react/pages/game/components/button/Button";
 import {useState} from "react";
 
@@ -37,11 +37,7 @@ export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
           void copiedToClipboard(key).then(setCopied);
         }}
       >
-        <SvgIcon className="h-4 w-4">
-          <rect x="9" y="9" width="11" height="11" rx="2" />
-
-          <path d="M5 15V6a2 2 0 0 1 2-2h8" />
-        </SvgIcon>
+        <CopyIcon className="h-4 w-4" />
         {label}
       </Button>
 

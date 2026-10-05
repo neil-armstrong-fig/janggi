@@ -1,6 +1,6 @@
 import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSliceState";
 import {clsx} from "clsx";
-import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
+import {RefreshIcon} from "@src/react/pages/game/components/svg-icon/icons/refresh/RefreshIcon";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
@@ -68,9 +68,7 @@ export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element 
               onClick={onRetry}
               className="mt-3 flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
             >
-              <SvgIcon className="h-4 w-4">
-                <path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v5h-5" />
-              </SvgIcon>
+              <RefreshIcon className="h-4 w-4" />
               {overlays.tryAgain}
             </button>
           </>

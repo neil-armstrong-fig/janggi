@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import {ChevronDownIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-down/ChevronDownIcon";
 
 interface Props extends React.ComponentProps<"select"> {
   wrapperClassName?: string;
@@ -22,19 +23,12 @@ export function SelectField({wrapperClassName, className, disabled, children, ..
         {children}
       </select>
 
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden
+      <ChevronDownIcon
         className={clsx(
           "pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-white/60",
           disabled && "opacity-40",
         )}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      />
     </div>
   );
 }

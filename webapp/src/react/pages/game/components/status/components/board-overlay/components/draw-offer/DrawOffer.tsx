@@ -1,5 +1,6 @@
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
+import {CheckIcon} from "@src/react/pages/game/components/svg-icon/icons/check/CheckIcon";
+import {CloseIcon} from "@src/react/pages/game/components/svg-icon/icons/close/CloseIcon";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
@@ -45,9 +46,7 @@ export function DrawOffer({offeredBy, onAccept, onDecline}: Props): React.JSX.El
             onClick={onAccept}
             className="pointer-events-auto flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
           >
-            <SvgIcon className="h-4 w-4">
-              <path d="m5 12.5 4.5 4.5L19 7.5" />
-            </SvgIcon>
+            <CheckIcon className="h-4 w-4" />
             {overlays.accept}
           </button>
 
@@ -57,9 +56,7 @@ export function DrawOffer({offeredBy, onAccept, onDecline}: Props): React.JSX.El
             onClick={onDecline}
             className="pointer-events-auto flex h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-white/10 px-5 text-sm font-semibold tracking-wide text-white/90 uppercase shadow transition-[transform,background-color] duration-150 hover:bg-white/15 active:scale-[0.97] motion-reduce:transition-none"
           >
-            <SvgIcon className="h-4 w-4">
-              <path d="M6 6l12 12M18 6 6 18" />
-            </SvgIcon>
+            <CloseIcon className="h-4 w-4" />
             {overlays.decline}
           </button>
         </div>

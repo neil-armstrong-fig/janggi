@@ -9,7 +9,7 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
 import {clsx} from "clsx";
 import {useRef} from "react";
 import {useScrolledToTop} from "@src/react/pages/game/hooks/use-scrolled-to-top/UseScrolledToTop";
-import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
+import {CloseIcon} from "@src/react/pages/game/components/svg-icon/icons/close/CloseIcon";
 
 /** Lets `Settings.tsx` set `--sheet-opacity` inline without an unnamed cast at the call site. */
 interface SheetPanelStyle extends React.CSSProperties {
@@ -93,9 +93,7 @@ export function Settings(): React.JSX.Element {
             onClick={onClose}
             className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
           >
-            <SvgIcon>
-              <path d="M6 6l12 12M18 6 6 18" />
-            </SvgIcon>
+            <CloseIcon />
           </button>
         </header>
 

@@ -105,7 +105,7 @@ painted, and say so.
   new sound for a new rule is a change to `cuesFor` only.
 
 - **Prefer a picture to a word where one will do, so the page can be read without English.** Stroked icons are
-  drawn inside `SvgIcon` (`pages/game/components/svg-icon/`), each glyph beside the one thing that shows it. A
+  drawn inside `SvgIcon` (`pages/game/components/svg-icon/`), each glyph one component in its `icons/<name>/` — add or reuse one there rather than drawing a path inline. A
   control is **icon-only only where the glyph reads the same in any language** — close, back, chevrons, a
   tick — and then carries an `aria-label` with the words; otherwise it is an icon **and** a short label, and
   a row of like controls (the ones under the board, the tabs) is all one or all the other. An id that doubles as a label (`SettingsTabName`) keeps being the id: a

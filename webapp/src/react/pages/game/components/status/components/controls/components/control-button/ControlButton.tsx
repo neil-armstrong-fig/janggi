@@ -1,4 +1,3 @@
-import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 
 /**
@@ -15,7 +14,7 @@ import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetNa
 interface Props {
   readonly testId: string;
   readonly label: string;
-  /** The strokes of a 24x24 icon, drawn in the button's own colour. */
+  /** An icon from `svg-icon/icons/`, drawn in the button's own colour. */
   readonly icon: React.ReactNode;
   readonly enabled?: boolean;
   readonly onPress: () => void;
@@ -33,7 +32,7 @@ export function ControlButton({testId, label, icon, enabled = true, onPress, tou
       onClick={onPress}
       className="flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl bg-white/5 text-white/80 transition-[transform,background-color] duration-150 enabled:cursor-pointer enabled:hover:bg-white/10 enabled:active:scale-95 disabled:opacity-30 motion-reduce:transition-none"
     >
-      <SvgIcon>{icon}</SvgIcon>
+      {icon}
 
       <span className="text-[10px] font-medium tracking-wide uppercase">{label}</span>
     </button>

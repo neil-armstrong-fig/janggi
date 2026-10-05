@@ -1,5 +1,6 @@
 import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+import {SlidersIcon} from "@src/react/pages/game/components/svg-icon/icons/sliders/SlidersIcon";
 
 /**
  * Opens the settings sheet.
@@ -19,19 +20,9 @@ export function SettingsButton({onOpen}: Props): React.JSX.Element {
     <ControlButton
       testId="settings-open"
       label={controls.settings}
-      icon={SLIDERS}
+      icon={<SlidersIcon />}
       tourTarget="settings"
       onPress={onOpen}
     />
   );
 }
-
-const SLIDERS = (
-  <>
-    <path d="M4 7h9M19 7h1M4 17h3M13 17h7" />
-
-    <circle cx="16" cy="7" r="2.5" />
-
-    <circle cx="10" cy="17" r="2.5" />
-  </>
-);

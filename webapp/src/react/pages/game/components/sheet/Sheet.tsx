@@ -1,7 +1,8 @@
 import {clsx} from "clsx";
 import {useRef} from "react";
 import {useScrolledToTop} from "@src/react/pages/game/hooks/use-scrolled-to-top/UseScrolledToTop";
-import {SvgIcon} from "@src/react/pages/game/components/svg-icon/SvgIcon";
+import {ChevronLeftIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-left/ChevronLeftIcon";
+import {CloseIcon} from "@src/react/pages/game/components/svg-icon/icons/close/CloseIcon";
 
 /**
  * The bottom sheet the Record, Play a friend and Styles sheets share: a backdrop, a panel that slides up,
@@ -76,9 +77,7 @@ export function Sheet({
                 onClick={onBack}
                 className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
               >
-                <SvgIcon>
-                  <path d="M15 6l-6 6 6 6" />
-                </SvgIcon>
+                <ChevronLeftIcon />
               </button>
             )}
 
@@ -92,9 +91,7 @@ export function Sheet({
             onClick={onClose}
             className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
           >
-            <SvgIcon>
-              <path d="M6 6l12 12M18 6 6 18" />
-            </SvgIcon>
+            <CloseIcon />
           </button>
         </header>
 

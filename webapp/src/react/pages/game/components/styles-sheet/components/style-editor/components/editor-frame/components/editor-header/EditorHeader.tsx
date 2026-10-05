@@ -1,5 +1,6 @@
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {clsx} from "clsx";
+import {ChevronLeftIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-left/ChevronLeftIcon";
 
 /**
  * The top of a style being made: back out of it, name it, save it, and — beneath — how the last save went.
@@ -25,18 +26,7 @@ export function EditorHeader({name, onName, onSave, onBack, pasteResult}: Props)
           onClick={onBack}
           className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
         >
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M15 6l-6 6 6 6" />
-          </svg>
+          <ChevronLeftIcon />
         </button>
 
         <input

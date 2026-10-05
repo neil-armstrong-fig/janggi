@@ -1,5 +1,6 @@
 import {ControlButton} from "@src/react/pages/game/components/status/components/controls/components/control-button/ControlButton";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+import {UndoIcon} from "@src/react/pages/game/components/svg-icon/icons/undo/UndoIcon";
 
 /**
  * Takes the last turn back, whether that was a move or a rested one.
@@ -21,13 +22,5 @@ interface Props {
 export function UndoButton({enabled, onUndo}: Props): React.JSX.Element {
   const {controls} = useMessages();
 
-  return <ControlButton testId="undo" label={controls.undo} icon={BACK} enabled={enabled} onPress={onUndo} />;
+  return <ControlButton testId="undo" label={controls.undo} icon={<UndoIcon />} enabled={enabled} onPress={onUndo} />;
 }
-
-const BACK = (
-  <>
-    <path d="M9 14 4 9l5-5" />
-
-    <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
-  </>
-);
