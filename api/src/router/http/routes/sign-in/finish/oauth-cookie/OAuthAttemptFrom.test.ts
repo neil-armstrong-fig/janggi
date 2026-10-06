@@ -13,7 +13,7 @@ it("reads it among other cookies", () => {
 });
 
 it("finds no attempt where there is no cookie, or nothing in it", () => {
-  expect(oauthAttemptFrom(null)).toBeUndefined();
+  expect(oauthAttemptFrom(undefined)).toBeUndefined();
   expect(oauthAttemptFrom("oauth=")).toBeUndefined();
 });
 

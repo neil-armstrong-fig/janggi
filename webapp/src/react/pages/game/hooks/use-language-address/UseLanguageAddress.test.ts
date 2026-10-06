@@ -6,7 +6,7 @@ import {renderHook} from "@testing-library/react";
 import {useLanguageAddress} from "@src/react/pages/game/hooks/use-language-address/UseLanguageAddress";
 
 beforeEach(() => {
-  globalThis.history.replaceState(null, "", "/");
+  globalThis.history.replaceState(undefined, "", "/");
 });
 
 it("moves a game read in Korean to the Korean page", () => {
@@ -16,7 +16,7 @@ it("moves a game read in Korean to the Korean page", () => {
 });
 
 it("moves a game read in English back to the root", () => {
-  globalThis.history.replaceState(null, "", "/ko/");
+  globalThis.history.replaceState(undefined, "", "/ko/");
 
   renderHook(() => useLanguageAddress("en"));
 
@@ -24,7 +24,7 @@ it("moves a game read in English back to the root", () => {
 });
 
 it("leaves an address that already matches the language as it is", () => {
-  globalThis.history.replaceState(null, "", "/ko/index.html");
+  globalThis.history.replaceState(undefined, "", "/ko/index.html");
 
   renderHook(() => useLanguageAddress("ko"));
 
@@ -32,7 +32,7 @@ it("leaves an address that already matches the language as it is", () => {
 });
 
 it("keeps the query and the hash", () => {
-  globalThis.history.replaceState(null, "", "/?join=ABCD#top");
+  globalThis.history.replaceState(undefined, "", "/?join=ABCD#top");
 
   renderHook(() => useLanguageAddress("ko"));
 

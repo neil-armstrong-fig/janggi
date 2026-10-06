@@ -64,7 +64,7 @@ it.each(CHANGES)("the API refuses a %s %s from another site", async (method, pat
 it.each(CHANGES)("the API refuses a %s %s with no origin at all", async (method, path) => {
   const cookie = await api.signIn("google-1");
 
-  expect((await api.send(method, path, {origin: null, cookie})).status).toBe(403);
+  expect((await api.send(method, path, {withoutOrigin: true, cookie})).status).toBe(403);
 });
 
 it("the API does not act on a refused change", async () => {

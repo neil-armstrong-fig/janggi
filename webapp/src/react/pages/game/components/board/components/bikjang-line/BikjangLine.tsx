@@ -18,9 +18,9 @@ interface Props {
   readonly drawing: boolean;
 }
 
-export function BikjangLine({game, bikjangStyle, momentId, drawing}: Props): React.JSX.Element | null {
+export function BikjangLine({game, bikjangStyle, momentId, drawing}: Props): React.JSX.Element | undefined {
   const line = bikjangLineIn(game);
-  if (!line) return null;
+  if (!line) return undefined;
 
   return (
     <LinesOverlay

@@ -16,10 +16,8 @@ export function joinLinkFor(siteAddress: string, code: FriendCode): string {
 
 /** The code a page's `location.search` carries, or undefined where it carries none or a bad one. */
 export function friendCodeInSearch(search: string): FriendCode | undefined {
-  const text = new URLSearchParams(search).get(JOIN_QUERY_PARAMETER);
-  if (text === null) {
-    return undefined;
-  }
+  const text = new URLSearchParams(search).get(JOIN_QUERY_PARAMETER) ?? undefined;
+  if (text === undefined) return undefined;
 
   return parseFriendCode(text);
 }

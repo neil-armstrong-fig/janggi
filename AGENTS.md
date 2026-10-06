@@ -107,6 +107,14 @@ Prettier owns formatting (`pnpm format`). What it won't tell you:
   to keep it honest stays a plain `type`.
 - **Give every type a name.** No inline object type or union in a signature, a field, or a `Record`'s
   value. Exception: a component's own `Props`.
+- **Use `undefined` for absence, never `null`, inside the codebase.** Optional
+  fields and values that may be missing use `?` or `| undefined`, so callers
+  never have to handle both. Where a browser, SDK or established wire contract
+  supplies or requires `null`, translate it to or from `undefined` at that
+  boundary; do not expose the nullable type any further. Tests may use `null`
+  to exercise untrusted input or to implement an SDK-shaped fake. Omit absent
+  optional JSON fields unless the established wire format explicitly requires
+  `null`.
 - **Three parameters at most; past that, take one object.** What a function acts *through* (an
   engine, an audio context) may stay positional ahead of the object.
 - **Name a variable after the type it holds**, where the type has a name of its own.

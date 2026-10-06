@@ -18,10 +18,10 @@ import {useAppSelector} from "@src/redux/Hooks";
  * pairing §7's table classifies. An absent line rather than a line saying "neither": there is no
  * such thing to tell a player about.
  */
-export function ElephantPairingLine(): React.JSX.Element | null {
+export function ElephantPairingLine(): React.JSX.Element | undefined {
   const {hanSetup, choSetup} = useAppSelector(state => state.game.phase);
   const pairing = hanSetup && choSetup ? elephantPairingOf(hanSetup, choSetup) : undefined;
-  if (!pairing) return null;
+  if (!pairing) return undefined;
 
   return (
     <p data-testid="elephant-pairing" data-pairing={pairing} className="text-xs text-wood/70">

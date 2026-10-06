@@ -19,8 +19,8 @@ interface Props {
   readonly drawing: boolean;
 }
 
-export function CheckLines({threat, checkStyle, momentId, drawing}: Props): React.JSX.Element | null {
-  if (!threat) return null;
+export function CheckLines({threat, checkStyle, momentId, drawing}: Props): React.JSX.Element | undefined {
+  if (!threat) return undefined;
 
   return (
     <LinesOverlay

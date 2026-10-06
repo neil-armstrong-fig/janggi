@@ -84,6 +84,12 @@ it("comes back with the app's own setups, found by name, rather than whatever wa
   expect(loadGame(storageHolding(tampered)).phase.hanSetup).toBe(setupNamed("Left Elephant"));
 });
 
+it("deals the first game when a kept setup name is unknown", () => {
+  const tampered = {...underWay, phase: {...underWay.phase, hanSetup: {name: "Unknown"}}};
+
+  expect(loadGame(storageHolding(tampered))).toEqual(firstGame());
+});
+
 it("deals the first game when a kept position has a piece off the board", () => {
   const offBoard = {
     ...underWay,

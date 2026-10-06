@@ -35,7 +35,7 @@ it("hands the room named by the code the upgrade, saying whose it is", async () 
 });
 
 it("answers what the room answers", async () => {
-  rooms.roomCalled.mockResolvedValueOnce(new Response(null, {status: 404}));
+  rooms.roomCalled.mockResolvedValueOnce(new Response(undefined, {status: 404}));
 
   expect((await forwardToRoom(upgrade(), ACCOUNT, CODE)).status).toBe(404);
 });

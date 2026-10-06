@@ -6,7 +6,7 @@ it("reads what the server sends for a player who has data", () => {
 });
 
 it("reads a player who has none yet", () => {
-  expect(serverDataFrom({version: 0, blob: null})).toEqual({version: 0, blob: null});
+  expect(serverDataFrom({version: 0, blob: null})).toEqual({version: 0});
 });
 
 it("refuses anything else", () => {

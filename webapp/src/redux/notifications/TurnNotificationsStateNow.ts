@@ -10,8 +10,8 @@ export async function turnNotificationsStateNow(): Promise<TurnNotificationsStat
   const registration = await serviceWorkerRegistrationNow();
   if (registration === undefined) return "unavailable";
 
-  const subscription = await registration.pushManager.getSubscription();
-  if (subscription === null || Notification.permission !== "granted") return "off";
+  const subscription = (await registration.pushManager.getSubscription()) ?? undefined;
+  if (subscription === undefined || Notification.permission !== "granted") return "off";
 
   return "on";
 }

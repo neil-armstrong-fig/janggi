@@ -85,17 +85,24 @@ export abstract class SettingsSheetComponent extends BaseComponent {
     return (await this.sheet.getAttribute("aria-modal")) === "true";
   }
 
-  protected tabNamed(name: string | null): Locator {
+  protected tabNamed(name: string): Locator {
     return this.page.locator(`[data-testid='settings-tab'][data-tab='${name}']`);
   }
 
   private async tabHolding(control: Locator): Promise<Locator> {
     const pane = this.page.getByTestId("settings-pane").filter({has: control});
+    const name = (await pane.getAttribute("data-pane")) ?? undefined;
+    if (name === undefined) throw new Error("The settings pane names no tab");
 
-    return this.tabNamed(await pane.getAttribute("data-pane"));
+    return this.tabNamed(name);
   }
 
-  private async selectedTabName(): Promise<string | null> {
-    return await this.page.locator("[data-testid='settings-tab'][aria-selected='true']").getAttribute("data-tab");
+  private async selectedTabName(): Promise<string> {
+    const name =
+      (await this.page.locator("[data-testid='settings-tab'][aria-selected='true']").getAttribute("data-tab")) ??
+      undefined;
+    if (name === undefined) throw new Error("The selected settings tab has no name");
+
+    return name;
   }
 }

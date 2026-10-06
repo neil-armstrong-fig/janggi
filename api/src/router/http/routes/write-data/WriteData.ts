@@ -16,7 +16,7 @@ import {respondJson} from "@src/router/http/routes/respond/RespondJson";
 export async function writeData(request: Request, account: Account): Promise<Response> {
   if (!(await dataWriteAllowed(account.id))) return respondEmpty(429);
 
-  const expectedVersion = versionOf(request.headers.get("If-Match"));
+  const expectedVersion = versionOf(request.headers.get("If-Match") ?? undefined);
   if (expectedVersion === undefined) return respondEmpty(428);
 
   const declared = Number(request.headers.get("Content-Length") ?? 0);
@@ -35,8 +35,8 @@ export async function writeData(request: Request, account: Account): Promise<Res
   return respondJson({version: written.version}, 409);
 }
 
-function versionOf(header: string | null): number | undefined {
-  if (header === null || !/^\d+$/.test(header)) return undefined;
+function versionOf(header: string | undefined): number | undefined {
+  if (header === undefined || !/^\d+$/.test(header)) return undefined;
 
   return Number(header);
 }

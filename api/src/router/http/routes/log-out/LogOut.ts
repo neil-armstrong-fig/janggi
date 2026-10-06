@@ -9,7 +9,7 @@ import {sessionTokenFrom} from "@src/router/shared/session/SessionTokenFrom";
  * carries none: somebody already signed out has nothing left to end, and telling them so would only be an error to show.
  */
 export async function logOut(request: Request): Promise<Response> {
-  const token = sessionTokenFrom(request.headers.get("Cookie"));
+  const token = sessionTokenFrom(request.headers.get("Cookie") ?? undefined);
   if (token !== undefined) await deleteSession(await hashSessionToken(token));
 
   const response = respondEmpty(204);

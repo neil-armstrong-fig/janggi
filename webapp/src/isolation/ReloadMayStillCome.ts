@@ -13,7 +13,9 @@ export function reloadMayStillCome(): boolean {
   if (globalThis.crossOriginIsolated || !("serviceWorker" in navigator)) return false;
 
   try {
-    return sessionStorage.getItem(ISOLATION_RELOAD_SPENT_KEY) === null;
+    const reloadSpent = sessionStorage.getItem(ISOLATION_RELOAD_SPENT_KEY) ?? undefined;
+
+    return reloadSpent === undefined;
   } catch {
     return false;
   }

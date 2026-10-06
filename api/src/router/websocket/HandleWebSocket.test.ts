@@ -47,7 +47,7 @@ it("logs a forwarded upgrade exactly once without its room code", async () => {
 });
 
 it("answers what the room answers", async () => {
-  rooms.roomCalled.mockResolvedValueOnce(new Response(null, {status: 404}));
+  rooms.roomCalled.mockResolvedValueOnce(new Response(undefined, {status: 404}));
 
   expect(
     (await api.send("GET", "/api/rooms/ABCD2345/socket", {cookie: await api.signIn("google-2"), headers: UPGRADE}))
@@ -104,9 +104,9 @@ it("logs a rejected socket origin exactly once without its value", async () => {
 it("refuses an upgrade with no origin", async () => {
   const cookie = await api.signIn("google-2");
 
-  expect((await api.send("GET", "/api/rooms/ABCD2345/socket", {cookie, origin: null, headers: UPGRADE})).status).toBe(
-    403,
-  );
+  expect(
+    (await api.send("GET", "/api/rooms/ABCD2345/socket", {cookie, withoutOrigin: true, headers: UPGRADE})).status,
+  ).toBe(403);
 });
 
 it.each(["/api/rooms/SHORT/socket", "/api/rooms/0000000O/socket", "/api/me", "/api/nothing", "/"])(

@@ -76,11 +76,11 @@ export class GameRoom extends DurableObject {
         return this.accept(asked.accountId);
       case "malformed": {
         logApiEvent({event: "game_room", outcome: "malformed_request", status: 400});
-        return new Response(null, {status: 400});
+        return new Response(undefined, {status: 400});
       }
       case "unknown": {
         logApiEvent({event: "game_room", outcome: "unknown_request", status: 404});
-        return new Response(null, {status: 404});
+        return new Response(undefined, {status: 404});
       }
     }
   }
@@ -117,14 +117,14 @@ export class GameRoom extends DurableObject {
     // not overwrite a game.
     if ((await this.stored()) !== undefined) {
       logApiEvent({event: "game_room", outcome: "duplicate_open", status: 409});
-      return new Response(null, {status: 409});
+      return new Response(undefined, {status: 409});
     }
 
     await this.context.storage.put({[STORED_CODE]: code, [STORED_ROOM]: room});
     await this.setAlarm(alarmPlanForRoom(room, Date.now()));
     logApiEvent({event: "game_room", outcome: "opened"});
 
-    return new Response(null, {status: 204});
+    return new Response(undefined, {status: 204});
   }
 
   private async accept(accountId: string): Promise<Response> {
@@ -140,14 +140,14 @@ export class GameRoom extends DurableObject {
     const {0: client, 1: server} = new WebSocketPair();
     this.context.acceptWebSocket(server, [accountId]);
 
-    return new Response(null, {status: 101, webSocket: client});
+    return new Response(undefined, {status: 101, webSocket: client});
   }
 
   private refuse(): Response {
     const {0: client, 1: server} = new WebSocketPair();
     server.accept();
     server.close(ROOM_GONE_CLOSE_CODE, "There is no such room");
-    const response = new Response(null, {status: 101, webSocket: client});
+    const response = new Response(undefined, {status: 101, webSocket: client});
 
     logApiEvent({event: "game_room", outcome: "socket_refused_missing_room"});
     return response;

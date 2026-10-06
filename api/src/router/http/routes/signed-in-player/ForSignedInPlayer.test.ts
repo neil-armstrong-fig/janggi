@@ -20,7 +20,7 @@ async function requestWithSession(token: string | undefined): Promise<Request> {
 
 it("hands the route the account of the session", async () => {
   const request = await requestWithSession("good");
-  const answer = vi.fn(() => Promise.resolve(new Response(null, {status: 204})));
+  const answer = vi.fn(() => Promise.resolve(new Response(undefined, {status: 204})));
 
   const response = await forSignedInPlayer(request, answer);
 
@@ -33,7 +33,7 @@ it.each([
   ["a session nobody has", "unknown"],
 ])("answers 401, and never calls the route, for %s", async (_what, token) => {
   const request = await requestWithSession(token);
-  const answer = vi.fn(() => Promise.resolve(new Response(null, {status: 204})));
+  const answer = vi.fn(() => Promise.resolve(new Response(undefined, {status: 204})));
 
   expect((await forSignedInPlayer(request, answer)).status).toBe(401);
   expect(answer).not.toHaveBeenCalled();

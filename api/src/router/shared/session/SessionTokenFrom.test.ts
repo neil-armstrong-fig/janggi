@@ -9,7 +9,7 @@ it("finds it where it is the only cookie", () => {
 });
 
 it("finds none where there is no cookie header, or no session in it", () => {
-  expect(sessionTokenFrom(null)).toBeUndefined();
+  expect(sessionTokenFrom(undefined)).toBeUndefined();
   expect(sessionTokenFrom("theme=dark")).toBeUndefined();
 });
 

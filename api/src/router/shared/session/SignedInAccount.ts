@@ -5,7 +5,7 @@ import {sessionTokenFrom} from "@src/router/shared/session/SessionTokenFrom";
 
 /** The account a request's session cookie belongs to, or undefined where it has none, or none that is still good. */
 export async function signedInAccount(request: Request): Promise<Account | undefined> {
-  const token = sessionTokenFrom(request.headers.get("Cookie"));
+  const token = sessionTokenFrom(request.headers.get("Cookie") ?? undefined);
   if (token === undefined) return undefined;
 
   return accountOfSession(await hashSessionToken(token), new Date());

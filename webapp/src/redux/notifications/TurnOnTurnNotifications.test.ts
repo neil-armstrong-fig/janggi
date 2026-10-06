@@ -17,7 +17,7 @@ beforeEach(() => {
     unsubscribe,
   });
   getSubscription.mockResolvedValue(null);
-  fetched.mockResolvedValue(new Response(null, {status: 204}));
+  fetched.mockResolvedValue(new Response(undefined, {status: 204}));
 
   vi.stubGlobal("navigator", {
     serviceWorker: {getRegistration: () => Promise.resolve({pushManager: {subscribe, getSubscription}})},
@@ -61,7 +61,7 @@ it("subscribes nowhere when the player says no to the browser's question", async
 });
 
 it("lets the browser's subscription go again when the server would not take it, so no address is held that it does not know", async () => {
-  fetched.mockResolvedValue(new Response(null, {status: 503}));
+  fetched.mockResolvedValue(new Response(undefined, {status: 503}));
 
   expect(await turnOnTurnNotifications()).toBe("off");
   expect(unsubscribe).toHaveBeenCalledOnce();

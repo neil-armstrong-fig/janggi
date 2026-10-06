@@ -16,7 +16,7 @@ it("writes the value as JSON under the key", () => {
 
   saveJson({setItem: (key, value) => void written.set(key, value)}, "kept", {elo: 1250});
 
-  expect(JSON.parse(written.get("kept") ?? "null")).toEqual({elo: 1250});
+  expect(written.get("kept")).toBe('{"elo":1250}');
 });
 
 it("carries on when the storage is full or refuses to be written", () => {

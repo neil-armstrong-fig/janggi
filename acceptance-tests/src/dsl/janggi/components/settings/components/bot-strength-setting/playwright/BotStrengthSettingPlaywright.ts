@@ -39,8 +39,8 @@ export class BotStrengthSettingPlaywright extends SettingsSheetComponent {
   }
 
   async choose(elo: BotElo): Promise<void> {
-    const value = await this.options[elo].getAttribute("value");
-    if (value === null) throw new Error(`The ${elo} option carries no value to select`);
+    const value = (await this.options[elo].getAttribute("value")) ?? undefined;
+    if (value === undefined) throw new Error(`The ${elo} option carries no value to select`);
 
     await this.inSheet(this.select, async () => {
       await this.select.selectOption(value);
@@ -54,6 +54,6 @@ export class BotStrengthSettingPlaywright extends SettingsSheetComponent {
   }
 
   async isLocked(elo: BotElo): Promise<boolean> {
-    return (await this.options[elo].getAttribute("data-locked")) !== null;
+    return ((await this.options[elo].getAttribute("data-locked")) ?? undefined) !== undefined;
   }
 }

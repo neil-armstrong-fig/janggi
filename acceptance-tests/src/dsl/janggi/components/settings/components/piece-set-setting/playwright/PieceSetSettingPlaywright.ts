@@ -38,8 +38,8 @@ export class PieceSetSettingPlaywright extends SettingsSheetComponent {
   }
 
   async choose(name: PieceSetName): Promise<void> {
-    const value = await this.options[name].getAttribute("value");
-    if (value === null) throw new Error(`The "${name}" option carries no value to select`);
+    const value = (await this.options[name].getAttribute("value")) ?? undefined;
+    if (value === undefined) throw new Error(`The "${name}" option carries no value to select`);
 
     await this.chooseNamed(value);
   }
@@ -98,6 +98,6 @@ export class PieceSetSettingPlaywright extends SettingsSheetComponent {
   }
 
   async isLocked(name: PieceSetName): Promise<boolean> {
-    return (await this.options[name].getAttribute("data-locked")) !== null;
+    return ((await this.options[name].getAttribute("data-locked")) ?? undefined) !== undefined;
   }
 }

@@ -36,7 +36,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", (endpoint: string, init: RequestInit) => {
     fetched.push({endpoint, headers: new Headers(init.headers)});
 
-    return Promise.resolve(new Response(null, {status: answers[endpoint] ?? 201}));
+    return Promise.resolve(new Response(undefined, {status: answers[endpoint] ?? 201}));
   });
 });
 

@@ -13,7 +13,7 @@ import {useState} from "react";
  *
  * Whether there was a link is read once, as the page opens, because dismissing it changes the address.
  */
-export function FriendSignIn(): React.JSX.Element | null {
+export function FriendSignIn(): React.JSX.Element | undefined {
   const status = useAppSelector(state => state.account.status);
   const dispatch = useAppDispatch();
   const [linked, setLinked] = useState(() => friendCodeInSearch(globalThis.location.search) !== undefined);
@@ -26,7 +26,7 @@ export function FriendSignIn(): React.JSX.Element | null {
   };
   useEscapeKey(dismiss);
 
-  if (!prompting) return null;
+  if (!prompting) return undefined;
 
   return (
     <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/60 p-3 sm:items-center">

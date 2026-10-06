@@ -147,11 +147,8 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
 
   /** The code the sheet shows the host, or undefined where it shows none. */
   async getCode(): Promise<FriendCode | undefined> {
-    const text = await this.code.getAttribute("data-code");
-
-    if (text === null) {
-      return undefined;
-    }
+    const text = (await this.code.getAttribute("data-code")) ?? undefined;
+    if (text === undefined) return undefined;
 
     return parseFriendCode(text);
   }
@@ -170,7 +167,7 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
 
   /** Whether the army's plaque wears the mark that says it is the one this player has. */
   async isMarkedAsYours(side: Side): Promise<boolean> {
-    return (await this.page.getByTestId(`plaque-${side}`).getAttribute("data-own")) !== null;
+    return ((await this.page.getByTestId(`plaque-${side}`).getAttribute("data-own")) ?? undefined) !== undefined;
   }
 
   /** Whether the strip tells this player it is their turn. False while it is the friend's, and where no game is being played. */
@@ -231,7 +228,8 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
       const subscribed = "dsl.push-endpoint";
       const permission = (): NotificationPermission => {
         if (kind === "blocks") return "denied";
-        if (localStorage.getItem(granted) === null) return "default";
+        const grantedPermission = localStorage.getItem(granted) ?? undefined;
+        if (grantedPermission === undefined) return "default";
 
         return "granted";
       };
@@ -243,8 +241,8 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
       };
 
       const subscription = (): unknown => {
-        const endpoint = localStorage.getItem(subscribed);
-        if (endpoint === null) return null;
+        const endpoint = localStorage.getItem(subscribed) ?? undefined;
+        if (endpoint === undefined) return null;
 
         return {
           endpoint,

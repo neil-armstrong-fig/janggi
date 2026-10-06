@@ -107,7 +107,9 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("push", event => {
-  event.waitUntil(showTurnNotification(event.data?.text()));
+  const data = event.data ?? undefined;
+
+  event.waitUntil(showTurnNotification(data?.text()));
 });
 
 self.addEventListener("notificationclick", event => {

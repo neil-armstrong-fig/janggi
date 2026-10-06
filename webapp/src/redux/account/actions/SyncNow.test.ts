@@ -26,7 +26,7 @@ import {syncNow} from "@src/redux/account/actions/SyncNow";
 
 interface Call {
   readonly method: string;
-  readonly ifMatch: string | null;
+  readonly ifMatch?: string;
   readonly body: unknown;
 }
 
@@ -58,11 +58,11 @@ function deviceHolding(save: Save, answers: readonly Response[]): AppStore {
 
     calls.push({
       method: init?.method ?? "GET",
-      ifMatch: headers.get("If-Match"),
+      ifMatch: headers.get("If-Match") ?? undefined,
       body: typeof init?.body === "string" ? JSON.parse(init.body) : undefined,
     });
 
-    return Promise.resolve(remaining.shift() ?? new Response(null, {status: 500}));
+    return Promise.resolve(remaining.shift() ?? new Response(undefined, {status: 500}));
   });
 
   const store = createStore(undefined);
@@ -343,7 +343,7 @@ it("gives up after a second conflict and says syncing is paused", async () => {
 });
 
 it("says syncing is paused when the server cannot be used, and keeps the player signed in", async () => {
-  const store = deviceHolding(empty.withXp(640).build(), [new Response(null, {status: 503})]);
+  const store = deviceHolding(empty.withXp(640).build(), [new Response(undefined, {status: 503})]);
 
   await store.dispatch(syncNow());
 
@@ -360,7 +360,7 @@ it("says syncing is paused when the server cannot be reached", async () => {
 });
 
 it("signs the player out when the server no longer knows them", async () => {
-  const store = deviceHolding(empty.withXp(640).build(), [new Response(null, {status: 401})]);
+  const store = deviceHolding(empty.withXp(640).build(), [new Response(undefined, {status: 401})]);
 
   await store.dispatch(syncNow());
 
@@ -389,7 +389,7 @@ it("says the data is too big to sync, and writes nothing, when the document is p
 });
 
 it("says the data is too big to sync where the server says so", async () => {
-  const store = deviceHolding(empty.withXp(640).build(), [holding(0), new Response(null, {status: 413})]);
+  const store = deviceHolding(empty.withXp(640).build(), [holding(0), new Response(undefined, {status: 413})]);
 
   await store.dispatch(syncNow());
 

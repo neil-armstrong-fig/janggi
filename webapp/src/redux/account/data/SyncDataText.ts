@@ -27,7 +27,7 @@ export function syncDataText(data: SyncData): string {
     },
     ratings: {
       byFormat: {Casual: latestGames(data.ratings.byFormat.Casual), Scored: latestGames(data.ratings.byFormat.Scored)},
-      resetAt: data.ratings.resetAt ?? null,
+      resetAt: data.ratings.resetAt,
     },
     preferences: {value: data.preferences.value, at: data.preferences.at},
   });

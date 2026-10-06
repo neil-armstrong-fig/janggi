@@ -28,7 +28,8 @@ export async function handleWebSocket(request: Request): Promise<Response> {
     return response;
   }
 
-  if (!isTrustedOrigin(request.headers.get("Origin"), allowedOrigins())) {
+  const origin = request.headers.get("Origin") ?? undefined;
+  if (!isTrustedOrigin(origin, allowedOrigins())) {
     const response = respondEmpty(403);
 
     logApiEvent({

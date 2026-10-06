@@ -60,10 +60,8 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
 
   /** The XP the next unlock needs, or undefined once everything is unlocked. */
   async getNextUnlockXp(): Promise<number | undefined> {
-    const xp = await this.nextUnlock.getAttribute("data-xp");
-    if (xp === null) {
-      return undefined;
-    }
+    const xp = (await this.nextUnlock.getAttribute("data-xp")) ?? undefined;
+    if (xp === undefined) return undefined;
 
     return Number(xp);
   }

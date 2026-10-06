@@ -87,6 +87,13 @@ it("keeps only the latest games of each format, the device keeping the rest", ()
   expect(read?.at(-1)).toEqual(games.at(-1));
 });
 
+it("omits a rating reset that has not happened", () => {
+  const text = syncDataText(data({ratings: {byFormat: freshRatings().byFormat, resetAt: undefined}}));
+  const written: unknown = JSON.parse(text);
+
+  expect(written).not.toHaveProperty("ratings.resetAt");
+});
+
 it("refuses text that is not JSON, not an object, or of another version", () => {
   expect(syncDataFrom("{nope")).toBeUndefined();
   expect(syncDataFrom("[]")).toBeUndefined();

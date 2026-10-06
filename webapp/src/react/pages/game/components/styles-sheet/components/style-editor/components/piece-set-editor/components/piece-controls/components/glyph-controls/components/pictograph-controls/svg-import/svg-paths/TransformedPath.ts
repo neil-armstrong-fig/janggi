@@ -66,7 +66,7 @@ function numbersAt(data: string, start: number, command: string): NumbersRead | 
 
     // An arc's two flags are one character each, and may be written with nothing between them.
     const isFlag = command === "A" && (index === 3 || index === 4);
-    const found = isFlag ? FLAG.exec(data.slice(at, at + 1)) : numberAt(data, at);
+    const found = isFlag ? (FLAG.exec(data.slice(at, at + 1)) ?? undefined) : numberAt(data, at);
     if (!found) return undefined;
 
     numbers.push(Number(found[0]));
@@ -105,10 +105,10 @@ function afterSeparators(data: string, from: number): number {
   return at;
 }
 
-function numberAt(data: string, at: number): RegExpExecArray | null {
+function numberAt(data: string, at: number): RegExpExecArray | undefined {
   NUMBER.lastIndex = at;
 
-  return NUMBER.exec(data);
+  return NUMBER.exec(data) ?? undefined;
 }
 
 const ARITY: Readonly<Record<string, number>> = {M: 2, L: 2, H: 1, V: 1, C: 6, S: 4, Q: 4, T: 2, A: 7, Z: 0};

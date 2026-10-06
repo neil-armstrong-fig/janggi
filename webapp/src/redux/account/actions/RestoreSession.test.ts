@@ -61,7 +61,7 @@ it("syncs straight after it is signed in", async () => {
 });
 
 it("is signed out where the server says nobody is signed in", async () => {
-  const store = await openedAs("signed-in", () => Promise.resolve(new Response(null, {status: 401})));
+  const store = await openedAs("signed-in", () => Promise.resolve(new Response(undefined, {status: 401})));
 
   expect(store.getState().account.status).toBe("signed-out");
 });

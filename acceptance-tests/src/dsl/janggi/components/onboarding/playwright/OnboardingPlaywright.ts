@@ -171,10 +171,10 @@ export class OnboardingPlaywright extends BaseComponent {
   }
 
   async isTourGuideLinkForTheGuide(): Promise<boolean> {
-    const href = await this.tourGuide.getAttribute("href");
+    const href = (await this.tourGuide.getAttribute("href")) ?? undefined;
 
     return (
-      href !== null &&
+      href !== undefined &&
       new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href &&
       (await this.tourGuide.getAttribute("target")) === "_blank"
     );

@@ -61,6 +61,7 @@ export class StyleToolsPlaywright extends StylesSheetComponent {
   }
 
   private async openTools(): Promise<void> {
-    if ((await this.tools.getAttribute("open")) === null) await this.toolsToggle.click();
+    const open = (await this.tools.getAttribute("open")) ?? undefined;
+    if (open === undefined) await this.toolsToggle.click();
   }
 }

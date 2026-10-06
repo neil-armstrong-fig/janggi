@@ -1,9 +1,9 @@
 import {useReleaseUpdate} from "@src/react/release-update/hooks/use-release-update/UseReleaseUpdate";
 
 /** A waiting release, kept compact and optional so it never interrupts the game in progress. */
-export function ReleaseUpdate(): React.JSX.Element | null {
+export function ReleaseUpdate(): React.JSX.Element | undefined {
   const {available, leaveUntilLater, refresh} = useReleaseUpdate();
-  if (!available) return null;
+  if (!available) return undefined;
 
   return (
     <aside

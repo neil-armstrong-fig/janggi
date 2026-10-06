@@ -32,7 +32,7 @@ export class ApiHarness {
     const headers = new Headers(options.headers);
     const origin = originOf(options);
 
-    if (origin !== null && origin !== undefined) headers.set("Origin", origin);
+    if (origin !== undefined) headers.set("Origin", origin);
     if (options.cookie !== undefined) headers.set("Cookie", options.cookie);
     if (options.body !== undefined || options.rawBody !== undefined) headers.set("Content-Type", "application/json");
 
@@ -50,14 +50,14 @@ export class ApiHarness {
 
   /** Signs in as the Google subject `subject`, the whole way round, and gives back the session cookie it was handed. */
   async signIn(subject: string): Promise<string> {
-    const started = await this.send("GET", `/api/auth/google?return=${SITE}/`, {origin: null});
+    const started = await this.send("GET", `/api/auth/google?return=${SITE}/`, {withoutOrigin: true});
     const attempt = cookieOf(started, "oauth");
     const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state") ?? "";
 
     this.google.subjectsByCode.set(`code-for-${subject}`, subject);
 
     const finished = await this.send("GET", `/api/auth/google/callback?code=code-for-${subject}&state=${state}`, {
-      origin: null,
+      withoutOrigin: true,
       cookie: attempt,
     });
 
@@ -65,9 +65,10 @@ export class ApiHarness {
   }
 }
 
-/** Where a test's request comes from: the site, unless it says another origin or none (`origin: null`). */
-function originOf(options: SendOptions): string | null | undefined {
-  if ("origin" in options) return options.origin;
+/** Where a test's request comes from: the site, unless it says another origin or asks for none. */
+function originOf(options: SendOptions): string | undefined {
+  if (options.withoutOrigin) return undefined;
+  if (options.origin !== undefined) return options.origin;
 
   return SITE;
 }

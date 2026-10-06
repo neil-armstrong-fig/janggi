@@ -3,7 +3,7 @@ import type {OAuthAttempt} from "@src/router/http/routes/sign-in/oauth/types/OAu
 import {OAUTH_COOKIE} from "@src/router/http/routes/sign-in/oauth/OAuthCookieName";
 
 /** The attempt in a request's `Cookie` header, or undefined where there is none or it is not one this API wrote. */
-export function oauthAttemptFrom(cookieHeader: string | null): OAuthAttempt | undefined {
+export function oauthAttemptFrom(cookieHeader: string | undefined): OAuthAttempt | undefined {
   const pair = (cookieHeader ?? "")
     .split(";")
     .map(each => each.trim())

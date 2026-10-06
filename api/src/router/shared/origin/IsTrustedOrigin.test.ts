@@ -19,5 +19,5 @@ it("refuses a lookalike that only starts with the site's origin", () => {
 });
 
 it("refuses a request that names no origin", () => {
-  expect(isTrustedOrigin(null, ALLOWED)).toBe(false);
+  expect(isTrustedOrigin(undefined, ALLOWED)).toBe(false);
 });

@@ -44,9 +44,9 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   }
 
   async isGuideLinkedFromGame(): Promise<boolean> {
-    const href = await this.page.getByTestId("guide-open").getAttribute("href");
+    const href = (await this.page.getByTestId("guide-open").getAttribute("href")) ?? undefined;
 
-    return href !== null && new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href;
+    return href !== undefined && new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href;
   }
 
   async getDeveloperWebsiteDestination(): Promise<string> {
@@ -58,8 +58,8 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   }
 
   private async appHelpDestination(testId: string): Promise<string> {
-    const href = await this.page.getByTestId(testId).getAttribute("href");
-    if (href === null) throw new Error(`The ${testId} link has no destination`);
+    const href = (await this.page.getByTestId(testId).getAttribute("href")) ?? undefined;
+    if (href === undefined) throw new Error(`The ${testId} link has no destination`);
 
     return href;
   }
@@ -123,9 +123,11 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   /** The selected layer has exactly the tab button's bounds, so no inset or stale column width remains. */
   async doesSelectedTabHighlightFillTab(name: SettingsTabName): Promise<boolean> {
     const tab = this.tabNamed(name);
-    const tabBounds = await tab.boundingBox();
-    const highlightBounds = await tab.getByTestId("settings-tab-highlight").boundingBox();
-    if (tabBounds === null || highlightBounds === null) return false;
+    const tabBounds = (await tab.boundingBox()) ?? undefined;
+    if (tabBounds === undefined) return false;
+
+    const highlightBounds = (await tab.getByTestId("settings-tab-highlight").boundingBox()) ?? undefined;
+    if (highlightBounds === undefined) return false;
 
     return (
       tabBounds.x === highlightBounds.x &&
@@ -196,9 +198,11 @@ export class SettingsPlaywright extends SettingsSheetComponent {
    * reaches up over. A closed sheet is below the screen and covers nothing.
    */
   async isCoveringTheBoardAt(file: number, rank: number): Promise<boolean> {
-    const cell = await this.page.getByTestId("board").getByTestId(`cell-f${file}r${rank}`).boundingBox();
-    const sheet = await this.sheet.boundingBox();
-    if (cell === null || sheet === null) throw new Error("Expected both the intersection and the sheet to be drawn");
+    const cell = (await this.page.getByTestId("board").getByTestId(`cell-f${file}r${rank}`).boundingBox()) ?? undefined;
+    if (cell === undefined) throw new Error("Expected the intersection to be drawn");
+
+    const sheet = (await this.sheet.boundingBox()) ?? undefined;
+    if (sheet === undefined) throw new Error("Expected the sheet to be drawn");
 
     const overlapsAcross = sheet.x < cell.x + cell.width && cell.x < sheet.x + sheet.width;
     const overlapsDown = sheet.y < cell.y + cell.height && cell.y < sheet.y + sheet.height;

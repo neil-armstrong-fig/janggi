@@ -19,8 +19,8 @@ export async function roomRequestFrom(request: Request): Promise<RoomRequest> {
 
 /** A player's socket, for the account the Worker named; with none named it is nothing the room serves. */
 function socketRequestFrom(request: Request): RoomRequest {
-  const accountId = request.headers.get(ROOM_OBJECT_CALL.accountHeader);
-  if (accountId === null || accountId === "") return {kind: "unknown"};
+  const accountId = request.headers.get(ROOM_OBJECT_CALL.accountHeader) ?? undefined;
+  if (accountId === undefined || accountId === "") return {kind: "unknown"};
 
   return {kind: "socket", accountId};
 }

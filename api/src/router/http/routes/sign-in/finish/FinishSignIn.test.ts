@@ -12,12 +12,12 @@ beforeEach(() => {
 });
 
 it("finishing a sign-in brings the player back to where the app asked, with a session", async () => {
-  const started = await api.send("GET", `/api/auth/google?return=${SITE}/?a=1`, {origin: null});
+  const started = await api.send("GET", `/api/auth/google?return=${SITE}/?a=1`, {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
   api.google.subjectsByCode.set("good", "google-1");
 
   const finished = await api.send("GET", `/api/auth/google/callback?code=good&state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -27,12 +27,12 @@ it("finishing a sign-in brings the player back to where the app asked, with a se
 });
 
 it("finishing a sign-in will not send the player on to a site that is not allowed", async () => {
-  const started = await api.send("GET", "/api/auth/google?return=https://evil.example/", {origin: null});
+  const started = await api.send("GET", "/api/auth/google?return=https://evil.example/", {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
   api.google.subjectsByCode.set("good", "google-1");
 
   const finished = await api.send("GET", `/api/auth/google/callback?code=good&state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -40,12 +40,12 @@ it("finishing a sign-in will not send the player on to a site that is not allowe
 });
 
 it("finishing a sign-in ends the attempt once it has been used", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
   api.google.subjectsByCode.set("good", "google-1");
 
   const finished = await api.send("GET", `/api/auth/google/callback?code=good&state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -53,12 +53,12 @@ it("finishing a sign-in ends the attempt once it has been used", async () => {
 });
 
 it("finishing a sign-in sets a session cookie no script can read", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
   api.google.subjectsByCode.set("good", "google-1");
 
   const finished = await api.send("GET", `/api/auth/google/callback?code=good&state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
   const session = finished.headers.getSetCookie().find(cookie => cookie.startsWith("session="));
@@ -84,11 +84,11 @@ it("finishing a sign-in gives the same account to the same Google subject on the
 });
 
 it("finishing a sign-in will not finish an attempt whose state is not the one it started", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   api.google.subjectsByCode.set("good", "google-1");
 
   const finished = await api.send("GET", "/api/auth/google/callback?code=good&state=forged", {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -99,18 +99,18 @@ it("finishing a sign-in will not finish an attempt whose state is not the one it
 it("finishing a sign-in will not finish an attempt it never started", async () => {
   api.google.subjectsByCode.set("good", "google-1");
 
-  const finished = await api.send("GET", "/api/auth/google/callback?code=good&state=anything", {origin: null});
+  const finished = await api.send("GET", "/api/auth/google/callback?code=good&state=anything", {withoutOrigin: true});
 
   expect(finished.status).toBe(400);
   expect(cookieOf(finished, "session")).toBe("");
 });
 
 it("finishing a sign-in sends the player back with no session where Google refuses the code", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
 
   const finished = await api.send("GET", `/api/auth/google/callback?code=forged&state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -119,11 +119,11 @@ it("finishing a sign-in sends the player back with no session where Google refus
 });
 
 it("finishing a sign-in sends the player back with no session where the callback has no code", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
 
   const finished = await api.send("GET", `/api/auth/google/callback?state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -133,16 +133,16 @@ it("finishing a sign-in sends the player back with no session where the callback
 it("finishing a sign-in will not finish an attempt for a player who has used up their allowance", async () => {
   api.limits.refuse("login", "unknown");
 
-  expect((await api.send("GET", "/api/auth/google/callback?code=x&state=y", {origin: null})).status).toBe(429);
+  expect((await api.send("GET", "/api/auth/google/callback?code=x&state=y", {withoutOrigin: true})).status).toBe(429);
 });
 
 it("logs Google's refusal safely as a failed sign-in", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
   vi.mocked(logApiEvent).mockClear();
 
   await api.send("GET", `/api/auth/google/callback?code=forged&state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -158,7 +158,7 @@ it("logs Google's refusal safely as a failed sign-in", async () => {
 });
 
 it("logs a callback with no attempt cookie as a refusal", async () => {
-  await api.send("GET", "/api/auth/google/callback?code=x&state=y", {origin: null});
+  await api.send("GET", "/api/auth/google/callback?code=x&state=y", {withoutOrigin: true});
 
   expect(logApiEvent).toHaveBeenCalledExactlyOnceWith({
     event: "api_request",
@@ -171,11 +171,11 @@ it("logs a callback with no attempt cookie as a refusal", async () => {
 });
 
 it("logs a callback with no code without Google's callback value", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   vi.mocked(logApiEvent).mockClear();
 
   await api.send("GET", "/api/auth/google/callback?error=access_denied", {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 
@@ -190,12 +190,12 @@ it("logs a callback with no code without Google's callback value", async () => {
 });
 
 it("finishing a sign-in gives Google the code, the attempt's state and verifier, and the callback address it was sent to", async () => {
-  const started = await api.send("GET", "/api/auth/google", {origin: null});
+  const started = await api.send("GET", "/api/auth/google", {withoutOrigin: true});
   const state = new URL(started.headers.get("Location") ?? "").searchParams.get("state");
   api.google.subjectsByCode.set("good", "google-1");
 
   await api.send("GET", `/api/auth/google/callback?code=good&state=${state}`, {
-    origin: null,
+    withoutOrigin: true,
     cookie: cookieOf(started, "oauth"),
   });
 

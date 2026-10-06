@@ -9,7 +9,7 @@ vi.mock("@src/router/RouteRequest");
 beforeEach(() => {
   workerEnvironment.GOOGLE_CLIENT_ID = "client-id";
   workerEnvironment.GOOGLE_CLIENT_SECRET = "client-secret";
-  vi.mocked(routeRequest).mockResolvedValue(new Response(null, {status: 204}));
+  vi.mocked(routeRequest).mockResolvedValue(new Response(undefined, {status: 204}));
 });
 
 afterEach(() => {

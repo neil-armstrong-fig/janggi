@@ -6,9 +6,9 @@
  * send somebody on to a site of its own. Anything that is not a URL is ignored rather than refused, since the player
  * is mid-way through signing in and a plain return to the site is a better answer than an error.
  */
-export function returnAddress(asked: string | null, allowedOrigins: readonly string[]): string {
+export function returnAddress(asked: string | undefined, allowedOrigins: readonly string[]): string {
   const fallback = `${allowedOrigins[0] ?? ""}/`;
-  if (asked === null) return fallback;
+  if (asked === undefined) return fallback;
 
   try {
     const address = new URL(asked);

@@ -367,14 +367,14 @@ export class StatusPlaywright extends BaseComponent {
   async isLayingOut(): Promise<boolean> {
     await this.container.waitFor({state: "visible"});
 
-    return (await this.container.getAttribute("data-laying-out")) !== null;
+    return ((await this.container.getAttribute("data-laying-out")) ?? undefined) !== undefined;
   }
 
   /** Whether the army to move is in check. */
   async isInCheck(): Promise<boolean> {
     await this.container.waitFor({state: "visible"});
 
-    return (await this.container.getAttribute("data-in-check")) !== null;
+    return ((await this.container.getAttribute("data-in-check")) ?? undefined) !== undefined;
   }
 
   /** The army that has won, or undefined while the game is still being played. */
@@ -412,7 +412,7 @@ export class StatusPlaywright extends BaseComponent {
   async isDrawn(): Promise<boolean> {
     await this.container.waitFor({state: "visible"});
 
-    return (await this.container.getAttribute("data-drawn")) !== null;
+    return ((await this.container.getAttribute("data-drawn")) ?? undefined) !== undefined;
   }
 
   /** How the game was drawn, which the turn line carries as `data-drawn`. */

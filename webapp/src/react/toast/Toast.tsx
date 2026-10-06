@@ -6,11 +6,11 @@ import {useToastTimeout} from "@src/react/toast/hooks/use-toast-timeout/UseToast
  * tap that moved the player to another sheet, say. At the top of the screen, over the sheets, and it takes no tap, so
  * nothing under it is covered for more than a moment. What is shown is the `toast` slice's, and the timer is the hook's.
  */
-export function Toast(): React.JSX.Element | null {
+export function Toast(): React.JSX.Element | undefined {
   const {message, id} = useAppSelector(state => state.toast);
   useToastTimeout(id, message !== undefined);
 
-  if (message === undefined) return null;
+  if (message === undefined) return undefined;
 
   return (
     <div

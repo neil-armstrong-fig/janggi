@@ -151,10 +151,10 @@ export class FakeApi {
 
   /** Where the real server sends the player back to: the address the app asked for, if it is on the site, and else the site. */
   private returnAddress(url: URL, siteOrigin: string): string {
-    const asked = url.searchParams.get("return");
+    const asked = url.searchParams.get("return") ?? undefined;
 
     try {
-      if (asked !== null && new URL(asked).origin === siteOrigin) {
+      if (asked !== undefined && new URL(asked).origin === siteOrigin) {
         return asked;
       }
 

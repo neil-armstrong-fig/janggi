@@ -16,7 +16,7 @@ interface GameRoomsStub {
  * stubbing: `idFromName` names the room by its code, and `get` hands back a stub whose `fetch` is a mock to read and to steer.
  */
 export function gameRoomsStub(): GameRoomsStub {
-  const roomCalled = vi.fn<RoomCall>(() => Promise.resolve(new Response(null, {status: 200})));
+  const roomCalled = vi.fn<RoomCall>(() => Promise.resolve(new Response(undefined, {status: 200})));
   const namespace = {
     idFromName: (name: string) => name,
     get: (code: string) => ({fetch: (input: RequestInfo | URL, init?: RequestInit) => roomCalled(code, input, init)}),

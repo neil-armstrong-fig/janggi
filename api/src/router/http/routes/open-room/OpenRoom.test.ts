@@ -172,7 +172,7 @@ it("opening a room is rate-limited by account", async () => {
 
 it.each([
   ["cannot be reached", () => rooms.roomCalled.mockRejectedValueOnce(new Error("The room could not be made"))],
-  ["answers with an error", () => rooms.roomCalled.mockResolvedValueOnce(new Response(null, {status: 500}))],
+  ["answers with an error", () => rooms.roomCalled.mockResolvedValueOnce(new Response(undefined, {status: 500}))],
 ])("a room that %s is forgotten, so the host may try again", async (_how, breakTheRoom) => {
   const cookie = await api.signIn("google-1");
   breakTheRoom();

@@ -15,11 +15,11 @@ import {respondEmpty} from "@src/router/shared/respond/RespondEmpty";
  * An answer has the CORS headers added to it last, so no route can forget them.
  */
 export async function handleHttp(request: Request): Promise<Response> {
-  const origin = request.headers.get("Origin");
+  const origin = request.headers.get("Origin") ?? undefined;
   const cors = corsHeadersFor(origin, allowedOrigins());
 
   if (request.method === "OPTIONS") {
-    const response = new Response(null, {status: 204, headers: preflightHeaders(cors)});
+    const response = new Response(undefined, {status: 204, headers: preflightHeaders(cors)});
 
     logApiEvent({event: "api_request", route: "preflight", transport: "http", outcome: "preflight", status: 204});
     return response;

@@ -57,8 +57,9 @@ export class ReferencesPlaywright extends BasePage {
   }
 
   async getDestinationOf(id: string): Promise<string> {
-    const href = await this.referencesPage().getByTestId(id).getAttribute("href");
-    if (href === null) throw new Error(`The reference ${id} has no destination`);
+    const href = (await this.referencesPage().getByTestId(id).getAttribute("href")) ?? undefined;
+    if (href === undefined) throw new Error(`The reference ${id} has no destination`);
+
     return href;
   }
 

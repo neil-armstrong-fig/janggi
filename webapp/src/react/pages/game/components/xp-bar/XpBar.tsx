@@ -17,9 +17,9 @@ interface Props {
   readonly className?: string;
 }
 
-export function XpBar({xp, testId, className}: Props): React.JSX.Element | null {
+export function XpBar({xp, testId, className}: Props): React.JSX.Element | undefined {
   const progress = unlockProgressFor(xp);
-  if (!progress) return null;
+  if (!progress) return undefined;
 
   const percent = Math.round(progress.fraction * 100);
 

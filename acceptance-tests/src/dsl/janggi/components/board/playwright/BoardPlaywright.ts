@@ -155,17 +155,17 @@ export class BoardPlaywright extends BaseComponent {
 
   /** Whether the board is offering this intersection as somewhere the selected piece may go. */
   async canMoveTo(file: number, rank: number): Promise<boolean> {
-    return (await this.cellLocator(file, rank).getAttribute("data-can-move-to")) !== null;
+    return ((await this.cellLocator(file, rank).getAttribute("data-can-move-to")) ?? undefined) !== undefined;
   }
 
   /** Whether the board is showing this intersection as one the piece in question would land on but for its own army. */
   async isShownAsCovered(file: number, rank: number): Promise<boolean> {
-    return (await this.cellLocator(file, rank).getAttribute("data-covered")) !== null;
+    return ((await this.cellLocator(file, rank).getAttribute("data-covered")) ?? undefined) !== undefined;
   }
 
   /** Whether the board is marking the piece on this intersection as one its owner may move now. */
   async canBeMoved(file: number, rank: number): Promise<boolean> {
-    return (await this.cellLocator(file, rank).getAttribute("data-can-be-moved")) !== null;
+    return ((await this.cellLocator(file, rank).getAttribute("data-can-be-moved")) ?? undefined) !== undefined;
   }
 
   /** Whether the intersection is marked as the point the last move left. */
@@ -190,13 +190,13 @@ export class BoardPlaywright extends BaseComponent {
     if ((await from.count()) === 0 || (await to.count()) === 0) return undefined;
 
     return {
-      from: this.pointOf(await from.getAttribute("data-testid")),
-      to: this.pointOf(await to.getAttribute("data-testid")),
+      from: this.pointOf((await from.getAttribute("data-testid")) ?? undefined),
+      to: this.pointOf((await to.getAttribute("data-testid")) ?? undefined),
     };
   }
 
   /** Reads a cell's `cell-f<file>r<rank>` test id back into the intersection it names. */
-  private pointOf(testId: string | null): Point {
+  private pointOf(testId: string | undefined): Point {
     const [, file, rank] = /^cell-f(\d+)r(\d+)$/.exec(testId ?? "") ?? [];
     if (file === undefined || rank === undefined) throw new Error(`Expected a cell's test id, got ${testId}`);
 
@@ -205,12 +205,12 @@ export class BoardPlaywright extends BaseComponent {
 
   /** Whether the intersection is marked as a general under attack. */
   async isMarkedAsUnderAttack(file: number, rank: number): Promise<boolean> {
-    return (await this.cellLocator(file, rank).getAttribute("data-under-attack")) !== null;
+    return ((await this.cellLocator(file, rank).getAttribute("data-under-attack")) ?? undefined) !== undefined;
   }
 
   /** Whether the intersection is marked as holding a piece that is giving check. */
   async isMarkedAsAttacking(file: number, rank: number): Promise<boolean> {
-    return (await this.cellLocator(file, rank).getAttribute("data-attacking")) !== null;
+    return ((await this.cellLocator(file, rank).getAttribute("data-attacking")) ?? undefined) !== undefined;
   }
 
   /** Whether the intersection carries the 빅장 label of a move that would let a bikjang be called. */
@@ -354,7 +354,7 @@ export class BoardPlaywright extends BaseComponent {
     return await this.eventually(async () => {
       const opacity = await piece.evaluate(element => {
         let product = 1;
-        for (let node: Element | null = element; node; node = node.parentElement) {
+        for (let node: Element | undefined = element; node; node = node.parentElement ?? undefined) {
           product *= Number(getComputedStyle(node).opacity);
         }
 

@@ -54,7 +54,7 @@ it("refuses a name that cannot be one without asking the server, and says why", 
 });
 
 it("keeps the name it had when the server refuses the new one", async () => {
-  const store = signedInAs("Kim Yu-sin", () => Promise.resolve(new Response(null, {status: 400})));
+  const store = signedInAs("Kim Yu-sin", () => Promise.resolve(new Response(undefined, {status: 400})));
 
   const result = await store.dispatch(renameAccount("Admiral Yi"));
 
@@ -80,7 +80,7 @@ it("keeps the name it had, and says so, when the server cannot be reached", asyn
 });
 
 it("keeps the name it had when the server fails", async () => {
-  const store = signedInAs("Kim Yu-sin", () => Promise.resolve(new Response(null, {status: 503})));
+  const store = signedInAs("Kim Yu-sin", () => Promise.resolve(new Response(undefined, {status: 503})));
 
   expect((await store.dispatch(renameAccount("Admiral Yi"))).accepted).toBe(false);
   expect(store.getState().account.displayName).toBe("Kim Yu-sin");

@@ -8,6 +8,7 @@ export function serverDataFrom(body: unknown): ServerData | undefined {
 
   const {version, blob} = body;
   if (!isFiniteNumber(version) || (blob !== null && typeof blob !== "string")) return undefined;
+  if (blob === null) return {version};
 
   return {version, blob};
 }

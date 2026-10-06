@@ -10,7 +10,7 @@ it("returns to the page the app asked to be brought back to, on an allowed site"
 });
 
 it("returns to the first allowed site where the app asked for nothing", () => {
-  expect(returnAddress(null, ALLOWED)).toBe("https://janggi.neilarmstrong.dev/");
+  expect(returnAddress(undefined, ALLOWED)).toBe("https://janggi.neilarmstrong.dev/");
 });
 
 it("will not send the player to a site that is not allowed", () => {

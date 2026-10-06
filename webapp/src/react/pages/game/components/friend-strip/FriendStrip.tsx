@@ -39,12 +39,12 @@ const WORDS: Record<FriendGameState, string> = {
  * It is in the page whenever there is a room, **even under the sheet**, and says nothing at all of a failure to reach the
  * room beyond the state: a game in progress is never interrupted, and one that cannot be reached shows as it was.
  */
-export function FriendStrip(): React.JSX.Element | null {
+export function FriendStrip(): React.JSX.Element | undefined {
   const friend = useAppSelector(state => state.friend);
   const game = useAppSelector(state => friendGameOf(state.friend, state.game).played.present);
   const dispatch = useAppDispatch();
   const state = friendStateOf(friend, game);
-  if (state === "idle") return null;
+  if (state === "idle") return undefined;
 
   const resignation = resignationWords(friend, state);
   const playing = state === "playing" || state === "opponent-left";

@@ -14,11 +14,11 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
  * Temporary: delete it, with the `languageNoticeSeen` preference, when the translation is accepted
  * (`docs/localisation.md`).
  */
-export function LanguageNotice(): React.JSX.Element | null {
+export function LanguageNotice(): React.JSX.Element | undefined {
   const language = useAppSelector(state => state.preferences.language);
   const seen = useAppSelector(state => state.preferences.languageNoticeSeen);
   const dispatch = useAppDispatch();
-  if (language !== "ko" || seen) return null;
+  if (language !== "ko" || seen) return undefined;
 
   const korean = messagesOf("ko").translationNotice;
   const english = messagesOf("en").translationNotice;

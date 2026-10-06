@@ -30,8 +30,8 @@ export class MovableHighlightSettingPlaywright extends SettingsSheetComponent {
 
   /** The name the switch stands for, or undefined before anything has rendered. */
   async getSelected(): Promise<MovableHighlightName | undefined> {
-    const pressed = await this.toggle.getAttribute("aria-pressed");
-    if (pressed === null) return undefined;
+    const pressed = (await this.toggle.getAttribute("aria-pressed")) ?? undefined;
+    if (pressed === undefined) return undefined;
 
     if (pressed === "true") return "Shown";
 

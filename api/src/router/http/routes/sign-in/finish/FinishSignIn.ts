@@ -29,15 +29,16 @@ import {httpRouteAnswerFor} from "@src/router/http/routes/answer/HttpRouteAnswer
 export async function finishSignIn(request: Request): Promise<HttpRouteAnswer> {
   if (!(await loginAllowed(clientOf(request)))) return httpRouteAnswerFor(respondEmpty(429));
 
-  const attempt = oauthAttemptFrom(request.headers.get("Cookie"));
+  const attempt = oauthAttemptFrom(request.headers.get("Cookie") ?? undefined);
   if (attempt === undefined) {
     return {response: respondEmpty(400), outcome: "sign_in_refused"};
   }
 
   const parameters = new URL(request.url).searchParams;
-  const code = parameters.get("code");
+  const code = parameters.get("code") ?? undefined;
+  const state = parameters.get("state") ?? undefined;
   const failed = respondRedirect(attempt.returnTo, [clearedOauthCookie()]);
-  if (code === null || parameters.get("state") !== attempt.state) {
+  if (code === undefined || state !== attempt.state) {
     return {response: failed, outcome: "sign_in_refused"};
   }
 

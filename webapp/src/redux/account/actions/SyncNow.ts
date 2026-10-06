@@ -42,13 +42,14 @@ export function syncNow(): AppThunk<Promise<void>> {
 
 async function bringLevel(dispatch: AppDispatch, getState: () => RootState, attempts: number): Promise<void> {
   const remote = await readServerData();
-  const theirs = remote.blob === null ? undefined : syncDataFrom(remote.blob);
+  if (remote.blob !== undefined) {
+    const theirs = syncDataFrom(remote.blob);
+    if (theirs) {
+      const local = syncDataOf(getState());
+      const merged = mergedSyncData(local, theirs);
 
-  if (theirs) {
-    const local = syncDataOf(getState());
-    const merged = mergedSyncData(local, theirs);
-
-    if (syncDataText(merged) !== syncDataText(local)) dispatch(syncMerged(merged));
+      if (syncDataText(merged) !== syncDataText(local)) dispatch(syncMerged(merged));
+    }
   }
 
   const blob = syncDataText(syncDataOf(getState()));

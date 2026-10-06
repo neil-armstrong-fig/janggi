@@ -59,8 +59,8 @@ function polygon(shape: Element, closed: boolean): string | undefined {
 
 /** An attribute that is a length in the SVG's own units — a bare number, or one with `px` after it. */
 function length(shape: Element, name: string): number | undefined {
-  const written = shape.getAttribute(name);
-  if (written === null) return undefined;
+  const written = shape.getAttribute(name) ?? undefined;
+  if (written === undefined) return undefined;
 
   const match = /^\s*(-?(?:\d+\.?\d*|\.\d+))(?:px)?\s*$/.exec(written);
   if (match?.[1] === undefined) {

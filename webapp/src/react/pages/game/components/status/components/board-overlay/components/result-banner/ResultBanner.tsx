@@ -73,11 +73,11 @@ export function ResultBanner({
   onShowBoard,
   onStartNewGame,
   onStartNewGameAtBotElo,
-}: Props): React.JSX.Element | null {
+}: Props): React.JSX.Element | undefined {
   const messages = useMessages();
   const {result, sides} = messages;
   const wording = wordingOf(status, result);
-  if (!wording) return null;
+  if (!wording) return undefined;
 
   return (
     <div

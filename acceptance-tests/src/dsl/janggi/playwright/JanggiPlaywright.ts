@@ -55,7 +55,8 @@ export class JanggiPlaywright extends BasePage {
     await this.page.context().addInitScript(
       (kept: OnboardingKept) => {
         try {
-          if (localStorage.getItem(kept.key) === null) localStorage.setItem(kept.key, kept.json);
+          const onboarding = localStorage.getItem(kept.key) ?? undefined;
+          if (onboarding === undefined) localStorage.setItem(kept.key, kept.json);
         } catch {
           // Storage blocked: the app falls back to a first visit, and the specs fail loudly on the welcome.
         }
@@ -69,8 +70,8 @@ export class JanggiPlaywright extends BasePage {
    * browser. Made with the options this device was made with, and closed with `closeTheDevice`.
    */
   async openAnotherDevicePage(options: BrowserContextOptions): Promise<Page> {
-    const browser = this.page.context().browser();
-    if (browser === null) throw new Error("This page has no browser to open another device in");
+    const browser = this.page.context().browser() ?? undefined;
+    if (browser === undefined) throw new Error("This page has no browser to open another device in");
 
     return await (await browser.newContext(options)).newPage();
   }
@@ -329,8 +330,8 @@ export class JanggiPlaywright extends BasePage {
   }
 
   async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
-    const content = await this.page.locator("script[type='application/ld+json']").textContent();
-    if (content === null) return false;
+    const content = (await this.page.locator("script[type='application/ld+json']").textContent()) ?? undefined;
+    if (content === undefined) return false;
 
     const searchData = JSON.parse(content) as SearchData;
 

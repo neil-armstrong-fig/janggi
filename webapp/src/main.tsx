@@ -37,7 +37,8 @@ function reloadOnceIsolatedByTheServiceWorker(): void {
 
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     try {
-      if (sessionStorage.getItem(ISOLATION_RELOAD_SPENT_KEY) !== null) return;
+      const reloadSpent = sessionStorage.getItem(ISOLATION_RELOAD_SPENT_KEY) ?? undefined;
+      if (reloadSpent !== undefined) return;
 
       sessionStorage.setItem(ISOLATION_RELOAD_SPENT_KEY, "true");
       location.reload();

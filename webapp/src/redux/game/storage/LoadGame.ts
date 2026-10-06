@@ -25,6 +25,11 @@ import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 /** A setup as it was kept: whatever sits beside its name is ignored, the name is looked up. */
 type SetupChoice = Setup | undefined;
 
+/** A setup field that was valid, carrying undefined where none was chosen. */
+interface SetupRead {
+  readonly setup: SetupChoice;
+}
+
 /**
  * The game kept on the device, or the first game where there is none to trust.
  *
@@ -128,19 +133,24 @@ function phaseFrom(value: unknown): SetupPhase | undefined {
   if (!isObject(value) || !isAmong(MATCH_FORMATS, value["format"])) return undefined;
 
   const format: MatchFormat = value["format"];
-  const hanSetup = setupFrom(value["hanSetup"]);
-  const choSetup = setupFrom(value["choSetup"]);
-  if (hanSetup === null || choSetup === null) return undefined;
+  const hanSetupRead = setupFrom(value["hanSetup"]);
+  if (hanSetupRead === undefined) return undefined;
 
-  return {format, hanSetup, choSetup};
+  const choSetupRead = setupFrom(value["choSetup"]);
+  if (choSetupRead === undefined) return undefined;
+
+  return {format, hanSetup: hanSetupRead.setup, choSetup: choSetupRead.setup};
 }
 
-/** The app's setup of the kept name, undefined where none was chosen, or null where the name is unknown. */
-function setupFrom(value: unknown): SetupChoice | null {
-  if (value === undefined || value === null) return undefined;
-  if (!isObject(value)) return null;
+/** The app's setup of the kept name, or undefined where the field is invalid. */
+function setupFrom(value: unknown): SetupRead | undefined {
+  if (value === undefined || value === null) return {setup: undefined};
+  if (!isObject(value)) return undefined;
 
-  return SETUPS.find(setup => setup.name === value["name"]) ?? null;
+  const setup = SETUPS.find(candidate => candidate.name === value["name"]);
+  if (setup === undefined) return undefined;
+
+  return {setup};
 }
 
 function opponentFrom(value: unknown): Opponent | undefined {

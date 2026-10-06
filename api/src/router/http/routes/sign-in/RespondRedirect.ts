@@ -3,5 +3,5 @@ export function respondRedirect(address: string, cookies: readonly string[] = []
   const headers = new Headers({Location: address});
   cookies.forEach(cookie => headers.append("Set-Cookie", cookie));
 
-  return new Response(null, {status: 302, headers});
+  return new Response(undefined, {status: 302, headers});
 }

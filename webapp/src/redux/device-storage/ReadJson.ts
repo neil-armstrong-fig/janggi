@@ -8,7 +8,7 @@
  */
 export function readJson(storage: Pick<Storage, "getItem"> | undefined, key: string): unknown {
   try {
-    const text = storage?.getItem(key);
+    const text = storage?.getItem(key) ?? undefined;
     if (text) {
       return JSON.parse(text);
     }

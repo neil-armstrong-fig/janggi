@@ -69,9 +69,9 @@ export class GuidePlaywright extends BasePage {
   }
 
   async isPlayLinkForTheGame(): Promise<boolean> {
-    const href = await this.page.getByTestId("guide-play").getAttribute("href");
+    const href = (await this.page.getByTestId("guide-play").getAttribute("href")) ?? undefined;
 
-    return href !== null && new URL(href, this.page.url()).href === new URL("./", this.page.url()).href;
+    return href !== undefined && new URL(href, this.page.url()).href === new URL("./", this.page.url()).href;
   }
 
   async isInstallButtonShown(): Promise<boolean> {
@@ -79,7 +79,7 @@ export class GuidePlaywright extends BasePage {
   }
 
   async isPieceOpen(type: PieceType): Promise<boolean> {
-    return (await this.pieces[type].getAttribute("open")) !== null;
+    return ((await this.pieces[type].getAttribute("open")) ?? undefined) !== undefined;
   }
 
   async getMovementDestinationCount(type: PieceType): Promise<number> {
