@@ -224,6 +224,15 @@ export class StatusDsl {
     }
   }
 
+  /** Whether the row of controls ends above the bottom strip of the window, where a system bar can sit. */
+  async areControlsClearOfTheBottom(clearance: number): Promise<boolean> {
+    try {
+      return await this.status.areControlsClearOfTheBottom(clearance);
+    } catch (error) {
+      throw new DslError("Failed to read whether the controls are clear of the bottom of the window", error);
+    }
+  }
+
   /** Whether the row of controls is turned upside down, for a player sat across the device. */
   async areControlsUpsideDown(): Promise<boolean> {
     try {

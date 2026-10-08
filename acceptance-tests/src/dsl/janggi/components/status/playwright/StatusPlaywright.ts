@@ -500,6 +500,20 @@ export class StatusPlaywright extends BaseComponent {
     return controls.y < board.y;
   }
 
+  /**
+   * Whether the row of controls ends at least `clearance` pixels above the bottom of the window — the
+   * strip a system bar can cover. The controls are the lowest thing on the page.
+   */
+  async areControlsClearOfTheBottom(clearance: number): Promise<boolean> {
+    await this.takeBack.waitFor({state: "visible"});
+
+    const controls = await this.takeBack.boundingBox();
+    const window = this.page.viewportSize();
+    if (!controls || !window) throw new Error("Expected the controls and the window to be on screen");
+
+    return controls.y + controls.height <= window.height - clearance;
+  }
+
   /** Whether the row of controls is turned upside down, its buttons included. */
   async areControlsUpsideDown(): Promise<boolean> {
     await this.takeBack.waitFor({state: "visible"});

@@ -23,8 +23,21 @@
   html,
   body,
   #root {
-    height: 100dvh;
     overflow: hidden;
+  }
+
+  html,
+  body {
+    height: 100dvh;
+  }
+
+  /*
+   * The body's padding keeps content clear of system bars, so the root takes what is left inside it.
+   * Given its own `100dvh` it would be that tall again, and the last safe-area inset's worth of it —
+   * the bottom plaque — would sit under Android's navigation buttons.
+   */
+  #root {
+    height: 100%;
   }
 
   html {

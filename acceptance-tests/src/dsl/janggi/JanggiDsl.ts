@@ -389,6 +389,15 @@ export class JanggiDsl {
     }
   }
 
+  /** Puts a system bar of this height over the bottom of the window, like Android's navigation buttons. */
+  async coverTheBottomOfTheWindow(height: number): Promise<void> {
+    try {
+      await this.janggi.coverTheBottomOfTheWindow(height);
+    } catch (error) {
+      throw new DslError(`Failed to cover the bottom ${height}px of the window`, error);
+    }
+  }
+
   /** Resizes the window, the way a user dragging the corner of a browser would. */
   async resizeWindowTo(width: number, height: number): Promise<void> {
     try {

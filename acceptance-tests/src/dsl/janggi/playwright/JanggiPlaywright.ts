@@ -403,6 +403,16 @@ export class JanggiPlaywright extends BasePage {
     );
   }
 
+  /**
+   * Has the browser report a system bar of this height over the bottom of the window, the way Chrome on
+   * Android does with its navigation buttons: the page is drawn under it and `safe-area-inset-bottom`
+   * says how far.
+   */
+  async coverTheBottomOfTheWindow(height: number): Promise<void> {
+    this.cdpSession ??= await this.page.context().newCDPSession(this.page);
+    await this.cdpSession.send("Emulation.setSafeAreaInsetsOverride", {insets: {bottom: height}});
+  }
+
   async resizeWindowTo(width: number, height: number): Promise<void> {
     await this.page.setViewportSize({width, height});
   }
