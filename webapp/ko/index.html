@@ -6,6 +6,17 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
+    <script>
+      // Chrome on Android lays content out under its navigation buttons when a page asks for
+      // `viewport-fit=cover`, and then relies on `env(safe-area-inset-bottom)` arriving in time. On a
+      // cold launch of the installed app it sometimes doesn't, and the bottom bar is left under the
+      // buttons. Without `cover`, Chrome keeps the content clear of them itself. iOS keeps `cover`.
+      if (/android/i.test(navigator.userAgent)) {
+        document
+          .querySelector('meta[name="viewport"]')
+          .setAttribute("content", "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
+      }
+    </script>
     <meta name="theme-color" content="#8b5a2b" />
     <meta
       name="description"
