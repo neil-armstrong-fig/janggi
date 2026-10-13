@@ -14,12 +14,14 @@ import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabNa
 export class SettingsPlaywright extends SettingsSheetComponent {
   private readonly elephantPairing: Locator;
   private readonly newGame: Locator;
+  private readonly appVersion: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.elephantPairing = page.getByTestId("elephant-pairing");
     this.newGame = page.getByTestId("new-game");
+    this.appVersion = page.getByTestId("app-version");
   }
 
   /**
@@ -55,6 +57,11 @@ export class SettingsPlaywright extends SettingsSheetComponent {
 
   async getRepositoryDestination(): Promise<string> {
     return await this.appHelpDestination("repository-open");
+  }
+
+  /** The build the app was made from, as the You tab names it. */
+  async getAppVersion(): Promise<string> {
+    return ((await this.appVersion.textContent()) ?? "").trim();
   }
 
   private async appHelpDestination(testId: string): Promise<string> {

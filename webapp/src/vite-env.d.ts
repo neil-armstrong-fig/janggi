@@ -9,4 +9,6 @@ interface ImportMetaEnv {
   readonly VITE_DEBUG_XP?: string;
   /** Where the sign-in and sync API is, where it is not at `API_ORIGIN` — a local `wrangler dev`, say. */
   readonly VITE_API_ORIGIN?: string;
+  /** The short hash of the commit the build was made from, set by `vite.config.ts`; absent where there is none. */
+  readonly VITE_BUILD_ID?: string;
 }

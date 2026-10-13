@@ -26,16 +26,23 @@
     overflow: hidden;
   }
 
-  html,
-  body {
-    height: 100dvh;
-  }
-
   /*
+   * Only `html` is sized from the viewport. `body` and `#root` take a percentage of what is above them,
+   * and never a viewport unit of their own: on a cold launch of the installed app on Android, `body`'s
+   * `100dvh` was left at the height the window had when the page was first laid out — a system bar's
+   * worth taller than the window it settled at — while `html`, with the same value, followed the window.
+   * The bottom controls were then laid out below the visible window. A percentage is resolved against
+   * its parent's current height whenever the page is laid out, so it cannot be left behind.
+   *
    * The body's padding keeps content clear of system bars, so the root takes what is left inside it.
    * Given its own `100dvh` it would be that tall again, and the last safe-area inset's worth of it —
    * the bottom plaque — would sit under Android's navigation buttons.
    */
+  html {
+    height: 100dvh;
+  }
+
+  body,
   #root {
     height: 100%;
   }

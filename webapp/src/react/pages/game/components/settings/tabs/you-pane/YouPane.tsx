@@ -1,4 +1,5 @@
 import {Account} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/Account";
+import {AppVersion} from "@src/react/pages/game/components/settings/tabs/you-pane/components/app-version/AppVersion";
 import {DeveloperWebsiteLink} from "@src/react/pages/game/components/settings/tabs/you-pane/components/developer-website-link/DeveloperWebsiteLink";
 import {GuideLink} from "@src/react/pages/game/components/settings/tabs/you-pane/components/guide-link/GuideLink";
 import {InstallButton} from "@src/react/pages/game/components/settings/tabs/you-pane/components/install-button/InstallButton";
@@ -48,6 +49,8 @@ export function YouPane({selected}: Props): React.JSX.Element {
       </div>
 
       <SaveTransfer />
+
+      <AppVersion />
     </SettingsPane>
   );
 }

@@ -11,7 +11,7 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   carrying `data-elo`; and the
   controls `new-game`, `result-new-game`, `result-show-board`, `result-peek` (the board-sized tap that brings the result back, present only while it is put aside), `pass`, `bikjang`, `draw`, `undo`, `redo`, `settings-open`,
   `settings-close`, `settings-scroll` (each pane's scrolling column), `settings-install`, `record-open`, `record-back`, `record-close`, `record-reset`, `guide-open`,
-  `references-open`, `developer-website-open`, `repository-open`, `privacy-open`, `terms-open`,
+  `references-open`, `developer-website-open`, `repository-open`, `app-version` (the short commit hash of the build, last in the You tab), `privacy-open`, `terms-open`,
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
   `progress-xp` and `progress-next-unlock` carrying `data-xp`, `progress-xp-bar` carrying `data-percent`
   (absent once everything is unlocked), `save-transfer-toggle` (`aria-expanded`; the save key section is folded away until it is pressed), `save-copy` and the `save-key` it shows,

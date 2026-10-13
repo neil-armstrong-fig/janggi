@@ -160,6 +160,14 @@ export class SettingsDsl {
     }
   }
 
+  async getAppVersion(): Promise<string> {
+    try {
+      return await this.settings.getAppVersion();
+    } catch (error) {
+      throw new DslError("Failed to read which build of Janggi is running", error);
+    }
+  }
+
   async doExternalAppHelpLinksOpenSeparately(): Promise<boolean> {
     try {
       return await this.settings.doExternalAppHelpLinksOpenSeparately();
