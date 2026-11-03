@@ -37,6 +37,9 @@ pnpm-debug.log*
 # Local scratch notes, not for the repo
 todo.txt
 
+# Playwright MCP browser session output (snapshots, screenshots, console logs)
+.playwright-mcp/
+
 # Worker secrets for local dev
 .dev.vars
 .wrangler/

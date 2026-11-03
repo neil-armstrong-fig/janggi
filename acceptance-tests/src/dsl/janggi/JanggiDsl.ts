@@ -301,6 +301,17 @@ export class JanggiDsl {
     }
   }
 
+  async getOtherLanguageAddressInPageServedToSearchEngines(): Promise<string> {
+    try {
+      return await this.janggi.getOtherLanguageAddressInPageServedToSearchEngines();
+    } catch (error) {
+      throw new DslError(
+        "Failed to read where the other-language link goes in the page served to search engines",
+        error,
+      );
+    }
+  }
+
   async getSearchDataLanguage(): Promise<unknown> {
     try {
       return await this.janggi.getSearchDataLanguage();
@@ -386,6 +397,14 @@ export class JanggiDsl {
       return await this.janggi.isEachPolicyListedInSitemap();
     } catch (error) {
       throw new DslError("Failed to check whether the legal pages are listed in the sitemap", error);
+    }
+  }
+
+  async isEverySitemapEntryDated(): Promise<boolean> {
+    try {
+      return await this.janggi.isEverySitemapEntryDated();
+    } catch (error) {
+      throw new DslError("Failed to check whether each sitemap entry says when it last changed", error);
     }
   }
 

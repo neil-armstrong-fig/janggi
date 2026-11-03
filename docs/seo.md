@@ -32,9 +32,22 @@ entry in `PRERENDERED_PAGES`, and `hreflang` pairs for it.
   input in `vite.config.ts`. **Its head is a copy of `webapp/index.html`'s**:
   change one, change the other.
 - `hreflang` for `en`, `ko` and `x-default` (English) in the head of both game
-  pages, and the same pairs as `xhtml:link` in `public/sitemap.xml` on both
-  entries. They must be reciprocal and the head and sitemap must agree; a
-  criterion in `DiscoveringJanggiInKorean.test.ts` compares them.
+  pages, and the same pairs as `xhtml:link` in the sitemap on both entries.
+  They must be reciprocal and the head and sitemap must agree; a criterion in
+  `DiscoveringJanggiInKorean.test.ts` compares them.
+- **A plain link each way**, in the crawler copy of both game pages
+  (`<a href="/ko/" hreflang="ko">`, and back to `/`). `hreflang` in the head
+  names a twin but is not a link a crawler follows; Search Console reported
+  `/ko/` as "URL is unknown to Google" until it had one.
+- **The sitemap is dated.** It is built from
+  `webapp/vite/sitemap/sitemap.template.xml` by `DatedSitemapFile.ts` beside
+  it, which gives each address a `<lastmod>`: the day of the last commit that
+  touched the page and the words it is written in (`SITEMAP_PAGES`). Not the
+  build date, which says every page changed on every deploy and is soon
+  ignored. Add a page to the template and to `SITEMAP_PAGES`
+  together; the build refuses an address it has no sources for. The deploy
+  checks out the whole history (`fetch-depth: 0` in `ci.yml`), or every page
+  would be dated by the one commit it has.
 - **The address follows the language.** A page under `/ko/` is read in Korean
   over any stored choice or browser preference (`loadPreferences`, given
   `languageOfAddress` by the store). `useLanguageAddress` then keeps the address
@@ -55,22 +68,51 @@ The social cards are rendered from `webapp/scripts/social-card.svg` and
 `page.screenshot` on the SVG file); re-rendering the English one reproduces
 `public/social-card.png` byte for byte. Hangul comes from WenQuanYi Zen Hei.
 
-## Not to do yet
+## Shipped before sign-off
 
-**Do not deploy `/ko/` or its `hreflang` before the translation is accepted.**
-A page marked as the Korean version while half of it is English is a
-duplicate-content risk and a poor first impression. Ship when the reviewer has
-signed off, `LanguageNotice` is gone, and the English still showing in the game
-is trimmed (`docs/localisation.md`, backlog).
+`/ko/` and its `hreflang` went live before the translation was reviewed, which
+this document first advised against: a page marked as the Korean version while
+part of it is English is a duplicate-content risk. It was accepted as good
+enough on 2026-11-03. `LanguageNotice` is still shown and the English still in
+the game is not yet trimmed (`docs/localisation.md`, backlog); if Korean
+queries bring people who bounce, that is the first place to look.
 
 ## Search engines
 
 Registration is manual: `MANUAL-SETUP-STEPS.md`, step 9.
 
-- **Naver** is the leading search engine in Korea. Register in Naver Search
-  Advisor, verify ownership, submit the sitemap.
-- **Google Search Console:** inspect `/` and `/ko/`, and watch page indexing and
-  the alternates report. Bing Webmaster Tools is optional.
+- **Naver** is the leading search engine in Korea. Search Advisor has the site
+  verified, the sitemap submitted, and a 웹 페이지 수집 request can be made per
+  address. Its RSS submission is unused. Naver registers per host, so the
+  personal site on the apex needs its own entry.
+- **Google Search Console** has a URL-prefix property for this host only. A
+  Domain property (one DNS TXT record on `neilarmstrong.dev`) would cover this
+  and the personal site. **Bing Webmaster Tools** imported this one from
+  Google.
+- **IndexNow** (Bing, Naver, Yandex, Seznam, Yep; not Google) is pinged after
+  each deploy by `notify-search-engines` in `ci.yml`, for the pages the sitemap
+  dates in the last two days. The key is the name and the content of
+  `webapp/public/<key>.txt`, and is public by design: it only proves the host
+  is ours. Rotating it means a new file and nothing else, since the job reads
+  the name from the folder. The job gates nothing.
+
+### Where it stood on 2026-11-03
+
+Read from the three consoles, and the reason the rest of this section exists:
+the site is barely crawled, not badly optimised.
+
+- Google: 1 of 6 pages indexed. The other five (`/ko/`, the guide, references,
+  privacy, terms) were "Discovered - currently not indexed", never crawled.
+  3 clicks and 25 impressions in three months, average position 28.8.
+- Bing read the sitemap once, on 10-03, and found five addresses; `/ko/` came
+  later. 0 clicks, 3 impressions.
+- Naver collected about five pages in early October and one more late that
+  month, with none restricted. 0 clicks, 3 impressions, all for `/`.
+
+That day indexing was requested for `/ko/` and `/learn.html` in Google, a
+collection for the same two in Naver, and the sitemap resubmitted in Bing. Look
+at the same three screens again after a few weeks before changing anything
+else: Google's Pages report, Bing's Sitemaps and Naver's 수집 현황.
 
 ## Content and where it can rank
 

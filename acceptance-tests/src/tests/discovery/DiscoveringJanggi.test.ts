@@ -22,6 +22,10 @@ given("someone searches for a way to play janggi", () => {
       expect(await janggi.isListedInSitemap()).toBe(true);
     });
 
+    then("the sitemap says when each page last changed, so a crawler knows what to revisit", async ({janggi}) => {
+      expect(await janggi.isEverySitemapEntryDated()).toBe(true);
+    });
+
     then("crawlers are allowed in and told where the sitemap is", async ({janggi}) => {
       expect(await janggi.isSitemapAdvertisedToCrawlers()).toBe(true);
     });

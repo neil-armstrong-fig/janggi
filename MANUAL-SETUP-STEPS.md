@@ -213,6 +213,21 @@ Neither step needs a secret in the repository.
   `webapp/ko/index.html` (or the file to `webapp/public/`), then submit the
   sitemap. Record here only that it was done, never the token.
 - **Bing Webmaster Tools** is optional and can import the Search Console site.
+  Done for this site by importing it from Search Console.
+- **Domain property (optional).** A Search Console *Domain* property, verified
+  by one DNS TXT record on the `neilarmstrong.dev` zone, covers this site and
+  the personal site on the apex; the URL-prefix property above covers only this
+  host. Naver registers per host, so the apex needs its own Search Advisor
+  entry.
+- **IndexNow needs nothing from you.** The key is a public file in
+  `webapp/public/` (it only proves the host is ours), and `ci.yml` pings after
+  each deploy. Bing's IndexNow page shows submissions once the first one
+  lands. If it ever needs rotating, replace the file with one named for a new
+  32-character hex key; the workflow reads the name from the folder.
+- **Done so far (2026-11-03):** the site is verified in all three, the sitemap
+  is in all three, and indexing or collection was requested for `/ko/` and
+  `/learn.html`. A later change to the sitemap needs no new step: all three
+  read it themselves.
 
 ## Rotating or removing
 

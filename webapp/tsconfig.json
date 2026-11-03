@@ -10,6 +10,7 @@
   },
   "include": [
     "src",
+    "vite",
     "vite.config.ts",
     "vitest.config.ts",
     "vitest.properties.config.ts",

@@ -105,7 +105,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      # The whole history, because the sitemap dates each page by the last commit that changed it
+      # (`webapp/vite/sitemap/DatedSitemapFile.ts`); a one-commit checkout would date every page today.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6
 
@@ -131,6 +135,60 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  # Tells Bing, Naver, Yandex and the other IndexNow engines which pages have just changed, so they come back
+  # sooner than their crawlers would. Google does not take part. It only names pages the sitemap dates in the last
+  # two days — IndexNow asks for changed pages, never the whole site — and it gates nothing: a ping that fails is
+  # a missed hint, not a broken release. The key file is `webapp/public/<key>.txt`; `docs/seo.md` has why.
+  notify-search-engines:
+    name: Tell search engines what changed
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Ping IndexNow
+        run: |
+          set -euo pipefail
+          site="${WEBAPP_URL%/}"
+          key_file=$(ls webapp/public | grep -E '^[0-9a-f]{32}\.txt$' | head -n 1)
+          key="${key_file%.txt}"
+
+          # The key file is what proves the site is ours, so it has to be there before the ping.
+          for _ in $(seq 1 60); do
+            curl -sf "$site/$key_file" >/dev/null && break
+            sleep 5
+          done
+
+          since=$(date -u -d '2 days ago' +%F)
+          changed=$(curl -sf "$site/sitemap.xml" \
+            | tr -d '\n' \
+            | grep -oE '<loc>[^<]*</loc>[[:space:]]*<lastmod>[^<]*</lastmod>' \
+            | sed -E 's|<loc>([^<]*)</loc>[[:space:]]*<lastmod>([^<]*)</lastmod>|\2 \1|' \
+            | awk -v since="$since" '$1 >= since { print $2 }')
+
+          if [ -z "$changed" ]; then
+            echo "No page changed since $since; nothing to tell search engines."
+            exit 0
+          fi
+
+          echo "Telling search engines about:"
+          echo "$changed"
+
+          body=$(printf '%s\n' "$changed" | jq -R . | jq -s \
+            --arg host "${site#https://}" \
+            --arg key "$key" \
+            --arg keyLocation "$site/$key_file" \
+            '{host: $host, key: $key, keyLocation: $keyLocation, urlList: .}')
+
+          curl -sS -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            --data "$body" \
+            --fail-with-body
+        env:
+          WEBAPP_URL: ${{ needs.deploy.outputs.page-url }}
 
   deploy-api:
     name: Deploy the API to Cloudflare

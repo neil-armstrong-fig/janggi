@@ -58,6 +58,14 @@ reintroduce it.
   forces a reader to hold both branches to find the one that applies; pair `flag && "class-a"` with
   `!flag && "class-b"` instead, so each line reads condition-then-value on its own.
 
+## The build
+
+`vite.config.ts` is the configuration and the list of plugins, and nothing else. What each plugin does lives
+under `vite/`, one folder per subject: `engine/` (Fairy-Stockfish's files, and the isolation headers it needs),
+`prerendered-pages/`, `sitemap/` (dated from git), `installable-app/` (the manifest) and `build-id/`. It is build
+code, not app code: it cannot use `@src/*` (Vite reads the config before the alias exists), so it imports its
+neighbours with `./x.js`. Its tests sit beside it and run with the rest.
+
 ## Testing
 
 **Do not write React Testing Library tests for components or pages.** That's covered by the

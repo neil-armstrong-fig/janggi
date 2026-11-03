@@ -93,7 +93,7 @@ is a place on that same ladder. The record page says so.
 The package is built with threads, so it needs `SharedArrayBuffer`, which a
 browser grants only to a page sent `Cross-Origin-Opener-Policy: same-origin` and
 `Cross-Origin-Embedder-Policy: require-corp`. The dev and preview servers send
-them (`vite.config.ts`). **GitHub Pages cannot send headers**, so the service
+them (`vite.config.ts`, the headers in `webapp/vite/engine/CrossOriginIsolation.ts`). **GitHub Pages cannot send headers**, so the service
 worker (`webapp/src/sw/ServiceWorker.ts`, vite-plugin-pwa `injectManifest`) adds
 both to every response it serves, from the precache or the network — the
 technique `coi-serviceworker` popularised. The first visit is served before the
@@ -124,6 +124,6 @@ moment before that reload would be wrong.
 
 Fairy-Stockfish is GPL-3.0; this repository is MIT. The engine is not bundled into
 the app's code: its files are copied, unmodified, from `node_modules` into
-`engine/` at build (`vite.config.ts`), with its `Copying.txt` and `AUTHORS`, and
+`engine/` at build (`webapp/vite/engine/FairyStockfish.ts`), with its `Copying.txt` and `AUTHORS`, and
 it runs as a separate program the page talks UCI to. The record page credits it
 and links its licence and source.

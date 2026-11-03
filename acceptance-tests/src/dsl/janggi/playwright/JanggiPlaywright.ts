@@ -316,6 +316,16 @@ export class JanggiPlaywright extends BasePage {
     return /<a[^>]+href="([^"]*learn\.html)"/.exec(root)?.[1] ?? "";
   }
 
+  /**
+   * Where the link to the game in the other language goes, in the page served to search engines, or an empty string
+   * if there is none. A `hreflang` in the head names a twin but is not a link a crawler follows.
+   */
+  async getOtherLanguageAddressInPageServedToSearchEngines(): Promise<string> {
+    const root = await this.getRootServedToSearchEngines();
+
+    return /<a[^>]+href="([^"]*)"[^>]*hreflang="/.exec(root)?.[1] ?? "";
+  }
+
   async isEachPolicyLinkedInPageServedToSearchEngines(): Promise<boolean> {
     const root = await this.getRootServedToSearchEngines();
 
@@ -401,6 +411,26 @@ export class JanggiPlaywright extends BasePage {
       sitemap.includes("https://janggi.neilarmstrong.dev/privacy.html") &&
       sitemap.includes("https://janggi.neilarmstrong.dev/terms.html")
     );
+  }
+
+  /** Every `url` in the sitemap carries a `lastmod` that is a date, and there is at least one. */
+  async isEverySitemapEntryDated(): Promise<boolean> {
+    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
+
+    return await this.page.evaluate(async address => {
+      const response = await fetch(address);
+      if (!response.ok) return false;
+
+      const sitemap = new DOMParser().parseFromString(await response.text(), "application/xml");
+      const entries = Array.from(sitemap.getElementsByTagNameNS("*", "url"));
+
+      return (
+        entries.length > 0 &&
+        entries.every(entry => {
+          return /^\d{4}-\d{2}-\d{2}$/.test(entry.getElementsByTagNameNS("*", "lastmod")[0]?.textContent ?? "");
+        })
+      );
+    }, sitemapAddress);
   }
 
   /**

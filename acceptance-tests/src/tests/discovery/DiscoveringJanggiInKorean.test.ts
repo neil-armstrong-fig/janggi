@@ -56,9 +56,17 @@ given("someone searches in Korean for a way to play janggi", () => {
       expect(await janggi.getGuideAddressInPageServedToSearchEngines()).toBe("/learn.html");
       expect(await janggi.getTextServedToSearchEngines()).toContain("(English)");
     });
+
+    then("search engines that follow links can reach the English page from it", async ({janggi}) => {
+      expect(await janggi.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/");
+    });
   });
 
   when("they open the game's English page", () => {
+    then("search engines that follow links can reach the Korean page from it", async ({janggi}) => {
+      expect(await janggi.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/ko/");
+    });
+
     then("search engines are told it has a Korean twin", async ({janggi}) => {
       expect(await janggi.getLanguageAlternates()).toEqual(LANGUAGE_ALTERNATES);
     });

@@ -43,6 +43,8 @@ export default defineConfig({
   test: {
     ...vitestBaseConfig.test,
     environment: "node",
+    // The build's own code under `vite/` has tests of its own, beside what they test.
+    include: [...(vitestBaseConfig.test?.include ?? []), "vite/**/*.test.ts"],
     exclude: [...configDefaults.exclude, ...PROPERTY_TESTS, ...BOT_GAME_TESTS],
   },
 });
