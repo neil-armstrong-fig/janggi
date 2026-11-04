@@ -26,10 +26,15 @@ export function BotStrengthSetting(): React.JSX.Element {
       id="bot-strength"
       disabled={playHasBegun(played) || withAFriend || opponent.name !== "Bot"}
       label={play.botStrength}
-      ariaLabel="How strongly the bot plays, as an Elo rating"
+      ariaLabel={play.botStrengthLabel}
       options={BOT_STRENGTH_OPTIONS}
       selected={BOT_STRENGTH_OPTIONS.find(option => option.elo === opponent.botElo)}
-      lockedReason={option => lockBehindBot(option.elo, beaten, phase.format, opponent.sideChoice)}
+      lockedReason={option => {
+        const lock = lockBehindBot(option.elo, beaten, phase.format, opponent.sideChoice);
+        if (lock === undefined) return undefined;
+
+        return play.botLock(lock);
+      }}
       onSelect={option => dispatch(botStrengthChosen(option.elo))}
     />
   );

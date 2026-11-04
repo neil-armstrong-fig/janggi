@@ -1,6 +1,9 @@
 import type {Locator, Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 
+/** Far longer than a wheel takes to land, and short enough that a page which cannot scroll answers promptly. */
+const SCROLLS_WITHIN_MS = 2_000;
+
 /** The public privacy policy and terms, whether reached from sign-in or visited directly. */
 export class LegalPlaywright extends BasePage {
   private readonly privacyLink: Locator;
@@ -92,10 +95,21 @@ export class LegalPlaywright extends BasePage {
     const footerLinks = this.page.getByRole("navigation", {name: "Legal navigation"});
     await footerLinks.waitFor({state: "visible"});
 
-    return await footerLinks.evaluate(element => {
-      const {bottom} = element.getBoundingClientRect();
+    // A wheel is handed to the page and applied a frame or so later, so the end is waited for rather than sampled.
+    try {
+      await this.page.waitForFunction(
+        element => {
+          const bottom = element?.getBoundingClientRect().bottom ?? 0;
 
-      return bottom > 0 && bottom <= window.innerHeight;
-    });
+          return bottom > 0 && bottom <= window.innerHeight;
+        },
+        await footerLinks.elementHandle(),
+        {timeout: SCROLLS_WITHIN_MS},
+      );
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

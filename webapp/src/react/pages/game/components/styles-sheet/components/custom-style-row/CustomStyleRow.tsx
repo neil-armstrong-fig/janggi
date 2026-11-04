@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {ShareKey} from "@src/react/pages/game/components/share-key/ShareKey";
 import type {StyleKind} from "@janggi/shared/janggi/settings/StyleKind";
 
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function CustomStyleRow({kind, name, keyOf, onDelete}: Props): React.JSX.Element {
+  const {kinds, ownStyles: words} = useMessages().styles;
   return (
     <li
       data-testid="custom-style"
@@ -23,10 +25,10 @@ export function CustomStyleRow({kind, name, keyOf, onDelete}: Props): React.JSX.
       <div className="flex items-baseline justify-between gap-2">
         <span className="truncate text-sm font-semibold text-white/90">{name}</span>
 
-        <span className="shrink-0 text-xs text-white/50 uppercase">{kind}</span>
+        <span className="shrink-0 text-xs text-white/50 uppercase">{kinds[kind]}</span>
       </div>
 
-      <ShareKey id="custom-style" label="Copy key" keyOf={keyOf} />
+      <ShareKey id="custom-style" label={words.copyKey} keyOf={keyOf} />
 
       <button
         type="button"
@@ -34,7 +36,7 @@ export function CustomStyleRow({kind, name, keyOf, onDelete}: Props): React.JSX.
         onClick={onDelete}
         className="h-9 cursor-pointer rounded-lg text-sm font-medium text-danger hover:bg-white/10"
       >
-        Delete
+        {words.delete}
       </button>
     </li>
   );

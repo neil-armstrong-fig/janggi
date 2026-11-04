@@ -1,5 +1,6 @@
 import {CopyIcon} from "@src/react/pages/game/components/svg-icon/icons/copy/CopyIcon";
 import {Button} from "@src/react/pages/game/components/button/Button";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useState} from "react";
 
 /**
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
+  const {keys} = useMessages().you;
   const [shown, setShown] = useState<string | undefined>(undefined);
   const [copied, setCopied] = useState(false);
 
@@ -44,7 +46,7 @@ export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
       {shown !== undefined && (
         <textarea
           data-testid={`${id}-key`}
-          aria-label="The key to share"
+          aria-label={keys.keyLabel}
           readOnly
           value={shown}
           rows={3}
@@ -53,11 +55,7 @@ export function ShareKey({id, label, keyOf}: Props): React.JSX.Element {
         />
       )}
 
-      {shown !== undefined && (
-        <p className="text-xs text-white/50">
-          {copied ? "Copied. Keep it somewhere safe, or send it on." : "Select the key above and copy it."}
-        </p>
-      )}
+      {shown !== undefined && <p className="text-xs text-white/50">{copied ? keys.copied : keys.selectToCopy}</p>}
     </div>
   );
 }

@@ -32,7 +32,7 @@ export function MatchFormatSetting(): React.JSX.Element {
       id="match-format"
       disabled={playHasBegun(played) || withAFriend}
       label={play.format}
-      ariaLabel="Which of janggi's two games is being played"
+      ariaLabel={play.formatLabel}
       options={MATCH_FORMAT_OPTIONS}
       labelOf={option => play.formatNames[option.name]}
       selected={{name: phase.format}}

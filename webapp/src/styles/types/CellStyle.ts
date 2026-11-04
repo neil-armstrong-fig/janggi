@@ -1,3 +1,4 @@
+import type {CellMarkerShape} from "@janggi/shared/janggi/styles/CellMarkerShape";
 /**
  * How one intersection is painted.
  *
@@ -15,11 +16,6 @@ export interface CellStyle {
   readonly diagonalStrokeWidth?: number;
   readonly marker?: CellMarker;
 }
-
-/** Listed as well as typed, because a style somebody else wrote has its shape checked against the list. */
-export const CELL_MARKER_SHAPES = ["ring", "dot"] as const;
-
-export type CellMarkerShape = (typeof CELL_MARKER_SHAPES)[number];
 
 /** An optional shape drawn on the intersection itself, on top of the lines. */
 export interface CellMarker {

@@ -99,6 +99,10 @@ export class BoardPlaywright extends BaseComponent {
    * attribute is the contract: the character or drawing painted on the piece is whichever set is
    * being worn, and says nothing dependable about which piece it is.
    */
+  async getPieceLabelAt(file: number, rank: number): Promise<string | undefined> {
+    return (await this.cellLocator(file, rank).getByTestId("piece").getAttribute("aria-label")) ?? undefined;
+  }
+
   async getPieceAt(file: number, rank: number): Promise<Piece | undefined> {
     const piece = this.pieceLocator(file, rank);
 

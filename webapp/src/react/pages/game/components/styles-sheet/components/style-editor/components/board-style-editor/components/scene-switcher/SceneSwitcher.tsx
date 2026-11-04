@@ -1,5 +1,6 @@
-import type {SceneName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
-import {SCENE_NAMES} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+import type {SceneName} from "@janggi/shared/janggi/styles/SceneName";
+import {SCENE_NAMES} from "@janggi/shared/janggi/styles/SceneName";
 import {clsx} from "clsx";
 
 /** Which position the preview shows the style in — the opening, a piece in hand, a check, a bikjang. */
@@ -9,8 +10,9 @@ interface Props {
 }
 
 export function SceneSwitcher({value, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.editor;
   return (
-    <div role="group" aria-label="Show the style in" className="flex gap-1 rounded-lg bg-black/25 p-1">
+    <div role="group" aria-label={words.scenesLabel} className="flex gap-1 rounded-lg bg-black/25 p-1">
       {SCENE_NAMES.map(name => (
         <button
           key={name}
@@ -24,7 +26,7 @@ export function SceneSwitcher({value, onChange}: Props): React.JSX.Element {
             value !== name && "text-white/70 hover:bg-white/10",
           )}
         >
-          {name}
+          {words.scenes[name]}
         </button>
       ))}
     </div>

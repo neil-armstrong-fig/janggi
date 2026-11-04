@@ -21,6 +21,10 @@ export class StylesSheetPlaywright extends SettingsSheetComponent {
     await this.stylesSheet.waitFor({state: "visible"});
   }
 
+  async getWords(): Promise<string> {
+    return (await this.stylesSheet.textContent()) ?? "";
+  }
+
   async goBackToSettings(): Promise<void> {
     await this.back.click();
   }

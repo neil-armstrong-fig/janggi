@@ -34,6 +34,5 @@ export interface Setup {
   readonly name: SetupName;
   /** The Korean name, shown alongside the English so the two are learnable together. */
   readonly korean: string;
-  readonly description: string;
   readonly backRank: BackRank;
 }

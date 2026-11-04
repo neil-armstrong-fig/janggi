@@ -45,6 +45,14 @@ export class MatchFormatSettingDsl {
     }
   }
 
+  async getExplanationWords(): Promise<string> {
+    try {
+      return await this.matchFormat.getExplanationWords();
+    } catch (error) {
+      throw new DslError("Failed to read the explanation of the match formats", error);
+    }
+  }
+
   async isExplanationShown(): Promise<boolean> {
     try {
       return await this.matchFormat.isExplanationShown();

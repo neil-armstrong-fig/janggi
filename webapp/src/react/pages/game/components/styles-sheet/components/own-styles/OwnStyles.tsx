@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {CustomStyleRow} from "@src/react/pages/game/components/styles-sheet/components/custom-style-row/CustomStyleRow";
 import {SectionHeading} from "@src/react/pages/game/components/styles-sheet/components/section-heading/SectionHeading";
 import {boardStyleDeleted, pieceSetDeleted} from "@src/redux/custom-styles/CustomStylesSlice";
@@ -9,18 +10,17 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
  * number of either may be kept; a style saved under the name of one of these replaces it.
  */
 export function OwnStyles(): React.JSX.Element {
+  const words = useMessages().styles.ownStyles;
   const customStyles = useAppSelector(state => state.customStyles);
   const dispatch = useAppDispatch();
 
   const hasNone = customStyles.boards.length === 0 && customStyles.pieceSets.length === 0;
 
   return (
-    <section aria-label="Your own styles" className="flex flex-col gap-2">
-      <SectionHeading>Your own</SectionHeading>
+    <section aria-label={words.label} className="flex flex-col gap-2">
+      <SectionHeading>{words.heading}</SectionHeading>
 
-      {hasNone && (
-        <p className="text-sm text-white/60">None yet. Import one somebody shared with you, or make your own.</p>
-      )}
+      {hasNone && <p className="text-sm text-white/60">{words.none}</p>}
 
       {!hasNone && (
         <ul className="flex flex-col gap-2">

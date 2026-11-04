@@ -54,5 +54,25 @@ given("a player whose browser prefers Korean opens the game for the first time",
         expect(await janggi.onboarding.getTourText()).toBe("내 말을 눌러 갈 수 있는 곳을 확인하세요.");
       });
     });
+
+    when("they follow the tour to its last step", () => {
+      beforeEach(async ({janggi}) => {
+        // The note about the translation stands over the top of a phone, where the tour card docks too.
+        await janggi.languageNotice.dismissIt();
+        await janggi.onboarding.startTheTour();
+        await janggi.onboarding.nextTourStep();
+        await janggi.onboarding.nextTourStep();
+        await janggi.onboarding.nextTourStep();
+        await janggi.settings.openTheSettings();
+        await janggi.onboarding.nextTourStep();
+        await janggi.onboarding.nextTourStep();
+        await janggi.onboarding.nextTourStep();
+      });
+
+      then("it sends them to the guide in Korean, in a new tab", async ({janggi}) => {
+        expect(await janggi.onboarding.getTourGuideAddress()).toBe("/ko/learn.html");
+        expect(await janggi.onboarding.isTourGuideOpenedInANewTab()).toBe(true);
+      });
+    });
   });
 });

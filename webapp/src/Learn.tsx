@@ -9,6 +9,6 @@ if (!rootElement) throw new Error("Could not find the '#root' element in learn.h
 hydrateRoot(
   rootElement,
   <StrictMode>
-    <LearnPage />
+    <LearnPage language="en" />
   </StrictMode>,
 );

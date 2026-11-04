@@ -8,7 +8,6 @@ import type {PieceLift} from "@src/react/pages/game/components/board/types/Piece
 import {Pictograph} from "@src/react/pages/game/components/board/components/piece/components/pictograph/Pictograph";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {characterFor} from "@src/react/pages/game/components/board/components/piece/utils/CharacterFor";
-import {pieceName} from "@src/react/pages/game/components/board/components/piece/utils/PieceNames";
 import {resolvePieceStyle} from "@src/react/pages/game/components/board/components/piece/utils/ResolvePieceStyle";
 import {clsx} from "clsx";
 import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
@@ -31,6 +30,8 @@ import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
  */
 interface Props {
   readonly piece: PieceIdentity;
+  /** What the piece is called out loud, in the language being read: the only words on the board. */
+  readonly name: string;
   readonly style: PieceSetStyle;
   /** Drawn with a heavier outline, to answer the pointer resting on it. */
   readonly emphasised: boolean;
@@ -45,6 +46,7 @@ interface Props {
 
 export function Piece({
   piece,
+  name,
   style,
   emphasised,
   concealed = false,
@@ -73,7 +75,7 @@ export function Piece({
             data-piece={toPieceKey(piece)}
             role="img"
             className="group-data-[flipped=true]/flip:rotate-180"
-            aria-label={pieceName(piece)}
+            aria-label={name}
             style={{height: `${pieceStyle.size * 100}%`, aspectRatio: 1}}
           >
             <PieceBody body={pieceStyle.body} strokeScale={emphasised ? style.handling.hoverOutline : 1} />

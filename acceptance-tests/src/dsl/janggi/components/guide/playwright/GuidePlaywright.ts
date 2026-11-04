@@ -3,8 +3,13 @@ import type {Locator, Page} from "@playwright/test";
 import type {GuidePieceStyleName} from "@src/dsl/janggi/components/guide/types/GuidePieceStyleName";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 
+type Bounds = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
+
 export class GuidePlaywright extends BasePage {
   private readonly install: Locator;
+  private readonly translationNotice: Locator;
+  private readonly englishGuide: Locator;
+  private readonly play: Locator;
   private readonly pieces: Record<PieceType, Locator>;
   private readonly pieceStyles: Record<GuidePieceStyleName, Locator>;
 
@@ -12,6 +17,9 @@ export class GuidePlaywright extends BasePage {
     super(page);
 
     this.install = page.getByTestId("guide-install");
+    this.translationNotice = page.getByTestId("translation-notice");
+    this.englishGuide = page.getByTestId("translation-notice-original");
+    this.play = page.getByTestId("guide-play");
     this.pieces = {
       general: page.getByTestId("guide-piece-general"),
       guard: page.getByTestId("guide-piece-guard"),
@@ -30,10 +38,46 @@ export class GuidePlaywright extends BasePage {
 
   async visitGuide(): Promise<void> {
     await this.page.goto(new URL("learn.html", this.page.url()).href);
+    await this.waitUntilReady();
+  }
+
+  /** Goes to the guide's Korean page, and waits as `visitGuide` does. */
+  async visitKoreanGuide(): Promise<void> {
+    await this.page.goto(new URL("ko/learn.html", this.page.url()).href);
+    await this.waitUntilReady();
+  }
+
+  private async waitUntilReady(): Promise<void> {
     await this.page
       .getByTestId("guide")
       .and(this.page.locator("[data-guide-ready='true']"))
       .waitFor({state: "visible"});
+  }
+
+  /** What the page says of being machine translated, or an empty string where it says nothing. */
+  async getTranslationNotice(): Promise<string> {
+    if ((await this.translationNotice.count()) === 0) return "";
+
+    return ((await this.translationNotice.textContent()) ?? "").trim();
+  }
+
+  /** Where the notice's link to the English guide goes, as written in the page. */
+  async getEnglishGuideAddress(): Promise<string> {
+    return (await this.englishGuide.getAttribute("href")) ?? "";
+  }
+
+  /** Where the footer's link to the references goes, as written in the page. */
+  async getReferencesAddress(): Promise<string> {
+    return (await this.page.getByTestId("guide-references").getAttribute("href")) ?? "";
+  }
+
+  /** Where the link into the game goes, as written in the page. */
+  async getPlayLinkAddress(): Promise<string> {
+    return (await this.play.getAttribute("href")) ?? "";
+  }
+
+  async getPieceName(type: PieceType): Promise<string> {
+    return ((await this.pieces[type].getByTestId("guide-piece-name").textContent()) ?? "").trim();
   }
 
   async chooseInstall(): Promise<void> {
@@ -72,6 +116,46 @@ export class GuidePlaywright extends BasePage {
     const href = (await this.page.getByTestId("guide-play").getAttribute("href")) ?? undefined;
 
     return href !== undefined && new URL(href, this.page.url()).href === new URL("./", this.page.url()).href;
+  }
+
+  /** On the title's row, and reaching the header's right edge. */
+  async isLanguageSwitchBesideTheTitle(): Promise<boolean> {
+    const title = await this.boundsOf(this.page.getByTestId("guide-header-title"));
+    const languageSwitch = await this.boundsOf(this.page.getByTestId("page-language-en").locator(".."));
+    const header = await this.boundsOf(this.page.getByTestId("guide-header"));
+
+    return (
+      this.shareARow(title, languageSwitch) &&
+      languageSwitch.x >= title.x + title.width &&
+      Math.abs(languageSwitch.x + languageSwitch.width - (header.x + header.width)) <= 1
+    );
+  }
+
+  /** Under the title, and as wide as the header. */
+  async isPlayButtonFullWidthBelowTheTitle(): Promise<boolean> {
+    const title = await this.boundsOf(this.page.getByTestId("guide-header-title"));
+    const play = await this.boundsOf(this.page.getByTestId("guide-header-play"));
+    const header = await this.boundsOf(this.page.getByTestId("guide-header"));
+
+    return play.y >= title.y + title.height && Math.abs(play.width - header.width) <= 1;
+  }
+
+  async isPlayButtonBesideTheLanguageSwitch(): Promise<boolean> {
+    const play = await this.boundsOf(this.page.getByTestId("guide-header-play"));
+    const languageSwitch = await this.boundsOf(this.page.getByTestId("page-language-en").locator(".."));
+
+    return this.shareARow(play, languageSwitch) && play.x >= languageSwitch.x + languageSwitch.width;
+  }
+
+  private shareARow(first: Bounds, second: Bounds): boolean {
+    return first.y < second.y + second.height && second.y < first.y + first.height;
+  }
+
+  private async boundsOf(locator: Locator): Promise<Bounds> {
+    const bounds = (await locator.boundingBox()) ?? undefined;
+    if (!bounds) throw new Error("The guide's header is missing something it should show");
+
+    return bounds;
   }
 
   async isInstallButtonShown(): Promise<boolean> {

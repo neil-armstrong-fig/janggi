@@ -207,6 +207,22 @@ export class OnboardingDsl {
     }
   }
 
+  async getTourGuideAddress(): Promise<string> {
+    try {
+      return await this.onboarding.getTourGuideAddress();
+    } catch (error) {
+      throw new DslError("Failed to read where the tour's guide link goes", error);
+    }
+  }
+
+  async isTourGuideOpenedInANewTab(): Promise<boolean> {
+    try {
+      return await this.onboarding.isTourGuideOpenedInANewTab();
+    } catch (error) {
+      throw new DslError("Failed to check whether the tour's guide link opens a new tab", error);
+    }
+  }
+
   async isTourGuideLinkForTheGuide(): Promise<boolean> {
     try {
       return await this.onboarding.isTourGuideLinkForTheGuide();

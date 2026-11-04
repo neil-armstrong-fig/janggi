@@ -1,3 +1,4 @@
+import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
@@ -7,8 +8,8 @@ import {objectFromText} from "@src/react/pages/game/components/styles-sheet/comp
  * The board style in the raw view's text, checked exactly as an imported one is. The text has no name —
  * that has a box of its own — so the style is read under a stand-in, which the editor never shows.
  */
-export function boardFromText(text: string): Checked<BoardStyle> {
-  const written = objectFromText(text);
+export function boardFromText(text: string, words: StyleRefusalMessages): Checked<BoardStyle> {
+  const written = objectFromText(text, words);
   if (written.kind === "accepted") {
     return boardStyleFrom({...written.value, name: STAND_IN});
   }

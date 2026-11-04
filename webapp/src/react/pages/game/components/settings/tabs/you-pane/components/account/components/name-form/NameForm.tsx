@@ -3,6 +3,7 @@ import type {RenameResult} from "@src/redux/account/types/RenameResult";
 import {clsx} from "clsx";
 import {renameAccount} from "@src/redux/account/actions/RenameAccount";
 import {useAppDispatch} from "@src/redux/Hooks";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useState} from "react";
 
 /**
@@ -11,6 +12,7 @@ import {useState} from "react";
  */
 export function NameForm(): React.JSX.Element {
   const dispatch = useAppDispatch();
+  const {name} = useMessages().you.account;
   const [text, setText] = useState("");
   const [result, setResult] = useState<RenameResult | undefined>(undefined);
 
@@ -23,14 +25,14 @@ export function NameForm(): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium text-white/60">Display name</span>
+      <span className="text-xs font-medium text-white/60">{name.label}</span>
 
       <div className="flex gap-2">
         <input
           type="text"
           data-testid="account-name-input"
-          aria-label="Display name"
-          placeholder="Change your display name"
+          aria-label={name.label}
+          placeholder={name.placeholder}
           value={text}
           autoComplete="off"
           spellCheck={false}
@@ -42,7 +44,7 @@ export function NameForm(): React.JSX.Element {
         />
 
         <Button variant="secondary" data-testid="account-name-save" onClick={() => void save()} className="shrink-0">
-          Save
+          {name.save}
         </Button>
       </div>
 

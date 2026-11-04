@@ -1,6 +1,6 @@
 import type {BoardMarks} from "@src/styles/types/board-marks/BoardMarks";
 import type {BoardStyle, CellOverrides} from "@src/styles/types/BoardStyle";
-import {CELL_MARKER_SHAPES} from "@src/styles/types/CellStyle";
+import {CELL_MARKER_SHAPES} from "@janggi/shared/janggi/styles/CellMarkerShape";
 import type {CellMarker, CellStyle} from "@src/styles/types/CellStyle";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import type {PositionKey} from "@janggi/engine/board/types/Position";

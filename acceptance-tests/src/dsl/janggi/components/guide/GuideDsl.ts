@@ -1,14 +1,19 @@
 import {DslError} from "@src/dsl/errors/DslError";
 import {GuidePlaywright} from "@src/dsl/janggi/components/guide/playwright/GuidePlaywright";
 import type {GuidePieceStyleName} from "@src/dsl/janggi/components/guide/types/GuidePieceStyleName";
+import {LanguageSwitchDsl} from "@src/dsl/janggi/components/language-switch/LanguageSwitchDsl";
 import type {Page} from "@playwright/test";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 
 export class GuideDsl {
   private readonly guide: GuidePlaywright;
 
+  readonly languageSwitch: LanguageSwitchDsl;
+
   constructor(page: Page) {
     this.guide = new GuidePlaywright(page);
+
+    this.languageSwitch = new LanguageSwitchDsl(page);
   }
 
   async visitGuide(): Promise<void> {
@@ -16,6 +21,54 @@ export class GuideDsl {
       await this.guide.visitGuide();
     } catch (error) {
       throw new DslError("Failed to visit the Janggi guide", error);
+    }
+  }
+
+  async visitKoreanGuide(): Promise<void> {
+    try {
+      await this.guide.visitKoreanGuide();
+    } catch (error) {
+      throw new DslError("Failed to visit the Janggi guide's Korean page", error);
+    }
+  }
+
+  async getTranslationNotice(): Promise<string> {
+    try {
+      return await this.guide.getTranslationNotice();
+    } catch (error) {
+      throw new DslError("Failed to read the guide's machine translation notice", error);
+    }
+  }
+
+  async getEnglishGuideAddress(): Promise<string> {
+    try {
+      return await this.guide.getEnglishGuideAddress();
+    } catch (error) {
+      throw new DslError("Failed to read where the notice's link to the English guide goes", error);
+    }
+  }
+
+  async getReferencesAddress(): Promise<string> {
+    try {
+      return await this.guide.getReferencesAddress();
+    } catch (error) {
+      throw new DslError("Failed to read where the guide's link to the references goes", error);
+    }
+  }
+
+  async getPlayLinkAddress(): Promise<string> {
+    try {
+      return await this.guide.getPlayLinkAddress();
+    } catch (error) {
+      throw new DslError("Failed to read where the guide's link into the game goes", error);
+    }
+  }
+
+  async getPieceName(type: PieceType): Promise<string> {
+    try {
+      return await this.guide.getPieceName(type);
+    } catch (error) {
+      throw new DslError(`Failed to read the name the guide gives the ${type}`, error);
     }
   }
 
@@ -88,6 +141,30 @@ export class GuideDsl {
       return await this.guide.isPlayLinkForTheGame();
     } catch (error) {
       throw new DslError("Failed to check where the Janggi guide's play link leads", error);
+    }
+  }
+
+  async isLanguageSwitchBesideTheTitle(): Promise<boolean> {
+    try {
+      return await this.guide.isLanguageSwitchBesideTheTitle();
+    } catch (error) {
+      throw new DslError("Failed to check that the guide's language switch sits beside its title", error);
+    }
+  }
+
+  async isPlayButtonFullWidthBelowTheTitle(): Promise<boolean> {
+    try {
+      return await this.guide.isPlayButtonFullWidthBelowTheTitle();
+    } catch (error) {
+      throw new DslError("Failed to check that the guide's header play button spans the row below its title", error);
+    }
+  }
+
+  async isPlayButtonBesideTheLanguageSwitch(): Promise<boolean> {
+    try {
+      return await this.guide.isPlayButtonBesideTheLanguageSwitch();
+    } catch (error) {
+      throw new DslError("Failed to check that the guide's header play button sits beside its language switch", error);
     }
   }
 

@@ -30,10 +30,12 @@ root `AGENTS.md` — a violation of any of these is a lint error:
   way of drawing) stays English, and what a player reads for it is looked up here. A sentence is a function, so each
   language orders it for itself. `docs/localisation.md` has the decisions and the backlog (and `docs/seo.md` what a search
   engine sees). Moved over so far: the tabs, controls, turn line, result banner and its explanations, the Play, Look and Sound tabs, plaques,
-  draw offer and bot notices, the repetition note, the record sheet, welcome and tour. Still English: the You tab (but its language
-  picker), the styles sheet and style names, playing a friend, toasts, piece names for screen readers, the match-format
-  explanation, and the extra pages. The Korean is shown with a note (`LanguageNotice`) that it is a work in progress; take that
-  out when it is not.
+  draw offer and bot notices, the repetition note, the record sheet, welcome and tour, and the You tab with the toast and the
+  rename answers (`you`, `toasts`; Redux reaches them through `messagesOf` and the language in the store), playing a friend,
+  piece names for screen readers, the match-format explanation, unlock names, and the styles sheet and editor (`styles`). Still English: the
+  legal pages, a style checker's notes on a field of its JSON (`Reading`), and style names, which stay as proper names in every language. The Korean is shown with a note (`LanguageNotice`) that it is a work in progress; take that
+  out when it is not. The guide has `GuideMessages` of its own (`guideMessagesOf`), handed to `LearnPage` as props rather than carried by every
+  game page, and its Korean is a machine translation that opens with a notice (`translationNotice`); take that out once a native speaker has read it. The references have `ReferencesMessages` (`referencesMessagesOf`) on the same terms.
 - `board/`'s geometry (positions, dimensions, palaces) lives in `engine/src/board/`, not in `react/`,
   because the engine needs it too and may not reach into `react/` — `cellShapeAt` in `react/` asks
   `palaceDiagonalStepsAt` for the palace X rather than working it out again, so what's painted and

@@ -38,12 +38,23 @@ interface SitemapPage {
 }
 
 const SITEMAP_PAGES: readonly SitemapPage[] = [
-  {address: "https://janggi.neilarmstrong.dev/", sources: ["index.html", "src/language/english"]},
-  {address: "https://janggi.neilarmstrong.dev/ko/", sources: ["ko/index.html", "src/language/korean"]},
-  {address: "https://janggi.neilarmstrong.dev/learn.html", sources: ["learn.html", "src/react/pages/learn"]},
+  {address: "https://janggi.neilarmstrong.dev/", sources: ["index.html", "src/language/english/English.ts"]},
+  {address: "https://janggi.neilarmstrong.dev/ko/", sources: ["ko/index.html", "src/language/korean/Korean.ts"]},
+  {
+    address: "https://janggi.neilarmstrong.dev/learn.html",
+    sources: ["learn.html", "src/react/pages/learn", "src/language/english/EnglishGuide.ts"],
+  },
+  {
+    address: "https://janggi.neilarmstrong.dev/ko/learn.html",
+    sources: ["ko/learn.html", "src/react/pages/learn", "src/language/korean/KoreanGuide.ts"],
+  },
   {
     address: "https://janggi.neilarmstrong.dev/references.html",
-    sources: ["references.html", "src/react/pages/references"],
+    sources: ["references.html", "src/react/pages/references", "src/language/english/EnglishReferences.ts"],
+  },
+  {
+    address: "https://janggi.neilarmstrong.dev/ko/references.html",
+    sources: ["ko/references.html", "src/react/pages/references", "src/language/korean/KoreanReferences.ts"],
   },
   {
     address: "https://janggi.neilarmstrong.dev/privacy.html",

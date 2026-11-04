@@ -56,6 +56,14 @@ export class BoardDsl {
   }
 
   /** Which piece stands on an intersection, or undefined where none does. */
+  async getPieceLabelAt(file: number, rank: number): Promise<string | undefined> {
+    try {
+      return await this.board.getPieceLabelAt(file, rank);
+    } catch (error) {
+      throw new DslError(`Failed to read what the piece at file ${file}, rank ${rank} is called`, error);
+    }
+  }
+
   async getPieceAt(file: number, rank: number): Promise<Piece | undefined> {
     try {
       return await this.board.getPieceAt(file, rank);

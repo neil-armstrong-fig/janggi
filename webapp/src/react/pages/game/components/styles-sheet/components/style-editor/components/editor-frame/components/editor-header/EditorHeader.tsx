@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {clsx} from "clsx";
 import {ChevronLeftIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-left/ChevronLeftIcon";
@@ -16,13 +17,14 @@ interface Props {
 }
 
 export function EditorHeader({name, onName, onSave, onBack, pasteResult}: Props): React.JSX.Element {
+  const words = useMessages().styles.editor;
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <button
           type="button"
           data-testid="style-editor-back"
-          aria-label="Back"
+          aria-label={words.back}
           onClick={onBack}
           className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
         >
@@ -31,8 +33,8 @@ export function EditorHeader({name, onName, onSave, onBack, pasteResult}: Props)
 
         <input
           data-testid="style-editor-name"
-          aria-label="A name for your style"
-          placeholder="A name for your style"
+          aria-label={words.namePlaceholder}
+          placeholder={words.namePlaceholder}
           value={name}
           maxLength={40}
           onChange={event => onName(event.target.value)}
@@ -45,7 +47,7 @@ export function EditorHeader({name, onName, onSave, onBack, pasteResult}: Props)
           onClick={onSave}
           className="h-11 shrink-0 cursor-pointer rounded-xl bg-wood px-4 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.98] motion-reduce:transition-none"
         >
-          Save
+          {words.save}
         </button>
       </div>
 

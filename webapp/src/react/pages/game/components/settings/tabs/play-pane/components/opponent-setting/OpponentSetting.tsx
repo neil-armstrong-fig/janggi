@@ -30,7 +30,7 @@ export function OpponentSetting(): React.JSX.Element {
         id="opponent"
         disabled={playHasBegun(played) || withAFriend || (!botAvailable && !againstBot)}
         label={play.opponent}
-        ariaLabel="Who plays the other army"
+        ariaLabel={play.opponentLabel}
         options={OPPONENT_OPTIONS}
         labelOf={option => play.opponentNames[option.name]}
         icon={option => <OpponentIcon name={option.name} />}
@@ -38,9 +38,7 @@ export function OpponentSetting(): React.JSX.Element {
         onSelect={option => dispatch(opponentChosen(option.name))}
       />
 
-      {!botAvailable && (
-        <p className="text-xs text-white/50">This browser cannot run the bot: it needs a cross-origin isolated page.</p>
-      )}
+      {!botAvailable && <p className="text-xs text-white/50">{play.botNeedsIsolation}</p>}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 /**
  * The style as JSON, for whoever wants a value the controls do not offer. What is typed is checked as an
  * imported style is, and what is wrong with it said beneath; only text that is a style reaches the preview.
@@ -10,16 +11,17 @@ interface Props {
 }
 
 export function RawView({raw, rawRefusal, onRaw}: Props): React.JSX.Element {
+  const words = useMessages().styles.editor;
   return (
     <>
       <textarea
         data-testid="style-editor-json"
-        aria-label="Your style, as JSON"
+        aria-label={words.rawLabel}
         value={raw}
         rows={14}
         spellCheck={false}
         onChange={event => onRaw(event.target.value)}
-        className="w-full rounded-xl bg-black/25 px-3 py-2 font-mono text-base leading-snug text-white/90"
+        className="w-full shrink-0 rounded-xl bg-black/25 px-3 py-2 font-mono text-base leading-snug text-white/90"
       />
 
       {rawRefusal && (

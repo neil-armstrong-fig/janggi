@@ -285,6 +285,30 @@ export class JanggiDsl {
     }
   }
 
+  async getSitemapLanguageAlternatesOfTheKoreanGuide(): Promise<LanguageAlternates> {
+    try {
+      return await this.janggi.getSitemapLanguageAlternatesOfTheKoreanGuide();
+    } catch (error) {
+      throw new DslError("Failed to read the sitemap's language alternates for the Korean guide", error);
+    }
+  }
+
+  async getSitemapLanguageAlternatesOfTheKoreanReferences(): Promise<LanguageAlternates> {
+    try {
+      return await this.janggi.getSitemapLanguageAlternatesOfTheKoreanReferences();
+    } catch (error) {
+      throw new DslError("Failed to read the sitemap's language alternates for the Korean references", error);
+    }
+  }
+
+  async getReferencesAddressInPageServedToSearchEngines(): Promise<string> {
+    try {
+      return await this.janggi.getReferencesAddressInPageServedToSearchEngines();
+    } catch (error) {
+      throw new DslError("Failed to read where the references link goes in the page served to search engines", error);
+    }
+  }
+
   async getSocialImageAddress(): Promise<string> {
     try {
       return await this.janggi.getSocialImageAddress();
@@ -418,6 +442,15 @@ export class JanggiDsl {
   }
 
   /** Resizes the window, the way a user dragging the corner of a browser would. */
+  /** Every Korean word on screen that a line ends in the middle of, which Korean wrapped by the letter would have. */
+  async getKoreanWordsSplitAcrossLines(): Promise<readonly string[]> {
+    try {
+      return await this.janggi.getKoreanWordsSplitAcrossLines();
+    } catch (error) {
+      throw new DslError("Failed to read which Korean words a line ends in the middle of", error);
+    }
+  }
+
   async resizeWindowTo(width: number, height: number): Promise<void> {
     try {
       await this.janggi.resizeWindowTo(width, height);

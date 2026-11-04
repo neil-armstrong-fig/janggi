@@ -33,9 +33,9 @@ it("says it in Korean for a player who reads the game in Korean", () => {
   const {title, options} = turnNotificationOf(JSON.stringify({opponent: "Kim Yu-sin"}), "ko");
 
   expect(title).toBe("장기");
-  expect(options.body).toBe("Kim Yu-sin님이 수를 두었습니다. 당신의 차례입니다.");
+  expect(options.body).toBe("Kim Yu-sin님이 수를 두었습니다. 내 차례입니다.");
 });
 
 it("still says it is their turn in Korean where the push cannot be read", () => {
-  expect(turnNotificationOf(undefined, "ko").options.body).toBe("당신의 차례입니다.");
+  expect(turnNotificationOf(undefined, "ko").options.body).toBe("내 차례입니다.");
 });

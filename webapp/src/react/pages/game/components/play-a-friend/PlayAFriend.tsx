@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Sheet} from "@src/react/pages/game/components/sheet/Sheet";
 import {ChooseSetup} from "@src/react/pages/game/components/play-a-friend/components/choose-setup/ChooseSetup";
 import {CodeGiven} from "@src/react/pages/game/components/play-a-friend/components/code-given/CodeGiven";
@@ -22,6 +23,7 @@ export function PlayAFriend(): React.JSX.Element {
   const open = useAppSelector(state => state.settings.openSheet === "friend");
   const {state, code} = useAppSelector(state => state.friend);
   const dispatch = useAppDispatch();
+  const words = useMessages().friend.sheet;
   const onClose = (): void => {
     dispatch(sheetClosed());
   };
@@ -36,8 +38,8 @@ export function PlayAFriend(): React.JSX.Element {
     <Sheet
       testId="play-a-friend"
       closeTestId="friend-close"
-      title="Play a friend"
-      closeLabel="Close play a friend"
+      title={words.title}
+      closeLabel={words.closeLabel}
       open={open}
       onClose={onClose}
       backTestId="friend-back"
@@ -55,11 +57,9 @@ export function PlayAFriend(): React.JSX.Element {
 
         {hasRoom && code !== undefined && state !== "choosing-setups" && <CodeGiven code={code} />}
 
-        {reaching && <p className="text-sm text-white/70">Reaching the room…</p>}
+        {reaching && <p className="text-sm text-white/70">{words.reaching}</p>}
 
-        {state === "waiting-for-a-friend" && (
-          <p className="text-sm text-white/70">Waiting for your friend. Give them the code, or send the link.</p>
-        )}
+        {state === "waiting-for-a-friend" && <p className="text-sm text-white/70">{words.waiting}</p>}
 
         {state === "choosing-setups" && <ChooseSetup />}
 
@@ -70,7 +70,7 @@ export function PlayAFriend(): React.JSX.Element {
             onClick={() => dispatch(leaveFriendRoom())}
             className="min-h-11 cursor-pointer self-start rounded-lg border border-white/20 px-3 text-sm text-white/70 hover:bg-white/10"
           >
-            Leave this room
+            {words.leaveRoom}
           </button>
         )}
       </div>

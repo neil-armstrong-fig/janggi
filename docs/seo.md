@@ -1,27 +1,28 @@
 # SEO for a Korean audience
 
 What a search engine sees of Janggi, why the in-app Korean alone did nothing
-for it, and what was built: a Korean page for the game, and only the game. The
-translation itself is in `docs/localisation.md`.
+for it, and what was built: a Korean page for the game, and a machine-translated
+Korean guide and references. The translation itself is in `docs/localisation.md`.
 
-## Decision: a `/ko/` subfolder, for the game only
+## Decision: a `/ko/` subfolder, for the game and its reading pages
 
 English stays at `/`, so existing ranking is untouched. The Korean game is at
-`/ko/`, the one page whose words are translated (`webapp/ko/index.html`).
+`/ko/` (`webapp/ko/index.html`), the Korean guide at `/ko/learn.html`
+(`webapp/ko/learn.html`) and the Korean references at `/ko/references.html`
+(`webapp/ko/references.html`); the legal pages are not translated.
 
 - Same host, so authority is shared; no new DNS or deploy. Static files work on
   GitHub Pages.
 - Rejected: `?lang=ko` (search engines treat parameters as duplicates of one
   page) and a separate Korean domain (splits authority; too much for one small
   game).
-- **The guide, references, privacy and terms are not translated** and have no
-  Korean URL. The Korean page links to them in English and says so
-  ("(English)"). They carry no `hreflang`, since they have no twin.
+- **Privacy and terms are not translated** and have no Korean URL.
+  The Korean pages link to them in English and say so ("(English)"). They carry
+  no `hreflang`, since they have no twin.
 
-**What this costs:** `/ko/` will not rank for 장기 두는 법 or 장기 규칙, which is
-where a Korean guide would land. It can target the game intents (below). A
-Korean guide is the later, larger step; it would be `/ko/learn.html`, a new
-entry in `PRERENDERED_PAGES`, and `hreflang` pairs for it.
+**What this costs:** the game page, `/ko/`, will not rank for 장기 두는 법 or
+장기 규칙; the Korean guide is the page that can. It is a machine translation, so
+it says so, and it is worth a native speaker's read before it is relied on.
 
 ## What is built
 
@@ -39,6 +40,30 @@ entry in `PRERENDERED_PAGES`, and `hreflang` pairs for it.
   (`<a href="/ko/" hreflang="ko">`, and back to `/`). `hreflang` in the head
   names a twin but is not a link a crawler follows; Search Console reported
   `/ko/` as "URL is unknown to Google" until it had one.
+- **The Korean guide**, `webapp/ko/learn.html`, is drawn by the same `LearnPage`
+  as the English one, given `language="ko"`. `PRERENDERED_PAGES` carries that
+  prop and matches a page by its whole path, because `learn.html` is also the end
+  of `ko/learn.html`. Its words are `KOREAN_GUIDE`
+  (`src/language/korean/KoreanGuide.ts`), a `GuideMessages` as `ENGLISH_GUIDE` is,
+  looked up by `guideMessagesOf`; the guide is not part of `Messages`, which
+  every game page carries. It was **machine translated and has not been read by a
+  native speaker**, so it opens with a notice in Korean and English
+  (`TranslationNotice`, `translation-notice`) that links the English guide
+  and cannot be dismissed. **To remove it, set `translationNotice` to `undefined`
+  in `KOREAN_GUIDE`** once someone has read it. Its link to the rules research is
+  English and says "(영어)". Its head has the `hreflang`
+  pair (also in `learn.html`), `og:locale ko_KR`, the Korean social card and
+  JSON-LD with `inLanguage: ko` and `translationOfWork`; the sitemap has both
+  guides with alternates. The two guides link to each other in their footers,
+  the Korean game's settings link the guide in the language the game is read in
+  (`GuideLink`), and `/ko/` links to `/ko/learn.html`.
+- **The Korean references**, `webapp/ko/references.html`, follow the guide:
+  `ReferencesPage` given `language="ko"`, the same `PRERENDERED_PAGES` prop, the
+  same notice and switch, its head and sitemap entries with the `hreflang` trio.
+  Its words are `KOREAN_REFERENCES`, also machine translated; a source's title
+  and authors stay as they wrote them. To remove the notice, set
+  `translationNotice` to `undefined` there. The Korean game, `/ko/` and the
+  Korean guide all link to it, and the English page links to it by its switch.
 - **The sitemap is dated.** It is built from
   `webapp/vite/sitemap/sitemap.template.xml` by `DatedSitemapFile.ts` beside
   it, which gives each address a `<lastmod>`: the day of the last commit that
@@ -119,14 +144,18 @@ else: Google's Pages report, Bing's Sitemaps and Naver's 수집 현황.
 The repo holds research few sites have: `docs/rules.md` and
 `docs/opening-setups.md` (상차림 and 포진 terms, with Korean sources). A Korean
 explainer on 상차림 or 빅장 built from them is the likeliest way to rank for
-those queries, and would need its own Korean page. Game intents to test, to be
+those queries, and would need its own Korean page; the Korean guide is the first
+step and covers the rules in general. Game intents to test, to be
 checked against Search Console and Naver data after launch rather than assumed:
 장기 온라인, 무료 장기 게임, 장기 AI 대국, 친구와 장기.
 
 ## Checks after deploying
 
-- View the source of `/ko/` with scripts off: the Korean text is there.
+- View the source of `/ko/` and `/ko/learn.html` with scripts off: the Korean
+  text, and on the guide its machine-translation notice, are there.
 - The `hreflang` pairs are reciprocal (use a validator) and match the sitemap.
+- After the first deploy, request indexing for `/ko/learn.html` in Google and a
+  collection for it in Naver: a new page is otherwise found slowly.
 - URL Inspection in Search Console, and Naver's page collection check.
 - Lighthouse SEO, and a link preview of the Korean social card.
 

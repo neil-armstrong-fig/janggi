@@ -28,7 +28,7 @@ export function rewardFor(
   const xp = xpFor(format, gameResult);
   const unlocked = unlockLadder()
     .filter(step => step.xp > xpNow - xp && step.xp <= xpNow)
-    .flatMap(step => step.labels);
+    .flatMap(step => step.items);
 
   return {xp, unlocked};
 }

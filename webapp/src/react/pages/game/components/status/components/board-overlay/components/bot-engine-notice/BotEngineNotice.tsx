@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element {
-  const {overlays} = useMessages();
+  const {overlays, plaque} = useMessages();
   const failed = botEngine.status === "failed";
 
   return (
@@ -52,7 +52,7 @@ export function BotEngineNotice({botEngine, onRetry}: Props): React.JSX.Element 
         {failed && (
           <>
             <p className="text-sm font-semibold tracking-wide text-white/90">
-              <span role="img" aria-label="Bot">
+              <span role="img" aria-label={plaque.bot}>
                 🤖
               </span>{" "}
               {overlays.botCouldNotStart}

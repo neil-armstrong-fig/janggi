@@ -10,6 +10,7 @@ import {ReplayTourButton} from "@src/react/pages/game/components/settings/tabs/y
 import {RepositoryLink} from "@src/react/pages/game/components/settings/tabs/you-pane/components/repository-link/RepositoryLink";
 import {SaveTransfer} from "@src/react/pages/game/components/settings/tabs/you-pane/components/save-transfer/SaveTransfer";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * The You tab: the player rather than a game — the language they read it in, their XP and next unlock, optional Google sign-in, the
@@ -24,6 +25,8 @@ interface Props {
 }
 
 export function YouPane({selected}: Props): React.JSX.Element {
+  const {you} = useMessages();
+
   return (
     <SettingsPane name="You" selected={selected}>
       <LanguageSetting />
@@ -32,8 +35,8 @@ export function YouPane({selected}: Props): React.JSX.Element {
 
       <Account />
 
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-medium text-white/60">App &amp; help</p>
+      <div className="flex flex-col gap-2" data-testid="app-help">
+        <p className="text-xs font-medium text-white/60">{you.links.heading}</p>
 
         <InstallButton />
 

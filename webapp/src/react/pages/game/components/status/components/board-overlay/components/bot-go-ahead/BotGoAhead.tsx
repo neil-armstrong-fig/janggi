@@ -14,13 +14,13 @@ interface Props {
 }
 
 export function BotGoAhead({botSide, onGoAhead}: Props): React.JSX.Element {
-  const {overlays} = useMessages();
+  const {overlays, plaque} = useMessages();
 
   return (
     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
       <div className="rounded-2xl border border-wood/40 bg-ground/85 px-6 py-3 text-center shadow-2xl shadow-black backdrop-blur-sm">
         <p className="text-sm font-semibold tracking-wide text-white/90">
-          <span role="img" aria-label="Bot">
+          <span role="img" aria-label={plaque.bot}>
             🤖
           </span>{" "}
           {overlays.botPlays(botSide)}

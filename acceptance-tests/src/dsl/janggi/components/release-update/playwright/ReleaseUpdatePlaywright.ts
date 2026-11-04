@@ -55,6 +55,10 @@ export class ReleaseUpdatePlaywright extends BaseComponent {
     await this.laterButton.click();
   }
 
+  async getWords(): Promise<string> {
+    return (await this.notice.textContent()) ?? "";
+  }
+
   async isOffered(): Promise<boolean> {
     try {
       await this.notice.waitFor({state: "visible"});

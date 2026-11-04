@@ -1,10 +1,10 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {CompanionPicker} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/companion-picker/CompanionPicker";
 import type {PieceTarget} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/piece-target/types/PieceTarget";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {TargetBar} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/target-bar/TargetBar";
 import {pieceTargetName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/piece-target/PieceTargetName";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
 
 /**
  * What goes with the pieces' preview: the board to show them on, and what the controls are changing — one
@@ -32,20 +32,22 @@ export function PiecePreviewOptions({
   onReset,
   onSide,
 }: Props): React.JSX.Element {
+  const messages = useMessages();
+  const words = messages.styles.editor;
   return (
     <>
       <CompanionPicker
-        label="Preview on"
-        currentLabel="Current board"
+        label={words.previewOn}
+        currentLabel={words.currentBoard}
         names={boardStyles.map(boardStyle => boardStyle.name)}
         value={previewedOn}
         onChange={onPreviewedOn}
       />
 
       <TargetBar
-        name={pieceTargetName(pieceTarget)}
+        name={pieceTargetName(pieceTarget, messages)}
         targetChoices={ARMIES.map(side => ({
-          name: sideName(side),
+          name: messages.sides[side],
           chosen: pieceTarget.kind === "side" && pieceTarget.side === side,
           onChoose: () => onSide(side),
         }))}

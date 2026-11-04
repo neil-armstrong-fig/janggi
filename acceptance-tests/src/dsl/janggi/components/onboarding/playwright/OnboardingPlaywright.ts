@@ -170,6 +170,15 @@ export class OnboardingPlaywright extends BaseComponent {
     return await this.tourText.innerText();
   }
 
+  /** Where the tour's link to the guide goes, as written in the page. */
+  async getTourGuideAddress(): Promise<string> {
+    return (await this.tourGuide.getAttribute("href")) ?? "";
+  }
+
+  async isTourGuideOpenedInANewTab(): Promise<boolean> {
+    return (await this.tourGuide.getAttribute("target")) === "_blank";
+  }
+
   async isTourGuideLinkForTheGuide(): Promise<boolean> {
     const href = (await this.tourGuide.getAttribute("href")) ?? undefined;
 

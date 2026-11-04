@@ -27,9 +27,7 @@ export function FlipBoardSetting(): React.JSX.Element {
         onToggle={() => dispatch(flipBoardForHanChosen(!flipBoardForHan))}
       />
 
-      <p className="px-2 text-xs text-white/40">
-        Turns the pieces to face Han's player on Han's move, for the player sat across from you.
-      </p>
+      <p className="px-2 text-xs text-white/40">{play.flipBoardHelp}</p>
     </div>
   );
 }

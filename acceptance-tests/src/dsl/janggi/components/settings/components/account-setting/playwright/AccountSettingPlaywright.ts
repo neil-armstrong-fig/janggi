@@ -241,4 +241,19 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   async getSyncState(): Promise<string | undefined> {
     return (await this.syncState.getAttribute("data-state")) ?? undefined;
   }
+
+  /** Everything the account card says, as the player reads it. */
+  async getAccountWords(): Promise<string> {
+    return ((await this.accountCard.textContent()) ?? "").trim();
+  }
+
+  /** What the card says of whether the progress is being kept in step. */
+  async getSyncWords(): Promise<string> {
+    return ((await this.syncState.textContent()) ?? "").trim();
+  }
+
+  /** What the answer to the last name tried says. */
+  async getNameWords(): Promise<string> {
+    return ((await this.nameMessage.textContent()) ?? "").trim();
+  }
 }

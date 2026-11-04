@@ -10,10 +10,10 @@ interface Props {
 
 /** One tab per match format, since each is rated apart. The chosen one is pressed. */
 export function FormatTabs({selected, onSelect}: Props): React.JSX.Element {
-  const {play} = useMessages();
+  const {play, record} = useMessages();
 
   return (
-    <nav aria-label="Match format" className="flex shrink-0 gap-1 rounded-xl bg-black/25 p-1">
+    <nav aria-label={record.formatsLabel} className="flex shrink-0 gap-1 rounded-xl bg-black/25 p-1">
       {MATCH_FORMATS.map(format => (
         <button
           key={format}

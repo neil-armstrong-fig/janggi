@@ -1,9 +1,5 @@
-import type {
-  CharacterGlyphStyle,
-  PictographGlyphStyle,
-  PieceGlyphKind,
-  PieceGlyphStyle,
-} from "@src/styles/types/PieceStyle";
+import type {CharacterGlyphStyle, PictographGlyphStyle, PieceGlyphStyle} from "@src/styles/types/PieceStyle";
+import type {PieceGlyphKind} from "@janggi/shared/janggi/styles/PieceGlyphKind";
 import {HANJA_CHARACTERS} from "@src/react/pages/game/components/board/piece-styles/builtin/marks/HanjaCharacters";
 import {JANGGI_PICTOGRAPHS} from "@src/react/pages/game/components/board/piece-styles/builtin/modern/marks/JanggiPictographs";
 import {FONT_STACKS} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/font/FontStacks";

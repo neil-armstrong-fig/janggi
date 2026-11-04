@@ -5,6 +5,10 @@ import type {Page, Worker} from "@playwright/test";
  * Chromium's own way of delivering one (`ServiceWorker.deliverPushMessage`) drops it for a page with no push subscription, so the
  * `push` event is dispatched in the worker itself, carrying the bytes the server would have sent. The worker does with it what it
  * would with any. What it shows is read back from the registration, as the page would read it.
+ *
+ * Delivering waits for what the worker hands to `waitUntil`, as the browser would for a real push, so the worker has finished showing
+ * the notification before anything reads the list, and a worker that fails to show one fails the delivery. Without the wait the list
+ * intermittently stays empty for good, and it takes `playwright.pwa.config.ts` keeping notifications in the browser as well to end that.
  */
 export class ServerPush {
   private readonly page: Page;
@@ -22,13 +26,21 @@ export class ServerPush {
   async receive(message: string): Promise<void> {
     const worker = await this.appsWorker();
 
-    await worker.evaluate(data => {
+    await worker.evaluate(async data => {
       const scope = globalThis as unknown as {
         dispatchEvent: (event: Event) => boolean;
         PushEvent: new (type: string, init: {data: string}) => Event;
       };
+      const handling: Promise<unknown>[] = [];
+      const event = new scope.PushEvent("push", {data});
 
-      scope.dispatchEvent(new scope.PushEvent("push", {data}));
+      Object.defineProperty(event, "waitUntil", {
+        value: (promise: Promise<unknown>) => {
+          handling.push(promise);
+        },
+      });
+      scope.dispatchEvent(event);
+      await Promise.all(handling);
     }, message);
   }
 

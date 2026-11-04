@@ -266,22 +266,39 @@ export class JanggiPlaywright extends BasePage {
 
   /** The twins the sitemap names for the Korean page, by `hreflang`. */
   async getSitemapLanguageAlternatesOfTheKoreanGame(): Promise<LanguageAlternates> {
+    return await this.getSitemapLanguageAlternatesOfTheEntryEndingWith("/ko/");
+  }
+
+  /** The twins the sitemap names for the Korean guide, by `hreflang`. */
+  async getSitemapLanguageAlternatesOfTheKoreanGuide(): Promise<LanguageAlternates> {
+    return await this.getSitemapLanguageAlternatesOfTheEntryEndingWith("/ko/learn.html");
+  }
+
+  /** The twins the sitemap names for the Korean references, by `hreflang`. */
+  async getSitemapLanguageAlternatesOfTheKoreanReferences(): Promise<LanguageAlternates> {
+    return await this.getSitemapLanguageAlternatesOfTheEntryEndingWith("/ko/references.html");
+  }
+
+  private async getSitemapLanguageAlternatesOfTheEntryEndingWith(ending: string): Promise<LanguageAlternates> {
     const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
 
-    return await this.page.evaluate(async address => {
-      const response = await fetch(address);
-      if (!response.ok) return {};
+    return await this.page.evaluate(
+      async ([address, suffix]) => {
+        const response = await fetch(address ?? "");
+        if (!response.ok) return {};
 
-      const sitemap = new DOMParser().parseFromString(await response.text(), "application/xml");
-      const entry = Array.from(sitemap.getElementsByTagNameNS("*", "url")).find(candidate =>
-        candidate.getElementsByTagNameNS("*", "loc")[0]?.textContent?.endsWith("/ko/"),
-      );
-      const links = Array.from(entry?.getElementsByTagNameNS("*", "link") ?? []);
+        const sitemap = new DOMParser().parseFromString(await response.text(), "application/xml");
+        const entry = Array.from(sitemap.getElementsByTagNameNS("*", "url")).find(candidate =>
+          candidate.getElementsByTagNameNS("*", "loc")[0]?.textContent?.endsWith(suffix ?? ""),
+        );
+        const links = Array.from(entry?.getElementsByTagNameNS("*", "link") ?? []);
 
-      return Object.fromEntries(
-        links.map(link => [link.getAttribute("hreflang") ?? "", link.getAttribute("href") ?? ""]),
-      );
-    }, sitemapAddress);
+        return Object.fromEntries(
+          links.map(link => [link.getAttribute("hreflang") ?? "", link.getAttribute("href") ?? ""]),
+        );
+      },
+      [sitemapAddress, ending],
+    );
   }
 
   async getSocialImageAddress(): Promise<string> {
@@ -316,6 +333,13 @@ export class JanggiPlaywright extends BasePage {
     return /<a[^>]+href="([^"]*learn\.html)"/.exec(root)?.[1] ?? "";
   }
 
+  /** Where the references link in the page served to search engines goes, or an empty string if there is none. */
+  async getReferencesAddressInPageServedToSearchEngines(): Promise<string> {
+    const root = await this.getRootServedToSearchEngines();
+
+    return /<a[^>]+href="([^"]*references\.html)"/.exec(root)?.[1] ?? "";
+  }
+
   /**
    * Where the link to the game in the other language goes, in the page served to search engines, or an empty string
    * if there is none. A `hreflang` in the head names a twin but is not a link a crawler follows.
@@ -323,7 +347,7 @@ export class JanggiPlaywright extends BasePage {
   async getOtherLanguageAddressInPageServedToSearchEngines(): Promise<string> {
     const root = await this.getRootServedToSearchEngines();
 
-    return /<a[^>]+href="([^"]*)"[^>]*hreflang="/.exec(root)?.[1] ?? "";
+    return /<a[^>]+href="([^"]*)"[^>]*hreflang="/i.exec(root)?.[1] ?? "";
   }
 
   async isEachPolicyLinkedInPageServedToSearchEngines(): Promise<boolean> {
@@ -336,7 +360,9 @@ export class JanggiPlaywright extends BasePage {
     const response = await this.page.request.get(this.page.url());
     const html = await response.text();
 
-    return /<div id="root">([\s\S]*?)<\/div>\s*<noscript>/.exec(html)?.[1] ?? "";
+    // What follows the root is a `noscript` on the game's pages, a `script` in development, and the end of the body in a
+    // build, where the script has moved to the head.
+    return /<div id="root">([\s\S]*?)<\/div>\s*<(?:noscript|script|\/body)\b/.exec(html)?.[1] ?? "";
   }
 
   async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
@@ -357,7 +383,10 @@ export class JanggiPlaywright extends BasePage {
   }
 
   async getSearchDataLanguage(): Promise<unknown> {
-    return (await this.getSearchData()).inLanguage;
+    const searchData = await this.getSearchData();
+    if (searchData.inLanguage !== undefined) return searchData.inLanguage;
+
+    return searchData["@graph"]?.find(node => node.inLanguage !== undefined)?.inLanguage;
   }
 
   async getSearchDataName(): Promise<unknown> {
@@ -441,6 +470,34 @@ export class JanggiPlaywright extends BasePage {
   async coverTheBottomOfTheWindow(height: number): Promise<void> {
     this.cdpSession ??= await this.page.context().newCDPSession(this.page);
     await this.cdpSession.send("Emulation.setSafeAreaInsetsOverride", {insets: {bottom: height}});
+  }
+
+  async getKoreanWordsSplitAcrossLines(): Promise<readonly string[]> {
+    return await this.page.evaluate(() => {
+      const lineGapPx = 8;
+      const split: string[] = [];
+      const texts = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+
+      while (texts.nextNode()) {
+        const text = texts.currentNode;
+        const parent = text.parentElement;
+        // A screen reader's words sit in a box too small to read, and a sheet that is closed is not on screen.
+        if (parent && parent.getBoundingClientRect().width > 1 && !parent.closest("[inert]")) {
+          // A line may fairly end before an opening bracket, so one starts a new word here.
+          for (const word of (text.textContent ?? "").matchAll(/[^\s(]*[가-힣][^\s(]*/g)) {
+            const range = document.createRange();
+            range.setStart(text, word.index);
+            range.setEnd(text, word.index + word[0].length);
+
+            const tops = [...range.getClientRects()].map(rect => rect.top);
+            // Hangul and Latin in one word can sit a pixel or two apart on the one line.
+            if (Math.max(...tops) - Math.min(...tops) > lineGapPx) split.push(word[0]);
+          }
+        }
+      }
+
+      return split;
+    });
   }
 
   async resizeWindowTo(width: number, height: number): Promise<void> {

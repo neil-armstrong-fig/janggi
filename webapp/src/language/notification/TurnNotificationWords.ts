@@ -20,7 +20,7 @@ export const TURN_NOTIFICATION_WORDS: Record<LanguageName, TurnNotificationLangu
   },
   ko: {
     title: "장기",
-    yourTurn: "당신의 차례입니다.",
-    moved: opponent => `${opponent}님이 수를 두었습니다. 당신의 차례입니다.`,
+    yourTurn: "내 차례입니다.",
+    moved: opponent => `${opponent}님이 수를 두었습니다. 내 차례입니다.`,
   },
 };

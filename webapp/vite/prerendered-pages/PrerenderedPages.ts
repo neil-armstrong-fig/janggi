@@ -13,7 +13,8 @@ export function prerenderedPages(): Plugin {
     transformIndexHtml: {
       order: "pre",
       async handler(html, context) {
-        const page = PRERENDERED_PAGES.find(candidate => context.filename.endsWith(candidate.file));
+        // By the whole path: `learn.html` is also the end of `ko/learn.html`, which is a different page.
+        const page = PRERENDERED_PAGES.find(candidate => context.filename === join(WEBAPP_ROOT, candidate.file));
         if (!page) return;
 
         const markup = context.server
@@ -32,19 +33,41 @@ const PAGE_MARKER = "<!--page-content-->";
 const WEBAPP_ROOT = join(import.meta.dirname, "..", "..");
 
 interface PrerenderedPage {
+  /** The page's entry, relative to the webapp folder. */
   readonly file: string;
   readonly module: string;
   readonly component: string;
+  /** What the page is given where more than one page is drawn by the same component, such as its language. */
+  readonly props?: PageProps;
 }
 
+type PageProps = Readonly<Record<string, string>>;
+
 const PRERENDERED_PAGES: readonly PrerenderedPage[] = [
-  {file: "learn.html", module: "/src/react/pages/learn/LearnPage.tsx", component: "LearnPage"},
+  {file: "learn.html", module: "/src/react/pages/learn/LearnPage.tsx", component: "LearnPage", props: {language: "en"}},
+  {
+    file: "ko/learn.html",
+    module: "/src/react/pages/learn/LearnPage.tsx",
+    component: "LearnPage",
+    props: {language: "ko"},
+  },
   {
     file: "privacy.html",
     module: "/src/react/pages/legal/privacy/PrivacyPolicy.tsx",
     component: "PrivacyPolicy",
   },
-  {file: "references.html", module: "/src/react/pages/references/ReferencesPage.tsx", component: "ReferencesPage"},
+  {
+    file: "references.html",
+    module: "/src/react/pages/references/ReferencesPage.tsx",
+    component: "ReferencesPage",
+    props: {language: "en"},
+  },
+  {
+    file: "ko/references.html",
+    module: "/src/react/pages/references/ReferencesPage.tsx",
+    component: "ReferencesPage",
+    props: {language: "ko"},
+  },
   {
     file: "terms.html",
     module: "/src/react/pages/legal/terms/TermsOfService.tsx",
@@ -87,7 +110,7 @@ function serviceWorkerRegistrationStub(): Plugin {
 }
 
 function markupFor(page: PrerenderedPage, pageModule: Record<string, unknown>): string {
-  const component = pageModule[page.component] as ComponentType;
+  const component = pageModule[page.component] as ComponentType<PageProps>;
 
-  return renderToString(createElement(StrictMode, undefined, createElement(component)));
+  return renderToString(createElement(StrictMode, undefined, createElement(component, page.props)));
 }

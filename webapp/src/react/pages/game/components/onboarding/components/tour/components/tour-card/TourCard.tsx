@@ -4,6 +4,7 @@ import {ChevronLeftIcon} from "@src/react/pages/game/components/svg-icon/icons/c
 import {ChevronRightIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-right/ChevronRightIcon";
 import type {TourStepWords} from "@src/language/types/TourStepWords";
 import type {TourStep} from "@src/react/pages/game/components/onboarding/components/tour/types/TourStep";
+import {useGuideAddress} from "@src/react/pages/game/hooks/use-guide-address/UseGuideAddress";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 interface Props {
@@ -28,6 +29,7 @@ interface Props {
  */
 export function TourCard({step, words, number, count, dock, onBack, onNext, onSkip}: Props): React.JSX.Element {
   const {tour} = useMessages();
+  const guideAddress = useGuideAddress();
   const last = number === count;
 
   return (
@@ -62,7 +64,7 @@ export function TourCard({step, words, number, count, dock, onBack, onNext, onSk
       {step.offersTheGuide && (
         <a
           data-testid="tour-open-guide"
-          href={`${import.meta.env.BASE_URL}learn.html`}
+          href={guideAddress}
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-lg bg-gold px-4 py-3 text-center font-semibold text-ink"

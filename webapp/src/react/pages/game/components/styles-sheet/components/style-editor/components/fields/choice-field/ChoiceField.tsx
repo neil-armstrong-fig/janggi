@@ -10,6 +10,8 @@ interface Props<Option extends string> {
   readonly id: string;
   readonly label: string;
   readonly options: readonly Option[];
+  /** What a player reads for an option, which stays an id in the code and in the test id. */
+  readonly labelOf: (option: Option) => string;
   readonly value: Option | undefined;
   readonly onChange: (option: Option) => void;
 }
@@ -18,6 +20,7 @@ export function ChoiceField<Option extends string>({
   id,
   label,
   options,
+  labelOf,
   value,
   onChange,
 }: Props<Option>): React.JSX.Element {
@@ -39,7 +42,7 @@ export function ChoiceField<Option extends string>({
               value !== option && "text-white/70 hover:bg-white/10",
             )}
           >
-            {option}
+            {labelOf(option)}
           </button>
         ))}
       </div>

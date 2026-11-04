@@ -117,6 +117,14 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
     await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
   }
 
+  async getSheetWords(): Promise<string> {
+    return this.friendSheet.innerText();
+  }
+
+  async getSignInPromptWords(): Promise<string> {
+    return this.signInPrompt.innerText();
+  }
+
   async isSignInPromptShown(): Promise<boolean> {
     return this.signInPrompt.isVisible();
   }

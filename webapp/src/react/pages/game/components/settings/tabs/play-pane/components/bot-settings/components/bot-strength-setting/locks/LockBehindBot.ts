@@ -1,3 +1,4 @@
+import type {BotLock} from "@src/language/types/BotLock";
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
@@ -22,14 +23,12 @@ export function lockBehindBot(
   beaten: BeatenLadders,
   format: MatchFormat,
   choice: SideChoiceName,
-): string | undefined {
+): BotLock | undefined {
   if (openBotElos(beaten, format, choice).includes(elo)) return undefined;
 
   // The bottom rung is open to everybody, so a locked strength always has one beneath it.
   const beneath = BOT_ELOS[BOT_ELOS.indexOf(elo) - 1];
   if (beneath === undefined) return undefined;
 
-  const army = choice === "Random" ? "with both armies" : `as ${choice}`;
-
-  return `beat ${beneath} ${army} in a ${format.toLowerCase()} game first`;
+  return {beneath, choice, format};
 }

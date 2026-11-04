@@ -1,3 +1,6 @@
+import type {BotLock} from "@src/language/types/BotLock";
+import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
+import type {FormatExplanationMessages} from "@src/language/types/format-explanation/FormatExplanationMessages";
 import type {GameShown} from "@janggi/shared/janggi/online/GameShown";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {OpponentName} from "@janggi/shared/janggi/settings/OpponentName";
@@ -25,4 +28,17 @@ export interface PlayMessages {
   readonly flipBoard: string;
   readonly newGame: string;
   readonly newGameCostsALoss: string;
+  readonly setupDescriptions: Record<SetupName, string>;
+  readonly setupPickerLabel: (side: Side) => string;
+  readonly armySwitchLabel: string;
+  readonly botStrengthLabel: string;
+  readonly yourSideLabel: string;
+  readonly flipBoardHelp: string;
+  readonly gamesLabel: string;
+  readonly formatLabel: string;
+  readonly opponentLabel: string;
+  readonly botNeedsIsolation: string;
+  readonly elephantPairings: Record<ElephantPairing, string>;
+  readonly botLock: (lock: BotLock) => string;
+  readonly formatExplanation: FormatExplanationMessages;
 }

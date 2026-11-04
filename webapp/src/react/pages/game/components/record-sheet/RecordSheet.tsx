@@ -72,25 +72,25 @@ export function RecordSheet(): React.JSX.Element {
         <ResetRecordButton onReset={() => dispatch(recordReset())} />
 
         <p className="text-xs text-white/40">
-          The bot is{" "}
+          {record.credit.start}
           <a
             className="underline"
             href="https://github.com/fairy-stockfish/Fairy-Stockfish"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Fairy-Stockfish
+            {record.credit.firstLink}
           </a>
-          , free software under the{" "}
+          {record.credit.middle}
           <a
             className="underline"
             href={`${import.meta.env.BASE_URL}engine/Copying.txt`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            GPL-3.0
+            {record.credit.secondLink}
           </a>
-          . Its strengths are nominal Elo, calibrated on chess rather than janggi.
+          {record.credit.end}
         </p>
       </div>
     </Sheet>

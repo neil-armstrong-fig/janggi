@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
 import {SectionHeading} from "@src/react/pages/game/components/styles-sheet/components/section-heading/SectionHeading";
@@ -11,35 +12,31 @@ import {useAppDispatch} from "@src/redux/Hooks";
  * if it would load anything from beyond the page.
  */
 export function StyleImporter(): React.JSX.Element {
+  const {importer: words, refusals} = useMessages().styles;
   const dispatch = useAppDispatch();
 
   const importStyle = (text: string): PasteResult => {
-    const styleOutcome = styleImportFrom(text);
+    const styleOutcome = styleImportFrom(text, refusals);
 
     switch (styleOutcome.kind) {
       case "board":
         dispatch(boardStyleImported(styleOutcome.style));
-        return {accepted: true, message: `Added the board "${styleOutcome.style.name}". Wear it from Appearance.`};
+        return {accepted: true, message: words.addedBoard(styleOutcome.style.name)};
       case "pieces":
         dispatch(pieceSetImported(styleOutcome.style));
-        return {accepted: true, message: `Added the pieces "${styleOutcome.style.name}". Wear them from Appearance.`};
+        return {accepted: true, message: words.addedPieces(styleOutcome.style.name)};
       case "refused":
         return {accepted: false, message: styleOutcome.reason};
     }
   };
 
   return (
-    <section aria-label="Import a style" className="flex flex-col gap-2">
-      <SectionHeading>Import</SectionHeading>
+    <section aria-label={words.label} className="flex flex-col gap-2">
+      <SectionHeading>{words.heading}</SectionHeading>
 
-      <p className="text-xs text-white/60">Paste a key somebody shared. It is only ever kept on this device.</p>
+      <p className="text-xs text-white/60">{words.note}</p>
 
-      <PasteKey
-        id="style-import"
-        label="Import style"
-        placeholder="Paste a board or piece set key"
-        onSubmit={importStyle}
-      />
+      <PasteKey id="style-import" label={words.submit} placeholder={words.placeholder} onSubmit={importStyle} />
     </section>
   );
 }

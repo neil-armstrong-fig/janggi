@@ -1,3 +1,4 @@
+import {unlockWordsOf} from "@src/react/pages/game/unlock-words/UnlockWordsOf";
 import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {Reward} from "@src/react/pages/game/components/status/components/board-overlay/types/Reward";
@@ -137,7 +138,7 @@ export function ResultBanner({
               animated && "animate-[result-slam_520ms_cubic-bezier(0.2,0.9,0.3,1.2)_both] [animation-delay:340ms]",
             )}
           >
-            🔓 Unlocked: {reward.unlocked.join(", ")}
+            {messages.result.unlocked(unlockWordsOf(reward.unlocked, messages.unlocks))}
           </p>
         )}
 

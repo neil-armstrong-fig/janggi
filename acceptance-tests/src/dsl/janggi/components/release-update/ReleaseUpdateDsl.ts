@@ -34,6 +34,14 @@ export class ReleaseUpdateDsl {
     }
   }
 
+  async getWords(): Promise<string> {
+    try {
+      return await this.releaseUpdate.getWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the offer of the available release says", error);
+    }
+  }
+
   async isOffered(): Promise<boolean> {
     try {
       return await this.releaseUpdate.isOffered();

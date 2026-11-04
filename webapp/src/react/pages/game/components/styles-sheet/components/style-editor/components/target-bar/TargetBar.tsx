@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {TargetChoice} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/target-bar/types/TargetChoice";
 import {clsx} from "clsx";
 
@@ -16,9 +17,10 @@ interface Props {
 }
 
 export function TargetBar({name, targetChoices, canReset, onReset}: Props): React.JSX.Element {
+  const words = useMessages().styles.editor;
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs text-white/60">Changing</span>
+      <span className="text-xs text-white/60">{words.changing}</span>
 
       <span
         data-testid="style-editor-target"
@@ -27,7 +29,7 @@ export function TargetBar({name, targetChoices, canReset, onReset}: Props): Reac
         {name}
       </span>
 
-      <div role="group" aria-label="Change all of" className="flex gap-1">
+      <div role="group" aria-label={words.changeAllOf} className="flex gap-1">
         {targetChoices.map(targetChoice => (
           <button
             key={targetChoice.name}
@@ -52,7 +54,7 @@ export function TargetBar({name, targetChoices, canReset, onReset}: Props): Reac
           onClick={onReset}
           className="h-7 cursor-pointer rounded-md bg-danger/20 px-2 text-xs text-danger hover:bg-danger/30"
         >
-          Reset
+          {words.reset}
         </button>
       )}
     </div>

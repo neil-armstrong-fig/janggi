@@ -1,7 +1,8 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {BoardTarget} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/board-target/types/BoardTarget";
 import {CompanionPicker} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/companion-picker/CompanionPicker";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
-import type {SceneName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
+import type {SceneName} from "@janggi/shared/janggi/styles/SceneName";
 import {SceneSwitcher} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/components/scene-switcher/SceneSwitcher";
 import {TargetBar} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/target-bar/TargetBar";
 import {boardTargetName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/board-target/BoardTargetName";
@@ -36,11 +37,12 @@ export function BoardPreviewOptions({
   onReset,
   onEveryPoint,
 }: Props): React.JSX.Element {
+  const words = useMessages().styles.editor;
   return (
     <>
       <CompanionPicker
-        label="Preview with"
-        currentLabel="Current pieces"
+        label={words.previewWith}
+        currentLabel={words.currentPieces}
         names={pieceSetStyles.map(pieceSetStyle => pieceSetStyle.name)}
         value={previewedWith}
         onChange={onPreviewedWith}
@@ -49,9 +51,9 @@ export function BoardPreviewOptions({
       <SceneSwitcher value={sceneName} onChange={onScene} />
 
       <TargetBar
-        name={boardTargetName(boardTarget)}
+        name={boardTargetName(boardTarget, words)}
         targetChoices={
-          boardTarget.kind === "point" ? [{name: "Every point", chosen: false, onChoose: onEveryPoint}] : []
+          boardTarget.kind === "point" ? [{name: words.everyPoint, chosen: false, onChoose: onEveryPoint}] : []
         }
         canReset={canReset}
         onReset={onReset}

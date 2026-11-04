@@ -261,6 +261,24 @@ export class PlayAFriendDsl {
     }
   }
 
+  /** Everything the sheet for playing a friend says, as a player reads it. */
+  async getSheetWords(): Promise<string> {
+    try {
+      return await this.friend.getSheetWords();
+    } catch (error) {
+      throw new DslError("Failed to read the words of the sheet for playing a friend", error);
+    }
+  }
+
+  /** What the prompt to sign in for a friend's link says, as a player reads it. */
+  async getSignInPromptWords(): Promise<string> {
+    try {
+      return await this.friend.getSignInPromptWords();
+    } catch (error) {
+      throw new DslError("Failed to read the words of the prompt to sign in for a friend", error);
+    }
+  }
+
   /** The words the strip shows for where the game stands, as a player reads them; empty where there is no room at all. */
   async getStatusWords(): Promise<string> {
     try {

@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Button} from "@src/react/pages/game/components/button/Button";
 import {joinFriendRoom} from "@src/redux/online/actions/entering/JoinFriendRoom";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
@@ -10,6 +11,7 @@ export function EnterCode(): React.JSX.Element {
   const refused = useAppSelector(state => state.friend.joinRefused);
   const introduction = useIntroduction();
   const dispatch = useAppDispatch();
+  const words = useMessages().friend.enterCode;
 
   return (
     <form
@@ -19,12 +21,12 @@ export function EnterCode(): React.JSX.Element {
         dispatch(joinFriendRoom(typed, introduction));
       }}
     >
-      <p className="text-xs font-medium text-white/60">Enter code to join a room</p>
+      <p className="text-xs font-medium text-white/60">{words.title}</p>
 
       <div className="flex gap-2">
         <input
           data-testid="friend-code-input"
-          aria-label="Your friend's code"
+          aria-label={words.codeLabel}
           value={typed}
           onChange={event => setTyped(event.target.value)}
           autoCapitalize="characters"
@@ -34,12 +36,12 @@ export function EnterCode(): React.JSX.Element {
         />
 
         <Button variant="primary" type="submit" data-testid="friend-join">
-          Join
+          {words.join}
         </Button>
       </div>
 
       <p role="status" data-testid="friend-join-message" data-refused={refused} className="min-h-4 text-xs text-danger">
-        {refused && "There is no game with that code. Check it with your friend."}
+        {refused && words.refused}
       </p>
     </form>
   );

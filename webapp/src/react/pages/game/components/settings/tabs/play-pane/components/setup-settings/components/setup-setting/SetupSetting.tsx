@@ -7,7 +7,6 @@ import {canPlace} from "@janggi/engine/setups/CanPlace";
 import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
@@ -43,7 +42,7 @@ export function SetupSetting({side}: Props): React.JSX.Element {
       disabled={playHasBegun(played) || withAFriend || laysOutItself || !canPlace(phase, side)}
       label={play.setupOf(side)}
       hideLabel
-      ariaLabel={`${sideName(side)}'s opening setup`}
+      ariaLabel={play.setupPickerLabel(side)}
       options={SETUPS}
       labelOf={option => play.setupNames[option.name]}
       selected={side === "han" ? phase.hanSetup : phase.choSetup}

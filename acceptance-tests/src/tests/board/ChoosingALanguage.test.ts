@@ -85,7 +85,7 @@ given("a player opens the game", () => {
       expect(await janggi.status.getControlLabel("bikjang")).toBe("빅장");
       expect(await janggi.status.getControlLabel("draw")).toBe("무승부");
       expect(await janggi.status.getControlLabel("undo")).toBe("무르기");
-      expect(await janggi.status.getControlLabel("redo")).toBe("다시");
+      expect(await janggi.status.getControlLabel("redo")).toBe("다시 두기");
       expect(await janggi.status.getControlLabel("settings")).toBe("설정");
     });
   });

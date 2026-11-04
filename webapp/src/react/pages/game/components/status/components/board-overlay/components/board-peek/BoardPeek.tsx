@@ -1,3 +1,5 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+
 /**
  * What stands over the board while the announcement of a result is put aside to look at it: a layer that takes the
  * whole board's tap, and a note across the top that says what the tap does.
@@ -12,12 +14,14 @@ interface Props {
 }
 
 export function BoardPeek({onTap}: Props): React.JSX.Element {
+  const {overlays} = useMessages();
+
   return (
     <>
       <button
         type="button"
         data-testid="result-peek"
-        aria-label="Show the result again"
+        aria-label={overlays.peekLabel}
         onClick={onTap}
         className="absolute inset-0 z-30 cursor-pointer"
       />
@@ -26,7 +30,7 @@ export function BoardPeek({onTap}: Props): React.JSX.Element {
         role="status"
         className="pointer-events-none absolute inset-x-2 top-2 z-30 mx-auto w-fit max-w-sm rounded-xl border border-white/15 bg-ground/85 px-3 py-1.5 text-center text-xs leading-snug text-white/80 shadow-lg shadow-black backdrop-blur-sm"
       >
-        Game over · tap the board to see the result
+        {overlays.peekNote}
       </p>
     </>
   );

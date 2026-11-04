@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {clsx} from "clsx";
 
 /** Whether a style has one of its optional parts — a marker on the point, an inlay in the piece — as an on and off button. */
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function SwitchField({id, label, value, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.fields;
   return (
     <div className="flex items-center gap-2">
       <span className="w-28 shrink-0 text-xs text-white/70">{label}</span>
@@ -27,7 +29,7 @@ export function SwitchField({id, label, value, onChange}: Props): React.JSX.Elem
           !value && "bg-black/25 text-white/60 hover:bg-white/10",
         )}
       >
-        {value ? "On" : "Off"}
+        {value ? words.on : words.off}
       </button>
     </div>
   );

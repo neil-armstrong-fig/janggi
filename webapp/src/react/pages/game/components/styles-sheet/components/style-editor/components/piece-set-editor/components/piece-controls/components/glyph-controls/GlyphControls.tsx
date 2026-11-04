@@ -1,8 +1,9 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {CharacterControls} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/CharacterControls";
 import {ChoiceField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/choice-field/ChoiceField";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
-import {PIECE_GLYPH_KINDS} from "@src/styles/types/PieceStyle";
+import {PIECE_GLYPH_KINDS} from "@janggi/shared/janggi/styles/PieceGlyphKind";
 import {PictographControls} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/pictograph-controls/PictographControls";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
@@ -23,14 +24,16 @@ interface Props {
 }
 
 export function GlyphControls({pieceStyle, side, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.pieces;
   const {glyph} = pieceStyle;
 
   return (
-    <ControlGroup title="Mark">
+    <ControlGroup title={words.mark}>
       <ChoiceField
         id="glyph-kind"
-        label="Kind"
+        label={words.kind}
         options={PIECE_GLYPH_KINDS}
+        labelOf={kind => words.glyphKinds[kind]}
         value={glyph.kind}
         onChange={pieceGlyphKind => {
           return onChange(currentPieceStyle => ({
@@ -42,7 +45,7 @@ export function GlyphControls({pieceStyle, side, onChange}: Props): React.JSX.El
 
       <ColourField
         id="glyph-colour"
-        label="Colour"
+        label={words.colour}
         value={glyph.colour}
         onChange={colour => {
           return onChange(currentPieceStyle => ({...currentPieceStyle, glyph: {...currentPieceStyle.glyph, colour}}));
@@ -51,7 +54,7 @@ export function GlyphControls({pieceStyle, side, onChange}: Props): React.JSX.El
 
       <SliderField
         id="glyph-scale"
-        label="Size"
+        label={words.size}
         numberRange={STYLE_LIMITS.glyphScale}
         step={0.01}
         value={glyph.scale}

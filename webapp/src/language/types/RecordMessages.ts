@@ -1,5 +1,6 @@
 import type {GameEnding} from "@janggi/shared/janggi/results/GameEnding";
 import type {GameResult} from "@janggi/shared/janggi/results/GameResult";
+import type {SentenceWithTwoLinks} from "@src/language/types/guide/SentenceWithTwoLinks";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /** The record sheet: how the player has done against the bot. */
@@ -23,4 +24,6 @@ export interface RecordMessages {
   readonly resetQuestion: string;
   readonly keepIt: string;
   readonly resetConfirm: string;
+  readonly formatsLabel: string;
+  readonly credit: SentenceWithTwoLinks;
 }

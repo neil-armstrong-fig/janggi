@@ -4,26 +4,21 @@ import {LegalLinks} from "@src/react/pages/game/components/settings/tabs/you-pan
 import {NameForm} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/name-form/NameForm";
 import {TurnNotifications} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/turn-notifications/TurnNotifications";
 import type {SyncState} from "@src/redux/account/types/SyncState";
+import type {YouSyncMessages} from "@src/language/types/you/YouSyncMessages";
 import {clsx} from "clsx";
 import {deleteAccount} from "@src/redux/account/actions/DeleteAccount";
 import {signIn} from "@src/redux/account/actions/SignIn";
 import {signOut} from "@src/redux/account/actions/SignOut";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useState} from "react";
-
-const SYNC_LABELS: Record<SyncState, string> = {
-  idle: "Syncing…",
-  synced: "Your progress is kept in step.",
-  paused: "Sync paused. It will try again after your next change.",
-  "too-large":
-    "Your data is too big to sync, so it is kept on this device only. Deleting a style or two would let it sync again.",
-};
 
 /**
  * Optional Google sign-in, presented as one account card rather than mixed into the player's progress.
  * A signed-out player makes no server call; signing out or deleting the server account leaves this device alone.
  */
 export function Account(): React.JSX.Element {
+  const {account} = useMessages().you;
   const status = useAppSelector(state => state.account.status);
   const sync = useAppSelector(state => state.account.sync);
   const displayName = useAppSelector(state => state.account.displayName);
@@ -43,22 +38,16 @@ export function Account(): React.JSX.Element {
       )}
     >
       <div className="flex flex-col gap-1">
-        <span className="text-xs font-medium text-white/60">Account</span>
+        <span className="text-xs font-medium text-white/60">{account.label}</span>
 
-        <p className="text-base font-semibold text-white/90">Keep your game in sync</p>
+        <p className="text-base font-semibold text-white/90">{account.heading}</p>
       </div>
 
       {status === "signed-out" && (
         <>
-          <p className="text-sm leading-relaxed text-white/70">
-            Sign in with Google to keep your XP, unlocks, bot record, styles and look in step across devices. Janggi
-            works the same without an account.
-          </p>
+          <p className="text-sm leading-relaxed text-white/70">{account.signedOutIntro}</p>
 
-          <p className="text-xs leading-relaxed text-white/55">
-            Janggi keeps an anonymous Google account ID, your display name and your save. It never sees your Google name
-            or email.
-          </p>
+          <p className="text-xs leading-relaxed text-white/55">{account.whatIsKept}</p>
 
           <button
             type="button"
@@ -66,7 +55,7 @@ export function Account(): React.JSX.Element {
             onClick={() => dispatch(signIn())}
             className="flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-gold/50 bg-gold/10 px-3 py-2 text-sm font-semibold text-gold hover:bg-gold/20"
           >
-            Sign in with Google
+            {account.signIn}
           </button>
         </>
       )}
@@ -78,7 +67,7 @@ export function Account(): React.JSX.Element {
           aria-live="polite"
           className="flex min-h-11 cursor-wait items-center justify-center rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm font-semibold text-white/55"
         >
-          Finishing sign-in…
+          {account.signingIn}
         </button>
       )}
 
@@ -87,7 +76,7 @@ export function Account(): React.JSX.Element {
           <div className="flex flex-col gap-2 rounded-lg bg-black/20 p-3">
             <div>
               <p data-testid="account-signed-in" className="text-xs font-medium text-white/60">
-                Signed in with Google
+                {account.signedInWith}
               </p>
 
               {displayName !== undefined && (
@@ -108,7 +97,7 @@ export function Account(): React.JSX.Element {
                 (sync === "paused" || sync === "too-large") && "border-gold/30 bg-gold/10 text-gold",
               )}
             >
-              {SYNC_LABELS[sync]}
+              {syncWords(sync, account.sync)}
             </p>
           </div>
 
@@ -123,7 +112,7 @@ export function Account(): React.JSX.Element {
               onClick={() => dispatch(signOut())}
               className="items-center justify-center"
             >
-              Sign out
+              {account.signOut}
             </Button>
 
             {!confirmingDelete && (
@@ -133,7 +122,7 @@ export function Account(): React.JSX.Element {
                 onClick={() => setConfirmingDelete(true)}
                 className="flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-danger/40 px-3 py-2 text-sm text-danger hover:bg-danger/10"
               >
-                Delete my account
+                {account.deleteAccount}
               </button>
             )}
 
@@ -144,7 +133,7 @@ export function Account(): React.JSX.Element {
                 onClick={() => dispatch(deleteAccount())}
                 className="col-span-2 flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-danger bg-danger/20 px-3 py-2 text-sm text-danger hover:bg-danger/30"
               >
-                Delete what the server holds
+                {account.deleteWhatTheServerHolds}
               </button>
             )}
           </div>
@@ -154,4 +143,11 @@ export function Account(): React.JSX.Element {
       <LegalLinks />
     </div>
   );
+}
+
+/** What the card says of syncing: the state is an id with a hyphen in it, the words are not. */
+function syncWords(sync: SyncState, words: YouSyncMessages): string {
+  if (sync === "too-large") return words.tooLarge;
+
+  return words[sync];
 }

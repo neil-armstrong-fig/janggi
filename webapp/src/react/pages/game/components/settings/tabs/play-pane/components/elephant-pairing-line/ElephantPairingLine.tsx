@@ -1,4 +1,4 @@
-import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {elephantPairingOf} from "@janggi/engine/setups/ElephantPairingOf";
 import {useAppSelector} from "@src/redux/Hooks";
 
@@ -20,18 +20,15 @@ import {useAppSelector} from "@src/redux/Hooks";
  */
 export function ElephantPairingLine(): React.JSX.Element | undefined {
   const {hanSetup, choSetup} = useAppSelector(state => state.game.phase);
+  const {play} = useMessages();
   const pairing = hanSetup && choSetup ? elephantPairingOf(hanSetup, choSetup) : undefined;
   if (!pairing) return undefined;
 
   return (
     <p data-testid="elephant-pairing" data-pairing={pairing} className="text-xs text-wood/70">
-      {DESCRIPTIONS[pairing]}
+      {play.elephantPairings[pairing]}
     </p>
   );
 }
 
 /** The Korean names the game itself uses, each with what it means on the board. */
-const DESCRIPTIONS: Record<ElephantPairing, string> = {
-  matsang: "맞상 — the outer elephants face each other, and must trade",
-  eotsang: "엇상 — both armies developed on the same wing",
-};

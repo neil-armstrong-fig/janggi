@@ -1,3 +1,4 @@
+import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import type {Size} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/pictograph-controls/svg-import/types/Size";
 import type {Placement} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/pictograph-controls/svg-import/svg-paths/types/Placement";
@@ -15,35 +16,33 @@ import {transformedPath} from "@src/react/pages/game/components/styles-sheet/com
  *
  * Only shapes are read. Nothing else in the file — a script, a link, an image — is looked at, kept or run.
  */
-export function pictographFromSvg(text: string): Checked<string> {
+export function pictographFromSvg(text: string, words: StyleRefusalMessages): Checked<string> {
   const document = new DOMParser().parseFromString(text, "image/svg+xml");
   const root = document.documentElement;
   if (document.querySelector("parsererror") || root.localName !== "svg") {
-    return refused("That is not an SVG file.");
+    return refused(words.notSvg);
   }
 
   if (document.querySelector("[transform]")) {
-    return refused(
-      "This SVG moves or scales its shapes with a transform, which cannot be followed. Export it with transforms applied.",
-    );
+    return refused(words.svgTransform);
   }
 
   const size = sizeOf(root);
-  if (!size) return refused("This SVG does not say how big it is. It needs a viewBox, or a width and a height.");
+  if (!size) return refused(words.svgNoSize);
 
   const shapes = [...document.querySelectorAll(SHAPES)].filter(shape => !shape.closest(NOT_DRAWN));
   const drawn = shapes.map(shapePathOf).filter(path => path !== undefined);
   if (drawn.length === 0) {
-    return refused("This SVG has no filled shapes. Paths, rectangles, circles, ellipses and polygons can be used.");
+    return refused(words.svgNoShapes);
   }
 
   const placement = fitted(size);
   const moved = drawn.map(path => transformedPath(path, placement));
-  if (moved.some(path => path === undefined)) return refused("A shape in this SVG has path data that cannot be read.");
+  if (moved.some(path => path === undefined)) return refused(words.svgBadPath);
 
   const data = moved.join(" ");
   if (data.length > LONGEST_DRAWING) {
-    return refused("This drawing is too detailed to keep. Simplify it, or use fewer points.");
+    return refused(words.svgTooDetailed);
   }
 
   return {kind: "accepted", value: data};

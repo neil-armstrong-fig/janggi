@@ -33,6 +33,14 @@ export class StyleEditorPlaywright extends StylesSheetComponent {
     });
   }
 
+  async getMessage(): Promise<string> {
+    return (await this.message.textContent()) ?? "";
+  }
+
+  async getRawMessage(): Promise<string> {
+    return (await this.rawMessage.textContent()) ?? "";
+  }
+
   async isRefused(): Promise<boolean> {
     return (await this.message.getAttribute("data-accepted")) === "false";
   }
@@ -56,6 +64,15 @@ export class StyleEditorPlaywright extends StylesSheetComponent {
 
   async getRaw(): Promise<string> {
     return await this.json.inputValue();
+  }
+
+  async getRawLinesShown(): Promise<number> {
+    return await this.json.evaluate(element => {
+      const {lineHeight, paddingTop, paddingBottom} = getComputedStyle(element);
+      const inside = element.clientHeight - parseFloat(paddingTop) - parseFloat(paddingBottom);
+
+      return Math.round(inside / parseFloat(lineHeight));
+    });
   }
 
   async setRaw(json: string): Promise<void> {

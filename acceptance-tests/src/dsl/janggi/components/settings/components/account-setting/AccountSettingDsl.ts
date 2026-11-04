@@ -260,4 +260,28 @@ export class AccountSettingDsl {
       throw new DslError("Failed to read the state of syncing", error);
     }
   }
+
+  async getAccountWords(): Promise<string> {
+    try {
+      return await this.account.getAccountWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the account card says", error);
+    }
+  }
+
+  async getSyncWords(): Promise<string> {
+    try {
+      return await this.account.getSyncWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the account says of syncing", error);
+    }
+  }
+
+  async getNameWords(): Promise<string> {
+    try {
+      return await this.account.getNameWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the answer to the last display name says", error);
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {BoardTarget} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/board-target/types/BoardTarget";
 import {BikjangControls} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/components/board-controls/components/bikjang-controls/BikjangControls";
@@ -9,7 +10,7 @@ import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/compon
 import {HintsControls} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/components/board-controls/components/hints-controls/HintsControls";
 import {LastMoveControls} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/components/board-controls/components/last-move-controls/LastMoveControls";
 import {MarkerControls} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/components/board-controls/components/marker-controls/MarkerControls";
-import type {SceneName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
+import type {SceneName} from "@janggi/shared/janggi/styles/SceneName";
 import {cellStyleAt} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/cell-style/CellStyleAt";
 import {withCellStyle} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/cell-style/WithCellStyle";
 
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export function BoardControls({boardStyle, boardTarget, onChange, onScene}: Props): React.JSX.Element {
+  const words = useMessages().styles.board;
   const cellStyle = cellStyleAt(boardStyle, boardTarget);
   const changeCell = (update: (currentCellStyle: CellStyle) => CellStyle): void => {
     onChange(currentBoardStyle => withCellStyle(currentBoardStyle, boardTarget, update));
@@ -33,10 +35,10 @@ export function BoardControls({boardStyle, boardTarget, onChange, onScene}: Prop
 
   return (
     <div className="flex flex-col gap-4">
-      <ControlGroup title="Board">
+      <ControlGroup title={words.board}>
         <ColourField
           id="surface-colour"
-          label="Board colour"
+          label={words.boardColour}
           value={boardStyle.surface}
           onChange={surface => onChange(currentBoardStyle => ({...currentBoardStyle, surface}))}
         />

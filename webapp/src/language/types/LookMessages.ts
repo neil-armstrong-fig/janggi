@@ -15,4 +15,6 @@ export interface LookMessages {
   readonly bikjangHintNote: string;
   readonly motion: string;
   readonly transparency: string;
+  readonly opponentLook: string;
+  readonly opponentLookHelp: string;
 }

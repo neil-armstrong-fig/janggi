@@ -26,7 +26,7 @@ export function YourSideSetting(): React.JSX.Element {
       id="your-side"
       disabled={playHasBegun(played) || withAFriend || opponent.name !== "Bot"}
       label={play.yourSide}
-      ariaLabel="Which army you play against the bot"
+      ariaLabel={play.yourSideLabel}
       options={SIDE_CHOICE_OPTIONS}
       labelOf={option => play.sideChoiceNames[option.name]}
       selected={{name: opponent.sideChoice}}

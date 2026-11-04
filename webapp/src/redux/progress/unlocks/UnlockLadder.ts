@@ -1,3 +1,4 @@
+import type {UnlockItem} from "@src/redux/progress/unlocks/types/UnlockItem";
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
 import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
@@ -12,25 +13,25 @@ import {isAmong} from "@src/redux/untrusted/IsAmong";
  * from the start is not a step at all.
  */
 export function unlockLadder(): readonly UnlockStep[] {
-  const labelsByXp = new Map<number, string[]>();
-  const add = (xp: number, label: string): void => {
-    labelsByXp.set(xp, [...(labelsByXp.get(xp) ?? []), label]);
+  const itemsByXp = new Map<number, UnlockItem[]>();
+  const add = (xp: number, item: UnlockItem): void => {
+    itemsByXp.set(xp, [...(itemsByXp.get(xp) ?? []), item]);
   };
 
   BOARD_STYLE_NAMES.forEach(name => {
-    return add(UNLOCK_PRICES.boardStyles[name], `${name} ${isTheme(name) ? "theme" : "board"}`);
+    return add(UNLOCK_PRICES.boardStyles[name], {kind: isTheme(name) ? "theme" : "board", name});
   });
 
   PIECE_SET_NAMES.forEach(name => {
-    if (!isTheme(name)) add(UNLOCK_PRICES.pieceSets[name], `${name} pieces`);
+    if (!isTheme(name)) add(UNLOCK_PRICES.pieceSets[name], {kind: "pieces", name});
   });
 
-  add(UNLOCK_PRICES.styleEditor, "Creating your own styles");
+  add(UNLOCK_PRICES.styleEditor, {kind: "style-editor"});
 
-  return [...labelsByXp]
+  return [...itemsByXp]
     .filter(([xp]) => xp > 0)
     .sort(([cheaper], [dearer]) => cheaper - dearer)
-    .map(([xp, labels]) => ({xp, labels}));
+    .map(([xp, items]) => ({xp, items}));
 }
 
 function isTheme(name: string): boolean {

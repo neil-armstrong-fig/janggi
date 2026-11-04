@@ -11,6 +11,6 @@ if (!rootElement) throw new Error("Could not find the '#root' element in referen
 hydrateRoot(
   rootElement,
   <StrictMode>
-    <ReferencesPage />
+    <ReferencesPage language="en" />
   </StrictMode>,
 );

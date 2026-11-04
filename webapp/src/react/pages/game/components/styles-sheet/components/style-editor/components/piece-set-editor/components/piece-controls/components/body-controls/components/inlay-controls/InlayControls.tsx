@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
 import type {PieceBodyStyle, PieceInlayStyle} from "@src/styles/types/PieceStyle";
@@ -14,16 +15,17 @@ interface Props {
 }
 
 export function InlayControls({pieceBodyStyle, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.pieces;
   const pieceInlayStyle = pieceBodyStyle.inlay;
   const changeInlay = (update: (currentPieceInlayStyle: PieceInlayStyle) => PieceInlayStyle): void => {
     if (pieceInlayStyle) onChange(withInlay(pieceBodyStyle, update(pieceInlayStyle)));
   };
 
   return (
-    <ControlGroup title="Inlay">
+    <ControlGroup title={words.inlay}>
       <SwitchField
         id="inlay-on"
-        label="Inlay"
+        label={words.inlay}
         value={pieceInlayStyle !== undefined}
         onChange={on => {
           return onChange(
@@ -36,7 +38,7 @@ export function InlayControls({pieceBodyStyle, onChange}: Props): React.JSX.Elem
         <>
           <SliderField
             id="inlay-inset"
-            label="Inset"
+            label={words.inset}
             numberRange={STYLE_LIMITS.inlayInset}
             step={0.01}
             value={pieceInlayStyle.inset}
@@ -45,14 +47,14 @@ export function InlayControls({pieceBodyStyle, onChange}: Props): React.JSX.Elem
 
           <ColourField
             id="inlay-colour"
-            label="Colour"
+            label={words.colour}
             value={pieceInlayStyle.stroke}
             onChange={stroke => changeInlay(currentPieceInlayStyle => ({...currentPieceInlayStyle, stroke}))}
           />
 
           <SliderField
             id="inlay-width"
-            label="Width"
+            label={words.width}
             numberRange={STYLE_LIMITS.lineWidth}
             step={0.1}
             value={pieceInlayStyle.strokeWidth}
@@ -61,7 +63,7 @@ export function InlayControls({pieceBodyStyle, onChange}: Props): React.JSX.Elem
 
           <SwitchField
             id="inlay-fill-on"
-            label="Filled"
+            label={words.filled}
             value={pieceInlayStyle.fill !== undefined}
             onChange={filled => {
               return changeInlay(currentPieceInlayStyle => {
@@ -73,7 +75,7 @@ export function InlayControls({pieceBodyStyle, onChange}: Props): React.JSX.Elem
           {pieceInlayStyle.fill !== undefined && (
             <ColourField
               id="inlay-fill"
-              label="Fill"
+              label={words.fill}
               value={pieceInlayStyle.fill}
               translucent
               onChange={fill => changeInlay(currentPieceInlayStyle => withInlayFill(currentPieceInlayStyle, fill))}

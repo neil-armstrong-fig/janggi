@@ -1,6 +1,7 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {SelectField} from "@src/react/pages/game/components/select-field/SelectField";
-import {COPY_SCOPES} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/style-tools/types/CopyScope";
-import type {CopyScope} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/style-tools/types/CopyScope";
+import {COPY_SCOPES} from "@janggi/shared/janggi/styles/CopyScope";
+import type {CopyScope} from "@janggi/shared/janggi/styles/CopyScope";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
 import {useState} from "react";
@@ -26,13 +27,14 @@ interface Props {
 }
 
 export function StyleTools({startName, onReset, onPasteKey, sources, onCopy, byArmy}: Props): React.JSX.Element {
+  const words = useMessages().styles.tools;
   const [from, setFrom] = useState("");
   const [scope, setScope] = useState<CopyScope>("both");
 
   return (
     <details data-testid="style-editor-tools" className="rounded-xl bg-black/15 px-3 py-2">
       <summary className="cursor-pointer text-xs font-semibold tracking-wide text-white/60 uppercase">
-        Load or reset
+        {words.summary}
       </summary>
 
       <div className="flex flex-col gap-3 pt-3">
@@ -42,17 +44,17 @@ export function StyleTools({startName, onReset, onPasteKey, sources, onCopy, byA
           onClick={onReset}
           className="h-10 cursor-pointer rounded-xl bg-danger/20 text-sm text-danger hover:bg-danger/30"
         >
-          Reset to {startName}
+          {words.resetTo(startName)}
         </button>
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-white/60">Load one you have</span>
+          <span className="text-xs text-white/60">{words.loadOneYouHave}</span>
 
           <div className="flex gap-2">
             <SelectField
               wrapperClassName="min-w-0 flex-1"
               data-testid="style-editor-copy-from"
-              aria-label="The style to load"
+              aria-label={words.styleToLoad}
               value={from || sources[0]}
               onChange={event => setFrom(event.target.value)}
               className="h-10 text-sm"
@@ -68,14 +70,14 @@ export function StyleTools({startName, onReset, onPasteKey, sources, onCopy, byA
               <SelectField
                 wrapperClassName="w-28 shrink-0"
                 data-testid="style-editor-copy-scope"
-                aria-label="How much of it to load"
+                aria-label={words.howMuch}
                 value={scope}
                 onChange={event => setScope(COPY_SCOPES.find(option => option === event.target.value) ?? "both")}
                 className="h-10 text-sm"
               >
                 {COPY_SCOPES.map(option => (
                   <option key={option} value={option} className="bg-ground-raised">
-                    {SCOPE_NAMES[option]}
+                    {words.scopes[option]}
                   </option>
                 ))}
               </SelectField>
@@ -88,17 +90,17 @@ export function StyleTools({startName, onReset, onPasteKey, sources, onCopy, byA
             onClick={() => onCopy(from || (sources[0] ?? ""), scope)}
             className="h-10 cursor-pointer rounded-xl bg-white/10 text-sm font-semibold text-white/80 hover:bg-white/15"
           >
-            Load
+            {words.load}
           </button>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-white/60">Load from a key somebody shared</span>
+          <span className="text-xs text-white/60">{words.loadFromKey}</span>
 
           <PasteKey
             id="style-editor-import"
-            label="Load key"
-            placeholder="Paste a board or piece set key"
+            label={words.loadKey}
+            placeholder={words.keyPlaceholder}
             onSubmit={onPasteKey}
           />
         </div>
@@ -106,5 +108,3 @@ export function StyleTools({startName, onReset, onPasteKey, sources, onCopy, byA
     </details>
   );
 }
-
-const SCOPE_NAMES: Record<CopyScope, string> = {both: "Whole set", han: "Han's", cho: "Cho's"};

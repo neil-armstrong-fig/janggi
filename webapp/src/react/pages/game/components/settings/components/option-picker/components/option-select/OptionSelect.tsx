@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {WithName} from "@src/react/pages/game/types/WithName";
 import {SelectField} from "@src/react/pages/game/components/select-field/SelectField";
 import {toSlug} from "@src/react/pages/game/components/settings/components/option-picker/utils/ToSlug";
@@ -42,6 +43,8 @@ export function OptionSelect<Option extends WithName>({
   labelOf,
   onSelect,
 }: Props<Option>): React.JSX.Element {
+  const {settings} = useMessages();
+
   return (
     <SelectField
       data-testid={`${pickerId}-select`}
@@ -56,7 +59,7 @@ export function OptionSelect<Option extends WithName>({
     >
       {selected === undefined && (
         <option value="" disabled className="bg-ground-raised">
-          Not yet chosen
+          {settings.notYetChosen}
         </option>
       )}
 

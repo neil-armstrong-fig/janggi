@@ -19,7 +19,10 @@ it("earns a bikjang draw the XP for seeing it through", () => {
 it("names what the game's XP was enough to unlock", () => {
   expect(rewardFor({kind: "won", by: "cho"}, bot, "Scored", 60)).toEqual({
     xp: 40,
-    unlocked: ["Hanja pieces", "Neon board"],
+    unlocked: [
+      {kind: "pieces", name: "Hanja"},
+      {kind: "board", name: "Neon"},
+    ],
   });
 });
 

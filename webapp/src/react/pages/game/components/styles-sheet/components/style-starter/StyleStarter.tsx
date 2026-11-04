@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Button} from "@src/react/pages/game/components/button/Button";
 import {SelectField} from "@src/react/pages/game/components/select-field/SelectField";
 import {SectionHeading} from "@src/react/pages/game/components/styles-sheet/components/section-heading/SectionHeading";
@@ -23,6 +24,8 @@ interface Props {
 }
 
 export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onStart}: Props): React.JSX.Element {
+  const messages = useMessages();
+  const words = messages.styles.starter;
   const [kind, setKind] = useState<StyleKind>("Board");
   const [from, setFrom] = useState("");
 
@@ -41,28 +44,24 @@ export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onSt
   };
 
   return (
-    <section aria-label="Make your own style" className="flex flex-col gap-2">
-      <SectionHeading>Make your own</SectionHeading>
+    <section aria-label={words.label} className="flex flex-col gap-2">
+      <SectionHeading>{words.heading}</SectionHeading>
 
       {!unlocked && (
         <p data-testid="style-editor-locked" className="text-sm text-white/70">
-          🔒 Making your own styles unlocks at {price.toLocaleString("en")} XP. Importing one somebody shared never
-          costs anything.
+          {words.locked(price.toLocaleString(messages.locale))}
         </p>
       )}
 
       {unlocked && (
         <>
-          <p className="text-xs text-white/60">
-            Start from a style you have, then change it on a board of its own. Colours, lines, marks and pieces all show
-            as you go. Save it under a name of your own.
-          </p>
+          <p className="text-xs text-white/60">{words.note}</p>
 
           <div className="flex gap-2">
             <SelectField
               wrapperClassName="w-full"
               data-testid="style-editor-kind"
-              aria-label="What kind of style to make"
+              aria-label={words.kindLabel}
               value={kind}
               onChange={event => {
                 const chosen = STYLE_KINDS.find(candidate => candidate === event.target.value);
@@ -75,7 +74,7 @@ export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onSt
             >
               {STYLE_KINDS.map(candidate => (
                 <option key={candidate} value={candidate} className="bg-ground-raised">
-                  {candidate}
+                  {messages.styles.kinds[candidate]}
                 </option>
               ))}
             </SelectField>
@@ -83,7 +82,7 @@ export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onSt
             <SelectField
               wrapperClassName="w-full"
               data-testid="style-editor-from"
-              aria-label="The style to start from"
+              aria-label={words.fromLabel}
               value={from || startingPoints[0]?.name}
               onChange={event => setFrom(event.target.value)}
               className="py-2.5 text-base"
@@ -97,7 +96,7 @@ export function StyleStarter({unlocked, price, boardStyles, pieceSetStyles, onSt
           </div>
 
           <Button variant="primary" data-testid="style-editor-start" onClick={start}>
-            Start
+            {words.start}
           </Button>
         </>
       )}

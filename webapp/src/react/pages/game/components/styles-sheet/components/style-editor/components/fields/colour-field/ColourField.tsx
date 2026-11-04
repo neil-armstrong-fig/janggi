@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {clsx} from "clsx";
 import {colourPartsOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/colour/ColourPartsOf";
 import {cssColourOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/colour/CssColourOf";
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export function ColourField({id, label, value, translucent = false, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.fields;
   const colourParts = colourPartsOf(value);
   const [typed, setTyped] = useState<string | undefined>(undefined);
   const shown = typed ?? value;
@@ -49,7 +51,7 @@ export function ColourField({id, label, value, translucent = false, onChange}: P
               <input
                 type="range"
                 data-testid={`style-control-${id}-alpha`}
-                aria-label={`${label}, how solid`}
+                aria-label={words.howSolid(label)}
                 min={0}
                 max={1}
                 step={0.01}
@@ -89,15 +91,13 @@ export function ColourField({id, label, value, translucent = false, onChange}: P
               }}
               className="h-9 shrink-0 cursor-pointer rounded-lg bg-white/10 px-2 text-xs text-white/80 hover:bg-white/15"
             >
-              Plain colour
+              {words.plainColour}
             </button>
           </>
         )}
       </div>
 
-      {!colourParts && !acceptable && (
-        <p className="pl-[7.5rem] text-xs text-danger">Not a colour the app will paint with.</p>
-      )}
+      {!colourParts && !acceptable && <p className="pl-[7.5rem] text-xs text-danger">{words.notAColour}</p>}
     </div>
   );
 }

@@ -1,8 +1,9 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {ChoiceField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/choice-field/ChoiceField";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
 import {InlayControls} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/body-controls/components/inlay-controls/InlayControls";
-import {PIECE_BODY_SHAPES} from "@src/styles/types/PieceStyle";
+import {PIECE_BODY_SHAPES} from "@janggi/shared/janggi/styles/PieceBodyShape";
 import type {PieceStyle} from "@src/styles/types/PieceStyle";
 import {STYLE_LIMITS} from "@src/styles/limits/StyleLimits";
 import {SliderField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/slider-field/SliderField";
@@ -14,15 +15,17 @@ interface Props {
 }
 
 export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.pieces;
   const {body} = pieceStyle;
 
   return (
     <>
-      <ControlGroup title="Body">
+      <ControlGroup title={words.body}>
         <ChoiceField
           id="body-shape"
-          label="Shape"
+          label={words.shape}
           options={PIECE_BODY_SHAPES}
+          labelOf={shape => words.bodyShapes[shape]}
           value={body.shape}
           onChange={shape => {
             return onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, shape}}));
@@ -31,7 +34,7 @@ export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
 
         <SliderField
           id="piece-size"
-          label="Size"
+          label={words.size}
           numberRange={STYLE_LIMITS.pieceSize}
           step={0.01}
           value={pieceStyle.size}
@@ -40,7 +43,7 @@ export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
 
         <ColourField
           id="piece-fill"
-          label="Fill"
+          label={words.fill}
           value={body.fill}
           translucent
           onChange={fill => {
@@ -50,7 +53,7 @@ export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
 
         <ColourField
           id="piece-outline"
-          label="Outline"
+          label={words.outline}
           value={body.stroke}
           onChange={stroke => {
             return onChange(currentPieceStyle => ({...currentPieceStyle, body: {...currentPieceStyle.body, stroke}}));
@@ -59,7 +62,7 @@ export function BodyControls({pieceStyle, onChange}: Props): React.JSX.Element {
 
         <SliderField
           id="piece-outline-width"
-          label="Outline width"
+          label={words.outlineWidth}
           numberRange={STYLE_LIMITS.lineWidth}
           step={0.1}
           value={body.strokeWidth}

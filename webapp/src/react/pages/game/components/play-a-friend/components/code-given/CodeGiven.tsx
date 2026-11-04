@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {formatFriendCode} from "@janggi/shared/janggi/online/friend-code/FormatFriendCode";
 import {joinLinkFor} from "@janggi/shared/janggi/online/friend-code/JoinLink";
 import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
@@ -10,6 +11,7 @@ interface Props {
 /** The code to give a friend — read out in two halves — with a way to copy it, and a link that takes them straight in. */
 export function CodeGiven({code}: Props): React.JSX.Element {
   const [copied, setCopied] = useState(false);
+  const words = useMessages().friend.codeGiven;
   const friendCode = parseFriendCode(code);
   const link =
     friendCode === undefined
@@ -18,7 +20,7 @@ export function CodeGiven({code}: Props): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-xs font-medium text-white/60">Your code</p>
+      <p className="text-xs font-medium text-white/60">{words.yourCode}</p>
 
       <p data-testid="friend-code" data-code={code} className="font-mono text-3xl font-bold tracking-widest text-gold">
         {friendCode === undefined ? code : formatFriendCode(friendCode)}
@@ -32,7 +34,7 @@ export function CodeGiven({code}: Props): React.JSX.Element {
           }}
           className="min-h-11 cursor-pointer self-start rounded-lg border border-white/20 px-3 text-sm text-white/80 hover:bg-white/10"
         >
-          {copied ? "Link copied" : "Copy a link to send"}
+          {copied ? words.linkCopied : words.copyLink}
         </button>
       )}
     </div>

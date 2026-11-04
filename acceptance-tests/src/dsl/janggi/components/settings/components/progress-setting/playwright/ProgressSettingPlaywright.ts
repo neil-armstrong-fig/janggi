@@ -90,4 +90,14 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
   async isSaveRefused(): Promise<boolean> {
     return (await this.message.getAttribute("data-accepted")) === "false";
   }
+
+  /** What the line under the box to load a save says of what came of it. */
+  async getSaveWords(): Promise<string> {
+    return ((await this.message.textContent()) ?? "").trim();
+  }
+
+  /** What the next unlock is told as, with its price and what it opens. */
+  async getNextUnlockWords(): Promise<string> {
+    return ((await this.nextUnlock.textContent()) ?? "").trim();
+  }
 }

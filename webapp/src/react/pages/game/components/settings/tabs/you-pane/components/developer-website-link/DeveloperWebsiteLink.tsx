@@ -1,5 +1,9 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+
 /** The developer's own site, opened without taking the game away. */
 export function DeveloperWebsiteLink(): React.JSX.Element {
+  const {you} = useMessages();
+
   return (
     <a
       data-testid="developer-website-open"
@@ -8,7 +12,7 @@ export function DeveloperWebsiteLink(): React.JSX.Element {
       rel="noopener noreferrer"
       className="flex min-h-11 items-center justify-between gap-4 rounded-lg border border-wood/20 px-3 py-2 text-sm text-wood hover:bg-wood/10"
     >
-      <span>Developer's website</span>
+      <span>{you.links.developerWebsite}</span>
 
       <span className="text-xs text-wood/70">neilarmstrong.dev</span>
     </a>

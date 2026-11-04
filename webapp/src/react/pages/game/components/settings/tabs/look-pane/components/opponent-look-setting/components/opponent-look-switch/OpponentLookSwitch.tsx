@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
 import {showOpponentLookChosen} from "@src/redux/preferences/PreferencesSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
@@ -6,19 +7,19 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 export function OpponentLookSwitch(): React.JSX.Element {
   const showOpponentLook = useAppSelector(state => state.preferences.showOpponentLook);
   const dispatch = useAppDispatch();
+  const {look} = useMessages();
 
   return (
     <div className="flex flex-col gap-0.5">
       <Switch
         testId="opponent-look-toggle"
         on={showOpponentLook}
-        label="Show opponent's board and pieces"
+        label={look.opponentLook}
         onToggle={() => dispatch(showOpponentLookChosen(!showOpponentLook))}
       />
 
       <p data-testid="opponent-look-explanation" className="px-2 text-xs text-white/40">
-        Online PvP only. Shows the game in your opponent&apos;s board and pieces, and shares yours with them. Turn it
-        off to use your own look.
+        {look.opponentLookHelp}
       </p>
     </div>
   );

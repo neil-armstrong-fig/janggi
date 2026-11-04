@@ -30,6 +30,16 @@ export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
     this.explanation = page.getByTestId("match-format-explanation");
   }
 
+  /** What the unfolded explanation says, read with the sheet open. */
+  async getExplanationWords(): Promise<string> {
+    let words = "";
+    await this.inSheet(this.explain, async () => {
+      words = await this.explanation.innerText();
+    });
+
+    return words;
+  }
+
   /** Presses the (?) beside the picker, which unfolds the explanation or folds it away again. */
   async toggleExplanation(): Promise<void> {
     await this.inSheet(this.explain, () => this.explain.click());

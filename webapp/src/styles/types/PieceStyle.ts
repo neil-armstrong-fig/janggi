@@ -1,3 +1,4 @@
+import type {PieceBodyShape} from "@janggi/shared/janggi/styles/PieceBodyShape";
 import type {CharacterSet} from "@src/styles/types/CharacterSet";
 import type {PictographSet} from "@src/styles/types/PictographSet";
 
@@ -30,11 +31,6 @@ export interface PieceBodyStyle {
   readonly inlay?: PieceInlayStyle;
 }
 
-/** Listed as well as typed, because a set somebody else wrote has its shape checked against the list. */
-export const PIECE_BODY_SHAPES = ["octagon", "disc"] as const;
-
-export type PieceBodyShape = (typeof PIECE_BODY_SHAPES)[number];
-
 export interface PieceInlayStyle {
   /** How far inside the body's edge the inlay sits, as a fraction of the piece's radius. */
   readonly inset: number;
@@ -53,11 +49,6 @@ export interface PieceInlayStyle {
  * someone writes can bring its own characters or its own drawings and needs no code to support it.
  */
 export type PieceGlyphStyle = CharacterGlyphStyle | PictographGlyphStyle;
-
-/** Listed as well as typed, because a set somebody else wrote has its shape checked against the list. */
-export const PIECE_GLYPH_KINDS = ["character", "pictograph"] as const;
-
-export type PieceGlyphKind = (typeof PIECE_GLYPH_KINDS)[number];
 
 export interface CharacterGlyphStyle {
   readonly kind: "character";

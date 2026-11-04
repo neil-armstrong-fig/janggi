@@ -13,28 +13,24 @@ import type {Setup} from "@janggi/engine/setups/types/Setup";
 const innerElephant: Setup = {
   name: "Inner Elephant",
   korean: "안상차림",
-  description: "Both elephants beside the guards, both horses out by the chariots. The usual choice.",
   backRank: ["chariot", "horse", "elephant", "guard", undefined, "guard", "elephant", "horse", "chariot"],
 };
 
 const outerElephant: Setup = {
   name: "Outer Elephant",
   korean: "밖상차림",
-  description: "Both elephants out by the chariots, leaving both horses covering the palace.",
   backRank: ["chariot", "elephant", "horse", "guard", undefined, "guard", "horse", "elephant", "chariot"],
 };
 
 const leftElephant: Setup = {
   name: "Left Elephant",
   korean: "왼상차림",
-  description: "One of each: the elephant out on the player's left, in on their right.",
   backRank: ["chariot", "elephant", "horse", "guard", undefined, "guard", "elephant", "horse", "chariot"],
 };
 
 const rightElephant: Setup = {
   name: "Right Elephant",
   korean: "오른상차림",
-  description: "The mirror image of the left: elephant out on the player's right, in on their left.",
   backRank: ["chariot", "horse", "elephant", "guard", undefined, "guard", "horse", "elephant", "chariot"],
 };
 
@@ -46,7 +42,6 @@ const rightElephant: Setup = {
 const centralChariot: Setup = {
   name: "Central Chariot",
   korean: "귀차차림",
-  description: "Chariots drawn in beside the guards. Casual play only. It is not a tournament setup.",
   backRank: ["elephant", "horse", "chariot", "guard", undefined, "guard", "chariot", "horse", "elephant"],
 };
 

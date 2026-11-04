@@ -10,7 +10,8 @@ import type {CharacterSet, PieceCharacter} from "@src/styles/types/CharacterSet"
 import type {PieceOverrides, PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import {DEFAULT_PIECE_HANDLING} from "@src/styles/defaults/DefaultPieceHandling";
-import {PIECE_BODY_SHAPES, PIECE_GLYPH_KINDS} from "@src/styles/types/PieceStyle";
+import {PIECE_BODY_SHAPES} from "@janggi/shared/janggi/styles/PieceBodyShape";
+import {PIECE_GLYPH_KINDS} from "@janggi/shared/janggi/styles/PieceGlyphKind";
 import type {PieceHandlingStyle} from "@src/styles/types/PieceHandlingStyle";
 import type {PictographSet} from "@src/styles/types/PictographSet";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";

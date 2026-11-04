@@ -1,6 +1,7 @@
 import type {AppThunk} from "@src/redux/AppThunk";
 import type {GameShown} from "@janggi/shared/janggi/online/GameShown";
 import {inFriendRoom} from "@src/redux/online/selecting/InFriendRoom";
+import {messagesOf} from "@src/language/MessagesOf";
 import {sheetOpened, signInPrompted} from "@src/redux/settings/SettingsSlice";
 import {toastShown} from "@src/redux/toast/ToastSlice";
 import {switchGame} from "@src/redux/online/actions/SwitchGame";
@@ -27,6 +28,6 @@ export function chooseGame(shown: GameShown): AppThunk {
     }
 
     dispatch(signInPrompted());
-    dispatch(toastShown("Sign in to play a friend online."));
+    dispatch(toastShown(messagesOf(getState().preferences.language).toasts.signInToPlayAFriend));
   };
 }

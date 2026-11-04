@@ -4,7 +4,10 @@ import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 
 interface Props {
   readonly pieceType: PieceType;
+  readonly pieceName: string;
   readonly pieceStyle: PieceSetStyle;
+  /** What the example shows, in the language of the guide. It is written beneath and read aloud for the figure. */
+  readonly caption: string;
 }
 
 interface MovementPoint {
@@ -16,17 +19,16 @@ interface MovementExample {
   readonly destinations: readonly MovementPoint[];
   readonly screens?: readonly MovementPoint[];
   readonly palace?: boolean;
-  readonly caption: string;
 }
 
 /** A seven-by-seven crop: enough board to show a piece's complete movement shape, and no more. */
-export function MovementSnapshot({pieceType, pieceStyle}: Props): React.JSX.Element {
+export function MovementSnapshot({pieceType, pieceName, pieceStyle, caption}: Props): React.JSX.Element {
   const example = MOVEMENT_EXAMPLES[pieceType];
 
   return (
     <figure
       className="grid items-center gap-4 p-5 sm:grid-cols-[minmax(10rem,1fr)_minmax(9rem,0.75fr)]"
-      aria-label={example.caption}
+      aria-label={caption}
     >
       <div className="relative aspect-square w-full max-w-80 rounded-md border border-gold/50 bg-wood shadow-inner">
         <svg className="block size-full" viewBox="0 0 100 100" aria-hidden="true">
@@ -83,11 +85,11 @@ export function MovementSnapshot({pieceType, pieceStyle}: Props): React.JSX.Elem
         </svg>
 
         <div className="absolute z-1 aspect-square w-[15%] -translate-x-1/2 -translate-y-1/2" style={piecePosition()}>
-          <Piece piece={{side: "cho", type: pieceType}} style={pieceStyle} emphasised={false} />
+          <Piece piece={{side: "cho", type: pieceType}} name={pieceName} style={pieceStyle} emphasised={false} />
         </div>
       </div>
 
-      <figcaption className="text-sm leading-relaxed text-wood/70">{example.caption}</figcaption>
+      <figcaption className="text-sm leading-relaxed text-wood/70">{caption}</figcaption>
     </figure>
   );
 }
@@ -166,25 +168,20 @@ const MOVEMENT_EXAMPLES: Readonly<Record<PieceType, MovementExample>> = {
   general: {
     destinations: ALL_ADJACENT,
     palace: true,
-    caption: "One step along a palace line. The general stays inside its own palace.",
   },
   guard: {
     destinations: ALL_ADJACENT,
     palace: true,
-    caption: "One step along a palace line, without leaving the palace.",
   },
   horse: {
     destinations: HORSE_DESTINATIONS,
-    caption: "One step straight, then one step diagonally out. The first step can be blocked.",
   },
   elephant: {
     destinations: ELEPHANT_DESTINATIONS,
-    caption: "One step straight, then two diagonally out. Either point on the route can be blocked.",
   },
   chariot: {
     destinations: CHARIOT_DESTINATIONS,
     palace: true,
-    caption: "Any distance in a straight line, plus the straight diagonals drawn through a palace.",
   },
   cannon: {
     destinations: [
@@ -196,7 +193,6 @@ const MOVEMENT_EXAMPLES: Readonly<Record<PieceType, MovementExample>> = {
       {file: 3, rank: 2},
       {file: 5, rank: 3},
     ],
-    caption: "It must jump one piece. The outlined points are the pieces it jumps over.",
   },
   soldier: {
     destinations: [
@@ -207,6 +203,5 @@ const MOVEMENT_EXAMPLES: Readonly<Record<PieceType, MovementExample>> = {
       {file: 4, rank: 3},
     ],
     palace: true,
-    caption: "One step forward or sideways, plus a forward palace diagonal. Never backwards.",
   },
 };

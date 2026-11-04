@@ -29,7 +29,7 @@ export function GamesSetting(): React.JSX.Element {
       <div className="flex items-center gap-3">
         <span className="text-xs font-medium text-white/60">{play.games}</span>
 
-        <div data-testid="games-picker" role="group" aria-label="Which game is on the board" className="flex gap-1">
+        <div data-testid="games-picker" role="group" aria-label={play.gamesLabel} className="flex gap-1">
           {GAMES_SHOWN.map(shown => (
             <button
               key={shown}

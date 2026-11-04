@@ -7,8 +7,8 @@ const LANGUAGE_ALTERNATES = {
 };
 
 /**
- * Someone searching in Korean should find the game read in Korean. Only the game has a Korean page: the
- * guide, references and legal pages are English, so the Korean page links to them as English.
+ * Someone searching in Korean should find the game read in Korean. The guide and references have Korean pages of their
+ * own; the legal pages are English, so the Korean page links to them as English.
  */
 given("someone searches in Korean for a way to play janggi", () => {
   when("they open the game's Korean page", () => {
@@ -52,9 +52,16 @@ given("someone searches in Korean for a way to play janggi", () => {
       expect(await janggi.getTextServedToSearchEngines()).toContain("비밀 코드");
     });
 
-    then("the guide it links to is the English one, and says so", async ({janggi}) => {
-      expect(await janggi.getGuideAddressInPageServedToSearchEngines()).toBe("/learn.html");
+    then("the guide it links to is the Korean one", async ({janggi}) => {
+      expect(await janggi.getGuideAddressInPageServedToSearchEngines()).toBe("/ko/learn.html");
+    });
+
+    then("the pages it links to that have no Korean twin say they are in English", async ({janggi}) => {
       expect(await janggi.getTextServedToSearchEngines()).toContain("(English)");
+    });
+
+    then("the guide the game's settings link to is the Korean one", async ({janggi}) => {
+      expect(await janggi.settings.getGuideAddressInGame()).toBe("/ko/learn.html");
     });
 
     then("search engines that follow links can reach the English page from it", async ({janggi}) => {

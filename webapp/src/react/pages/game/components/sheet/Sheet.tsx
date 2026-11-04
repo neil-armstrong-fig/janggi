@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {clsx} from "clsx";
 import {useRef} from "react";
 import {useScrolledToTop} from "@src/react/pages/game/hooks/use-scrolled-to-top/UseScrolledToTop";
@@ -39,6 +40,7 @@ export function Sheet({
   children,
 }: Props): React.JSX.Element {
   const panelRef = useRef<HTMLElement>(null);
+  const {settings} = useMessages();
   useScrolledToTop(panelRef, open);
 
   return (
@@ -73,7 +75,7 @@ export function Sheet({
               <button
                 type="button"
                 data-testid={backTestId}
-                aria-label="Back"
+                aria-label={settings.back}
                 onClick={onBack}
                 className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
               >

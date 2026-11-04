@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {Move} from "@janggi/engine/types/Move";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
@@ -41,6 +42,7 @@ interface Props {
 
 export function Impact({move, taken, style, seed, onStrike, onSettled}: Props): React.JSX.Element {
   const pieceRef = useRef<HTMLDivElement>(null);
+  const {pieceName} = useMessages();
   const ringRef = useRef<HTMLSpanElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const strike = useEffectEvent(() => onStrike(shakeImpulse(move, taken.type)));
@@ -113,7 +115,7 @@ export function Impact({move, taken, style, seed, onStrike, onSettled}: Props): 
       style={{left: percent(box.left), top: percent(box.top), width: percent(box.width), height: percent(box.height)}}
     >
       <div ref={pieceRef} className="absolute inset-0">
-        <Piece piece={taken} style={style} emphasised={false} />
+        <Piece piece={taken} name={pieceName(taken)} style={style} emphasised={false} />
       </div>
 
       <span className="absolute inset-0 flex items-center justify-center">

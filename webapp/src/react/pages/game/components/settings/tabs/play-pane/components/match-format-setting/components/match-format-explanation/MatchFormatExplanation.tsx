@@ -1,3 +1,6 @@
+import {FormatSummary} from "@src/react/pages/game/components/settings/tabs/play-pane/components/match-format-setting/components/match-format-explanation/components/format-summary/FormatSummary";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+
 /**
  * What sets janggi's two games apart, in as few plain words as will do it on a phone.
  *
@@ -8,47 +11,16 @@
  * across a phone leave each too narrow to read.
  */
 export function MatchFormatExplanation(): React.JSX.Element {
+  const {play} = useMessages();
+  const {casual, scored, both} = play.formatExplanation;
+
   return (
     <div className="flex flex-col gap-3">
-      <section className="flex flex-col gap-1">
-        <h3 className="font-semibold text-wood">Casual</h3>
+      <FormatSummary name={play.formatNames.Casual} words={casual} />
 
-        <p className="text-xs text-white/60">The friendly game most janggi sites play.</p>
+      <FormatSummary name={play.formatNames.Scored} words={scored} />
 
-        <ul className="flex list-disc flex-col gap-1 pl-4">
-          <li>Both armies start set up. Either can be changed until the first move.</li>
-
-          <li>
-            When the generals face each other down an open file, either player may call <strong>bikjang</strong>, and
-            the game is a <strong>draw</strong>.
-          </li>
-
-          <li>
-            Players may agree to a draw, and once <strong>both sides are under 30 points</strong> a position that comes
-            round a third time is a draw too.
-          </li>
-        </ul>
-      </section>
-
-      <section className="flex flex-col gap-1">
-        <h3 className="font-semibold text-wood">Scored</h3>
-
-        <p className="text-xs text-white/60">The Korea Janggi Association’s tournament game. There are no draws.</p>
-
-        <ul className="flex list-disc flex-col gap-1 pl-4">
-          <li>Han picks its setup first and can’t change it. Cho picks after seeing Han’s.</li>
-
-          <li>
-            Bikjang can only be called once <strong>both sides are under 30 points</strong>, and whoever is ahead on
-            points <strong>wins</strong>. So does a position that comes round a third time under 30 points.
-          </li>
-        </ul>
-      </section>
-
-      <p className="text-xs text-white/60">
-        In both, two passes in a row end the game on points, and Han starts 1.5 points up for moving second. Your rating
-        is kept separately for each.
-      </p>
+      <p className="text-xs text-white/60">{both}</p>
     </div>
   );
 }

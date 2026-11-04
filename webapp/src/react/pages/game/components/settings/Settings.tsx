@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {LookPane} from "@src/react/pages/game/components/settings/tabs/look-pane/LookPane";
 import {settingsTabSelected, sheetClosed} from "@src/redux/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
@@ -47,6 +48,7 @@ interface SheetPanelStyle extends React.CSSProperties {
 
 export function Settings(): React.JSX.Element {
   const open = useAppSelector(state => state.settings.openSheet === "settings");
+  const {controls, settings} = useMessages();
   const tab = useAppSelector(state => state.settings.tab);
   const showings = useAppSelector(state => state.settings.showings);
   const panelRef = useRef<HTMLElement>(null);
@@ -73,7 +75,7 @@ export function Settings(): React.JSX.Element {
         ref={panelRef}
         data-testid="settings"
         role="dialog"
-        aria-label="Settings"
+        aria-label={controls.settings}
         aria-modal={open}
         inert={!open}
         style={{"--sheet-opacity": `${sheetOpacity}%`} as SheetPanelStyle}
@@ -89,7 +91,7 @@ export function Settings(): React.JSX.Element {
           <button
             type="button"
             data-testid="settings-close"
-            aria-label="Close settings"
+            aria-label={settings.closeLabel}
             onClick={onClose}
             className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-white/70 hover:bg-white/10"
           >

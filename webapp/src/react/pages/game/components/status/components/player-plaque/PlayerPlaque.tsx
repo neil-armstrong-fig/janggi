@@ -1,3 +1,4 @@
+import {unlockWordsOf} from "@src/react/pages/game/unlock-words/UnlockWordsOf";
 import type {PlaquePlayer} from "@src/react/pages/game/components/status/components/player-plaque/types/PlaquePlayer";
 import type {PlaqueState} from "@src/react/pages/game/components/status/components/player-plaque/types/PlaqueState";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
@@ -56,7 +57,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
   const xp = useAppSelector(state => state.progress.xp);
   const {pieceStyle, effects} = usePreferences();
   const {status} = useGameStatus();
-  const {sides, plaque} = useMessages();
+  const {locale, sides, plaque, unlocks} = useMessages();
   const ownedByYou = useAppSelector(state => inFriendGame(state.friend) && state.friend.ownSide === side);
 
   const game = played.present;
@@ -103,7 +104,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
               data-xp={player.xp}
               className="shrink-0 whitespace-nowrap text-gold/80"
             >
-              {shortened(player.xp)} XP
+              {shortened(player.xp, locale)} XP
             </span>
           )}
 
@@ -111,10 +112,13 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
             <span
               data-testid={`plaque-next-unlock-${side}`}
               data-xp={player.nextUnlock.xp}
-              title={`Next unlock: ${player.nextUnlock.xp.toLocaleString("en")} XP, unlock ${player.nextUnlock.labels.join(", ")}`}
+              title={plaque.nextUnlock(
+                player.nextUnlock.xp.toLocaleString(locale),
+                unlockWordsOf(player.nextUnlock.items, unlocks),
+              )}
               className="hidden min-w-0 truncate text-white/40 lg:inline"
             >
-              {`(Next unlock: ${player.nextUnlock.xp.toLocaleString("en")} XP, unlock ${player.nextUnlock.labels.join(", ")})`}
+              {`(${plaque.nextUnlock(player.nextUnlock.xp.toLocaleString(locale), unlockWordsOf(player.nextUnlock.items, unlocks))})`}
             </span>
           )}
         </span>
@@ -134,8 +138,8 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
 }
 
 /** An amount of XP as it fits on a plaque: 640 stays 640, and 1,000,000 becomes 1M. */
-function shortened(xp: number): string {
-  return new Intl.NumberFormat("en", {notation: "compact", maximumFractionDigits: 1}).format(xp);
+function shortened(xp: number, locale: string): string {
+  return new Intl.NumberFormat(locale, {notation: "compact", maximumFractionDigits: 1}).format(xp);
 }
 
 const PLAYER_EMOJI: Record<PlaquePlayer["kind"], string> = {bot: "🤖", player: "🧑"};

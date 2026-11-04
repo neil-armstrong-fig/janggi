@@ -2,9 +2,11 @@ import type {Reference} from "@src/react/pages/references/types/Reference";
 
 interface Props {
   readonly reference: Reference;
+  /** How a licence is worded in the page's language. */
+  readonly licenceOf: (licence: string) => string;
 }
 
-export function ReferenceEntry({reference}: Props): React.JSX.Element {
+export function ReferenceEntry({reference, licenceOf}: Props): React.JSX.Element {
   return (
     <li className="py-5">
       <h3 className="font-semibold">
@@ -24,7 +26,7 @@ export function ReferenceEntry({reference}: Props): React.JSX.Element {
           href={`https://spdx.org/licenses/${reference.licence}.html`}
           className="mt-3 inline-block text-xs text-gold underline underline-offset-4"
         >
-          {reference.licence} licence
+          {licenceOf(reference.licence)}
         </a>
       )}
 

@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
 import type {HintsStyle} from "@src/styles/types/board-marks/HintsStyle";
@@ -11,25 +12,26 @@ interface Props {
 }
 
 export function HintsControls({hintsStyle, onChange, onFocus}: Props): React.JSX.Element {
+  const words = useMessages().styles.board;
   return (
-    <ControlGroup title="Hints" onFocus={onFocus}>
+    <ControlGroup title={words.hints} onFocus={onFocus}>
       <ColourField
         id="hints-colour"
-        label="Colour"
+        label={words.colour}
         value={hintsStyle.colour}
         onChange={colour => onChange({...hintsStyle, colour})}
       />
 
       <ColourField
         id="hints-outline"
-        label="Outline"
+        label={words.outline}
         value={hintsStyle.outline}
         onChange={outline => onChange({...hintsStyle, outline})}
       />
 
       <ColourField
         id="hints-selection"
-        label="Piece in hand"
+        label={words.pieceInHand}
         value={hintsStyle.selection}
         translucent
         onChange={selection => onChange({...hintsStyle, selection})}

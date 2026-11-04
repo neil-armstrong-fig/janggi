@@ -144,6 +144,22 @@ export class SettingsDsl {
     }
   }
 
+  async getGuideAddressInGame(): Promise<string> {
+    try {
+      return await this.settings.getGuideAddressInGame();
+    } catch (error) {
+      throw new DslError("Failed to read where the game's link to the guide goes", error);
+    }
+  }
+
+  async getReferencesAddressInGame(): Promise<string> {
+    try {
+      return await this.settings.getReferencesAddressInGame();
+    } catch (error) {
+      throw new DslError("Failed to read where the game's link to the references goes", error);
+    }
+  }
+
   async getDeveloperWebsiteDestination(): Promise<string> {
     try {
       return await this.settings.getDeveloperWebsiteDestination();
@@ -165,6 +181,22 @@ export class SettingsDsl {
       return await this.settings.getAppVersion();
     } catch (error) {
       throw new DslError("Failed to read which build of Janggi is running", error);
+    }
+  }
+
+  async getVersionWords(): Promise<string> {
+    try {
+      return await this.settings.getVersionWords();
+    } catch (error) {
+      throw new DslError("Failed to read the line that names the build", error);
+    }
+  }
+
+  async getAppHelpWords(): Promise<string> {
+    try {
+      return await this.settings.getAppHelpWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the app and help links say", error);
     }
   }
 

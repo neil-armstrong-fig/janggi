@@ -1,3 +1,4 @@
+import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
 import type {StyleOutcome} from "@src/react/pages/game/components/styles-sheet/types/StyleOutcome";
 import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
 import {decodeKey} from "@janggi/shared/janggi/share-keys/DecodeKey";
@@ -8,7 +9,7 @@ import {pieceSetStyleFrom} from "@src/redux/custom-styles/untrusted/PieceSetStyl
  * checked all the way down, or why it will not be imported. One box takes either, because a player
  * handed a key should not have to know which kind it is.
  */
-export function styleImportFrom(text: string): StyleOutcome {
+export function styleImportFrom(text: string, words: StyleRefusalMessages): StyleOutcome {
   const board = decodeKey("board", text);
   if (board !== undefined) {
     const checked = boardStyleFrom(board);
@@ -29,5 +30,5 @@ export function styleImportFrom(text: string): StyleOutcome {
     return checked;
   }
 
-  return {kind: "refused", reason: "That is not a board or piece set key."};
+  return {kind: "refused", reason: words.notAKey};
 }

@@ -3,7 +3,11 @@ import {unlockLadder} from "@src/redux/progress/unlocks/UnlockLadder";
 import {unlockProgressFor} from "@src/react/pages/game/components/xp-bar/unlock-progress/UnlockProgressFor";
 
 it("starts from nothing towards the first unlock", () => {
-  expect(unlockProgressFor(0)).toEqual({previousXp: 0, next: {xp: 30, labels: ["Hanja pieces"]}, fraction: 0});
+  expect(unlockProgressFor(0)).toEqual({
+    previousXp: 0,
+    next: {xp: 30, items: [{kind: "pieces", name: "Hanja"}]},
+    fraction: 0,
+  });
 });
 
 it("fills as XP climbs towards the first unlock", () => {
@@ -13,7 +17,7 @@ it("fills as XP climbs towards the first unlock", () => {
 it("measures from the unlock last passed, not from nothing", () => {
   expect(unlockProgressFor(900)).toEqual({
     previousXp: 600,
-    next: {xp: 1_200, labels: ["Celadon theme"]},
+    next: {xp: 1_200, items: [{kind: "theme", name: "Celadon"}]},
     fraction: 0.5,
   });
 });

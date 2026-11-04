@@ -1,4 +1,5 @@
-import {CELL_MARKER_SHAPES} from "@src/styles/types/CellStyle";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+import {CELL_MARKER_SHAPES} from "@janggi/shared/janggi/styles/CellMarkerShape";
 import type {CellMarker, CellStyle} from "@src/styles/types/CellStyle";
 import {ChoiceField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/choice-field/ChoiceField";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.board;
   const cellMarker = cellStyle.marker;
   const changeMarker = (update: (currentCellMarker: CellMarker) => CellMarker): void => {
     onChange(currentCellStyle => {
@@ -27,10 +29,10 @@ export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element 
   };
 
   return (
-    <ControlGroup title="Marker">
+    <ControlGroup title={words.marker}>
       <SwitchField
         id="marker-on"
-        label="Marker"
+        label={words.marker}
         value={cellMarker !== undefined}
         onChange={on => {
           return onChange(currentCellStyle => {
@@ -53,15 +55,16 @@ export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element 
         <>
           <ChoiceField
             id="marker-shape"
-            label="Shape"
+            label={words.shape}
             options={CELL_MARKER_SHAPES}
+            labelOf={shape => words.markerShapes[shape]}
             value={cellMarker.shape}
             onChange={shape => changeMarker(currentCellMarker => ({...currentCellMarker, shape}))}
           />
 
           <SliderField
             id="marker-radius"
-            label="Size"
+            label={words.size}
             numberRange={STYLE_LIMITS.markerRadius}
             step={1}
             value={cellMarker.radius}
@@ -70,7 +73,7 @@ export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element 
 
           <ColourField
             id="marker-colour"
-            label="Colour"
+            label={words.colour}
             value={cellMarker.colour}
             onChange={colour => changeMarker(currentCellMarker => ({...currentCellMarker, colour}))}
           />
@@ -78,7 +81,7 @@ export function MarkerControls({cellStyle, onChange}: Props): React.JSX.Element 
           {cellMarker.shape === "ring" && (
             <SliderField
               id="marker-width"
-              label="Ring width"
+              label={words.ringWidth}
               numberRange={STYLE_LIMITS.lineWidth}
               step={0.5}
               value={cellMarker.strokeWidth ?? 1}

@@ -23,10 +23,10 @@ interface Props {
 }
 
 export function SettingsTabs({selected, onSelect}: Props): React.JSX.Element {
-  const {tabs} = useMessages();
+  const {settings, tabs} = useMessages();
 
   return (
-    <div role="tablist" aria-label="Kinds of setting" className="grid min-w-0 flex-1 grid-cols-4 gap-0.5">
+    <div role="tablist" aria-label={settings.tabsLabel} className="grid min-w-0 flex-1 grid-cols-4 gap-0.5">
       {SETTINGS_TAB_NAMES.map(name => (
         <button
           key={name}

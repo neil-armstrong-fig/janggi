@@ -32,6 +32,12 @@ export class ReferencesPlaywright extends BasePage {
     await this.page.getByTestId("references").waitFor({state: "visible"});
   }
 
+  /** Goes to the references' Korean page. The address is relative, so call it from a page at the root of the site. */
+  async visitKoreanReferences(): Promise<void> {
+    await this.page.goto(new URL("ko/references.html", this.page.url()).href);
+    await this.page.getByTestId("references").waitFor({state: "visible"});
+  }
+
   async reload(): Promise<void> {
     const references = this.referencesPage();
     await references.reload();
@@ -46,6 +52,27 @@ export class ReferencesPlaywright extends BasePage {
 
   async isSeparateFromGame(): Promise<boolean> {
     return this.referencesPage() !== this.page;
+  }
+
+  async getPageTitle(): Promise<string> {
+    return await this.referencesPage().title();
+  }
+
+  async getMainHeading(): Promise<string> {
+    return await this.referencesPage().getByTestId("references").locator("h1").innerText();
+  }
+
+  /** What the page says of being machine translated, or an empty string where it says nothing. */
+  async getTranslationNotice(): Promise<string> {
+    const notice = this.referencesPage().getByTestId("translation-notice");
+    if ((await notice.count()) === 0) return "";
+
+    return ((await notice.textContent()) ?? "").trim();
+  }
+
+  /** Where the notice's link to the page it was translated from goes, as written in the page. */
+  async getOriginalAddress(): Promise<string> {
+    return (await this.referencesPage().getByTestId("translation-notice-original").getAttribute("href")) ?? "";
   }
 
   async getHeadings(): Promise<string[]> {
@@ -74,6 +101,25 @@ export class ReferencesPlaywright extends BasePage {
 
   async isFullyOnScreen(): Promise<boolean> {
     return await this.referencesPage().evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+  }
+
+  /** Above the heading, and reaching the right edge of the page's content, which its footer spans. */
+  async isLanguageSwitchAtTheTopRight(): Promise<boolean> {
+    const page = this.referencesPage();
+    const references = page.getByTestId("references");
+    const languageSwitch = (await page.getByTestId("page-language-en").locator("..").boundingBox()) ?? undefined;
+    if (!languageSwitch) throw new Error("The references page has no language switch");
+
+    const heading = (await references.locator("h1").boundingBox()) ?? undefined;
+    if (!heading) throw new Error("The references page has no heading");
+
+    const footer = (await references.locator("footer").boundingBox()) ?? undefined;
+    if (!footer) throw new Error("The references page has no footer");
+
+    const isAboveHeading = languageSwitch.y + languageSwitch.height <= heading.y;
+    const reachesRightEdge = Math.abs(languageSwitch.x + languageSwitch.width - (footer.x + footer.width)) <= 1;
+
+    return isAboveHeading && reachesRightEdge;
   }
 
   private referencesPage(): Page {

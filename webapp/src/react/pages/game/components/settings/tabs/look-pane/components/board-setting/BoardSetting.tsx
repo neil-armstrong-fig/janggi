@@ -27,11 +27,11 @@ export function BoardSetting(): React.JSX.Element {
   const split = useAppSelector(state => state.preferences.hanBoardStyle !== undefined);
   const {armyBoardStyles} = useOwnPreferences();
   const dispatch = useAppDispatch();
-  const {look} = useMessages();
+  const {locale, look} = useMessages();
 
   const optionsBoardStyles = [...BUILT_IN_STYLES, ...boards];
   const lockedReason = (boardStyle: BoardStyle): string | undefined => {
-    return lockBehindXp(boardStylePrice(boardStyle.name), xp);
+    return lockBehindXp(boardStylePrice(boardStyle.name), xp, locale);
   };
 
   return (

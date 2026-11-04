@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
 import type {LastMoveStyle} from "@src/styles/types/board-marks/LastMoveStyle";
@@ -11,11 +12,12 @@ interface Props {
 }
 
 export function LastMoveControls({lastMoveStyle, onChange, onFocus}: Props): React.JSX.Element {
+  const words = useMessages().styles.board;
   return (
-    <ControlGroup title="Last move" onFocus={onFocus}>
+    <ControlGroup title={words.lastMove} onFocus={onFocus}>
       <ColourField
         id="last-move-wash"
-        label="Wash"
+        label={words.wash}
         value={lastMoveStyle.wash}
         translucent
         onChange={wash => onChange({...lastMoveStyle, wash})}
@@ -23,7 +25,7 @@ export function LastMoveControls({lastMoveStyle, onChange, onFocus}: Props): Rea
 
       <ColourField
         id="last-move-brackets"
-        label="Brackets"
+        label={words.brackets}
         value={lastMoveStyle.brackets}
         onChange={brackets => onChange({...lastMoveStyle, brackets})}
       />

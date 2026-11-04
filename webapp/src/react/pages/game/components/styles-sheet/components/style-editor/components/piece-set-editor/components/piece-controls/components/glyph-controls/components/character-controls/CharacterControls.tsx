@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {CharacterGlyphStyle} from "@src/styles/types/PieceStyle";
 import {ChoiceField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/choice-field/ChoiceField";
 import {FONT_STACKS} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/font/FontStacks";
@@ -7,7 +8,7 @@ import {STYLE_LIMITS} from "@src/styles/limits/StyleLimits";
 import {SliderField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/slider-field/SliderField";
 import {SwitchField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/switch-field/SwitchField";
 import {TextField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/text-field/TextField";
-import {WRITING_NAMES} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/writing/WritingName";
+import {WRITING_NAMES} from "@janggi/shared/janggi/styles/WritingName";
 import {characterFor} from "@src/react/pages/game/components/board/components/piece/utils/CharacterFor";
 import {withCharacter} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/character-glyph/WithCharacter";
 import {withSlant} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/character-glyph/WithSlant";
@@ -26,12 +27,14 @@ interface Props {
 }
 
 export function CharacterControls({characterGlyphStyle, side, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.pieces;
   return (
     <>
       <ChoiceField
         id="writing"
-        label="Writing"
+        label={words.writing}
         options={WRITING_NAMES}
+        labelOf={writingName => words.writings[writingName]}
         value={writingOf(characterGlyphStyle.characters)}
         onChange={writingName => onChange(withWriting(characterGlyphStyle, writingName))}
       />
@@ -40,7 +43,7 @@ export function CharacterControls({characterGlyphStyle, side, onChange}: Props):
         <TextField
           key={pieceType}
           id={`character-${pieceType}`}
-          label={pieceType}
+          label={words.pieceTypes[pieceType]}
           value={characterFor(characterGlyphStyle.characters, {side, type: pieceType})}
           maxLength={MOST_CHARACTERS}
           onChange={text => onChange(withCharacter(characterGlyphStyle, {side, type: pieceType}, text))}
@@ -49,8 +52,9 @@ export function CharacterControls({characterGlyphStyle, side, onChange}: Props):
 
       <ChoiceField
         id="font"
-        label="Face"
+        label={words.face}
         options={FONT_STACKS.map(fontStack => fontStack.name)}
+        labelOf={fontStackName => words.fonts[fontStackName]}
         value={FONT_STACKS.find(fontStack => fontStack.css === characterGlyphStyle.fontFamily)?.name}
         onChange={fontStackName => {
           const chosenFontStack = FONT_STACKS.find(fontStack => fontStack.name === fontStackName);
@@ -60,7 +64,7 @@ export function CharacterControls({characterGlyphStyle, side, onChange}: Props):
 
       <SliderField
         id="font-weight"
-        label="Weight"
+        label={words.weight}
         numberRange={STYLE_LIMITS.fontWeight}
         step={50}
         value={characterGlyphStyle.fontWeight}
@@ -69,7 +73,7 @@ export function CharacterControls({characterGlyphStyle, side, onChange}: Props):
 
       <SwitchField
         id="slant-on"
-        label="Leaning"
+        label={words.leaning}
         value={characterGlyphStyle.slant !== undefined}
         onChange={leaning => onChange(withSlant(characterGlyphStyle, leaning ? LEAN : undefined))}
       />
@@ -77,7 +81,7 @@ export function CharacterControls({characterGlyphStyle, side, onChange}: Props):
       {characterGlyphStyle.slant !== undefined && (
         <SliderField
           id="slant"
-          label="Lean"
+          label={words.lean}
           numberRange={STYLE_LIMITS.glyphSlant}
           step={1}
           value={characterGlyphStyle.slant}

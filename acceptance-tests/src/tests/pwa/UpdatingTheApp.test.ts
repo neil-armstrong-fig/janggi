@@ -37,6 +37,27 @@ given("a player has a game in progress when another app release becomes availabl
   });
 });
 
+given("a player who reads the game in Korean when another app release becomes available", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.settings.language.setTo("ko");
+    await janggi.languageNotice.dismissIt();
+    await janggi.releaseUpdate.makeAvailable();
+  });
+
+  when("the new release is ready", () => {
+    then("the offer to refresh, or to leave it until later, is in Korean", async ({janggi}) => {
+      expect(await janggi.releaseUpdate.isOffered()).toBe(true);
+
+      const words = await janggi.releaseUpdate.getWords();
+
+      expect(words).toContain("새 버전이 준비되었습니다");
+      expect(words).toContain("새로고침");
+      expect(words).toContain("나중에");
+      expect(words).not.toContain("Refresh");
+    });
+  });
+});
+
 given("someone is reading the references when another app release becomes available", () => {
   beforeEach(async ({janggi}) => {
     await janggi.references.visitReferences();
@@ -46,6 +67,26 @@ given("someone is reading the references when another app release becomes availa
   when("the new release is ready", () => {
     then("the reading page offers to refresh too", async ({janggi}) => {
       expect(await janggi.releaseUpdate.isOffered()).toBe(true);
+    });
+  });
+});
+
+given("someone is reading the Korean references when another app release becomes available", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.references.visitKoreanReferences();
+    await janggi.releaseUpdate.makeAvailable();
+  });
+
+  when("the new release is ready", () => {
+    then("the offer to refresh, or to leave it until later, is in Korean", async ({janggi}) => {
+      expect(await janggi.releaseUpdate.isOffered()).toBe(true);
+
+      const words = await janggi.releaseUpdate.getWords();
+
+      expect(words).toContain("새 버전이 준비되었습니다");
+      expect(words).toContain("새로고침");
+      expect(words).toContain("나중에");
+      expect(words).not.toContain("Refresh");
     });
   });
 });

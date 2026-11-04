@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {EditingPanel} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/editor-frame/components/editing-panel/EditingPanel";
 import {EditorFrame} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/editor-frame/EditorFrame";
@@ -46,10 +47,11 @@ export function PieceSetEditor({
   onBack,
   onSave,
 }: Props): React.JSX.Element {
+  const {editor: words, refusals} = useMessages().styles;
   const {boardStyle: currentBoardStyle} = usePreferences();
   const [previewedOn, setPreviewedOn] = useState("");
   const previewedBoardStyle = boardStyles.find(boardStyle => boardStyle.name === previewedOn) ?? currentBoardStyle;
-  const styleDraft = useStyleDraft(startPieceSetStyle, piecesFromText);
+  const styleDraft = useStyleDraft(startPieceSetStyle, text => piecesFromText(text, refusals));
   const [pieceTarget, setPieceTarget] = useState<PieceTarget>({kind: "side", side: "cho"});
   // A set of the player's own is saved under its own name, which replaces it; a built-in's cannot be.
   const [name, setName] = useState(
@@ -69,17 +71,17 @@ export function PieceSetEditor({
       return;
     }
 
-    const styleOutcome = editedStyle("Pieces", name, JSON.stringify(styleDraft.style));
+    const styleOutcome = editedStyle({styleKind: "Pieces", name, json: JSON.stringify(styleDraft.style)}, refusals);
 
     if (styleOutcome.kind === "pieces") {
       onSave(styleOutcome.style);
-      setPasteResult({accepted: true, message: `Saved "${styleOutcome.style.name}", and the board is wearing it.`});
+      setPasteResult({accepted: true, message: words.saved(styleOutcome.style.name)});
       return;
     }
 
     setPasteResult({
       accepted: false,
-      message: styleOutcome.kind === "refused" ? styleOutcome.reason : "That is not a piece set.",
+      message: styleOutcome.kind === "refused" ? styleOutcome.reason : words.notAPieceSet,
     });
   };
 

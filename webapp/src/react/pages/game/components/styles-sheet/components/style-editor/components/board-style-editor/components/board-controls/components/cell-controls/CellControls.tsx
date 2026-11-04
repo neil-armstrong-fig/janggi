@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {CellStyle} from "@src/styles/types/CellStyle";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
@@ -17,21 +18,22 @@ interface Props {
 }
 
 export function CellControls({cellStyle, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.board;
   const ownDiagonals = cellStyle.diagonalStroke !== undefined || cellStyle.diagonalStrokeWidth !== undefined;
 
   return (
     <>
-      <ControlGroup title="Lines">
+      <ControlGroup title={words.lines}>
         <ColourField
           id="line-colour"
-          label="Line colour"
+          label={words.lineColour}
           value={cellStyle.stroke}
           onChange={stroke => onChange(currentCellStyle => ({...currentCellStyle, stroke}))}
         />
 
         <SliderField
           id="line-width"
-          label="Line width"
+          label={words.lineWidth}
           numberRange={STYLE_LIMITS.lineWidth}
           step={0.05}
           value={cellStyle.strokeWidth}
@@ -40,7 +42,7 @@ export function CellControls({cellStyle, onChange}: Props): React.JSX.Element {
 
         <SwitchField
           id="diagonals-own"
-          label="Own diagonals"
+          label={words.ownDiagonals}
           value={ownDiagonals}
           onChange={own => onChange(currentCellStyle => withDiagonals(currentCellStyle, own))}
         />
@@ -49,14 +51,14 @@ export function CellControls({cellStyle, onChange}: Props): React.JSX.Element {
           <>
             <ColourField
               id="diagonal-colour"
-              label="Diagonal colour"
+              label={words.diagonalColour}
               value={cellStyle.diagonalStroke ?? cellStyle.stroke}
               onChange={diagonalStroke => onChange(currentCellStyle => ({...currentCellStyle, diagonalStroke}))}
             />
 
             <SliderField
               id="diagonal-width"
-              label="Diagonal width"
+              label={words.diagonalWidth}
               numberRange={STYLE_LIMITS.lineWidth}
               step={0.05}
               value={cellStyle.diagonalStrokeWidth ?? cellStyle.strokeWidth}
@@ -68,10 +70,10 @@ export function CellControls({cellStyle, onChange}: Props): React.JSX.Element {
         )}
       </ControlGroup>
 
-      <ControlGroup title="Background">
+      <ControlGroup title={words.background}>
         <SwitchField
           id="cell-surface-own"
-          label="Own background"
+          label={words.ownBackground}
           value={cellStyle.surface !== undefined}
           onChange={own => {
             return onChange(currentCellStyle => withCellSurface(currentCellStyle, own ? OWN_BACKGROUND : undefined));
@@ -81,7 +83,7 @@ export function CellControls({cellStyle, onChange}: Props): React.JSX.Element {
         {cellStyle.surface !== undefined && (
           <ColourField
             id="cell-surface-colour"
-            label="Background"
+            label={words.background}
             value={cellStyle.surface}
             translucent
             onChange={surface => onChange(currentCellStyle => withCellSurface(currentCellStyle, surface))}

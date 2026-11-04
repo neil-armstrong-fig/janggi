@@ -1,5 +1,6 @@
-import {STYLE_VIEWS} from "@src/react/pages/game/components/styles-sheet/components/style-editor/types/StyleView";
-import type {StyleView} from "@src/react/pages/game/components/styles-sheet/components/style-editor/types/StyleView";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+import {STYLE_VIEWS} from "@janggi/shared/janggi/styles/StyleView";
+import type {StyleView} from "@janggi/shared/janggi/styles/StyleView";
 import {clsx} from "clsx";
 
 /** Whether a style is changed with the controls or as its raw JSON. */
@@ -9,8 +10,9 @@ interface Props {
 }
 
 export function ViewToggle({styleView, onView}: Props): React.JSX.Element {
+  const words = useMessages().styles.editor;
   return (
-    <div role="group" aria-label="How to change the style" className="flex gap-1 rounded-lg bg-black/25 p-1">
+    <div role="group" aria-label={words.viewsLabel} className="flex gap-1 rounded-lg bg-black/25 p-1">
       {STYLE_VIEWS.map(option => (
         <button
           key={option}
@@ -24,7 +26,7 @@ export function ViewToggle({styleView, onView}: Props): React.JSX.Element {
             styleView !== option && "text-white/70 hover:bg-white/10",
           )}
         >
-          {option === "raw" ? "Raw JSON" : "Controls"}
+          {words.views[option]}
         </button>
       ))}
     </div>

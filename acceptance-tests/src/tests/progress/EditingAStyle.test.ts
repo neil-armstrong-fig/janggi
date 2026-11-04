@@ -117,6 +117,20 @@ given("a player with the XP to make a style", () => {
         expect(await janggi.stylesSheet.styleEditor.getRaw()).toContain("#4a3116");
       });
 
+      then("there is room to read it", async ({janggi}) => {
+        expect(await janggi.stylesSheet.styleEditor.getRawLinesShown()).toBe(14);
+      });
+
+      when("the window is as small as a small phone's", () => {
+        beforeEach(async ({janggi}) => {
+          await janggi.resizeWindowTo(320, 568);
+        });
+
+        then("there is still room to read it, the editor scrolling to reach it", async ({janggi}) => {
+          expect(await janggi.stylesSheet.styleEditor.getRawLinesShown()).toBe(14);
+        });
+      });
+
       when("they change the colour of the lines there", () => {
         beforeEach(async ({janggi}) => {
           const raw = await janggi.stylesSheet.styleEditor.getRaw();

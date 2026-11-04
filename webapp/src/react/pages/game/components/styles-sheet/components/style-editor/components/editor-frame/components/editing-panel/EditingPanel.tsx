@@ -1,5 +1,5 @@
 import {RawView} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/editor-frame/components/editing-panel/components/raw-view/RawView";
-import type {StyleView} from "@src/react/pages/game/components/styles-sheet/components/style-editor/types/StyleView";
+import type {StyleView} from "@janggi/shared/janggi/styles/StyleView";
 import {ViewToggle} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/editor-frame/components/editing-panel/components/view-toggle/ViewToggle";
 
 /**

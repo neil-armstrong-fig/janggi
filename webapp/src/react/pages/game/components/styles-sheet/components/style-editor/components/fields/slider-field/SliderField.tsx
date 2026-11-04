@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {NumberRange} from "@src/styles/limits/types/NumberRange";
 import {clampedTo} from "@src/styles/limits/ClampedTo";
 import {useState} from "react";
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function SliderField({id, label, numberRange, step, value, onChange}: Props): React.JSX.Element {
+  const words = useMessages().styles.fields;
   // What is being typed, while it is not yet a number worth keeping — "0." on the way to "0.5".
   const [typed, setTyped] = useState<string | undefined>(undefined);
 
@@ -43,7 +45,7 @@ export function SliderField({id, label, numberRange, step, value, onChange}: Pro
       <input
         type="number"
         data-testid={`style-control-${id}`}
-        aria-label={`${label}, as a number`}
+        aria-label={words.asNumber(label)}
         min={numberRange.least}
         max={numberRange.most}
         step={step}

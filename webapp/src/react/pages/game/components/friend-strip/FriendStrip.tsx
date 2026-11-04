@@ -1,3 +1,5 @@
+import type {FriendStripMessages} from "@src/language/types/friend/FriendStripMessages";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {FriendConnectionStatus} from "@janggi/shared/janggi/online/FriendConnectionStatus";
 import type {FriendSliceState} from "@src/redux/online/types/FriendSliceState";
 import {actInFriendRoom} from "@src/redux/online/actions/playing/ActInFriendRoom";
@@ -9,27 +11,11 @@ import {leaveFriendRoom} from "@src/redux/online/actions/LeaveFriendRoom";
 import {sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import type {FriendGameState} from "@janggi/shared/janggi/online/FriendGameState";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
-
-const CONNECTION_WORDS: Record<FriendConnectionStatus, string> = {
-  connecting: "Connecting…",
-  connected: "Connected",
-  reconnecting: "Reconnecting…",
-};
 
 const DOTS: Record<FriendConnectionStatus, string> = {
   connecting: "animate-pulse bg-white/50",
   connected: "bg-green-500",
   reconnecting: "animate-pulse bg-red-500",
-};
-
-const WORDS: Record<FriendGameState, string> = {
-  idle: "",
-  "waiting-for-a-friend": "Waiting for friend to join",
-  "choosing-setups": "Choosing arrangements",
-  playing: "Playing",
-  "opponent-left": "Your friend has left. Your game is kept for them",
-  over: "Game over",
 };
 
 /**
@@ -43,10 +29,11 @@ export function FriendStrip(): React.JSX.Element | undefined {
   const friend = useAppSelector(state => state.friend);
   const game = useAppSelector(state => friendGameOf(state.friend, state.game).played.present);
   const dispatch = useAppDispatch();
+  const words = useMessages().friend.strip;
   const state = friendStateOf(friend, game);
   if (state === "idle") return undefined;
 
-  const resignation = resignationWords(friend, state);
+  const resignation = resignationWords(friend, state, words);
   const playing = state === "playing" || state === "opponent-left";
   const yourTurn = state === "playing" && friend.ownSide !== undefined && game.sideToMove === friend.ownSide;
   const theirTurn = state === "playing" && friend.ownSide !== undefined && game.sideToMove !== friend.ownSide;
@@ -66,7 +53,7 @@ export function FriendStrip(): React.JSX.Element | undefined {
         data-testid="friend-connection"
         data-connection={friend.connection}
         role="img"
-        aria-label={CONNECTION_WORDS[friend.connection]}
+        aria-label={words.connection[friend.connection]}
         className={clsx("size-3 shrink-0 rounded-full", DOTS[friend.connection])}
       />
 
@@ -76,13 +63,13 @@ export function FriendStrip(): React.JSX.Element | undefined {
         role="status"
         className={clsx(state === "waiting-for-a-friend" ? "min-w-0 truncate text-white/80" : "sr-only")}
       >
-        {WORDS[state]}
-        {resignation !== undefined && ` — ${resignation} resigned`}
+        {words.states[state]}
+        {resignation !== undefined && ` — ${resignation}`}
       </span>
 
       {friend.ownSide !== undefined && (
         <span data-testid="friend-own-side" data-side={friend.ownSide} className="sr-only">
-          You are {sideName(friend.ownSide)}
+          {words.youAre(friend.ownSide)}
         </span>
       )}
 
@@ -104,13 +91,13 @@ export function FriendStrip(): React.JSX.Element | undefined {
             onClick={() => dispatch(switchGame("friend"))}
             className={BUTTON}
           >
-            Back to this game
+            {words.backToGame}
           </button>
         )}
 
         {friend.viewing === "friend" && state === "choosing-setups" && (
           <button type="button" onClick={() => dispatch(sheetOpened("friend"))} className={BUTTON}>
-            Choose
+            {words.choose}
           </button>
         )}
 
@@ -121,7 +108,7 @@ export function FriendStrip(): React.JSX.Element | undefined {
             onClick={() => dispatch(actInFriendRoom({kind: "resign"}))}
             className={clsx(BUTTON_SHAPE, yourTurn && ON_YOUR_TURN, !yourTurn && QUIET)}
           >
-            Resign
+            {words.resign}
           </button>
         )}
 
@@ -133,7 +120,7 @@ export function FriendStrip(): React.JSX.Element | undefined {
               onClick={() => dispatch(leaveFriendRoom())}
               className={BUTTON}
             >
-              Leave
+              {words.leave}
             </button>
           )}
       </span>
@@ -141,12 +128,19 @@ export function FriendStrip(): React.JSX.Element | undefined {
   );
 }
 
-/** Who resigned, in words, once the game is over by resignation: "You", or the friend's name. Nothing while the game is any other way. */
-function resignationWords(friend: FriendSliceState, state: FriendGameState): string | undefined {
+/** Who resigned, in words, once the game is over by resignation. Nothing while the game is any other way. */
+function resignationWords(
+  friend: FriendSliceState,
+  state: FriendGameState,
+  words: FriendStripMessages,
+): string | undefined {
   if (state !== "over" || friend.resignedBy === undefined) return undefined;
-  if (friend.resignedBy === friend.ownSide) return "You";
+  if (friend.resignedBy === friend.ownSide) return words.youResigned;
 
-  return friend.opponent?.displayName ?? "Your friend";
+  const name = friend.opponent?.displayName;
+  if (name === undefined) return words.friendResigned;
+
+  return words.opponentResigned(name);
 }
 
 const BUTTON_SHAPE = "min-h-8 cursor-pointer rounded-md border px-2 text-xs";

@@ -1,5 +1,9 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+
 /** The app's source repository, opened without taking the game away. */
 export function RepositoryLink(): React.JSX.Element {
+  const {you} = useMessages();
+
   return (
     <a
       data-testid="repository-open"
@@ -8,9 +12,9 @@ export function RepositoryLink(): React.JSX.Element {
       rel="noopener noreferrer"
       className="flex min-h-11 items-center justify-between gap-4 rounded-lg border border-wood/20 px-3 py-2 text-sm text-wood hover:bg-wood/10"
     >
-      <span>Source code</span>
+      <span>{you.links.repository.title}</span>
 
-      <span className="text-xs text-wood/70">Github</span>
+      <span className="text-xs text-wood/70">{you.links.repository.note}</span>
     </a>
   );
 }

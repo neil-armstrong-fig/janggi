@@ -1,3 +1,4 @@
+import {ENGLISH} from "@src/language/english/English";
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
@@ -154,5 +155,5 @@ it("goes back to the style it was started from, whatever has been changed since"
 });
 
 function draft(): RenderedDraft {
-  return renderHook(() => useStyleDraft(classicStyle, boardFromText));
+  return renderHook(() => useStyleDraft(classicStyle, text => boardFromText(text, ENGLISH.styles.refusals)));
 }

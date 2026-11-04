@@ -51,6 +51,16 @@ export class SettingsPlaywright extends SettingsSheetComponent {
     return href !== undefined && new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href;
   }
 
+  /** Where the link to the guide in the game goes, as written in the page. */
+  async getGuideAddressInGame(): Promise<string> {
+    return (await this.page.getByTestId("guide-open").getAttribute("href")) ?? "";
+  }
+
+  /** Where the link to the references in the game goes, as written in the page. */
+  async getReferencesAddressInGame(): Promise<string> {
+    return (await this.page.getByTestId("references-open").getAttribute("href")) ?? "";
+  }
+
   async getDeveloperWebsiteDestination(): Promise<string> {
     return await this.appHelpDestination("developer-website-open");
   }
@@ -62,6 +72,16 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   /** The build the app was made from, as the You tab names it. */
   async getAppVersion(): Promise<string> {
     return ((await this.appVersion.textContent()) ?? "").trim();
+  }
+
+  /** The line that names the build, with the word for a version in front of it. */
+  async getVersionWords(): Promise<string> {
+    return ((await this.appVersion.locator("xpath=..").textContent()) ?? "").trim();
+  }
+
+  /** What the app and help links in the You tab say, as the player reads them. */
+  async getAppHelpWords(): Promise<string> {
+    return ((await this.page.getByTestId("app-help").textContent()) ?? "").trim();
   }
 
   private async appHelpDestination(testId: string): Promise<string> {

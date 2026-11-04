@@ -70,4 +70,20 @@ export class ProgressSettingDsl {
       throw new DslError("Failed to read whether the save was refused", error);
     }
   }
+
+  async getSaveWords(): Promise<string> {
+    try {
+      return await this.progress.getSaveWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the answer to the last save says", error);
+    }
+  }
+
+  async getNextUnlockWords(): Promise<string> {
+    try {
+      return await this.progress.getNextUnlockWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the next unlock says", error);
+    }
+  }
 }

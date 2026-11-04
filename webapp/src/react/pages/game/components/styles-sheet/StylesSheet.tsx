@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Sheet} from "@src/react/pages/game/components/sheet/Sheet";
 import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
@@ -31,6 +32,7 @@ import {useState} from "react";
  * saved is worn the moment it is, and seen straight away on the game when the sheet closes.
  */
 export function StylesSheet(): React.JSX.Element {
+  const words = useMessages().styles.sheet;
   const open = useAppSelector(state => state.settings.openSheet === "styles");
   const customStyles = useAppSelector(state => state.customStyles);
   const xp = useAppSelector(state => state.progress.xp);
@@ -58,8 +60,8 @@ export function StylesSheet(): React.JSX.Element {
       testId="styles"
       closeTestId="styles-close"
       backTestId="styles-back"
-      title="Your styles"
-      closeLabel="Close your styles"
+      title={words.title}
+      closeLabel={words.closeLabel}
       open={open}
       onClose={onClose}
       onBack={onBack}

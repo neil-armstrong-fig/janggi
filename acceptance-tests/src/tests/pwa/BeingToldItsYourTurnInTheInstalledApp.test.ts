@@ -61,7 +61,7 @@ given("a player who reads the game in Korean, whose browser lets the app show no
     then("the notification is in Korean", async ({janggi}) => {
       await expect
         .poll(() => janggi.playAFriend.getNotificationsShown())
-        .toEqual(["Yi Sun-sin님이 수를 두었습니다. 당신의 차례입니다."]);
+        .toEqual(["Yi Sun-sin님이 수를 두었습니다. 내 차례입니다."]);
     });
   });
 
@@ -71,7 +71,7 @@ given("a player who reads the game in Korean, whose browser lets the app show no
     });
 
     then("the notification still says it is their turn, in Korean", async ({janggi}) => {
-      await expect.poll(() => janggi.playAFriend.getNotificationsShown()).toEqual(["당신의 차례입니다."]);
+      await expect.poll(() => janggi.playAFriend.getNotificationsShown()).toEqual(["내 차례입니다."]);
     });
   });
 });

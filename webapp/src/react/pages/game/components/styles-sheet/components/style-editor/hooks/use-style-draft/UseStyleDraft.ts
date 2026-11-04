@@ -1,7 +1,7 @@
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
-import type {StyleView} from "@src/react/pages/game/components/styles-sheet/components/style-editor/types/StyleView";
+import type {StyleView} from "@janggi/shared/janggi/styles/StyleView";
 import {useState} from "react";
 import {writtenOut} from "@src/react/pages/game/components/styles-sheet/components/style-editor/hooks/use-style-draft/written-out/WrittenOut";
 

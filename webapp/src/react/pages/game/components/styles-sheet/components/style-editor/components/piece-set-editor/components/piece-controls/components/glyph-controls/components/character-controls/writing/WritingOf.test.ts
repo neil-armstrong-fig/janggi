@@ -1,5 +1,5 @@
 import {expect, it} from "vitest";
-import {WRITING_NAMES} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/writing/WritingName";
+import {WRITING_NAMES} from "@janggi/shared/janggi/styles/WritingName";
 import {WRITINGS} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/writing/Writings";
 import {writingOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/writing/WritingOf";
 

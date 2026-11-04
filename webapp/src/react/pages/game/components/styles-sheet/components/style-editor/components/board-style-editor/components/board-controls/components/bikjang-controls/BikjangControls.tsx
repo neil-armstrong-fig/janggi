@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {BikjangStyle} from "@src/styles/types/board-marks/BikjangStyle";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
@@ -13,18 +14,19 @@ interface Props {
 }
 
 export function BikjangControls({bikjangStyle, onChange, onFocus}: Props): React.JSX.Element {
+  const words = useMessages().styles.board;
   return (
-    <ControlGroup title="Bikjang" onFocus={onFocus}>
+    <ControlGroup title={words.bikjang} onFocus={onFocus}>
       <ColourField
         id="bikjang-colour"
-        label="Line colour"
+        label={words.lineColour}
         value={bikjangStyle.colour}
         onChange={colour => onChange({...bikjangStyle, colour})}
       />
 
       <SliderField
         id="bikjang-width"
-        label="Line width"
+        label={words.lineWidth}
         numberRange={STYLE_LIMITS.bikjangWidth}
         step={0.5}
         value={bikjangStyle.width}

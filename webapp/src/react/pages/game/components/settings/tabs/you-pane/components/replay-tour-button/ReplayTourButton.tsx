@@ -1,6 +1,7 @@
 import {Button} from "@src/react/pages/game/components/button/Button";
 import {tourStarted} from "@src/redux/onboarding/OnboardingSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * Starts the tour again, for a player who skipped it or has forgotten it. It puts the sheet away by itself:
@@ -8,6 +9,7 @@ import {useAppDispatch} from "@src/redux/Hooks";
  */
 export function ReplayTourButton(): React.JSX.Element {
   const dispatch = useAppDispatch();
+  const {you} = useMessages();
 
   return (
     <Button
@@ -16,9 +18,9 @@ export function ReplayTourButton(): React.JSX.Element {
       onClick={() => dispatch(tourStarted())}
       className="items-center justify-between gap-4"
     >
-      <span>Replay the tour</span>
+      <span>{you.links.replayTour.title}</span>
 
-      <span className="text-xs text-wood/70">Show me around again</span>
+      <span className="text-xs text-wood/70">{you.links.replayTour.note}</span>
     </Button>
   );
 }

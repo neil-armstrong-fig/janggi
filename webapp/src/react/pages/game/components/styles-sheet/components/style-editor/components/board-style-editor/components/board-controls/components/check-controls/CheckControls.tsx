@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {CheckStyle} from "@src/styles/types/board-marks/CheckStyle";
 import {ColourField} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/ColourField";
 import {ControlGroup} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/control-group/ControlGroup";
@@ -11,11 +12,12 @@ interface Props {
 }
 
 export function CheckControls({checkStyle, onChange, onFocus}: Props): React.JSX.Element {
+  const words = useMessages().styles.board;
   return (
-    <ControlGroup title="Check" onFocus={onFocus}>
+    <ControlGroup title={words.check} onFocus={onFocus}>
       <ColourField
         id="check-colour"
-        label="Colour"
+        label={words.colour}
         value={checkStyle.colour}
         onChange={colour => onChange({...checkStyle, colour})}
       />

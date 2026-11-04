@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {Move} from "@janggi/engine/types/Move";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {Piece as PieceIdentity} from "@janggi/shared/janggi/pieces/Piece";
@@ -38,6 +39,7 @@ interface Props {
 
 export function MoveFlight({piece, move, style, onLanded}: Props): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
+  const {pieceName} = useMessages();
   const land = useEffectEvent(onLanded);
   const box = pointBox(move.to);
   const start = startingOffset(move);
@@ -78,7 +80,7 @@ export function MoveFlight({piece, move, style, onLanded}: Props): React.JSX.Ele
         transform: `translate(${start.x}%, ${start.y}%)`,
       }}
     >
-      <Piece piece={piece} style={style} emphasised={false} />
+      <Piece piece={piece} name={pieceName(piece)} style={style} emphasised={false} />
     </div>
   );
 }

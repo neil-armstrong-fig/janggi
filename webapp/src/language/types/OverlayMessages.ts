@@ -18,4 +18,6 @@ export interface OverlayMessages {
   readonly tryAgain: string;
   /** What the note says while a move is held back for repeating a position, after the Korean words that head it in every language. */
   readonly repetitionNotice: string;
+  readonly peekLabel: string;
+  readonly peekNote: string;
 }

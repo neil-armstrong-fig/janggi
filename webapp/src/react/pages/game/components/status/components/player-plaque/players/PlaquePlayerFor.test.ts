@@ -19,7 +19,7 @@ it("names the player, their rating and their XP, on their own army", () => {
 
 it("names the next unlock past the player's XP", () => {
   expect(plaquePlayerFor("cho", theBot, 1200, 640)).toMatchObject({
-    nextUnlock: {xp: 1_200, labels: ["Celadon theme"]},
+    nextUnlock: {xp: 1_200, items: [{kind: "theme", name: "Celadon"}]},
   });
 });
 

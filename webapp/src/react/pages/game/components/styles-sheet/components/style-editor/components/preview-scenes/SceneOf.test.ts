@@ -1,4 +1,4 @@
-import {SCENE_NAMES} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
+import {SCENE_NAMES} from "@janggi/shared/janggi/styles/SceneName";
 import {bikjangLineIn} from "@src/react/pages/game/components/board/components/bikjang-line/utils/BikjangLineIn";
 import {expect, it} from "vitest";
 import {sceneOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/SceneOf";

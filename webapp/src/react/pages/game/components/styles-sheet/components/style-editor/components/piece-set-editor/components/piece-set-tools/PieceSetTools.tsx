@@ -1,8 +1,8 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {StyleDraft} from "@src/react/pages/game/components/styles-sheet/components/style-editor/hooks/use-style-draft/UseStyleDraft";
 import {StyleTools} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/style-tools/StyleTools";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
 import {styleImportFrom} from "@src/react/pages/game/components/styles-sheet/style-import/StyleImportFrom";
 import {withArmyOf} from "@src/styles/piece-sets/WithArmyOf";
 
@@ -30,6 +30,7 @@ export function PieceSetTools({
   onLoaded,
   onPasteResult,
 }: Props): React.JSX.Element {
+  const {tools: words, refusals} = useMessages().styles;
   return (
     <StyleTools
       startName={startPieceSetStyle.name}
@@ -39,20 +40,17 @@ export function PieceSetTools({
         onPasteResult(undefined);
       }}
       onPasteKey={text => {
-        const styleOutcome = styleImportFrom(text);
+        const styleOutcome = styleImportFrom(text, refusals);
         if (styleOutcome.kind === "pieces") {
           styleDraft.replace(styleOutcome.style);
           onLoaded();
 
-          return {accepted: true, message: `Loaded "${styleOutcome.style.name}".`};
+          return {accepted: true, message: words.loaded(styleOutcome.style.name)};
         }
 
         return {
           accepted: false,
-          message:
-            styleOutcome.kind === "board"
-              ? "That is a board key, and this is a piece set being made."
-              : styleOutcome.reason,
+          message: styleOutcome.kind === "board" ? words.boardKeyHere : styleOutcome.reason,
         };
       }}
       sources={pieceSetStyles.map(pieceSetStyle => pieceSetStyle.name)}
@@ -63,7 +61,7 @@ export function PieceSetTools({
         if (copyScope === "both") {
           styleDraft.replace(sourcePieceSetStyle);
           onLoaded();
-          onPasteResult({accepted: true, message: `Loaded "${sourcePieceSetStyle.name}".`});
+          onPasteResult({accepted: true, message: words.loaded(sourcePieceSetStyle.name)});
           return;
         }
 
@@ -71,7 +69,7 @@ export function PieceSetTools({
         onLoaded();
         onPasteResult({
           accepted: true,
-          message: `Loaded ${sideName(copyScope)}'s pieces from "${sourcePieceSetStyle.name}".`,
+          message: words.loadedArmy(copyScope, sourcePieceSetStyle.name),
         });
       }}
       byArmy

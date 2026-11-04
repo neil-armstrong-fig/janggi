@@ -1,5 +1,6 @@
 import {clsx} from "clsx";
 import {unlockProgressFor} from "@src/react/pages/game/components/xp-bar/unlock-progress/UnlockProgressFor";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
 /**
  * How far a player's XP has come towards the next unlock, as a bar that fills between the last one and
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function XpBar({xp, testId, className}: Props): React.JSX.Element | undefined {
+  const {you} = useMessages();
   const progress = unlockProgressFor(xp);
   if (!progress) return undefined;
 
@@ -26,7 +28,7 @@ export function XpBar({xp, testId, className}: Props): React.JSX.Element | undef
   return (
     <div
       role="progressbar"
-      aria-label="Progress to the next unlock"
+      aria-label={you.progress.barLabel}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={percent}

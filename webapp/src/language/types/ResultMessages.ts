@@ -10,6 +10,7 @@ export interface ResultMessages {
   readonly wonOnPoints: (side: Side) => string;
   readonly drawn: Record<DrawnBy, string>;
   readonly newGame: string;
+  readonly unlocked: (unlocks: string) => string;
   readonly showBoard: string;
   readonly newGameAt: (botElo: number) => string;
   /** How the bot is named as the one who called a bikjang, given the army it plays. */

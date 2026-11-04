@@ -44,6 +44,14 @@ export class StylesSheetDsl {
     }
   }
 
+  async getWords(): Promise<string> {
+    try {
+      return await this.styles.getWords();
+    } catch (error) {
+      throw new DslError("Failed to read what the player's styles say", error);
+    }
+  }
+
   async goBackToSettings(): Promise<void> {
     try {
       await this.styles.goBackToSettings();

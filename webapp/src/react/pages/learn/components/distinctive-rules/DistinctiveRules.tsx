@@ -1,83 +1,78 @@
-export function DistinctiveRules(): React.JSX.Element {
+import type {GuideRulesMessages} from "@src/language/types/guide/GuideRulesMessages";
+import type {GuideLinks} from "@src/react/pages/learn/links/types/GuideLinks";
+
+interface Props {
+  readonly messages: GuideRulesMessages;
+  readonly links: GuideLinks;
+}
+
+export function DistinctiveRules({messages, links}: Props): React.JSX.Element {
   return (
     <section className="border-t border-wood/15 py-16 lg:py-28" data-testid="guide-section">
-      <p className="mb-3 text-xs font-bold tracking-[0.19em] text-gold uppercase">04 · What makes it different</p>
+      <p className="mb-3 text-xs font-bold tracking-[0.19em] text-gold uppercase">{messages.eyebrow}</p>
 
       <h2 className="mb-7 font-serif text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
-        Rules unique to Janggi
+        {messages.heading}
       </h2>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <article className="rounded-xl border border-wood/15 bg-ground-raised/60 p-6">
-          <h3 className="mb-2 text-base font-bold">There is no river</h3>
+          <h3 className="mb-2 text-base font-bold">{messages.noRiver.title}</h3>
 
-          <p className="text-sm leading-relaxed text-wood/70">
-            The full board is open from the start. Soldiers can move sideways straight away, and elephants can cross
-            into the opposing half.
-          </p>
+          <p className="text-sm leading-relaxed text-wood/70">{messages.noRiver.body}</p>
         </article>
 
         <article className="rounded-xl border border-wood/15 bg-ground-raised/60 p-6">
-          <h3 className="mb-2 text-base font-bold">Cannons must jump</h3>
+          <h3 className="mb-2 text-base font-bold">{messages.cannons.title}</h3>
 
-          <p className="text-sm leading-relaxed text-wood/70">
-            A cannon must jump exactly one piece even for an ordinary move. It cannot jump over another cannon, and one
-            cannon can never capture another.
-          </p>
+          <p className="text-sm leading-relaxed text-wood/70">{messages.cannons.body}</p>
         </article>
 
         <article className="rounded-xl border border-wood/15 bg-ground-raised/60 p-6">
-          <h3 className="mb-2 text-base font-bold">Palaces have active diagonals</h3>
+          <h3 className="mb-2 text-base font-bold">{messages.palaces.title}</h3>
 
-          <p className="text-sm leading-relaxed text-wood/70">
-            Generals and guards use their own palace lines. Chariots and cannons can use the diagonals in either palace,
-            while invading soldiers can step diagonally forward.
-          </p>
+          <p className="text-sm leading-relaxed text-wood/70">{messages.palaces.body}</p>
         </article>
 
         <article className="rounded-xl border border-wood/15 bg-ground-raised/60 p-6">
-          <h3 className="mb-2 text-base font-bold">You choose the opening arrangement</h3>
+          <h3 className="mb-2 text-base font-bold">{messages.openings.title}</h3>
 
-          <p className="text-sm leading-relaxed text-wood/70">
-            Before play, each army chooses how its two horses and two elephants alternate on the back rank. The four
-            standard arrangements change which side of the board develops first.
-          </p>
+          <p className="text-sm leading-relaxed text-wood/70">{messages.openings.body}</p>
         </article>
 
         <article className="rounded-xl border border-wood/15 bg-ground-raised/60 p-6">
-          <h3 className="mb-2 text-base font-bold">You may pass</h3>
+          <h3 className="mb-2 text-base font-bold">{messages.passing.title}</h3>
 
-          <p className="text-sm leading-relaxed text-wood/70">
-            You can skip a turn unless your general is in check. That is why the game has no stalemate.
-          </p>
+          <p className="text-sm leading-relaxed text-wood/70">{messages.passing.body}</p>
         </article>
 
         <article className="rounded-xl border border-wood/15 bg-ground-raised/60 p-6">
-          <h3 className="mb-2 text-base font-bold">Facing generals create bikjang</h3>
+          <h3 className="mb-2 text-base font-bold">{messages.bikjang.title}</h3>
 
           <p className="text-sm leading-relaxed text-wood/70">
-            When the two generals face down an open file, a player may call <i>bikjang</i> (빅장). What that call
-            decides depends on the match format.
+            {messages.bikjang.body.before}
+            <i>{messages.bikjang.body.marked}</i>
+            {messages.bikjang.body.after}
           </p>
         </article>
       </div>
 
       <p className="mt-4 border-l-3 border-gold bg-gold/5 px-5 py-4 text-wood/80">
-        The{" "}
+        {messages.sources.start}
         <a
           className="underline decoration-wood/35 underline-offset-4 hover:decoration-gold"
-          href="references.html#rules"
+          href={`${links.references}#rules`}
         >
-          rules and match sources
-        </a>{" "}
-        cover palace lines, cannons, passing and bikjang. The{" "}
+          {messages.sources.firstLink}
+        </a>
+        {messages.sources.middle}
         <a
           className="underline decoration-wood/35 underline-offset-4 hover:decoration-gold"
-          href="references.html#openings"
+          href={`${links.references}#openings`}
         >
-          opening research
-        </a>{" "}
-        explains how the four starting arrangements were compared and named.
+          {messages.sources.secondLink}
+        </a>
+        {messages.sources.end}
       </p>
     </section>
   );

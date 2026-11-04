@@ -12,14 +12,26 @@ English can play a game from the first screen to the result.
 - **In scope: the main game.** Tabs, controls under the board, turn line, result
   banner and its explanations, the Play, Look and Sound tabs, plaques, draw
   offer, bot notices, the repeated-position note, the record sheet, the welcome
-  and the tour.
-- **Out of scope for now:** the learn, references and legal pages, the styles
-  editor and style names, the account and save panels, playing a friend, toasts
-  and errors, and piece names read by a screen reader (see the backlog below).
+  and the tour, and the whole You tab: the account, the progress, the app and
+  help links and the save key, with the answers the game gives to them and the
+  one toast (`you` and `toasts` in `Messages`). Also playing a friend, and the
+  styles sheet and editor (`styles`, the lowest priority for a reviewer).
+- **Out of scope for now:** the legal pages (the guide and references have
+  machine-translated Korean versions of their own, below; the legal pages stay
+  English on purpose, a machine translation of legal text being able to change
+  what it means). A style keeps its own name in every language, as a proper
+  name.
+- **English on purpose inside the styles sheet:** the checker's notes on one
+  field of a style's JSON (`style.sides.han.size should be…`, in `Reading`). They
+  name a place in the JSON for someone writing it by hand, and the sync and save
+  checks share them with no language to hand. What the sheet says of a whole
+  key, name, file or text is in `styles.refusals`; a function that words one is
+  handed those words, as `pieceTargetName` is.
 - **Deployed in a test state.** Choosing Korean (or a Korean browser on a first
   visit) shows a bilingual note that the translation is a work in progress.
-- **Reviewed by a volunteer native speaker**, so the load is kept small (about
-  170 strings). Do not grow `Korean.ts` without a reason.
+- **Reviewed by a volunteer native speaker**, so the load is kept in mind. It
+  began at about 170 strings and grew by decision to cover the whole game, so the
+  reviewer's table should put the rules and play first and the styles editor last.
 
 ## Architecture
 
@@ -44,7 +56,8 @@ English can play a game from the first screen to the result.
   never lowercased or joined.
 - `LanguageName` (`en`, `ko`) lives in `shared/src/janggi/settings/`. The
   message module needed `TourStepName`, `GameEnding` and `GameResult`, which
-  moved to `shared/` for that reason.
+  moved to `shared/` for that reason, as did the style editor's options
+  (`shared/src/janggi/styles/`), whose words are keyed off their lists.
 - The preference is `language` plus `languageNoticeSeen` in the preferences
   slice. It is kept on the device and **not synced**: a phone and a laptop may
   be read in different languages.
@@ -76,9 +89,43 @@ comes back; English never shows it. **Delete the component, its mount in
 `GamePage`, the `languageNoticeSeen` preference and `LanguageNoticeDsl` when the
 translation is accepted.**
 
+## The guide, machine translated
+
+The guide has its own words, `GuideMessages` (`english/EnglishGuide.ts`,
+`korean/KoreanGuide.ts`), looked up by `guideMessagesOf` and handed to
+`LearnPage` as props. It is **not part of `Messages`**: about sixty passages of
+prose that every game page would otherwise carry, drawn on a page that has no
+store. Where a sentence has a bold word or a link in it (`MarkedText`,
+`SentenceWithTwoLinks`), each language writes the text before, the marked words
+and the text after, so the marked words fall where its own order puts them.
+`MovementSnapshot` takes its caption as a prop for the same reason.
+
+The Korean was **machine translated from the English by an assistant and has not
+been read by a native speaker**, so the page opens with a notice saying so in
+Korean and English, which links the English guide and cannot be dismissed. To
+remove it once someone has read it, set `translationNotice` to `undefined` in
+`KOREAN_GUIDE`. Terms to check first: the piece names (`궁(왕)`, `졸·병(卒·兵)`),
+`rules.openings` (상차림), the two formats (일반, 점수제 and 대회 방식), `hero.facts`,
+and the wording of 외통 against 장군 in `winning`.
+
+## The references, machine translated
+
+The references page has the same shape as the guide: `ReferencesMessages`
+(`english/EnglishReferences.ts`, `korean/KoreanReferences.ts`), looked up by
+`referencesMessagesOf` and not part of `Messages`. `referenceSectionsOf` builds
+the page's sections from those words, keeping URLs and licences in one place.
+
+**What other people wrote keeps the name they gave it**: a source's title and
+its authors, in the code as literals. The labels this project wrote (`linkNames`)
+and what each source contributed (`descriptions`) are translated. Where the
+English says a source is "In Korean", the Korean says instead when one is in
+English. It opens with the same `TranslationNotice`; remove it by setting
+`translationNotice` to `undefined` in `KOREAN_REFERENCES`. A Korean reader reaches
+it from the You tab, `/ko/` and the Korean guide (`addressOfReferences`).
+
 ## Why no i18n library
 
-Two languages and about 170 strings do not need one:
+Two languages and a few hundred strings do not need one:
 
 - Typed `Messages` gives compile-time completeness; most libraries use string
   keys and need extra tooling for that.
@@ -110,10 +157,12 @@ Decided against: icons on the Your side picker. With a dot beside Cho and Han,
 Janggi's own terms are used rather than translations of the English: 한수쉼
 (pass), 빅장 (bikjang), 외통 (checkmate), 장군 (check), 점수승, 초 and 한, and
 the setups 안상차림, 바깥상차림, 왼상차림, 오른상차림 (from
-`docs/opening-setups.md`, section "official Korean notation"). **기동차차림 for
-"Central Chariot" is a guess.** Terms a native speaker should check first:
+`docs/opening-setups.md`, section "official Korean notation"). **기동차 차림 for
+"Central Chariot" is spelled as `docs/opening-setups.md` has it, unconfirmed.**
+Terms a native speaker should check first:
 `play.setupNames`, `play.formatNames` (일반 / 점수제), `play.flipBoard`,
-`play.games`, `tabs.You` (내 정보), `controls.redo` (다시), `controls.pass`,
+`play.games`, `tabs.You` (내 정보), `controls.redo` (다시 두기), `controls.pass`,
+`announcements.inCheck` (초 궁 장군 상태), `overlays.botPlays`,
 `overlays.drawOffer` (무승부 · 초 제안), `result.botPlaying` (봇(초)),
 `record.winsDrawsLosses`, `record.winRate`, `record.endings.abandoned`,
 `announcements.wonOnPoints`.
@@ -121,7 +170,8 @@ the setups 안상차림, 바깥상차림, 왼상차림, 오른상차림 (from
 ## The reviewer's table
 
 A native speaker finds an English-to-Korean table far easier than reading code.
-It was made by flattening `ENGLISH` and `KOREAN`:
+It is made by flattening `ENGLISH` and `KOREAN`, and the guide's and references'
+words beside them:
 
 1. A temporary Vitest file (deleted after) walks both objects, calling each
    function message with sample values (`cho`, `800`, step 3 of 8, 300 XP, both
@@ -134,18 +184,17 @@ The page is a snapshot and its link is private and perishable, so regenerate it
 rather than rely on it. Reviewer changes go into `Korean.ts` only; the types and
 `MessagesOf.test.ts` catch anything missing.
 
-## Still English (backlog, in priority order)
+## Still English
 
-1. The match-format explanation and the flip-board help sentence.
-2. Board and piece style names and the styles sheet.
-3. The You tab apart from the picker, and the Play a friend sheets and the "Tell me when it is my turn" switch.
-4. Toasts and errors, including the rename messages built in `redux/`.
-5. Piece `aria-label`s (`pieceName`), which a screen reader reads in English.
-6. The "bot is Fairy-Stockfish" footer on the record sheet.
-7. Number formatting hard-coded to `"en"` (`PlayerPlaque`, `Progress`,
-   `LockBehindXp`, `StyleStarter`): identical for small numbers, but the compact
-   form ("1M") differs in Korean. Use the chosen language when this is done.
-8. The extra pages (guide, references, legal) and the manifest, which stay English by decision; the game's own Korean page, `/ko/`, is built: see `docs/seo.md`.
+The legal pages and the manifest, which stay English by decision. The game's own
+Korean page, `/ko/`, the guide's, `/ko/learn.html`, and the references',
+`/ko/references.html`, are built: see `docs/seo.md`.
+
+The unlock ladder holds `UnlockItem`s, data rather than words, and
+`unlockWordsOf` words them where they are shown: a style keeps its name and the
+words around it are the language's ("Hanja 말"). `lockBehindBot` likewise returns
+a `BotLock` for `play.botLock` to word. The engine carries no player-facing
+description of a setup; those are `play.setupDescriptions`.
 
 ## Adding a language, or changing a string
 
@@ -159,6 +208,12 @@ rather than rely on it. Reviewer changes go into `Korean.ts` only; the types and
   `innerText` returns the capitals.
 
 ## Hazards found
+
+- Korean would otherwise break a line between any two letters, so `body` in
+  `index.css` sets `word-break: keep-all`. That still leaves a break after a
+  closing bracket, so **no particle straight after `)`**: `(샹치)와` can end a line
+  before its `와`. Reword rather than add an invisible joiner, which a reviewer
+  cannot see and a search engine reads. `ReadingKoreanWithoutSplitWords` measures it.
 
 - Never build an aria label by lowercasing and joining words.
 - A dev server on a spare port is stopped by PID (`ss -ltnp`), not with

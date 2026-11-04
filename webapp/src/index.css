@@ -42,6 +42,16 @@
     height: 100dvh;
   }
 
+  /*
+   * Korean may break between any two letters, and left to itself a line ends in the middle of a word, which reads as a
+   * mistake. So lines break between words. Latin text already does, so this changes nothing for it. A word too long for
+   * its whole line may still break rather than overflow; `break-word` leaves how wide a box asks to be alone.
+   */
+  body {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
   body,
   #root {
     height: 100%;

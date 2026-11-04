@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import type {StyleDraft} from "@src/react/pages/game/components/styles-sheet/components/style-editor/hooks/use-style-draft/UseStyleDraft";
@@ -27,6 +28,7 @@ export function BoardStyleTools({
   onLoaded,
   onPasteResult,
 }: Props): React.JSX.Element {
+  const {tools: words, refusals} = useMessages().styles;
   const load = (boardStyle: BoardStyle): void => {
     styleDraft.replace(boardStyle);
     onLoaded();
@@ -41,19 +43,16 @@ export function BoardStyleTools({
         onPasteResult(undefined);
       }}
       onPasteKey={text => {
-        const styleOutcome = styleImportFrom(text);
+        const styleOutcome = styleImportFrom(text, refusals);
         if (styleOutcome.kind === "board") {
           load(styleOutcome.style);
 
-          return {accepted: true, message: `Loaded "${styleOutcome.style.name}".`};
+          return {accepted: true, message: words.loaded(styleOutcome.style.name)};
         }
 
         return {
           accepted: false,
-          message:
-            styleOutcome.kind === "pieces"
-              ? "That is a piece set key, and this is a board being made."
-              : styleOutcome.reason,
+          message: styleOutcome.kind === "pieces" ? words.piecesKeyHere : styleOutcome.reason,
         };
       }}
       sources={boardStyles.map(boardStyle => boardStyle.name)}
@@ -62,7 +61,7 @@ export function BoardStyleTools({
         if (!boardStyle) return;
 
         load(boardStyle);
-        onPasteResult({accepted: true, message: `Loaded "${boardStyle.name}".`});
+        onPasteResult({accepted: true, message: words.loaded(boardStyle.name)});
       }}
       byArmy={false}
     />

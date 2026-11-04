@@ -39,6 +39,22 @@ export class StyleEditorDsl {
   }
 
   /** Whether the editor refused the last style saved in it. */
+  async getMessage(): Promise<string> {
+    try {
+      return await this.styleEditor.getMessage();
+    } catch (error) {
+      throw new DslError("Failed to read what the style editor said", error);
+    }
+  }
+
+  async getRawMessage(): Promise<string> {
+    try {
+      return await this.styleEditor.getRawMessage();
+    } catch (error) {
+      throw new DslError("Failed to read what the style editor said of the JSON", error);
+    }
+  }
+
   async isRefused(): Promise<boolean> {
     try {
       return await this.styleEditor.isRefused();
@@ -81,6 +97,14 @@ export class StyleEditorDsl {
   }
 
   /** Replaces the raw JSON of the style being made. */
+  async getRawLinesShown(): Promise<number> {
+    try {
+      return await this.styleEditor.getRawLinesShown();
+    } catch (error) {
+      throw new DslError("Failed to read how many lines of JSON the style editor shows", error);
+    }
+  }
+
   async setRaw(json: string): Promise<void> {
     try {
       await this.styleEditor.setRaw(json);

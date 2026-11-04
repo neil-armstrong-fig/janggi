@@ -1,10 +1,10 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {KeyedPiece} from "@src/react/pages/game/components/status/components/player-plaque/components/taken-tray/types/KeyedPiece";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
-import {sideName} from "@src/react/pages/game/utils/SideNames";
 
 /**
  * The pieces one army has lost, drawn small in the set the board is wearing, most valuable first.
@@ -25,10 +25,12 @@ interface Props {
 }
 
 export function TakenTray({side, taken, pieceStyle, popping}: Props): React.JSX.Element {
+  const {pieceName, plaque} = useMessages();
+
   return (
     <ol
       data-testid={`taken-${side}`}
-      aria-label={`Taken from ${sideName(side)}`}
+      aria-label={plaque.takenFrom(side)}
       className="flex h-6 min-w-0 flex-1 items-center"
     >
       {keyed(taken).map(({type, key}) => (
@@ -39,7 +41,7 @@ export function TakenTray({side, taken, pieceStyle, popping}: Props): React.JSX.
             popping && "animate-[tray-pop_420ms_cubic-bezier(0.2,1.5,0.4,1)_both]",
           )}
         >
-          <Piece piece={{side, type}} style={pieceStyle} emphasised={false} />
+          <Piece piece={{side, type}} name={pieceName({side, type})} style={pieceStyle} emphasised={false} />
         </li>
       ))}
     </ol>

@@ -5,9 +5,11 @@ import type {PasteResult} from "@src/react/pages/game/components/paste-key/types
 import {SaveBuilder} from "@src/redux/saves/SaveBuilder";
 import {ShareKey} from "@src/react/pages/game/components/share-key/ShareKey";
 import type {AppDispatch} from "@src/redux/Store";
+import type {YouSaveTransferMessages} from "@src/language/types/you/YouSaveTransferMessages";
 import {saveFrom} from "@src/redux/saves/SaveFrom";
 import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useId, useState} from "react";
 
 /**
@@ -16,6 +18,7 @@ import {useId, useState} from "react";
  * data or moving to a new phone loses anything that was not copied; loading a save replaces the XP and unlocks here.
  */
 export function SaveTransfer(): React.JSX.Element {
+  const {saveTransfer} = useMessages().you;
   const progress = useAppSelector(state => state.progress);
   const customStyles = useAppSelector(state => state.customStyles);
   const dispatch = useAppDispatch();
@@ -32,7 +35,7 @@ export function SaveTransfer(): React.JSX.Element {
         onClick={() => setOpen(shown => !shown)}
         className="flex min-h-11 w-full cursor-pointer items-center justify-between gap-2 text-left"
       >
-        <span className="text-xs font-medium text-white/60">Move your progress to another device</span>
+        <span className="text-xs font-medium text-white/60">{saveTransfer.toggle}</span>
 
         <ChevronDownIcon
           className={clsx(
@@ -44,19 +47,15 @@ export function SaveTransfer(): React.JSX.Element {
 
       {open && (
         <div id={bodyId} className="flex flex-col gap-3">
-          <p className="rounded-xl bg-black/25 p-3 text-sm text-white/85">
-            A save key lets you move your progress by hand, with no account and no connection, so Janggi can stay fully
-            offline. It holds your XP, the bots you have beaten and your own styles, and loading one replaces your XP.
-            If you would rather not copy keys around, signing in with Google above keeps everything in sync for you.
-          </p>
+          <p className="rounded-xl bg-black/25 p-3 text-sm text-white/85">{saveTransfer.explanation}</p>
 
-          <ShareKey id="save" label="Copy save key" keyOf={() => SaveBuilder.of({progress, customStyles}).key()} />
+          <ShareKey id="save" label={saveTransfer.copy} keyOf={() => SaveBuilder.of({progress, customStyles}).key()} />
 
           <PasteKey
             id="save-load"
-            label="Load save"
-            placeholder="Paste a save key"
-            onSubmit={text => loadSave(dispatch, text)}
+            label={saveTransfer.load}
+            placeholder={saveTransfer.placeholder}
+            onSubmit={text => loadSave(dispatch, text, saveTransfer)}
           />
         </div>
       )}
@@ -64,11 +63,11 @@ export function SaveTransfer(): React.JSX.Element {
   );
 }
 
-function loadSave(dispatch: AppDispatch, text: string): PasteResult {
+function loadSave(dispatch: AppDispatch, text: string, words: YouSaveTransferMessages): PasteResult {
   const save = saveFrom(text);
-  if (!save) return {accepted: false, message: "That is not a save key."};
+  if (!save) return {accepted: false, message: words.notAKey};
 
   dispatch(saveLoaded(save));
 
-  return {accepted: true, message: "Loaded. Your XP and unlocks are the save's now."};
+  return {accepted: true, message: words.loaded};
 }

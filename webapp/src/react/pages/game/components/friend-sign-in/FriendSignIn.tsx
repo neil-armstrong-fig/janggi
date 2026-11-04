@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {addressWithoutLink} from "@src/react/pages/game/hooks/use-friend-room/utils/AddressWithoutLink";
 import {friendCodeInSearch} from "@janggi/shared/janggi/online/friend-code/JoinLink";
 import {signIn} from "@src/redux/account/actions/SignIn";
@@ -16,6 +17,7 @@ import {useState} from "react";
 export function FriendSignIn(): React.JSX.Element | undefined {
   const status = useAppSelector(state => state.account.status);
   const dispatch = useAppDispatch();
+  const words = useMessages().friend.signIn;
   const [linked, setLinked] = useState(() => friendCodeInSearch(globalThis.location.search) !== undefined);
   const prompting = linked && status === "signed-out";
   const dismiss = (): void => {
@@ -43,13 +45,10 @@ export function FriendSignIn(): React.JSX.Element | undefined {
           autoFocus
           className="text-lg font-semibold tracking-wide text-wood outline-none"
         >
-          Sign in to join your friend
+          {words.title}
         </h2>
 
-        <p className="text-sm text-white/80">
-          Playing a friend needs a Google account, so the game knows who is who. Sign in and you will be taken straight
-          to their game.
-        </p>
+        <p className="text-sm text-white/80">{words.body}</p>
 
         <button
           type="button"
@@ -57,7 +56,7 @@ export function FriendSignIn(): React.JSX.Element | undefined {
           onClick={() => dispatch(signIn())}
           className="cursor-pointer rounded-lg bg-gold px-4 py-3 font-semibold text-ink"
         >
-          Sign in with Google
+          {words.confirm}
         </button>
 
         <button
@@ -66,7 +65,7 @@ export function FriendSignIn(): React.JSX.Element | undefined {
           onClick={dismiss}
           className="cursor-pointer self-center rounded-lg px-3 py-2 text-sm text-white/60 underline hover:text-white"
         >
-          Not now
+          {words.dismiss}
         </button>
       </section>
     </div>

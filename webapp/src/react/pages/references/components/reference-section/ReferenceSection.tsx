@@ -3,9 +3,11 @@ import {ReferenceEntry} from "@src/react/pages/references/components/reference-s
 
 interface Props {
   readonly section: Section;
+  /** How a licence is worded in the page's language. */
+  readonly licenceOf: (licence: string) => string;
 }
 
-export function ReferenceSection({section}: Props): React.JSX.Element {
+export function ReferenceSection({section, licenceOf}: Props): React.JSX.Element {
   return (
     <section id={section.id} aria-labelledby={`${section.id}-heading`} tabIndex={-1} className="scroll-mt-8">
       <h2
@@ -20,7 +22,7 @@ export function ReferenceSection({section}: Props): React.JSX.Element {
 
       <ul className="mt-5 divide-y divide-wood/15">
         {section.references.map(reference => (
-          <ReferenceEntry key={reference.id} reference={reference} />
+          <ReferenceEntry key={reference.id} reference={reference} licenceOf={licenceOf} />
         ))}
       </ul>
     </section>

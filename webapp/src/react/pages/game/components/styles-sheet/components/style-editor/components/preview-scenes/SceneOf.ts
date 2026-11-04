@@ -1,7 +1,7 @@
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {Move} from "@janggi/engine/types/Move";
 import type {PreviewScene} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/PreviewScene";
-import type {SceneName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
+import type {SceneName} from "@janggi/shared/janggi/styles/SceneName";
 import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {applyMove} from "@janggi/engine/ApplyMove";
 import {callBikjang} from "@janggi/engine/bikjang/CallBikjang";

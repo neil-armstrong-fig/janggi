@@ -23,7 +23,7 @@ export function ArmySwitch({showing, onShow}: Props): React.JSX.Element {
 
       <div
         role="group"
-        aria-label="Which army's setup to show"
+        aria-label={play.armySwitchLabel}
         className="flex min-w-0 flex-1 gap-1 rounded-xl bg-black/25 p-1"
       >
         {SIDES_IN_PLAY_ORDER.map(side => (

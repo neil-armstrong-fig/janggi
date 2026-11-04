@@ -1,4 +1,5 @@
 import {clsx} from "clsx";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useTurnNotifications} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/turn-notifications/hooks/use-turn-notifications/UseTurnNotifications";
 
 /**
@@ -7,6 +8,7 @@ import {useTurnNotifications} from "@src/react/pages/game/components/settings/ta
  * The wrapper is always there, with the state on it, so a page and a spec can tell "still finding out" from "not offered".
  */
 export function TurnNotifications(): React.JSX.Element {
+  const {turnNotifications} = useMessages().you.account;
   const {state, toggle} = useTurnNotifications();
   const offered = state === "off" || state === "on";
 
@@ -18,13 +20,13 @@ export function TurnNotifications(): React.JSX.Element {
     >
       {offered && (
         <div className="flex items-center justify-between gap-3">
-          <span className="text-sm text-white/80">Tell me when it is my turn</span>
+          <span className="text-sm text-white/80">{turnNotifications.label}</span>
 
           <button
             type="button"
             role="switch"
             aria-checked={state === "on"}
-            aria-label="Tell me when it is my turn"
+            aria-label={turnNotifications.label}
             onClick={toggle}
             className={clsx(
               "h-8 w-16 shrink-0 cursor-pointer rounded-lg text-xs font-semibold transition-colors duration-150 motion-reduce:transition-none",
@@ -32,18 +34,13 @@ export function TurnNotifications(): React.JSX.Element {
               state !== "on" && "bg-black/25 text-white/60 hover:bg-white/10",
             )}
           >
-            {state === "on" && "On"}
-            {state !== "on" && "Off"}
+            {state === "on" && turnNotifications.on}
+            {state !== "on" && turnNotifications.off}
           </button>
         </div>
       )}
 
-      {state === "blocked" && (
-        <p className="text-xs text-white/60">
-          Notifications are blocked for Janggi in your browser&apos;s settings, so it cannot tell you when it is your
-          turn.
-        </p>
-      )}
+      {state === "blocked" && <p className="text-xs text-white/60">{turnNotifications.blocked}</p>}
     </div>
   );
 }

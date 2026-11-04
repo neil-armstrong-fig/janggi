@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {CellLines} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cell-lines/CellLines";
 import {CoverHint} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cover-hint/CoverHint";
 import {CELL_SVG_PROPS} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellViewBox";
@@ -103,6 +104,7 @@ export function Cell({
   pieceSetStyle: pieceStyleOverridePieceSetStyle,
 }: Props): React.JSX.Element {
   const preferences = usePreferences();
+  const {pieceName} = useMessages();
   const styleBoardStyle = boardStyle ?? preferences.boardStyle;
   const pieceSetStyle = pieceStyleOverridePieceSetStyle ?? preferences.pieceStyle;
   const pulsing = preferences.effects.full;
@@ -149,6 +151,7 @@ export function Cell({
         <Piece
           key={flourish?.id ?? "still"}
           piece={piece}
+          name={pieceName(piece)}
           style={pieceSetStyle}
           emphasised={hovered}
           concealed={concealed}

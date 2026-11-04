@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {WithName} from "@src/react/pages/game/types/WithName";
 import {ExplanationToggle} from "@src/react/pages/game/components/settings/components/explanation-toggle/ExplanationToggle";
 import {OptionButton} from "@src/react/pages/game/components/settings/components/option-picker/components/option-button/OptionButton";
@@ -72,6 +73,7 @@ export function OptionPicker<Option extends WithName>({
   explanation,
   onSelect,
 }: Props<Option>): React.JSX.Element {
+  const {settings} = useMessages();
   const [explained, setExplained] = useState(false);
   const explanationId = useId();
   const asDropdown = options.length > (lockedReason === undefined ? MOST_BUTTONS : MOST_LOCKABLE_BUTTONS);
@@ -86,7 +88,7 @@ export function OptionPicker<Option extends WithName>({
           {explanation !== undefined && (
             <ExplanationToggle
               testId={`${id}-explain`}
-              ariaLabel={`What each ${label.toLowerCase()} means`}
+              ariaLabel={settings.whatEachMeans(label)}
               expanded={explained}
               controls={explanationId}
               onToggle={() => setExplained(shown => !shown)}

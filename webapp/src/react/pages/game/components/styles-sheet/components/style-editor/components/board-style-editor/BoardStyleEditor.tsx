@@ -1,3 +1,4 @@
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {BoardTarget} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/board-target/types/BoardTarget";
@@ -9,7 +10,7 @@ import {EditorFrame} from "@src/react/pages/game/components/styles-sheet/compone
 import {EditorHeader} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/editor-frame/components/editor-header/EditorHeader";
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
-import type {SceneName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/preview-scenes/types/SceneName";
+import type {SceneName} from "@janggi/shared/janggi/styles/SceneName";
 import {StylePreview} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/style-preview/StylePreview";
 import {boardFromText} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/board-text/BoardFromText";
 import {editedStyle} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/EditedStyle";
@@ -44,11 +45,12 @@ export function BoardStyleEditor({
   onBack,
   onSave,
 }: Props): React.JSX.Element {
+  const {editor: words, refusals} = useMessages().styles;
   const {pieceStyle: currentPieceSetStyle} = usePreferences();
   const [previewedWith, setPreviewedWith] = useState("");
   const previewedPieceSetStyle =
     pieceSetStyles.find(pieceSetStyle => pieceSetStyle.name === previewedWith) ?? currentPieceSetStyle;
-  const styleDraft = useStyleDraft(startBoardStyle, boardFromText);
+  const styleDraft = useStyleDraft(startBoardStyle, text => boardFromText(text, refusals));
   const [boardTarget, setBoardTarget] = useState<BoardTarget>({kind: "default"});
   const [sceneName, setSceneName] = useState<SceneName>("opening");
   // A style of the player's own is saved under its own name, which replaces it; a built-in's cannot be.
@@ -63,17 +65,17 @@ export function BoardStyleEditor({
       return;
     }
 
-    const styleOutcome = editedStyle("Board", name, JSON.stringify(styleDraft.style));
+    const styleOutcome = editedStyle({styleKind: "Board", name, json: JSON.stringify(styleDraft.style)}, refusals);
 
     if (styleOutcome.kind === "board") {
       onSave(styleOutcome.style);
-      setPasteResult({accepted: true, message: `Saved "${styleOutcome.style.name}", and the board is wearing it.`});
+      setPasteResult({accepted: true, message: words.saved(styleOutcome.style.name)});
       return;
     }
 
     setPasteResult({
       accepted: false,
-      message: styleOutcome.kind === "refused" ? styleOutcome.reason : "That is not a board.",
+      message: styleOutcome.kind === "refused" ? styleOutcome.reason : words.notABoard,
     });
   };
 

@@ -27,11 +27,11 @@ export function PieceSetSetting(): React.JSX.Element {
   const split = useAppSelector(state => state.preferences.hanPieceSet !== undefined);
   const {armyPieceSets} = useOwnPreferences();
   const dispatch = useAppDispatch();
-  const {look} = useMessages();
+  const {locale, look} = useMessages();
 
   const optionsPieceSetStyles = [...BUILT_IN_PIECE_STYLES, ...pieceSets];
   const lockedReason = (pieceSetStyle: PieceSetStyle): string | undefined => {
-    return lockBehindXp(pieceSetPrice(pieceSetStyle.name), xp);
+    return lockBehindXp(pieceSetPrice(pieceSetStyle.name), xp, locale);
   };
 
   return (

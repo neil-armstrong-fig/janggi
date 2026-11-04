@@ -1,7 +1,7 @@
 import type {CharacterSet} from "@src/styles/types/CharacterSet";
-import type {WritingName} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/writing/WritingName";
+import type {WritingName} from "@janggi/shared/janggi/styles/WritingName";
 import {WRITINGS} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/writing/Writings";
-import {WRITING_NAMES} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/character-controls/writing/WritingName";
+import {WRITING_NAMES} from "@janggi/shared/janggi/styles/WritingName";
 
 /**
  * Which shipped writing a set of characters is, or undefined where it is one of its own — compared by what

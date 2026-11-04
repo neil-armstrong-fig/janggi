@@ -99,7 +99,12 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   is every top-level section of the reading page. `guide` wraps the page and carries
   `data-guide-ready` once it has finished rendering, `guide-play` is its primary route into the game,
   and `guide-install` is shown only when a phone browser offers to save it. Its link in Settings is
-  `guide-open`.
+  `guide-open`. `guide-piece-name` is the name a card gives its piece, apart from the mark beside it. The
+  Korean guide, a machine translation, opens with `translation-notice` (the page says so before anything
+  else), and `translation-notice-original` is the link in it to the guide it was translated from; the English guide
+  has neither. `guide-references` is the footer's link to the references. `guide-header` is the bar at the page's head, `guide-header-title` the link with its name in it and `guide-header-play` its button into the game. Both guides carry the language switch, `page-language-en` and `page-language-ko`: the one for the
+  language the page is in carries `data-current="true"`, and both sit inside one link to the same page in the
+  other language, so pressing either toggles it. The references page carries the same two, and in Korean the same notice and link.
 - **Making a style** — `style-editor` wraps the whole editor, on a board of its own. At the top,
   `style-editor-back`, `-name`, `-save` and `-message` (`data-accepted`); `style-editor-controls` and
   `style-editor-raw` (`aria-pressed`) choose what is shown beneath — the controls, or
