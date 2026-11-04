@@ -98,7 +98,8 @@ Cho (blue) moves first. Checkmate the enemy general to win.
 ## Also a showcase of engineering
 
 I built this to play, and just as much to show how I build software. Everything below is in this
-repository, and where I could, tooling enforces it instead of good intentions.
+repository, and where I could, tooling enforces it instead of good intentions. The
+[case study](https://neilarmstrong.dev/software/janggi/) covers the thinking behind it.
 
 ### Acceptance Test Driven Development
 
