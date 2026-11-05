@@ -189,6 +189,7 @@ export const ENGLISH: Messages = {
     music: "Music",
     muteMusic: "Mute music",
     muted: "Muted",
+    countdown: "Countdown in the last 10 seconds",
   },
   record: {
     title: "Your record",

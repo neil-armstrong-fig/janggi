@@ -16,7 +16,7 @@ import {woodBlock} from "@src/audio/instruments/WoodBlock";
  *
  * **The sounds a game makes most are wood, and the rarest are brass.** Pieces lifted, set down and
  * taken are the board and the pieces themselves; a check is a drum and a plucked figure, since it is
- * the game raising its voice; and the three endings are the gong, which is struck for nothing else.
+ * the game raising its voice; and the endings are the gong, which is struck for nothing else.
  *
  * Every piece sound is pitched a few cents differently each time it plays. Sixty identical clacks in a
  * game are heard as a machine; sixty that differ by a hair are heard as a board.
@@ -31,6 +31,8 @@ export const CUE_VOICINGS: Record<CueName, Voicing> = {
   checkmate,
   pointsWin,
   bikjang,
+  timeLost,
+  countdown,
   dealt,
   controlPressed,
 };
@@ -115,6 +117,29 @@ function bikjang(soundOutput: SoundOutput, when: number): void {
   gong(soundOutput, when + 0.5, {frequency: 165, weight: 0.7, length: 3.5});
 }
 
+/**
+ * The gong, and the dark mode falling away beneath it more quickly than at a mate: a game run out of, rather than
+ * lost over the board.
+ */
+function timeLost(soundOutput: SoundOutput, when: number): void {
+  gong(soundOutput, when, {frequency: 98, weight: 1, length: 4});
+
+  [5, 3, 2, 0].forEach((degree, index) => {
+    gayageum(soundOutput, when + 0.25 + index * 0.12, {
+      frequency: pitchOf(ROOT, GYEMYEONJO, degree),
+      weight: 0.7,
+      length: 1,
+    });
+  });
+}
+
+/** The stick on the drum's rim each second, harder as time runs short, with the palm under it for the last few. */
+function countdown(soundOutput: SoundOutput, when: number, weight: number): void {
+  janggu(soundOutput, when, {head: "chae", weight: 0.25 + 0.25 * weight});
+
+  if (weight >= FINAL_SECONDS) janggu(soundOutput, when + 0.01, {head: "gung", weight: 0.4});
+}
+
 /** A run of light clacks as the pieces are set out, in step with the board laying them down. */
 function dealt(soundOutput: SoundOutput, when: number): void {
   for (let piece = 0; piece < 10; piece += 1) {
@@ -137,6 +162,9 @@ const ROOT = 220;
 
 /** How sharp the check's plucked notes are: they are there to alert, so they cut where others mellow. */
 const CHECK_EDGE = 0.8;
+
+/** From this weight a countdown's tick is one of its last three seconds — ticks are weighted a tenth a second. */
+const FINAL_SECONDS = 0.8;
 
 /** From this weight a capture is heavy enough to bring the drum in under it. */
 const HEAVY_CAPTURE = 0.8;

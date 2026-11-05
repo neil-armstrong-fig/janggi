@@ -90,6 +90,23 @@ full scale; the final output peaked around 0.86 (−1.3 dBFS). Recheck both the
 music alone and that overlap when a channel level or voicing changes: a safe
 voice alone can still overload the sum.
 
+## The clock's countdown
+
+The last ten seconds before a flag (시간패) tick once a second. Three were
+auditioned in the running game: a high wood knock, the janggu stick on its rim,
+and a high gayageum note climbing a step for each of the last three seconds.
+The drum was chosen by ear. It is the stick each second, struck harder as time
+runs short, with the palm under it for the last three. The ticks are booked on
+the audio clock from the deadline (`setCountdown`), not one timer per second,
+so they stay in step with the plaque. A tick more than 150 ms late is let go
+rather than played behind the clock's face. A switch in the Sound tab turns it
+off, because some find a ticking clock stressful.
+
+Measured the same way (worst of eight renders, effects at 0.55): the last and
+loudest tick peaks around 0.22, just under a quiet move (0.24), and the first
+around 0.05. The last tick landing on a heavy capture followed by check, the
+worst overlap it can make, peaked around 0.87, inside the 0.91 above.
+
 ## Sources
 
 - Gayageum physical modelling with a noise exciter: http://koreascience.or.kr/article/JAKO201816563163547.page

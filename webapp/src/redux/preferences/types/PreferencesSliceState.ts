@@ -51,6 +51,8 @@ export interface PreferencesSliceState {
   readonly effects: EffectsName;
   readonly soundEffectsVolume: Volume;
   readonly musicVolume: Volume;
+  /** Whether a clock's last ten seconds tick out. On unless turned off, since some find it stressful. */
+  readonly countdown: boolean;
   readonly sheetOpacity: Opacity;
   /** What the game is read in. Kept on the device, not synced: a phone may be read in one language and a laptop in another. */
   readonly language: LanguageName;

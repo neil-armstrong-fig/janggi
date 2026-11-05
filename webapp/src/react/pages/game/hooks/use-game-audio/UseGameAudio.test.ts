@@ -29,6 +29,7 @@ const director = vi.hoisted(() => ({
   unlock: vi.fn(),
   play: vi.fn(),
   sound: vi.fn(),
+  setCountdown: vi.fn(),
   setMood: vi.fn(),
   setChannels: vi.fn(),
   setOnScreen: vi.fn(),
@@ -107,6 +108,60 @@ describe("a game being listened to", () => {
     });
   });
 
+  it("has no countdown to tick while no clock is running", () => {
+    expect(director.setCountdown).toHaveBeenLastCalledWith(undefined);
+  });
+
+  describe("when a clock is running", () => {
+    beforeEach(() => {
+      hook.rerender({...hook.props, flagDueAt: 90_000});
+    });
+
+    it("counts down to the flag with the tick chosen", () => {
+      expect(director.setCountdown).toHaveBeenLastCalledWith({endsAt: 90_000, cue: "countdown"});
+    });
+
+    describe("and the player turns the countdown off", () => {
+      beforeEach(() => {
+        hook.rerender({...hook.props, countdown: false});
+      });
+
+      it("stops counting down", () => {
+        expect(director.setCountdown).toHaveBeenLastCalledWith(undefined);
+      });
+    });
+
+    describe("and its flag falls", () => {
+      beforeEach(() => {
+        hook.rerender({...hook.props, outOfTime: "han", flagFall: 1});
+      });
+
+      it("stops counting down", () => {
+        expect(director.setCountdown).toHaveBeenLastCalledWith(undefined);
+      });
+    });
+  });
+
+  describe("when a flag falls", () => {
+    beforeEach(() => {
+      hook.rerender({...hook.props, outOfTime: "han", flagFall: 1});
+    });
+
+    it("sounds the end of the game", () => {
+      expect(director.sound).toHaveBeenCalledWith({name: "timeLost", weight: 1});
+    });
+
+    it("does not sound it again when rendered again with nothing changed", () => {
+      hook.rerender({...hook.props});
+
+      expect(director.sound).toHaveBeenCalledTimes(1);
+    });
+
+    it("tells the music the game has been won", () => {
+      expect(director.setMood).toHaveBeenLastCalledWith(expect.objectContaining({ending: "won"}));
+    });
+  });
+
   describe("when the page is put away", () => {
     beforeEach(() => {
       turnPage("hidden");
@@ -167,6 +222,10 @@ function renderOn(played: PlayedGame): Rendered {
   const initialProps: Props = {
     played,
     moment: undefined,
+    outOfTime: undefined,
+    flagFall: 0,
+    flagDueAt: undefined,
+    countdown: true,
     soundEffectsVolume: FULL_VOLUME,
     musicVolume: FULL_VOLUME,
   };

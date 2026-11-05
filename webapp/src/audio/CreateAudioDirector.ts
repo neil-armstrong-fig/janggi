@@ -2,9 +2,13 @@ import type {AudioChannels} from "@src/audio/types/AudioChannels";
 import type {AudioDirector} from "@src/audio/types/AudioDirector";
 import {CUE_VOICINGS} from "@src/audio/cues/CueVoicings";
 import type {Conductor} from "@src/audio/music/types/Conductor";
+import type {Countdown} from "@src/audio/types/Countdown";
+import type {CountdownTick} from "@src/audio/countdown/types/CountdownTick";
 import type {Cue} from "@src/audio/types/Cue";
+import type {CueName} from "@src/audio/types/CueName";
 import type {Mood} from "@src/audio/types/Mood";
 import {channelGainFor} from "@src/audio/utils/ChannelGainFor";
+import {countdownTicksOf} from "@src/audio/countdown/CountdownTicksOf";
 import {createConductor} from "@src/audio/music/CreateConductor";
 import {softClipCurve} from "@src/audio/soft-clip/SoftClipCurve";
 
@@ -52,6 +56,9 @@ export function createAudioDirector(): AudioDirector {
   let lastHeard = 0;
   let ready = false;
   let quieting: ReturnType<typeof setTimeout> | undefined;
+  let countdown: Countdown | undefined;
+  let counting: ReturnType<typeof setTimeout> | undefined;
+  let lastTicked = 0;
 
   return {
     unlock: () => {
@@ -82,6 +89,12 @@ export function createAudioDirector(): AudioDirector {
       CUE_VOICINGS[cue.name]({context, destination: effects}, context.currentTime + LATENCY_S, cue.weight);
     },
 
+    setCountdown: (next: Countdown | undefined) => {
+      countdown = next;
+      lastTicked = 0;
+      keepCounting();
+    },
+
     setMood: (next: Mood) => {
       mood = next;
       conductor?.setMood(next);
@@ -105,6 +118,8 @@ export function createAudioDirector(): AudioDirector {
 
     dispose: () => {
       clearTimeout(quieting);
+      clearTimeout(counting);
+      countdown = undefined;
       conductor?.stop();
       conductor = undefined;
       void graph?.context.close();
@@ -129,6 +144,37 @@ export function createAudioDirector(): AudioDirector {
       ready = true;
       follow(channels);
     });
+  }
+
+  /**
+   * Books each tick a moment before it is due, on the audio clock, and sleeps until the next. A tick due while the
+   * device is held or the effects are off is let go rather than played late.
+   */
+  function keepCounting(): void {
+    clearTimeout(counting);
+    if (!countdown) return;
+
+    const now = Date.now();
+    const due = countdownTicksOf(countdown.endsAt).filter(
+      tick => tick.at > lastTicked && tick.at >= now - LATE_TICK_MS,
+    );
+    const next = due[0];
+    if (!next) return;
+
+    if (next.at <= now + TICK_AHEAD_MS) {
+      lastTicked = next.at;
+      tick(countdown.cue, next, now);
+    }
+
+    counting = setTimeout(keepCounting, Math.max(next.at - TICK_AHEAD_MS - now, TICK_POLL_MS));
+  }
+
+  function tick(cue: CueName, countdownTick: CountdownTick, now: number): void {
+    if (!graph || channels.effects === 0 || graph.context.state !== "running") return;
+
+    const {context, effects} = graph;
+    const when = context.currentTime + LATENCY_S + Math.max(countdownTick.at - now, 0) / 1000;
+    CUE_VOICINGS[cue]({context, destination: effects}, when, countdownTick.weight);
   }
 
   function follow(wanted: AudioChannels): void {
@@ -229,3 +275,12 @@ const LATENCY_S = 0.005;
 
 /** How far apart the sounds of one change follow each other. */
 const BETWEEN_CUES_S = 0.12;
+
+/** How long before a countdown's tick it is booked on the audio clock, so a timer a little late still lands it on time. */
+const TICK_AHEAD_MS = 250;
+
+/** How late a tick may be booked and still be heard; past this it is let go rather than played behind the clock face. */
+const LATE_TICK_MS = 150;
+
+/** How often a countdown looks again while it is waiting on a tick it could not play — the device held, say. */
+const TICK_POLL_MS = 100;

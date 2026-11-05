@@ -81,6 +81,11 @@ export const preferencesSlice = createSlice({
       flipBoardForHan: action.payload,
     }),
 
+    countdownChosen: (state, action: PayloadAction<boolean>): PreferencesSliceState => ({
+      ...state,
+      countdown: action.payload,
+    }),
+
     showOpponentLookChosen: (state, action: PayloadAction<boolean>): PreferencesSliceState => ({
       ...state,
       showOpponentLook: action.payload,
@@ -132,6 +137,7 @@ export const {
   movableHighlightChosen,
   bikjangHintChosen,
   flipBoardForHanChosen,
+  countdownChosen,
   showOpponentLookChosen,
   effectsChosen,
   soundEffectsVolumeChanged,

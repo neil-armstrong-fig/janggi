@@ -15,6 +15,8 @@ export const CUE_NAMES = [
   "checkmate",
   "pointsWin",
   "bikjang",
+  "timeLost",
+  "countdown",
   "dealt",
   "controlPressed",
 ] as const;

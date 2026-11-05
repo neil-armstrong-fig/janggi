@@ -14,6 +14,7 @@ import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components
 import {InstallButtonDsl} from "@src/dsl/janggi/components/settings/components/install-button/InstallButtonDsl";
 import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
+import {CountdownSettingDsl} from "@src/dsl/janggi/components/settings/components/countdown-setting/CountdownSettingDsl";
 import {MusicSettingDsl} from "@src/dsl/janggi/components/settings/components/music-setting/MusicSettingDsl";
 import {OpacitySettingDsl} from "@src/dsl/janggi/components/settings/components/opacity-setting/OpacitySettingDsl";
 import {OpponentSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-setting/OpponentSettingDsl";
@@ -67,6 +68,7 @@ export class SettingsDsl {
   readonly opacity: OpacitySettingDsl;
   readonly soundEffects: SoundEffectsSettingDsl;
   readonly music: MusicSettingDsl;
+  readonly countdown: CountdownSettingDsl;
   readonly progress: ProgressSettingDsl;
   readonly install: InstallButtonDsl;
   readonly account: AccountSettingDsl;
@@ -93,6 +95,7 @@ export class SettingsDsl {
     this.opacity = new OpacitySettingDsl(page);
     this.soundEffects = new SoundEffectsSettingDsl(page);
     this.music = new MusicSettingDsl(page);
+    this.countdown = new CountdownSettingDsl(page);
     this.progress = new ProgressSettingDsl(page);
     this.install = new InstallButtonDsl(page);
     this.account = new AccountSettingDsl(page);

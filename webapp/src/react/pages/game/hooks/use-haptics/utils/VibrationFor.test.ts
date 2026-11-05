@@ -24,6 +24,7 @@ it("gives the longest pattern for the end of a game, however it ended", () => {
   expect(total(mate)).toBeGreaterThan(total(vibrationFor(cues("piecePlaced", "check"))));
   expect(vibrationFor(cues("turnRested", "pointsWin"))).toEqual(mate);
   expect(vibrationFor(cues("bikjang"))).toEqual(mate);
+  expect(vibrationFor(cues("timeLost"))).toEqual(mate);
 });
 
 it("is not felt for a turn taken back, a rested turn or a new deal", () => {

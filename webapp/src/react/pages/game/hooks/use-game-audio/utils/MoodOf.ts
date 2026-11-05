@@ -2,6 +2,7 @@ import type {Ending} from "@src/audio/types/Ending";
 import type {GameState} from "@janggi/engine/types/GameState";
 import type {Mood} from "@src/audio/types/Mood";
 import type {Outcome} from "@janggi/engine/types/Outcome";
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {isInCheck} from "@janggi/engine/check/IsInCheck";
 import {materialFor} from "@janggi/engine/scoring/MaterialFor";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
@@ -21,12 +22,14 @@ import {outcomeOf} from "@janggi/engine/OutcomeOf";
  * is empty: the last few captures of a game are already the most fraught, and music still building at
  * that point would have nowhere left to go.
  *
+ * **A game lost on time (시간패) is won**, as a mate is, though the position says nothing of it: the clock
+ * decides it, so the page hands over the army `outOfTime`.
+ *
  * Check is read off the engine for the army to move, and falls silent once the game has ended — a
  * mate is an ending, not a check the music should keep worrying about.
  */
-export function moodOf(game: GameState, begun: boolean): Mood {
-  const outcome = outcomeOf(game);
-  const ending = endingOf(outcome);
+export function moodOf(game: GameState, begun: boolean, outOfTime?: Side): Mood {
+  const ending = endingFor(game, outOfTime);
 
   return {
     tension: tensionOf(game),
@@ -34,6 +37,12 @@ export function moodOf(game: GameState, begun: boolean): Mood {
     ending,
     underWay: begun || ending !== "none",
   };
+}
+
+function endingFor(game: GameState, outOfTime: Side | undefined): Ending {
+  if (outOfTime) return "won";
+
+  return endingOf(outcomeOf(game));
 }
 
 function tensionOf(game: GameState): number {

@@ -32,5 +32,6 @@ export interface Preferences {
   readonly soundEffectsVolume: Volume;
   readonly language: LanguageName;
   readonly musicVolume: Volume;
+  readonly countdown: boolean;
   readonly sheetOpacity: Opacity;
 }

@@ -59,6 +59,7 @@ export function preferencesFrom(
     soundEffectsVolume: names.soundEffectsVolume,
     language: names.language,
     musicVolume: names.musicVolume,
+    countdown: names.countdown,
     sheetOpacity: names.sheetOpacity,
   };
 }

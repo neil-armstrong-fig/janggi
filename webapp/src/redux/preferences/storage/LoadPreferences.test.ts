@@ -20,6 +20,7 @@ const chosen: PreferencesSliceState = {
   effects: "Reduced",
   soundEffectsVolume: 40,
   musicVolume: 0,
+  countdown: false,
   sheetOpacity: 85,
   language: "ko",
   languageNoticeSeen: true,
@@ -74,6 +75,13 @@ it("puts back the default for a flip that was never kept or is not a yes or no",
   expect(loadPreferences(storageHolding({...chosen, flipBoardForHan: "yes"})).flipBoardForHan).toBe(
     defaultPreferences().flipBoardForHan,
   );
+});
+
+it("puts back the default for a countdown that was never kept or is not a yes or no", () => {
+  const {countdown: _never, ...savedBeforeTheCountdown} = chosen;
+
+  expect(loadPreferences(storageHolding(savedBeforeTheCountdown)).countdown).toBe(true);
+  expect(loadPreferences(storageHolding({...chosen, countdown: "no"})).countdown).toBe(true);
 });
 
 it("puts back the default for a volume outside the slider's range", () => {

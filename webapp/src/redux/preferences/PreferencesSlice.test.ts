@@ -3,6 +3,7 @@ import {
   armyPieceSetChosen,
   bikjangHintChosen,
   flipBoardForHanChosen,
+  countdownChosen,
   boardStyleChosen,
   boardStyleSplit,
   effectsChosen,
@@ -33,6 +34,7 @@ it("starts on the classic board and the modern set, with every mark, motion and 
     effects: "Full",
     soundEffectsVolume: 100,
     musicVolume: 100,
+    countdown: true,
     sheetOpacity: 90,
     language: "en",
     languageNoticeSeen: false,
@@ -105,6 +107,13 @@ it("flips the board for Han, or puts it back, as chosen", () => {
 
   expect(flipped).toEqual({...initial(), flipBoardForHan: true});
   expect(preferencesReducer(flipped, flipBoardForHanChosen(false))).toEqual(initial());
+});
+
+it("turns the countdown off, or back on, as chosen", () => {
+  const quiet = preferencesReducer(initial(), countdownChosen(false));
+
+  expect(quiet).toEqual({...initial(), countdown: false});
+  expect(preferencesReducer(quiet, countdownChosen(true))).toEqual(initial());
 });
 
 it("moves the board as much as chosen", () => {

@@ -31,7 +31,7 @@ a type an instrument needs lives with the instruments even where the music fills
 
 - **The rarest cues get the loudest voicings.** A quiet move is heard sixty-odd times a game, so
   `piecePlaced` is a soft clack, pitched a few cents differently every time; `pieceTaken` is struck as
-  hard as its weight says; `check` is a drum; the three endings are the gong, which is struck for
+  hard as its weight says; `check` is a drum; the endings are the gong, which is struck for
   nothing else. Do not voice a cue the page sends often without taking that budget into account.
 - **A cue is heard once.** `play` takes the id of the moment it came from and ignores any id it has
   already heard, which is what keeps React's double-rendered effects from doubling a sound.

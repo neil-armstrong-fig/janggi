@@ -1,4 +1,5 @@
 import type {AudioChannels} from "@src/audio/types/AudioChannels";
+import type {Countdown} from "@src/audio/types/Countdown";
 import type {Cue} from "@src/audio/types/Cue";
 import type {Mood} from "@src/audio/types/Mood";
 
@@ -16,6 +17,11 @@ export interface AudioDirector {
    * changes nothing in the game: picking a piece up, pressing a control.
    */
   readonly sound: (cue: Cue) => void;
+  /**
+   * Ticks out the last seconds before a deadline, a tick on each of them, each struck harder than the last — or stops,
+   * given nothing. Seconds already gone by are not ticked, so a countdown handed over late joins it where it is.
+   */
+  readonly setCountdown: (countdown: Countdown | undefined) => void;
   /** Tells the music how the game feels now. */
   readonly setMood: (mood: Mood) => void;
   /** Sets how loud the sound effects and the music are, each fading to its new level. */

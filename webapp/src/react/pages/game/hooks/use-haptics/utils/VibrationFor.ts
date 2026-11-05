@@ -1,4 +1,5 @@
 import type {Cue} from "@src/audio/types/Cue";
+import type {CueName} from "@src/audio/types/CueName";
 
 /**
  * The buzz a phone gives for one change to the game, in the milliseconds `navigator.vibrate` takes —
@@ -14,13 +15,16 @@ import type {Cue} from "@src/audio/types/Cue";
  */
 export function vibrationFor(cues: readonly Cue[]): readonly number[] | undefined {
   const heard = new Set(cues.map(({name}) => name));
-  if (heard.has("checkmate") || heard.has("pointsWin") || heard.has("bikjang")) return ENDING;
+  if (ENDINGS.some(ending => heard.has(ending))) return ENDING;
   if (heard.has("check")) return CHECK;
   if (heard.has("pieceTaken")) return TAKEN;
   if (heard.has("piecePlaced")) return PLACED;
 
   return undefined;
 }
+
+/** The cues a game ends on, each felt as the long pattern. */
+const ENDINGS: readonly CueName[] = ["checkmate", "pointsWin", "bikjang", "timeLost"];
 
 const PLACED: readonly number[] = [8];
 const TAKEN: readonly number[] = [22];

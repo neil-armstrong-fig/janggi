@@ -19,6 +19,9 @@ import {useFriendRoom} from "@src/react/pages/game/hooks/use-friend-room/UseFrie
 import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAudio";
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
 import {useHaptics} from "@src/react/pages/game/hooks/use-haptics/UseHaptics";
+import {useFlagFall} from "@src/react/pages/game/hooks/use-flag-fall/UseFlagFall";
+import {sideOutOfTime} from "@src/redux/clock/selecting/SideOutOfTime";
+import {flagDueAt} from "@src/redux/clock/selecting/FlagDueAt";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useClockKeeper} from "@src/react/pages/game/hooks/use-clock-keeper/UseClockKeeper";
 import {useRatedGame} from "@src/react/pages/game/hooks/use-rated-game/UseRatedGame";
@@ -70,13 +73,25 @@ import {ResumeGame} from "@src/react/pages/game/components/resume-game/ResumeGam
 export function GamePage(): React.JSX.Element {
   const [engine] = useState(() => createFairyStockfish(`${import.meta.env.BASE_URL}engine/`));
   const played = useAppSelector(state => state.game.played);
-  const {effects, soundEffectsVolume, musicVolume} = usePreferences();
+  const {effects, soundEffectsVolume, musicVolume, countdown} = usePreferences();
   const language = useAppSelector(state => state.preferences.language);
   const messages = useMessages();
   const moment = useGameMoment(played);
+  const outOfTime = useAppSelector(sideOutOfTime);
+  const flagFall = useFlagFall(outOfTime);
+  const flagDue = useAppSelector(flagDueAt);
 
-  const sound = useGameAudio({played, moment, soundEffectsVolume, musicVolume});
-  useHaptics(played, moment, effects.full);
+  const sound = useGameAudio({
+    played,
+    moment,
+    outOfTime,
+    flagFall,
+    flagDueAt: flagDue,
+    countdown,
+    soundEffectsVolume,
+    musicVolume,
+  });
+  useHaptics({played, moment, flagFall, enabled: effects.full});
   useBotEngine(engine);
   useDocumentLanguage();
   useWorkerLanguage();

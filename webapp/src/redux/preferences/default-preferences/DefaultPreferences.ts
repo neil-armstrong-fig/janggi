@@ -20,6 +20,7 @@ export function defaultPreferences(): PreferencesSliceState {
     effects: "Full",
     soundEffectsVolume: FULL_VOLUME,
     musicVolume: FULL_VOLUME,
+    countdown: true,
     sheetOpacity: DEFAULT_OPACITY,
     language: DEFAULT_LANGUAGE,
     languageNoticeSeen: false,

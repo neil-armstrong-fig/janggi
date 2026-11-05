@@ -48,6 +48,14 @@ it("hears a checkmate as a game won, and no longer as a check", () => {
   expect(moodOf(mate(), true)).toMatchObject({inCheck: false, ending: "won"});
 });
 
+it("hears a game lost on time as a game won, and no longer as a check", () => {
+  expect(moodOf(check(), true, "cho")).toMatchObject({inCheck: false, ending: "won"});
+});
+
+it("is under way once a game is lost on time, as with any other ending", () => {
+  expect(moodOf(opening(), false, "han").underWay).toBe(true);
+});
+
 it("hears a casual bikjang as a draw", () => {
   const drawn: GameState = {...position(cho("general", 5, 9), han("general", 5, 2)), bikjangCalled: true};
 

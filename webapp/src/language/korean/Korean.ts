@@ -195,6 +195,7 @@ export const KOREAN: Messages = {
     music: "음악",
     muteMusic: "음악 끄기",
     muted: "꺼짐",
+    countdown: "마지막 10초 알림음",
   },
   record: {
     title: "내 기록",
