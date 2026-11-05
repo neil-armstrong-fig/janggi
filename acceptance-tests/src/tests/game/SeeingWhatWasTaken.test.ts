@@ -38,6 +38,29 @@ given("the two soldiers on file 1 have advanced into contact", () => {
       expect(await janggi.status.getTakenFrom("han")).toEqual([]);
     });
 
+    then("the soldier stands in the place kept for soldiers, whichever army has lost one", async ({janggi}) => {
+      expect(await janggi.status.getTakenSlotOffset("cho", "soldier")).toBe(
+        await janggi.status.getTakenSlotOffset("han", "soldier"),
+      );
+    });
+
+    when("han takes a second of cho's soldiers", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.board.tap(3, 6);
+        await janggi.board.tap(2, 6);
+        await janggi.board.tap(1, 6);
+        await janggi.board.tap(2, 6);
+      });
+
+      then("cho is shown to have lost two soldiers", async ({janggi}) => {
+        expect(await janggi.status.getTakenFrom("cho")).toEqual(["soldier", "soldier"]);
+      });
+
+      then("the two are one soldier with a count of two", async ({janggi}) => {
+        expect(await janggi.status.getTakenCount("cho", "soldier")).toBe(2);
+      });
+    });
+
     when("the capture is taken back", () => {
       beforeEach(async ({janggi}) => {
         await janggi.status.undo();

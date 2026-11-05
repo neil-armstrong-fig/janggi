@@ -74,14 +74,6 @@ export class SettingsPlaywright extends SettingsSheetComponent {
     return ((await this.appVersion.textContent()) ?? "").trim();
   }
 
-  /** What the Play tab lists as in development, once it has been drawn. */
-  async getFeaturesInDevelopment(): Promise<string[]> {
-    const features = this.page.getByTestId("unreleased-feature");
-    await features.first().waitFor({state: "attached"});
-
-    return await features.allTextContents();
-  }
-
   /** The line that names the build, with the word for a version in front of it. */
   async getVersionWords(): Promise<string> {
     return ((await this.appVersion.locator("xpath=..").textContent()) ?? "").trim();

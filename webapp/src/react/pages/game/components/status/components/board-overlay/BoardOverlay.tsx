@@ -65,7 +65,8 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   const [gamePutAside, setGamePutAside] = useState<typeof played.present>();
 
   const game = played.present;
-  const gameIsOver = status.kind === "won" || status.kind === "wonOnPoints" || status.kind === "drawn";
+  const gameIsOver =
+    status.kind === "won" || status.kind === "wonOnPoints" || status.kind === "wonOnTime" || status.kind === "drawn";
   const resultPutAside = gameIsOver && gamePutAside === game;
   const botSide = opponent.name === "Bot" ? opponentOf(opponent.playerSide) : undefined;
   const scores: ArmyScores = {cho: scoreFor(game, "cho"), han: scoreFor(game, "han")};

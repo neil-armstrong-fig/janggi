@@ -3,6 +3,7 @@ import {botAwaitsGoAhead} from "@src/react/pages/game/bot-duty/BotAwaitsGoAhead"
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
 import {gameStatusOf} from "@src/react/pages/game/components/status/utils/GameStatusOf";
+import {sideOutOfTime} from "@src/redux/clock/selecting/SideOutOfTime";
 import {useAppSelector} from "@src/redux/Hooks";
 
 /**
@@ -20,9 +21,10 @@ import {useAppSelector} from "@src/redux/Hooks";
 export function useGameStatus(): LiveStatus {
   const game = useAppSelector(state => state.game);
   const botEngine = useAppSelector(state => state.botEngine);
+  const outOfTime = useAppSelector(sideOutOfTime);
 
   return {
-    status: gameStatusOf(game.played.present, game.phase),
+    status: gameStatusOf(game.played.present, game.phase, outOfTime),
     botsTurn: botDutyFor(game.played, game.phase, game.opponent) !== undefined,
     awaitingGoAhead: botAwaitsGoAhead(game),
     engineHoldsPlay: botEngineHoldsPlay(game.played, game.opponent, botEngine.status),

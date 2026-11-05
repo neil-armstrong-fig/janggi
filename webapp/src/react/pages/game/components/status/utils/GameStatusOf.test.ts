@@ -16,6 +16,10 @@ it("says whose move it is when nothing is hanging over them", () => {
   expect(gameStatusOf(opening(), LAID_OUT)).toEqual({kind: "toMove", side: "cho"});
 });
 
+it("says the other army has won once one has run out of time", () => {
+  expect(gameStatusOf(opening(), LAID_OUT, "cho")).toEqual({kind: "wonOnTime", by: "han"});
+});
+
 it("says an army is in check when its general is under attack", () => {
   const state = position("han", han("general", 4, 2), cho("general", 5, 9), cho("chariot", 4, 9));
 

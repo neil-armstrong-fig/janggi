@@ -108,6 +108,8 @@ function announcementOf(status: GameStatus, words: AnnouncementMessages): string
       return words.won(status.by);
     case "wonOnPoints":
       return words.wonOnPoints(status.by);
+    case "wonOnTime":
+      return words.won(status.by);
     case "drawn":
       return words.drawn[status.by];
     case "inCheck":
@@ -123,6 +125,7 @@ function toneOf(status: GameStatus): string {
   switch (status.kind) {
     case "won":
     case "wonOnPoints":
+    case "wonOnTime":
       return "bg-gold/15 text-gold";
     case "drawn":
       return "bg-white/10 text-white/80";
@@ -139,7 +142,7 @@ const SIDE_TONES: Record<Side, string> = {cho: "bg-cho/15 text-cho", han: "bg-ha
 
 /** The army that has won, however it won, or undefined while there is still a game to play. */
 function winnerOf(status: GameStatus): Side | undefined {
-  if (status.kind === "won" || status.kind === "wonOnPoints") return status.by;
+  if (status.kind === "won" || status.kind === "wonOnPoints" || status.kind === "wonOnTime") return status.by;
 
   return undefined;
 }

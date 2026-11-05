@@ -1,3 +1,4 @@
+import type {ClockReading} from "@src/dsl/janggi/components/status/types/ClockReading";
 import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
@@ -269,6 +270,23 @@ export class StatusDsl {
     }
   }
 
+  /** What an army's clock shows, in the game of two people at one device that has one. */
+  async getClock(side: Side): Promise<ClockReading> {
+    try {
+      return await this.status.getClock(side);
+    } catch (error) {
+      throw new DslError(`Failed to read ${side}'s clock`, error);
+    }
+  }
+
+  async isClockShown(side: Side): Promise<boolean> {
+    try {
+      return await this.status.isClockShown(side);
+    } catch (error) {
+      throw new DslError(`Failed to check whether ${side}'s plaque shows a clock`, error);
+    }
+  }
+
   /** Which army is to move. */
   async getTurn(): Promise<Side | undefined> {
     try {
@@ -278,7 +296,25 @@ export class StatusDsl {
     }
   }
 
-  /** Every piece one army has lost, by kind, in the order pieces are named — the general first. */
+  /** Every piece one army has lost, by kind, most valuable first. */
+  /** How many of a kind an army has lost, which the tray shows as one piece with a count. */
+  async getTakenCount(side: Side, type: PieceType): Promise<number> {
+    try {
+      return await this.status.getTakenCount(side, type);
+    } catch (error) {
+      throw new DslError(`Failed to read how many of ${side}'s ${type}s have been taken`, error);
+    }
+  }
+
+  /** How far along its tray the place for a kind stands, in pixels, whether or not any have been lost. */
+  async getTakenSlotOffset(side: Side, type: PieceType): Promise<number> {
+    try {
+      return await this.status.getTakenSlotOffset(side, type);
+    } catch (error) {
+      throw new DslError(`Failed to read where ${side}'s tray keeps its ${type}s`, error);
+    }
+  }
+
   async getTakenFrom(side: Side): Promise<PieceType[]> {
     try {
       return await this.status.getTakenFrom(side);
@@ -449,7 +485,7 @@ export class StatusDsl {
     }
   }
 
-  /** The XP shown beside an army, or undefined where none is — the bot's plaque, or a game between two people. */
+  /** The XP shown beside an army, or undefined where none is — the bot's plaque, two people, or a narrow screen. */
   async getShownXp(side: Side): Promise<number | undefined> {
     try {
       return await this.status.getShownXp(side);
@@ -485,12 +521,12 @@ export class StatusDsl {
     }
   }
 
-  /** Whether an army's losses tray can show every capturable piece without squeezing them. */
+  /** Whether an army's losses tray has a full-size place for every kind it can lose. */
   async canShowAllTakenPieces(side: Side): Promise<boolean> {
     try {
       return await this.status.canShowAllTakenPieces(side);
     } catch (error) {
-      throw new DslError(`Failed to read whether every piece taken from ${side} would fit`, error);
+      throw new DslError(`Failed to read whether every kind taken from ${side} would fit`, error);
     }
   }
 

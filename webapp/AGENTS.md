@@ -50,7 +50,7 @@ reintroduce it.
 
 ## Conventions
 
-- **Work not yet in production goes behind `UNRELEASED`** (`src/unreleased/Unreleased.ts`): `{UNRELEASED && <Thing />}`,
+- **Work not yet in production goes behind `IN_DEVELOPMENT`** (`src/unreleased/InDevelopment.ts`): `{IN_DEVELOPMENT && <Thing />}`,
   with a static import, which the build removes. It is on under `pnpm start` and in a build compiled with
   `VITE_UNRELEASED=true`, and off in anything deployed. Wear at least one test id beginning `unreleased-` per gated
   feature, because that is what `pnpm --filter @janggi/webapp check:unreleased` looks for in `build/`; CI runs it before a deploy.

@@ -26,6 +26,11 @@ it("names the winner and the loser of a game settled on points, as it would a ch
   expect(plaqueStateOf({kind: "wonOnPoints", by: "han"}, "cho")).toBe("lost");
 });
 
+it("names the winner and the loser of a game lost on time", () => {
+  expect(plaqueStateOf({kind: "wonOnTime", by: "han"}, "han")).toBe("won");
+  expect(plaqueStateOf({kind: "wonOnTime", by: "han"}, "cho")).toBe("lost");
+});
+
 it("reads a draw the same on both plaques", () => {
   expect(plaqueStateOf({kind: "drawn", by: "bikjang"}, "cho")).toBe("drawn");
   expect(plaqueStateOf({kind: "drawn", by: "bikjang"}, "han")).toBe("drawn");

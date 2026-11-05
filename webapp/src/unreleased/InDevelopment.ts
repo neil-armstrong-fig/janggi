@@ -3,4 +3,4 @@
  * when compiled with `VITE_UNRELEASED=true`. Settled at build time, so the bundler removes what it guards and no
  * visitor can switch it on. `scripts/check-unreleased.mjs` proves the removal. See `webapp/AGENTS.md`.
  */
-export const UNRELEASED: boolean = import.meta.env.DEV || import.meta.env.VITE_UNRELEASED === "true";
+export const IN_DEVELOPMENT: boolean = import.meta.env.DEV || import.meta.env.VITE_UNRELEASED === "true";

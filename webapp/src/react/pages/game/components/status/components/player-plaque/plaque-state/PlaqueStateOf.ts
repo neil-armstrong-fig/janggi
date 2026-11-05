@@ -32,6 +32,7 @@ export function plaqueStateOf(status: GameStatus, side: Side): PlaqueState {
       return "waiting";
     case "won":
     case "wonOnPoints":
+    case "wonOnTime":
       if (status.by === side) {
         return "won";
       }

@@ -1,20 +1,26 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
-import type {KeyedPiece} from "@src/react/pages/game/components/status/components/player-plaque/components/taken-tray/types/KeyedPiece";
 import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
+import {takenSlotsFrom} from "@src/react/pages/game/components/status/components/player-plaque/components/taken-tray/slots/TakenSlotsFrom";
 
 /**
- * The pieces one army has lost, drawn small in the set the board is wearing, most valuable first.
+ * What one army has lost: one place per kind, most valuable first, each with the piece drawn small in the set the board
+ * is wearing and, where more than one has gone, how many.
  *
- * Drawn with the board's own `Piece` rather than a second, smaller drawing of it, so a set someone
- * authors is worn here without anything learning it exists — and so each carries the same
- * `data-piece` the acceptance tests already read a piece by.
+ * **A kind always stands in its own place**, and a place with nothing in it stays empty and keeps its space. So the tray
+ * is the same width from the first capture to the last, nothing moves when a piece is taken, and the two armies' trays
+ * line up. Fifteen separate pieces squeezed together across a phone were too noisy to read.
  *
- * The pieces squeeze together rather than wrapping or scrolling as the list grows. Fifteen losses
- * will not fit across a phone at full size, and a plaque that grew a second row would push the board.
+ * Only on the narrowest phones, under 340px, are the places a little smaller, which is all it takes for the plaque to fit.
+ *
+ * Drawn with the board's own `Piece` rather than a second, smaller drawing of it, so a set someone authors is worn here
+ * without anything learning it exists. A kind's place says what it holds in `data-type` and `data-count`, which is what
+ * the acceptance tests read.
+ *
+ * The piece is keyed by its count, so that another of a kind being lost pops it again.
  */
 interface Props {
   readonly side: Side;
@@ -28,37 +34,50 @@ export function TakenTray({side, taken, pieceStyle, popping}: Props): React.JSX.
   const {pieceName, plaque} = useMessages();
 
   return (
-    <ol
-      data-testid={`taken-${side}`}
-      aria-label={plaque.takenFrom(side)}
-      className="flex h-6 min-w-0 flex-1 items-center"
-    >
-      {keyed(taken).map(({type, key}) => (
+    <ol data-testid={`taken-${side}`} aria-label={plaque.takenFrom(side)} className="flex h-6 shrink-0 items-center">
+      {takenSlotsFrom(taken).map(({type, count}) => (
         <li
-          key={key}
-          className={clsx(
-            "relative h-6 w-6 min-w-2 shrink",
-            popping && "animate-[tray-pop_420ms_cubic-bezier(0.2,1.5,0.4,1)_both]",
-          )}
+          key={type}
+          data-testid="taken-slot"
+          data-type={type}
+          data-count={count}
+          aria-hidden={count === 0 || undefined}
+          className="relative h-6 w-6 shrink-0 max-[339px]:h-5 max-[339px]:w-5"
         >
-          <Piece piece={{side, type}} name={pieceName({side, type})} style={pieceStyle} emphasised={false} />
+          {count > 0 && (
+            <span
+              key={count}
+              className={clsx(
+                "absolute inset-0",
+                popping && "animate-[tray-pop_420ms_cubic-bezier(0.2,1.5,0.4,1)_both]",
+              )}
+            >
+              <Piece
+                piece={{side, type}}
+                name={nameWithCount(pieceName({side, type}), count)}
+                style={pieceStyle}
+                emphasised={false}
+              />
+            </span>
+          )}
+
+          {count > 1 && (
+            <span
+              aria-hidden
+              className="absolute top-0 right-0 rounded-full bg-ground px-0.5 text-[10px] leading-none font-bold text-white tabular-nums"
+            >
+              {count}
+            </span>
+          )}
         </li>
       ))}
     </ol>
   );
 }
 
-/**
- * Each lost piece with a key of its own. A list of repeated kinds has none to give — two soldiers
- * are the same soldier — so each is numbered among those of its kind.
- */
-function keyed(taken: readonly PieceType[]): readonly KeyedPiece[] {
-  const counted = new Map<PieceType, number>();
+/** A piece's name for a screen reader, which cannot see the count drawn beside it. */
+function nameWithCount(name: string, count: number): string {
+  if (count === 1) return name;
 
-  return taken.map(type => {
-    const nth = (counted.get(type) ?? 0) + 1;
-    counted.set(type, nth);
-
-    return {type, key: `${type}-${nth}`};
-  });
+  return `${name} ×${count}`;
 }

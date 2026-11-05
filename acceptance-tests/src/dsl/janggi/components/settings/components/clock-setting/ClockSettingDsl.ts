@@ -1,0 +1,73 @@
+import type {Page} from "@playwright/test";
+import {ClockSettingPlaywright} from "@src/dsl/janggi/components/settings/components/clock-setting/playwright/ClockSettingPlaywright";
+import {DslError} from "@src/dsl/errors/DslError";
+import type {TimeControl} from "@janggi/shared/janggi/settings/TimeControl";
+import type {TimeControlName} from "@janggi/shared/janggi/settings/TimeControlName";
+
+/** The picker for the clock in a game between two people at one device, reached as `janggi.settings.clock`. */
+export class ClockSettingDsl {
+  private readonly clock: ClockSettingPlaywright;
+
+  constructor(page: Page) {
+    this.clock = new ClockSettingPlaywright(page);
+  }
+
+  async setTo(name: TimeControlName): Promise<void> {
+    try {
+      await this.clock.choose(name);
+    } catch (error) {
+      throw new DslError(`Failed to set the clock to "${name}"`, error);
+    }
+  }
+
+  /** Chooses Custom and writes the format out. */
+  async setCustomTo(timeControl: TimeControl): Promise<void> {
+    try {
+      await this.clock.writeOut(timeControl);
+    } catch (error) {
+      throw new DslError("Failed to write out a format for the clock", error);
+    }
+  }
+
+  /** Presses the (?) beside the picker, which unfolds what a format means or folds it away again. */
+  async toggleExplanation(): Promise<void> {
+    try {
+      await this.clock.toggleExplanation();
+    } catch (error) {
+      throw new DslError("Failed to press the clock's (?)", error);
+    }
+  }
+
+  async isExplanationShown(): Promise<boolean> {
+    try {
+      return await this.clock.isExplanationShown();
+    } catch (error) {
+      throw new DslError("Failed to read whether the clock's explanation is shown", error);
+    }
+  }
+
+  async getExplanationWords(): Promise<string> {
+    try {
+      return await this.clock.getExplanationWords();
+    } catch (error) {
+      throw new DslError("Failed to read the clock's explanation", error);
+    }
+  }
+
+  async getSelected(): Promise<TimeControlName | undefined> {
+    try {
+      return await this.clock.getSelected();
+    } catch (error) {
+      throw new DslError("Failed to read what the clock is set to", error);
+    }
+  }
+
+  /** Whether a player is offered a clock at all, which only two people at one device are. */
+  async isOffered(): Promise<boolean> {
+    try {
+      return await this.clock.isOffered();
+    } catch (error) {
+      throw new DslError("Failed to check whether a clock is offered", error);
+    }
+  }
+}

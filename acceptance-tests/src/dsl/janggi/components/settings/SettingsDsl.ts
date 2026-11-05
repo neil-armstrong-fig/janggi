@@ -6,6 +6,7 @@ import {LanguageSettingDsl} from "@src/dsl/janggi/components/settings/components
 import {BikjangHintSettingDsl} from "@src/dsl/janggi/components/settings/components/bikjang-hint-setting/BikjangHintSettingDsl";
 import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
 import {BotStrengthSettingDsl} from "@src/dsl/janggi/components/settings/components/bot-strength-setting/BotStrengthSettingDsl";
+import {ClockSettingDsl} from "@src/dsl/janggi/components/settings/components/clock-setting/ClockSettingDsl";
 import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/ChoSetupSettingDsl";
 import {DslError} from "@src/dsl/errors/DslError";
 import {EffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/effects-setting/EffectsSettingDsl";
@@ -55,6 +56,7 @@ export class SettingsDsl {
   readonly bikjangHint: BikjangHintSettingDsl;
   readonly language: LanguageSettingDsl;
   readonly flipBoard: FlipBoardSettingDsl;
+  readonly clock: ClockSettingDsl;
   readonly opponentLook: OpponentLookSettingDsl;
   readonly games: GamesSettingDsl;
   readonly matchFormat: MatchFormatSettingDsl;
@@ -80,6 +82,7 @@ export class SettingsDsl {
     this.bikjangHint = new BikjangHintSettingDsl(page);
     this.language = new LanguageSettingDsl(page);
     this.flipBoard = new FlipBoardSettingDsl(page);
+    this.clock = new ClockSettingDsl(page);
     this.opponentLook = new OpponentLookSettingDsl(page);
     this.games = new GamesSettingDsl(page);
     this.matchFormat = new MatchFormatSettingDsl(page);
@@ -173,14 +176,6 @@ export class SettingsDsl {
       return await this.settings.getRepositoryDestination();
     } catch (error) {
       throw new DslError("Failed to read where the Janggi repository link leads", error);
-    }
-  }
-
-  async getFeaturesInDevelopment(): Promise<string[]> {
-    try {
-      return await this.settings.getFeaturesInDevelopment();
-    } catch (error) {
-      throw new DslError("Failed to read what is in development", error);
     }
   }
 

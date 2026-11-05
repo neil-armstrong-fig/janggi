@@ -6,7 +6,7 @@ import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
 import type {Messages} from "@src/language/types/Messages";
-import type {ResultMessages} from "@src/language/types/ResultMessages";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {XpBar} from "@src/react/pages/game/components/xp-bar/XpBar";
 import type {Wording} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/types/Wording";
@@ -77,7 +77,7 @@ export function ResultBanner({
 }: Props): React.JSX.Element | undefined {
   const messages = useMessages();
   const {result, sides} = messages;
-  const wording = wordingOf(status, result);
+  const wording = wordingOf(status, messages);
   if (!wording) return undefined;
 
   return (
@@ -175,12 +175,15 @@ export function ResultBanner({
   );
 }
 
-function wordingOf(status: GameStatus, result: ResultMessages): Wording | undefined {
+function wordingOf(status: GameStatus, {result, sides}: Messages): Wording | undefined {
   switch (status.kind) {
     case "won":
       return {korean: "외통", plain: result.won(status.by)};
     case "wonOnPoints":
       return {korean: "점수승", plain: result.wonOnPoints(status.by)};
+    case "wonOnTime":
+      // In English until the clock is released, as `IN_DEVELOPMENT` work stays (`webapp/AGENTS.md`).
+      return {korean: "시간패", plain: `${sides[opponentOf(status.by)]} lost on time`};
     case "drawn":
       return {korean: status.by === "bikjang" ? "빅장" : "무승부", plain: result.drawn[status.by]};
     case "toMove":

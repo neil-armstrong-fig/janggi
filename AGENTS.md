@@ -119,6 +119,10 @@ Prettier owns formatting (`pnpm format`). What it won't tell you:
 - **Three parameters at most; past that, take one object.** What a function acts *through* (an
   engine, an audio context) may stay positional ahead of the object.
 - **Name a variable after the type it holds**, where the type has a name of its own.
+- **Use janggi's own terms, never ones borrowed from shogi or xiangqi that janggi doesn't use.** Identifiers are in plain
+  English (`overtime`, not `byoYomi`), or the Korean term where English has no obvious equivalent (`bikjang`). A comment
+  on a janggi concept also gives the Korean, since that is the term used over the board: `Overtime (초읽기)`. Naming
+  another game is fine when contrasting it with janggi ("unlike xiangqi, …").
 - **A guard sits directly under the line it checks**, no blank line between them: `const thing = build();` then
   `if (!thing) return undefined;`. A blank line goes after the guard, before the next block. This holds for
   an `if` that reads the variable declared on the line above it, whatever it returns; a guard that checks a
@@ -190,9 +194,9 @@ one starts. The working tree, the index, the stash and the editor's language ser
 
 ## Working on a feature in a worktree
 
-Anything bigger than a small fix goes in its own git worktree, so the main checkout stays free for
-others. `EnterWorktree` makes one under `.claude/worktrees/<name>` on branch `worktree-<name>`
-(`git worktree add` does the same by hand).
+**Work in the main checkout, however big the change. Use a worktree only when asked.** The rest of
+this section is for then. `EnterWorktree` makes one under `.claude/worktrees/<name>` on branch
+`worktree-<name>` (`git worktree add` does the same by hand).
 
 1. **Install its own dependencies** — a worktree has no `node_modules`:
    `pnpm install --frozen-lockfile --offline`.

@@ -2,6 +2,7 @@ import {unlockWordsOf} from "@src/react/pages/game/unlock-words/UnlockWordsOf";
 import type {PlaquePlayer} from "@src/react/pages/game/components/status/components/player-plaque/types/PlaquePlayer";
 import type {PlaqueState} from "@src/react/pages/game/components/status/components/player-plaque/types/PlaqueState";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
+import {PlaqueClock} from "@src/react/pages/game/components/status/components/player-plaque/components/plaque-clock/PlaqueClock";
 import {TakenTray} from "@src/react/pages/game/components/status/components/player-plaque/components/taken-tray/TakenTray";
 import {clsx} from "clsx";
 import {plaquePlayerFor} from "@src/react/pages/game/components/status/components/player-plaque/players/PlaquePlayerFor";
@@ -9,6 +10,7 @@ import {plaqueStateOf} from "@src/react/pages/game/components/status/components/
 import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {inFriendGame} from "@src/redux/online/selecting/InFriendGame";
 import {takenFrom} from "@janggi/engine/scoring/TakenFrom";
+import {IN_DEVELOPMENT} from "@src/unreleased/InDevelopment";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
@@ -35,11 +37,12 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
  * at, or a person, the player's own rating and the XP they have earned. Without it the bot's army reads
  * as a second person at the device, and the two ratings the game is being played between are nowhere on
  * the screen. The XP is here because this is the one place a player looks while playing, and it is what
- * the next board or piece set is waiting on.
+ * the next board or piece set is waiting on. **Under 400px the XP gives way** to the taken pieces, which cannot
+ * shrink: it is still in Progress and on the result banner, and the rating stays.
  *
  * **What the XP is working towards is named in Progress, and repeated here only on a wide screen** —
- * "(Next unlock: 1,200 XP, unlock Celadon theme)". At `lg` there is still enough room beside it for all
- * fifteen capturable pieces at their full tray size; below that, the losses and XP take the space. The
+ * "(Next unlock: 1,200 XP, unlock Celadon theme)". At `lg` there is still enough room beside it for a
+ * place for every kind of piece in the tray; below that, the losses and XP take the space. The
  * sentence truncates if the plaque runs short, with the whole of it in the `title`. A million XP is
  * shortened to `1M`, with `data-xp` carrying the true figure, and the amount and unit never split.
  *
@@ -102,7 +105,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
             <span
               data-testid={`plaque-xp-${side}`}
               data-xp={player.xp}
-              className="shrink-0 whitespace-nowrap text-gold/80"
+              className="hidden shrink-0 whitespace-nowrap text-gold/80 min-[400px]:inline"
             >
               {shortened(player.xp, locale)} XP
             </span>
@@ -126,13 +129,17 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
 
       <TakenTray side={side} taken={takenFrom(game, side)} pieceStyle={pieceStyle} popping={effects.full} />
 
-      <span
-        data-testid={`score-${side}`}
-        data-score={score}
-        className="ml-auto shrink-0 text-base font-semibold text-white/90 tabular-nums"
-      >
-        {shownScore}
-      </span>
+      <div className="ml-auto flex shrink-0 items-center gap-2">
+        {IN_DEVELOPMENT && <PlaqueClock side={side} />}
+
+        <span
+          data-testid={`score-${side}`}
+          data-score={score}
+          className="shrink-0 text-base font-semibold text-white/90 tabular-nums"
+        >
+          {shownScore}
+        </span>
+      </div>
     </section>
   );
 }

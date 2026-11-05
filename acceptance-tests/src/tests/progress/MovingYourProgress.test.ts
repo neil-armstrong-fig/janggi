@@ -36,12 +36,18 @@ given("a player who has earned some progress", () => {
       await janggi.settings.opponent.setTo("Bot");
     });
 
-    then("their own plaque shows the XP they have earned", async ({janggi}) => {
-      expect(await janggi.status.getShownXp("cho")).toBe(640);
-    });
-
     then("the bot's plaque shows none, having none to earn", async ({janggi}) => {
       expect(await janggi.status.getShownXp("han")).toBeUndefined();
+    });
+
+    when("their screen is wide enough", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.resizeWindowTo(1024, 900);
+      });
+
+      then("their own plaque shows the XP they have earned", async ({janggi}) => {
+        expect(await janggi.status.getShownXp("cho")).toBe(640);
+      });
     });
 
     when("their screen is narrow", () => {
@@ -53,8 +59,8 @@ given("a player who has earned some progress", () => {
         expect(await janggi.status.getNextUnlock("cho")).toBeUndefined();
       });
 
-      then("the XP amount and its unit stay on one line", async ({janggi}) => {
-        expect(await janggi.status.isXpOnOneLine("cho")).toBe(true);
+      then("the XP is left to the Progress settings too, to make room for the taken pieces", async ({janggi}) => {
+        expect(await janggi.status.getShownXp("cho")).toBeUndefined();
       });
     });
   });
@@ -125,7 +131,7 @@ given("a player starting from nothing", () => {
       expect(await janggi.status.getNextUnlock("cho")).toBe("(Next unlock: 30 XP, unlock Hanja pieces)");
     });
 
-    then("all the pieces they could lose still fit beside it at full size", async ({janggi}) => {
+    then("every kind of piece they could lose still fits beside it at full size", async ({janggi}) => {
       expect(await janggi.status.canShowAllTakenPieces("cho")).toBe(true);
     });
 

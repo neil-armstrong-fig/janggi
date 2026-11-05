@@ -4,6 +4,7 @@ import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {isArranged} from "@janggi/engine/setups/IsArranged";
 import {isInCheck} from "@janggi/engine/check/IsInCheck";
+import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
 
 /**
@@ -40,6 +41,12 @@ interface WonOnPoints {
   readonly by: Side;
 }
 
+/** The other army ran out of time — 시간패. A clock says so, not the position, so it is passed in. */
+interface WonOnTime {
+  readonly kind: "wonOnTime";
+  readonly by: Side;
+}
+
 /**
  * The game was drawn, which only a casual one can be: the two generals faced each other and the call
  * was made — 빅장 — or a position stood a third time where nothing refuses it, or the players agreed.
@@ -51,7 +58,7 @@ interface Drawn {
   readonly by: DrawnBy;
 }
 
-export type GameStatus = LayingOut | ToMove | InCheck | Won | WonOnPoints | Drawn;
+export type GameStatus = LayingOut | ToMove | InCheck | Won | WonOnPoints | WonOnTime | Drawn;
 
 /**
  * What the game has to say about itself, in the one form a player needs told.
@@ -72,8 +79,10 @@ export type GameStatus = LayingOut | ToMove | InCheck | Won | WonOnPoints | Draw
  * laid out has a `GameState` only because something has to be drawn — `BoardShownFor.ts` — and
  * announcing "Cho to move" over a game nobody has arranged yet would be a lie about a board that
  * will not answer a tap.
+ *
+ * A game the position has already decided stays decided: the clock only has a say while it is still undecided.
  */
-export function gameStatusOf(game: GameState, phase: SetupPhase): GameStatus {
+export function gameStatusOf(game: GameState, phase: SetupPhase, outOfTime?: Side): GameStatus {
   if (!isArranged(phase)) return {kind: "layingOut", side: layingOutNext(phase)};
 
   const outcome = outcomeOf(game);
@@ -84,6 +93,8 @@ export function gameStatusOf(game: GameState, phase: SetupPhase): GameStatus {
   if (outcome.kind === "bikjang" || outcome.kind === "repetition" || outcome.kind === "agreement") {
     return {kind: "drawn", by: outcome.kind};
   }
+
+  if (outOfTime) return {kind: "wonOnTime", by: opponentOf(outOfTime)};
 
   if (isInCheck(game, game.sideToMove)) return {kind: "inCheck", side: game.sideToMove};
 

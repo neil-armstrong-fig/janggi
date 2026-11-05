@@ -24,6 +24,8 @@ import type {SettingsSliceState} from "@src/redux/settings/types/SettingsSliceSt
 import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceState";
 import {toastReducer} from "@src/redux/toast/ToastSlice";
 import type {ToastSliceState} from "@src/redux/toast/types/ToastSliceState";
+import {clockReducer} from "@src/redux/clock/ClockSlice";
+import type {ClockSliceState} from "@src/redux/clock/types/ClockSliceState";
 import {botEngineReducer} from "@src/redux/bot-engine/BotEngineSlice";
 import {botKeptWithinReach} from "@src/redux/game/GameSlice";
 import {customStylesReducer} from "@src/redux/custom-styles/CustomStylesSlice";
@@ -76,13 +78,14 @@ export interface RootState {
   readonly syncLedger: SyncLedgerSliceState;
   readonly friend: FriendSliceState;
   readonly toast: ToastSliceState;
+  readonly clock: ClockSliceState;
 }
 
 /**
  * The slices that are written to the device. The engine's is not, being what this page has started, and nor
- * are the sheets' or the toast's: a page opens with none up.
+ * are the sheets' or the toast's: a page opens with none up. Nor is the clock's yet: it is an example, and a page opens with it off.
  */
-type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast">;
+type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast" | "clock">;
 
 /** What is compared, to know a slice has changed, and then written: a slice itself, except where what is kept is less than the slice (`keptValue`). */
 type KeptValue = RootState[KeptSlice] | string | undefined;
@@ -131,6 +134,7 @@ export function createStore(storage?: Storage): AppStore {
       syncLedger: syncLedgerReducer,
       friend: friendReducer,
       toast: toastReducer,
+      clock: clockReducer,
     },
     preloadedState: {
       game,

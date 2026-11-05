@@ -1,12 +1,13 @@
+import type {ClockReading} from "@src/dsl/janggi/components/status/types/ClockReading";
 import type {Locator, Page} from "@playwright/test";
 import {DRAWN_BY} from "@janggi/shared/janggi/results/DrawnBy";
 import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
+import {PIECE_TYPES} from "@janggi/shared/janggi/pieces/PieceType";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {ControlName} from "@src/dsl/janggi/components/status/types/ControlName";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
-import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
 
 /** Longer than any score takes to roll to its new value. */
 const SETTLES_WITHIN_MS = 3_000;
@@ -24,8 +25,8 @@ const AT_REST_FOR_MS = 700;
 
 const POLL_MS = 50;
 
-/** Every piece except its general, which is checkmated rather than taken. */
-const MOST_PIECES_AN_ARMY_CAN_LOSE = 15;
+/** Every kind except the general, which is checkmated rather than taken. */
+const KINDS_AN_ARMY_CAN_LOSE = 6;
 
 /** Where the game says what it is doing, rather than what is standing on it. */
 export class StatusPlaywright extends BaseComponent {
@@ -40,6 +41,7 @@ export class StatusPlaywright extends BaseComponent {
   private readonly drawDecline: Locator;
   private readonly drawDeclined: Locator;
   private readonly scores: Record<Side, Locator>;
+  private readonly clocks: Record<Side, Locator>;
   private readonly taken: Record<Side, Locator>;
   private readonly result: Locator;
   private readonly showBoardButton: Locator;
@@ -68,6 +70,7 @@ export class StatusPlaywright extends BaseComponent {
     this.drawDecline = page.getByTestId("draw-decline");
     this.drawDeclined = page.getByTestId("draw-declined");
     this.scores = {cho: page.getByTestId("score-cho"), han: page.getByTestId("score-han")};
+    this.clocks = {cho: page.getByTestId("unreleased-clock-cho"), han: page.getByTestId("unreleased-clock-han")};
     this.taken = {cho: page.getByTestId("taken-cho"), han: page.getByTestId("taken-han")};
     this.result = page.getByTestId("result");
     this.showBoardButton = page.getByTestId("result-show-board");
@@ -184,12 +187,13 @@ export class StatusPlaywright extends BaseComponent {
   }
 
   /**
-   * The XP shown on an army's plaque, or undefined where none is — the bot's own plaque, and both
-   * plaques in a game between two people. Read off `data-xp`, since the words are shortened.
+   * The XP shown on an army's plaque, or undefined where none is — the bot's own plaque, both plaques
+   * in a game between two people, and any plaque on a narrow screen. Read off `data-xp`, since the words
+   * are shortened.
    */
   async getShownXp(side: Side): Promise<number | undefined> {
     const xp = this.page.getByTestId(`plaque-xp-${side}`);
-    if ((await xp.count()) === 0) return undefined;
+    if (!(await xp.isVisible())) return undefined;
 
     return Number(await xp.getAttribute("data-xp"));
   }
@@ -225,12 +229,12 @@ export class StatusPlaywright extends BaseComponent {
     return (await nextUnlock.textContent()) ?? undefined;
   }
 
-  /** Whether the losses tray has room for all fifteen capturable pieces at its full height. */
+  /** Whether the losses tray has room for a place for each kind an army can lose, at its full height. */
   async canShowAllTakenPieces(side: Side): Promise<boolean> {
     const tray = await this.taken[side].boundingBox();
     if (!tray) return false;
 
-    return tray.width >= tray.height * MOST_PIECES_AN_ARMY_CAN_LOSE;
+    return tray.width >= tray.height * KINDS_AN_ARMY_CAN_LOSE;
   }
 
   /**
@@ -339,22 +343,39 @@ export class StatusPlaywright extends BaseComponent {
    * Waits for the tray to be attached rather than visible: an army that has lost nothing has an empty
    * tray, which has no size to be visible with.
    */
+  /** Every piece an army has lost, one entry per piece, read off the count on each of its tray's places. */
   async getTakenFrom(side: Side): Promise<PieceType[]> {
     const tray = this.taken[side];
     await tray.waitFor({state: "attached"});
 
-    const keys = await tray
-      .getByTestId("piece")
-      .evaluateAll(pieces => pieces.map(piece => piece.getAttribute("data-piece")));
+    const slots = await tray
+      .getByTestId("taken-slot")
+      .evaluateAll(found => found.map(slot => [slot.getAttribute("data-type"), slot.getAttribute("data-count")]));
 
-    return keys.flatMap(key => {
-      const piece = key ? parsePieceKey(key) : undefined;
-      if (piece) {
-        return [piece.type];
+    return slots.flatMap(([name, count]) => {
+      const type = PIECE_TYPES.find(candidate => candidate === name);
+      if (type) {
+        return Array<PieceType>(Number(count)).fill(type);
       }
 
       return [];
     });
+  }
+
+  async getTakenCount(side: Side, type: PieceType): Promise<number> {
+    return Number(await this.takenSlot(side, type).getAttribute("data-count"));
+  }
+
+  async getTakenSlotOffset(side: Side, type: PieceType): Promise<number> {
+    const tray = await this.taken[side].boundingBox();
+    const slot = await this.takenSlot(side, type).boundingBox();
+    if (!tray || !slot) throw new Error(`${side}'s tray has no place to measure for its ${type}s`);
+
+    return slot.x - tray.x;
+  }
+
+  private takenSlot(side: Side, type: PieceType): Locator {
+    return this.taken[side].locator(`[data-testid='taken-slot'][data-type='${type}']`);
   }
 
   /**
@@ -537,6 +558,23 @@ export class StatusPlaywright extends BaseComponent {
    * words, so the plaque can be reworded without breaking a spec. A missing attribute is a NaN, which
    * no assertion will match.
    */
+  async getClock(side: Side): Promise<ClockReading> {
+    const clock = this.clocks[side];
+    await clock.waitFor({state: "visible"});
+
+    return {
+      seconds: Number(await clock.getAttribute("data-seconds")),
+      periods: Number(await clock.getAttribute("data-periods")),
+    };
+  }
+
+  /** Asked once the plaque's score is up, so a clock not yet drawn is not taken for one that will not be. */
+  async isClockShown(side: Side): Promise<boolean> {
+    await this.scores[side].waitFor({state: "visible"});
+
+    return await this.clocks[side].isVisible();
+  }
+
   async getScore(side: Side): Promise<number> {
     const score = this.scores[side];
     await score.waitFor({state: "visible"});

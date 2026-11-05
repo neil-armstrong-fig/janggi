@@ -37,6 +37,7 @@ function resultOf(status: GameStatus, playerSide: Side): GameResult | undefined 
   switch (status.kind) {
     case "won":
     case "wonOnPoints":
+    case "wonOnTime":
       if (status.by === playerSide) {
         return "won";
       }
