@@ -17,25 +17,25 @@ given("a player in a game with a friend who wears a board of their own", () => {
   beforeEach(async ({janggi}) => {
     friend = await janggi.openSeparateDevice();
 
-    await janggi.settings.board.setTo("Diagram");
+    await janggi.settings.look.board.setTo("Diagram");
     diagramSurface = await janggi.board.getSurfaceAt(1);
 
-    await janggi.settings.board.setTo("Classic");
-    await friend.settings.board.setTo("Neon");
+    await janggi.settings.look.board.setTo("Classic");
+    await friend.settings.look.board.setTo("Neon");
     friendsSurface = await friend.board.getSurfaceAt(1);
 
-    await janggi.settings.account.signInWithGoogle();
-    await friend.settings.account.signInWithGoogleAsAnotherPlayer();
+    await janggi.settings.you.account.signInWithGoogle();
+    await friend.settings.you.account.signInWithGoogleAsAnotherPlayer();
   });
 
   when("they choose another board, with showing the opponent's board left on", () => {
     beforeEach(async ({janggi}) => {
       await playTogether(janggi, friend);
-      await janggi.settings.board.setTo("Diagram");
+      await janggi.settings.look.board.setTo("Diagram");
     });
 
     then("the board they chose is the one shown as selected", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelected()).toBe("Diagram");
+      expect(await janggi.settings.look.board.getSelected()).toBe("Diagram");
     });
 
     then("their own half is drawn in it", async ({janggi}) => {
@@ -50,8 +50,8 @@ given("a player in a game with a friend who wears a board of their own", () => {
   when("they choose another board, with showing the opponent's board turned off", () => {
     beforeEach(async ({janggi}) => {
       await playTogether(janggi, friend);
-      await janggi.settings.opponentLook.setTo(false);
-      await janggi.settings.board.setTo("Diagram");
+      await janggi.settings.look.opponentLook.setTo(false);
+      await janggi.settings.look.board.setTo("Diagram");
     });
 
     then("the board is drawn as they chose it", async ({janggi}) => {

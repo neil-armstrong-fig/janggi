@@ -8,7 +8,7 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a player who has already been through the tour", () => {
   when("they replay it from their account settings", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.account.replayTheTour();
+      await janggi.settings.you.account.replayTheTour();
     });
 
     then("the tour starts again from its first step", async ({janggi}) => {

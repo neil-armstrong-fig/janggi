@@ -6,18 +6,18 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player with no game with a friend", () => {
   then("the board shows their own game", async ({janggi}) => {
-    expect(await janggi.settings.games.getShown()).toBe("local");
+    expect(await janggi.settings.play.games.getShown()).toBe("local");
   });
 
   when("they are signed out and choose Online", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.games.chooseOnline();
+      await janggi.settings.play.games.chooseOnline();
     });
 
     then("the settings open on the account card, picked out", async ({janggi}) => {
       expect(await janggi.settings.isTabSelected("You")).toBe(true);
-      expect(await janggi.settings.account.isSignInOffered()).toBe(true);
-      expect(await janggi.settings.account.isAccountHighlighted()).toBe(true);
+      expect(await janggi.settings.you.account.isSignInOffered()).toBe(true);
+      expect(await janggi.settings.you.account.isAccountHighlighted()).toBe(true);
     });
 
     then("a toast says why they were sent there", async ({janggi}) => {
@@ -29,14 +29,14 @@ given("a player with no game with a friend", () => {
     });
 
     then("the game has made no call to the API", async ({janggi}) => {
-      expect(await janggi.settings.account.getRequestsMadeToTheApi()).toBe(0);
+      expect(await janggi.settings.you.account.getRequestsMadeToTheApi()).toBe(0);
     });
   });
 
   when("they are signed in and choose Online", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.account.signInWithGoogle();
-      await janggi.settings.games.chooseOnline();
+      await janggi.settings.you.account.signInWithGoogle();
+      await janggi.settings.play.games.chooseOnline();
     });
 
     then("the sheet to make or take a code is open", async ({janggi}) => {

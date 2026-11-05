@@ -14,8 +14,8 @@ given("a player takes on the bot while its engine is slow to load", () => {
   beforeEach(async ({janggi}) => {
     await janggi.reload();
     await janggi.holdBackTheBotsEngine();
-    await janggi.settings.opponent.setTo("Bot");
-    await janggi.settings.botStrength.setTo(800);
+    await janggi.settings.play.opponent.setTo("Bot");
+    await janggi.settings.play.botStrength.setTo(800);
   });
 
   when("the engine has not arrived yet", () => {
@@ -62,8 +62,8 @@ given("a player takes on the bot while its engine cannot be fetched", () => {
   beforeEach(async ({janggi}) => {
     await janggi.reload();
     await janggi.cutOffTheBotsEngine();
-    await janggi.settings.opponent.setTo("Bot");
-    await janggi.settings.botStrength.setTo(800);
+    await janggi.settings.play.opponent.setTo("Bot");
+    await janggi.settings.play.botStrength.setTo(800);
     await janggi.status.waitForTheBotToLoad();
   });
 
@@ -80,7 +80,7 @@ given("a player takes on the bot while its engine cannot be fetched", () => {
   when("the engine can be fetched again and the player tries again", () => {
     beforeEach(async ({janggi}) => {
       await janggi.restoreTheBotsEngine();
-      await janggi.status.retryTheBot();
+      await janggi.status.overlay.botEngineNotice.retryTheBot();
       await janggi.status.waitForTheBotToLoad();
     });
 

@@ -11,7 +11,7 @@ given("a player who never signs in", () => {
     });
 
     then("signing in is not offered anywhere over the game", async ({janggi}) => {
-      expect(await janggi.settings.account.isSignInOfferedOutsideTheSettings()).toBe(false);
+      expect(await janggi.settings.you.account.isSignInOfferedOutsideTheSettings()).toBe(false);
     });
 
     then("playing a friend is not offered anywhere over the game", async ({janggi}) => {
@@ -19,7 +19,7 @@ given("a player who never signs in", () => {
     });
 
     then("the game has made no call to the API", async ({janggi}) => {
-      expect(await janggi.settings.account.getRequestsMadeToTheApi()).toBe(0);
+      expect(await janggi.settings.you.account.getRequestsMadeToTheApi()).toBe(0);
     });
   });
 
@@ -29,11 +29,11 @@ given("a player who never signs in", () => {
     });
 
     then("signing in is offered there", async ({janggi}) => {
-      expect(await janggi.settings.account.isSignInOffered()).toBe(true);
+      expect(await janggi.settings.you.account.isSignInOffered()).toBe(true);
     });
 
     then("the game has still made no call to the API", async ({janggi}) => {
-      expect(await janggi.settings.account.getRequestsMadeToTheApi()).toBe(0);
+      expect(await janggi.settings.you.account.getRequestsMadeToTheApi()).toBe(0);
     });
   });
 });

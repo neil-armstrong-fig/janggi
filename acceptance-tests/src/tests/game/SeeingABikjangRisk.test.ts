@@ -57,11 +57,11 @@ given("cho's soldier has stepped off file 5, leaving han's the only piece betwee
 
 given("a scored game in which cho's soldier has stepped off file 5", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.matchFormat.setTo("Scored");
+    await janggi.settings.play.matchFormat.setTo("Scored");
     // A scored game is laid out before it is played — han first, then cho. Until both have, the
     // board answers nothing, and the criteria below would pass for the wrong reason.
-    await janggi.settings.hanSetup.setTo("Inner Elephant");
-    await janggi.settings.choSetup.setTo("Inner Elephant");
+    await janggi.settings.play.hanSetup.setTo("Inner Elephant");
+    await janggi.settings.play.choSetup.setTo("Inner Elephant");
     await janggi.board.tap(5, 7);
     await janggi.board.tap(4, 7);
   });
@@ -82,14 +82,14 @@ given("a scored game in which cho's soldier has stepped off file 5", () => {
 given("a game that has just been dealt", () => {
   when("nothing has been chosen about the bikjang hint", () => {
     then("the hint is shown", async ({janggi}) => {
-      expect(await janggi.settings.bikjangHint.getSelected()).toBe("Shown");
+      expect(await janggi.settings.look.bikjangHint.getSelected()).toBe("Shown");
     });
   });
 });
 
 given("the bikjang hint is hidden, and cho's soldier has stepped off file 5", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.bikjangHint.setTo("Hidden");
+    await janggi.settings.look.bikjangHint.setTo("Hidden");
     await janggi.board.tap(5, 7);
     await janggi.board.tap(4, 7);
   });
@@ -107,7 +107,7 @@ given("the bikjang hint is hidden, and cho's soldier has stepped off file 5", ()
 
     when("the hint is shown again", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.bikjangHint.setTo("Shown");
+        await janggi.settings.look.bikjangHint.setTo("Shown");
       });
 
       then("the same steps are labelled, the choice being worn the moment it is made", async ({janggi}) => {

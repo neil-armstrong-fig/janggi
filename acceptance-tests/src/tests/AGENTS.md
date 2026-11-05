@@ -57,7 +57,7 @@ when.each(
   set => `the set in use is ${set}`,
   set => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.pieceSet.setTo(set);
+      await janggi.settings.look.pieceSet.setTo(set);
     });
 
     then("it is the writing that changed and never the game", async ({janggi}) => { ... });

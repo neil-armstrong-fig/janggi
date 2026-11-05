@@ -8,12 +8,12 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  */
 given("a player who has earned the neon board", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 60}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 60}));
   });
 
   when("they choose the classic board", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.board.setTo("Classic");
+      await janggi.settings.look.board.setTo("Classic");
     });
 
     then("both halves are dressed in it", async ({janggi}) => {
@@ -24,23 +24,23 @@ given("a player who has earned the neon board", () => {
     });
 
     then("the boards are not chosen apart", async ({janggi}) => {
-      expect(await janggi.settings.board.isChosenApart()).toBe(false);
+      expect(await janggi.settings.look.board.isChosenApart()).toBe(false);
     });
 
     when("they choose the armies' boards apart", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.board.toggleChoosingApart();
+        await janggi.settings.look.board.toggleChoosingApart();
       });
 
       then("each half is still classic", async ({janggi}) => {
-        expect(await janggi.settings.board.getSelectedNameForArmy("han")).toBe("Classic");
-        expect(await janggi.settings.board.getSelectedNameForArmy("cho")).toBe("Classic");
+        expect(await janggi.settings.look.board.getSelectedNameForArmy("han")).toBe("Classic");
+        expect(await janggi.settings.look.board.getSelectedNameForArmy("cho")).toBe("Classic");
         expect(await janggi.board.getLineColourAt(5, 2)).toBe("rgb(74, 49, 22)");
       });
 
       when("they give han the neon board", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.settings.board.chooseForArmy("han", "Neon");
+          await janggi.settings.look.board.chooseForArmy("han", "Neon");
         });
 
         then("han's half is neon, lines and background both", async ({janggi}) => {
@@ -55,11 +55,11 @@ given("a player who has earned the neon board", () => {
 
         when("they put both halves back in one board", () => {
           beforeEach(async ({janggi}) => {
-            await janggi.settings.board.toggleChoosingApart();
+            await janggi.settings.look.board.toggleChoosingApart();
           });
 
           then("both are classic, and the boards are no longer chosen apart", async ({janggi}) => {
-            expect(await janggi.settings.board.isChosenApart()).toBe(false);
+            expect(await janggi.settings.look.board.isChosenApart()).toBe(false);
             expect(await janggi.board.getLineColourAt(5, 2)).toBe("rgb(74, 49, 22)");
             expect(await janggi.board.getSurfaceAt(2)).toBe("rgb(231, 200, 143)");
           });
@@ -68,7 +68,7 @@ given("a player who has earned the neon board", () => {
 
       when("they give cho the neon board", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.settings.board.chooseForArmy("cho", "Neon");
+          await janggi.settings.look.board.chooseForArmy("cho", "Neon");
         });
 
         then("cho's half is neon and han's is still classic", async ({janggi}) => {

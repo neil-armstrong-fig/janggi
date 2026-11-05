@@ -9,27 +9,27 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player takes on the bot, and the game has just begun", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.opponent.setTo("Bot");
-    await janggi.settings.botStrength.setTo(800);
+    await janggi.settings.play.opponent.setTo("Bot");
+    await janggi.settings.play.botStrength.setTo(800);
   });
 
   when("cho offers the bot a draw", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.offerDraw();
+      await janggi.status.controls.offerDraw();
     });
 
     then("the bot turns it down, the game being nowhere near its end", async ({janggi}) => {
-      expect(await janggi.status.getDrawDeclinedBy()).toBe("han");
+      expect(await janggi.status.overlay.drawDeclinedNote.getDrawDeclinedBy()).toBe("han");
     });
 
     then("the game carries on with cho to move, nobody having won or drawn", async ({janggi}) => {
-      expect(await janggi.status.getDrawDeclinedBy()).toBe("han");
+      expect(await janggi.status.overlay.drawDeclinedNote.getDrawDeclinedBy()).toBe("han");
       expect(await janggi.status.isDrawn()).toBe(false);
       expect(await janggi.status.getTurn()).toBe("cho");
     });
 
     then("no question is put to han, the bot answering for itself", async ({janggi}) => {
-      expect(await janggi.status.getDrawOfferedBy()).toBeUndefined();
+      expect(await janggi.status.overlay.drawOffer.getDrawOfferedBy()).toBeUndefined();
     });
   });
 });

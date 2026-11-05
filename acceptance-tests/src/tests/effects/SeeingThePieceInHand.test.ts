@@ -12,11 +12,11 @@ given("motion is left on", () => {
     });
 
     then("the soldier is drawn raised off the board", async ({janggi}) => {
-      expect(await janggi.board.isPieceRaisedAt(1, 7)).toBe(true);
+      expect(await janggi.board.motion.isPieceRaisedAt(1, 7)).toBe(true);
     });
 
     then("no other piece is raised", async ({janggi}) => {
-      expect(await janggi.board.isPieceRaisedAt(3, 7)).toBe(false);
+      expect(await janggi.board.motion.isPieceRaisedAt(3, 7)).toBe(false);
     });
 
     when("cho puts it back down", () => {
@@ -25,7 +25,7 @@ given("motion is left on", () => {
       });
 
       then("the soldier settles back onto the board", async ({janggi}) => {
-        expect(await janggi.board.isPieceRaisedAt(1, 7)).toBe(false);
+        expect(await janggi.board.motion.isPieceRaisedAt(1, 7)).toBe(false);
       });
     });
 
@@ -35,7 +35,7 @@ given("motion is left on", () => {
       });
 
       then("the soldier is set down where it lands, not left raised", async ({janggi}) => {
-        expect(await janggi.board.isPieceRaisedAt(1, 6)).toBe(false);
+        expect(await janggi.board.motion.isPieceRaisedAt(1, 6)).toBe(false);
       });
     });
   });

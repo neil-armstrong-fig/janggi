@@ -15,7 +15,7 @@ given("a player who made a code, and a friend who is not signed in", () => {
   beforeEach(async ({janggi}) => {
     friend = await janggi.openSeparateDevice();
 
-    await janggi.settings.account.signInWithGoogle();
+    await janggi.settings.you.account.signInWithGoogle();
     await janggi.playAFriend.openPlayAFriend();
     await janggi.playAFriend.createACode("han");
   });
@@ -31,7 +31,7 @@ given("a player who made a code, and a friend who is not signed in", () => {
 
     when("they choose to sign in", () => {
       beforeEach(async () => {
-        await friend.settings.account.signInAsAnotherPlayerFromThePrompt();
+        await friend.settings.you.account.signInAsAnotherPlayerFromThePrompt();
       });
 
       then("they are told who they are playing, with no code typed", async () => {
@@ -53,7 +53,7 @@ given("a player who made a code, and a friend who is not signed in", () => {
       });
 
       then("they are still signed out", async () => {
-        expect(await friend.settings.account.isSignInOffered()).toBe(true);
+        expect(await friend.settings.you.account.isSignInOffered()).toBe(true);
       });
     });
   });
@@ -70,7 +70,7 @@ given("a player who is not signed in", () => {
     });
 
     then("the game has made no call to the API", async ({janggi}) => {
-      expect(await janggi.settings.account.getRequestsMadeToTheApi()).toBe(0);
+      expect(await janggi.settings.you.account.getRequestsMadeToTheApi()).toBe(0);
     });
   });
 

@@ -8,23 +8,23 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a player is choosing who to play", () => {
   when("they play the bot", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.opponent.setTo("Bot");
+      await janggi.settings.play.opponent.setTo("Bot");
     });
 
     then("they are asked how strong it is and which army they take", async ({janggi}) => {
-      expect(await janggi.settings.botStrength.isShown()).toBe(true);
-      expect(await janggi.settings.yourSide.isShown()).toBe(true);
+      expect(await janggi.settings.play.botStrength.isShown()).toBe(true);
+      expect(await janggi.settings.play.yourSide.isShown()).toBe(true);
     });
   });
 
   when("they play another person", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.opponent.setTo("Human");
+      await janggi.settings.play.opponent.setTo("Human");
     });
 
     then("they are not asked either", async ({janggi}) => {
-      expect(await janggi.settings.botStrength.isShown()).toBe(false);
-      expect(await janggi.settings.yourSide.isShown()).toBe(false);
+      expect(await janggi.settings.play.botStrength.isShown()).toBe(false);
+      expect(await janggi.settings.play.yourSide.isShown()).toBe(false);
     });
   });
 });

@@ -7,13 +7,13 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("motion is left on", () => {
   when("the page has loaded", () => {
     then("effects start in full", async ({janggi}) => {
-      expect(await janggi.settings.effects.getSelected()).toBe("Full");
+      expect(await janggi.settings.look.effects.getSelected()).toBe("Full");
     });
   });
 
   when("effects are reduced", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.effects.setTo("Reduced");
+      await janggi.settings.look.effects.setTo("Reduced");
     });
 
     when("cho advances a soldier", () => {
@@ -23,11 +23,11 @@ given("motion is left on", () => {
       });
 
       then("the soldier is not shown travelling", async ({janggi}) => {
-        expect(await janggi.board.isShowingAPieceInFlight()).toBe(false);
+        expect(await janggi.board.motion.isShowingAPieceInFlight()).toBe(false);
       });
 
       then("the soldier is fully shown where it arrived", async ({janggi}) => {
-        expect(await janggi.board.isPieceFullyShownAt(1, 6)).toBe(true);
+        expect(await janggi.board.motion.isPieceFullyShownAt(1, 6)).toBe(true);
       });
 
       then("the point it arrived on is still marked, the mark carrying no motion", async ({janggi}) => {

@@ -21,7 +21,7 @@ given("a player wearing a board that picks its own colours for the lines", () =>
     const styled = {...MIDNIGHT, bikjang: {colour: "#ff00ff", width: 6}, check: {colour: "#00ffff"}};
 
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", styled));
-    await janggi.settings.board.setOwnStyleTo("Midnight");
+    await janggi.settings.look.board.setOwnStyleTo("Midnight");
   });
 
   when("the generals come to face each other and cho calls the bikjang", () => {
@@ -30,7 +30,7 @@ given("a player wearing a board that picks its own colours for the lines", () =>
       await janggi.board.tap(4, 7);
       await janggi.board.tap(5, 4);
       await janggi.board.tap(4, 4);
-      await janggi.status.callBikjang();
+      await janggi.status.controls.callBikjang();
     });
 
     then("the line between the generals is in the board's colour", async ({janggi}) => {
@@ -61,7 +61,7 @@ given("a player wearing a board that picks its own colours for the lines", () =>
 given("a player wearing a board written before boards carried those colours", () => {
   beforeEach(async ({janggi}) => {
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", MIDNIGHT));
-    await janggi.settings.board.setOwnStyleTo("Midnight");
+    await janggi.settings.look.board.setOwnStyleTo("Midnight");
   });
 
   when("the generals come to face each other and cho calls the bikjang", () => {
@@ -70,7 +70,7 @@ given("a player wearing a board written before boards carried those colours", ()
       await janggi.board.tap(4, 7);
       await janggi.board.tap(5, 4);
       await janggi.board.tap(4, 4);
-      await janggi.status.callBikjang();
+      await janggi.status.controls.callBikjang();
     });
 
     then("the line is the gold it always was", async ({janggi}) => {

@@ -22,13 +22,13 @@ given("a player with no XP takes on the weakest bot, playing what the strongest 
   beforeEach(async ({janggi}) => {
     strongestBotsDevice = await janggi.openSeparateDevice();
 
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 0}));
-    await janggi.settings.opponent.setTo("Bot");
-    await janggi.settings.botStrength.setTo(800);
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 0}));
+    await janggi.settings.play.opponent.setTo("Bot");
+    await janggi.settings.play.botStrength.setTo(800);
 
-    await strongestBotsDevice.settings.opponent.setTo("Bot");
-    await strongestBotsDevice.settings.botStrength.setTo(2850);
-    await strongestBotsDevice.settings.yourSide.setTo("Han");
+    await strongestBotsDevice.settings.play.opponent.setTo("Bot");
+    await strongestBotsDevice.settings.play.botStrength.setTo(2850);
+    await strongestBotsDevice.settings.play.yourSide.setTo("Han");
   });
 
   when("every turn either bot takes is played on the other device, until the game ends", () => {
@@ -37,20 +37,20 @@ given("a player with no XP takes on the weakest bot, playing what the strongest 
     });
 
     then("the result is announced", async ({janggi}) => {
-      expect(await janggi.status.isResultAnnounced()).toBe(true);
+      expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(true);
     });
 
     then("it shows the same XP bar the progress settings do", async ({janggi}) => {
-      const shown = await janggi.status.getResultXpBarPercent();
+      const shown = await janggi.status.overlay.resultBanner.getResultXpBarPercent();
 
       expect(shown).toBeDefined();
-      expect(shown).toBe(await janggi.settings.progress.getXpBarPercent());
+      expect(shown).toBe(await janggi.settings.you.progress.getXpBarPercent());
     });
 
     then("a game against the next strength up is offered only if the player won, which opened it", async ({janggi}) => {
       const won = (await janggi.status.getWinner()) === "cho";
 
-      expect(await janggi.status.isNewGameAtNextStrengthOffered()).toBe(won);
+      expect(await janggi.status.overlay.resultBanner.isNewGameAtNextStrengthOffered()).toBe(won);
     });
   });
 });
@@ -60,11 +60,11 @@ given("a player with no XP takes on the weakest bot, playing what the strongest 
  * it is not on, until the player's game has a result or `MOST_TURNS` have gone.
  */
 async function playOut(janggi: Janggi, strongestBotsDevice: Janggi): Promise<void> {
-  await strongestBotsDevice.status.letTheBotStart();
+  await strongestBotsDevice.status.overlay.botGoAhead.letTheBotStart();
   await strongestBotsDevice.status.waitForTheBot();
 
   for (let turn = 0; turn < MOST_TURNS; turn += 1) {
-    if (await janggi.status.isResultAnnounced()) return;
+    if (await janggi.status.overlay.resultBanner.isResultAnnounced()) return;
 
     const [played, answering] = turn % 2 === 0 ? [strongestBotsDevice, janggi] : [janggi, strongestBotsDevice];
     await playTheBotsTurn(played, answering);
@@ -84,9 +84,9 @@ async function playTheBotsTurn(played: Janggi, answering: Janggi): Promise<void>
     await answering.board.tap(move.from.file, move.from.rank);
     await answering.board.tap(move.to.file, move.to.rank);
   } else if (await played.status.isDrawn()) {
-    await answering.status.callBikjang();
+    await answering.status.controls.callBikjang();
   } else {
-    await answering.status.pass();
+    await answering.status.controls.pass();
   }
 
   await answering.status.waitForTheBot();

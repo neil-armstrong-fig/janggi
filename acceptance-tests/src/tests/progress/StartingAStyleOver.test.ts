@@ -33,7 +33,7 @@ const LETTERS = {name: "Letters", sides: {han: PIECE, cho: PIECE}};
 
 given("a player making a board from the classic one", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
     await janggi.stylesSheet.styleStarter.start("Board", "Classic");
   });
 
@@ -102,7 +102,7 @@ given("a player making a board from the classic one", () => {
 
 given("a player making a piece set from the hangul one", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
     await janggi.stylesSheet.styleStarter.start("Pieces", "Hangul");
   });
 

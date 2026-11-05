@@ -6,7 +6,7 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player who reads the game in Korean on a narrow phone", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.language.setTo("ko");
+    await janggi.settings.you.language.setTo("ko");
     await janggi.languageNotice.dismissIt();
     await janggi.resizeWindowTo(320, 568);
   });

@@ -1,3 +1,4 @@
+import {DiscoveryDsl} from "@src/dsl/janggi/components/discovery/DiscoveryDsl";
 import {BoardDsl} from "@src/dsl/janggi/components/board/BoardDsl";
 import type {DeviceSetup} from "@src/dsl/janggi/playwright/types/DeviceSetup";
 import {DebugDsl} from "@src/dsl/janggi/components/debug/DebugDsl";
@@ -8,7 +9,6 @@ import {JanggiPlaywright} from "@src/dsl/janggi/playwright/JanggiPlaywright";
 import {LegalDsl} from "@src/dsl/janggi/components/legal/LegalDsl";
 import {OnboardingDsl} from "@src/dsl/janggi/components/onboarding/OnboardingDsl";
 import {PlayAFriendDsl} from "@src/dsl/janggi/components/play-a-friend/PlayAFriendDsl";
-import type {LanguageAlternates} from "@src/dsl/janggi/types/LanguageAlternates";
 import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationAppearance";
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
@@ -62,6 +62,7 @@ export class JanggiDsl {
   readonly languageNotice: LanguageNoticeDsl;
   readonly stylesSheet: StylesSheetDsl;
   readonly debug: DebugDsl;
+  readonly discovery: DiscoveryDsl;
 
   constructor(
     page: Page,
@@ -84,6 +85,7 @@ export class JanggiDsl {
     this.languageNotice = new LanguageNoticeDsl(page);
     this.stylesSheet = new StylesSheetDsl(page);
     this.debug = new DebugDsl(page);
+    this.discovery = new DiscoveryDsl(page);
   }
 
   /**
@@ -101,12 +103,12 @@ export class JanggiDsl {
 
       if (!freshPlayer) await this.janggi.keepOnboardingDone();
 
-      await this.settings.account.standInForTheApi(sharingTheApiWith?.settings.account);
+      await this.settings.you.account.standInForTheApi(sharingTheApiWith?.settings.you.account);
       await this.navigateToPage();
       if (freshPlayer) return;
 
-      if (!keepShippedOpponent) await this.settings.opponent.setTo("Human");
-      if (effects !== "Full") await this.settings.effects.setTo(effects);
+      if (!keepShippedOpponent) await this.settings.play.opponent.setTo("Human");
+      if (effects !== "Full") await this.settings.look.effects.setTo(effects);
       await this.debug.setProgress(EVERYTHING_UNLOCKED);
     } catch (error) {
       throw new DslError("Failed to start the app on this device", error);
@@ -228,35 +230,11 @@ export class JanggiDsl {
     }
   }
 
-  async getPageTitle(): Promise<string> {
-    try {
-      return await this.janggi.getPageTitle();
-    } catch (error) {
-      throw new DslError("Failed to read the game's page title", error);
-    }
-  }
-
   async getInstallationAppearance(): Promise<InstallationAppearance> {
     try {
       return await this.janggi.getInstallationAppearance();
     } catch (error) {
       throw new DslError("Failed to read the app's installation artwork", error);
-    }
-  }
-
-  async getPageDescription(): Promise<string> {
-    try {
-      return await this.janggi.getPageDescription();
-    } catch (error) {
-      throw new DslError("Failed to read the game's search description", error);
-    }
-  }
-
-  async getCanonicalAddress(): Promise<string> {
-    try {
-      return await this.janggi.getCanonicalAddress();
-    } catch (error) {
-      throw new DslError("Failed to read the game's canonical address", error);
     }
   }
 
@@ -276,166 +254,11 @@ export class JanggiDsl {
     }
   }
 
-  async getLanguageAlternates(): Promise<LanguageAlternates> {
-    try {
-      return await this.janggi.getLanguageAlternates();
-    } catch (error) {
-      throw new DslError("Failed to read the page's language alternates", error);
-    }
-  }
-
-  async getSitemapLanguageAlternatesOfTheKoreanGame(): Promise<LanguageAlternates> {
-    try {
-      return await this.janggi.getSitemapLanguageAlternatesOfTheKoreanGame();
-    } catch (error) {
-      throw new DslError("Failed to read the sitemap's language alternates for the Korean game", error);
-    }
-  }
-
-  async getSitemapLanguageAlternatesOfTheKoreanGuide(): Promise<LanguageAlternates> {
-    try {
-      return await this.janggi.getSitemapLanguageAlternatesOfTheKoreanGuide();
-    } catch (error) {
-      throw new DslError("Failed to read the sitemap's language alternates for the Korean guide", error);
-    }
-  }
-
-  async getSitemapLanguageAlternatesOfTheKoreanReferences(): Promise<LanguageAlternates> {
-    try {
-      return await this.janggi.getSitemapLanguageAlternatesOfTheKoreanReferences();
-    } catch (error) {
-      throw new DslError("Failed to read the sitemap's language alternates for the Korean references", error);
-    }
-  }
-
-  async getReferencesAddressInPageServedToSearchEngines(): Promise<string> {
-    try {
-      return await this.janggi.getReferencesAddressInPageServedToSearchEngines();
-    } catch (error) {
-      throw new DslError("Failed to read where the references link goes in the page served to search engines", error);
-    }
-  }
-
-  async getSocialImageAddress(): Promise<string> {
-    try {
-      return await this.janggi.getSocialImageAddress();
-    } catch (error) {
-      throw new DslError("Failed to read the game's social card address", error);
-    }
-  }
-
-  async getGuideAddressInPageServedToSearchEngines(): Promise<string> {
-    try {
-      return await this.janggi.getGuideAddressInPageServedToSearchEngines();
-    } catch (error) {
-      throw new DslError("Failed to read where the guide link goes in the page served to search engines", error);
-    }
-  }
-
-  async getOtherLanguageAddressInPageServedToSearchEngines(): Promise<string> {
-    try {
-      return await this.janggi.getOtherLanguageAddressInPageServedToSearchEngines();
-    } catch (error) {
-      throw new DslError(
-        "Failed to read where the other-language link goes in the page served to search engines",
-        error,
-      );
-    }
-  }
-
-  async getSearchDataLanguage(): Promise<unknown> {
-    try {
-      return await this.janggi.getSearchDataLanguage();
-    } catch (error) {
-      throw new DslError("Failed to read the language the game's search data declares", error);
-    }
-  }
-
-  async getSearchDataName(): Promise<unknown> {
-    try {
-      return await this.janggi.getSearchDataName();
-    } catch (error) {
-      throw new DslError("Failed to read the name in the game's search data", error);
-    }
-  }
-
   async getMainHeading(): Promise<string> {
     try {
       return await this.janggi.getMainHeading();
     } catch (error) {
       throw new DslError("Failed to read the game's main heading", error);
-    }
-  }
-
-  async getMainHeadingServedToSearchEngines(): Promise<string> {
-    try {
-      return await this.janggi.getMainHeadingServedToSearchEngines();
-    } catch (error) {
-      throw new DslError("Failed to read the main heading in the page as served, before scripts run", error);
-    }
-  }
-
-  async getTextServedToSearchEngines(): Promise<string> {
-    try {
-      return await this.janggi.getTextServedToSearchEngines();
-    } catch (error) {
-      throw new DslError("Failed to read the text in the page as served, before scripts run", error);
-    }
-  }
-
-  async isGuideLinkedInPageServedToSearchEngines(): Promise<boolean> {
-    try {
-      return await this.janggi.isGuideLinkedInPageServedToSearchEngines();
-    } catch (error) {
-      throw new DslError("Failed to check for the guide link in the page as served, before scripts run", error);
-    }
-  }
-
-  async isEachPolicyLinkedInPageServedToSearchEngines(): Promise<boolean> {
-    try {
-      return await this.janggi.isEachPolicyLinkedInPageServedToSearchEngines();
-    } catch (error) {
-      throw new DslError("Failed to check for the legal links in the page as served, before scripts run", error);
-    }
-  }
-
-  async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
-    try {
-      return await this.janggi.isIdentifiedAsAFreeWebGame();
-    } catch (error) {
-      throw new DslError("Failed to read the game's structured search data", error);
-    }
-  }
-
-  async isSitemapAdvertisedToCrawlers(): Promise<boolean> {
-    try {
-      return await this.janggi.isSitemapAdvertisedToCrawlers();
-    } catch (error) {
-      throw new DslError("Failed to check that robots.txt allows crawlers and names the sitemap", error);
-    }
-  }
-
-  async isListedInSitemap(): Promise<boolean> {
-    try {
-      return await this.janggi.isListedInSitemap();
-    } catch (error) {
-      throw new DslError("Failed to check whether the game and guide are listed in the sitemap", error);
-    }
-  }
-
-  async isEachPolicyListedInSitemap(): Promise<boolean> {
-    try {
-      return await this.janggi.isEachPolicyListedInSitemap();
-    } catch (error) {
-      throw new DslError("Failed to check whether the legal pages are listed in the sitemap", error);
-    }
-  }
-
-  async isEverySitemapEntryDated(): Promise<boolean> {
-    try {
-      return await this.janggi.isEverySitemapEntryDated();
-    } catch (error) {
-      throw new DslError("Failed to check whether each sitemap entry says when it last changed", error);
     }
   }
 
@@ -448,7 +271,6 @@ export class JanggiDsl {
     }
   }
 
-  /** Resizes the window, the way a user dragging the corner of a browser would. */
   /** Every Korean word on screen that a line ends in the middle of, which Korean wrapped by the letter would have. */
   async getKoreanWordsSplitAcrossLines(): Promise<readonly string[]> {
     try {
@@ -475,6 +297,7 @@ export class JanggiDsl {
     }
   }
 
+  /** Resizes the window, the way a user dragging the corner of a browser would. */
   async resizeWindowTo(width: number, height: number): Promise<void> {
     try {
       await this.janggi.resizeWindowTo(width, height);

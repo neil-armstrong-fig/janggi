@@ -18,8 +18,8 @@ given("two players, each signed in with Google as themselves", () => {
   beforeEach(async ({janggi}) => {
     friend = await janggi.openSeparateDevice();
 
-    await janggi.settings.account.signInWithGoogle();
-    await friend.settings.account.signInWithGoogleAsAnotherPlayer();
+    await janggi.settings.you.account.signInWithGoogle();
+    await friend.settings.you.account.signInWithGoogleAsAnotherPlayer();
     await janggi.playAFriend.openPlayAFriend();
     await friend.playAFriend.openPlayAFriend();
   });
@@ -30,7 +30,7 @@ given("two players, each signed in with Google as themselves", () => {
     });
 
     then("the server is asked to keep it a month", async ({janggi}) => {
-      expect(await janggi.settings.account.getRoomsAsked()).toEqual([{side: "han", awayDays: 30}]);
+      expect(await janggi.settings.you.account.getRoomsAsked()).toEqual([{side: "han", awayDays: 30}]);
     });
   });
 
@@ -222,7 +222,7 @@ given("two players, each signed in with Google as themselves", () => {
 
         when("the friend loses their connection", () => {
           beforeEach(async () => {
-            await friend.settings.account.dropTheFriendConnection();
+            await friend.settings.you.account.dropTheFriendConnection();
           });
 
           then("the first is told their friend has left", async ({janggi}) => {
@@ -236,7 +236,7 @@ given("two players, each signed in with Google as themselves", () => {
           when("the friend is connected again", () => {
             beforeEach(async ({janggi}) => {
               await expect.poll(() => janggi.playAFriend.getState()).toBe("opponent-left");
-              await friend.settings.account.restoreTheFriendConnection();
+              await friend.settings.you.account.restoreTheFriendConnection();
             });
 
             then("the game goes on", async ({janggi}) => {
@@ -251,9 +251,9 @@ given("two players, each signed in with Google as themselves", () => {
 
         when("the friend is out of reach and the rooms are let go, and then the friend is back in reach", () => {
           beforeEach(async ({janggi}) => {
-            await friend.settings.account.dropTheFriendConnection();
-            await janggi.settings.account.letGoOfTheRooms();
-            await friend.settings.account.restoreTheFriendConnection();
+            await friend.settings.you.account.dropTheFriendConnection();
+            await janggi.settings.you.account.letGoOfTheRooms();
+            await friend.settings.you.account.restoreTheFriendConnection();
           });
 
           then("the first is out of a game with a room that is gone", async ({janggi}) => {

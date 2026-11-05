@@ -26,7 +26,7 @@ given("the You settings were read to the bottom, and the sheet was shut", () => 
 
   when("a signed-out player chooses Online", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.games.chooseOnline();
+      await janggi.settings.play.games.chooseOnline();
     });
 
     then("the You tab is at its top, with the sign-in in view", async ({janggi}) => {

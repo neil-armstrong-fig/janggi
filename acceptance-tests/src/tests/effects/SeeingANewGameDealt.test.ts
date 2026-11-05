@@ -10,21 +10,21 @@ given("motion is left on", () => {
     beforeEach(async ({janggi}) => {
       await janggi.board.tap(1, 7);
       await janggi.board.tap(1, 6);
-      await janggi.settings.startNewGame();
+      await janggi.settings.play.startNewGame();
     });
 
     then("the back ranks are fully shown once they have been set out", async ({janggi}) => {
-      expect(await janggi.board.isPieceFullyShownAt(1, 10)).toBe(true);
-      expect(await janggi.board.isPieceFullyShownAt(5, 2)).toBe(true);
+      expect(await janggi.board.motion.isPieceFullyShownAt(1, 10)).toBe(true);
+      expect(await janggi.board.motion.isPieceFullyShownAt(5, 2)).toBe(true);
     });
 
     then("the soldiers by the river are fully shown once they have been set out too", async ({janggi}) => {
-      expect(await janggi.board.isPieceFullyShownAt(9, 4)).toBe(true);
-      expect(await janggi.board.isPieceFullyShownAt(9, 7)).toBe(true);
+      expect(await janggi.board.motion.isPieceFullyShownAt(9, 4)).toBe(true);
+      expect(await janggi.board.motion.isPieceFullyShownAt(9, 7)).toBe(true);
     });
 
     then("the soldier that had moved is fully shown back where it began", async ({janggi}) => {
-      expect(await janggi.board.isPieceFullyShownAt(1, 7)).toBe(true);
+      expect(await janggi.board.motion.isPieceFullyShownAt(1, 7)).toBe(true);
     });
   });
 });

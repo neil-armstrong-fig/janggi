@@ -19,7 +19,7 @@ given("someone who reads Korean wants to know where the rules came from", () => 
     then("the page describes the references in Korean", async ({janggi}) => {
       expect(await janggi.getPageLanguage()).toBe("ko");
       expect(await janggi.references.getPageTitle()).toBe("장기 규칙 출처 · 참고 자료와 크레딧");
-      expect(await janggi.getPageDescription()).toBe(
+      expect(await janggi.discovery.getPageDescription()).toBe(
         "장기 규칙과 상차림 연구의 출처, 봇에 쓰인 Fairy-Stockfish, 이 무료 장기 게임을 만드는 데 쓰인 오픈 소스 소프트웨어를 소개합니다.",
       );
       expect(await janggi.references.getMainHeading()).toBe("참고 자료 및 출처");
@@ -84,28 +84,30 @@ given("someone who reads Korean wants to know where the rules came from", () => 
     });
 
     then("search engines are given its own address, not the English page's", async ({janggi}) => {
-      expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/ko/references.html");
+      expect(await janggi.discovery.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/ko/references.html");
     });
 
     then("search engines are told it is the Korean twin of the English page", async ({janggi}) => {
-      expect(await janggi.getLanguageAlternates()).toEqual(REFERENCES_ALTERNATES);
+      expect(await janggi.discovery.getLanguageAlternates()).toEqual(REFERENCES_ALTERNATES);
     });
 
     then("search engines understand that it is written in Korean", async ({janggi}) => {
-      expect(await janggi.getSearchDataLanguage()).toBe("ko");
+      expect(await janggi.discovery.getSearchDataLanguage()).toBe("ko");
     });
 
     then("it is shared with a card that is written in Korean", async ({janggi}) => {
-      expect(await janggi.getSocialImageAddress()).toBe("https://janggi.neilarmstrong.dev/social-card-ko.png");
+      expect(await janggi.discovery.getSocialImageAddress()).toBe(
+        "https://janggi.neilarmstrong.dev/social-card-ko.png",
+      );
     });
 
     then("search engines that don't run scripts read it, and its notice, in Korean too", async ({janggi}) => {
-      expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("참고 자료 및 출처");
-      expect(await janggi.getTextServedToSearchEngines()).toContain("기계 번역");
+      expect(await janggi.discovery.getMainHeadingServedToSearchEngines()).toBe("참고 자료 및 출처");
+      expect(await janggi.discovery.getTextServedToSearchEngines()).toContain("기계 번역");
     });
 
     then("search engines that follow links can reach the English page from it", async ({janggi}) => {
-      expect(await janggi.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/references.html");
+      expect(await janggi.discovery.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/references.html");
     });
 
     then("a language switch names each language in itself and marks Korean as the one it is in", async ({janggi}) => {
@@ -127,7 +129,7 @@ given("someone who reads Korean wants to know where the rules came from", () => 
       });
 
       then("the switch toggles them to the other language's references", async ({janggi}) => {
-        expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/references.html");
+        expect(await janggi.discovery.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/references.html");
         expect(await janggi.getPageLanguage()).toBe("en");
         expect(await janggi.references.languageSwitch.getSelection()).toBe("en");
       });
@@ -139,7 +141,7 @@ given("someone who reads Korean wants to know where the rules came from", () => 
       });
 
       then("they are on the English references, and the switch marks English", async ({janggi}) => {
-        expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/references.html");
+        expect(await janggi.discovery.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/references.html");
         expect(await janggi.getPageLanguage()).toBe("en");
         expect(await janggi.references.languageSwitch.getSelection()).toBe("en");
       });
@@ -152,11 +154,11 @@ given("someone who reads Korean wants to know where the rules came from", () => 
     });
 
     then("search engines are told it has a Korean twin", async ({janggi}) => {
-      expect(await janggi.getLanguageAlternates()).toEqual(REFERENCES_ALTERNATES);
+      expect(await janggi.discovery.getLanguageAlternates()).toEqual(REFERENCES_ALTERNATES);
     });
 
     then("search engines that follow links can reach the Korean page from it", async ({janggi}) => {
-      expect(await janggi.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/ko/references.html");
+      expect(await janggi.discovery.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/ko/references.html");
     });
 
     then("it does not carry the machine translation notice", async ({janggi}) => {
@@ -164,7 +166,7 @@ given("someone who reads Korean wants to know where the rules came from", () => 
     });
 
     then("the sitemap tells the same story as the pages", async ({janggi}) => {
-      expect(await janggi.getSitemapLanguageAlternatesOfTheKoreanReferences()).toEqual(REFERENCES_ALTERNATES);
+      expect(await janggi.discovery.getSitemapLanguageAlternatesOfTheKoreanReferences()).toEqual(REFERENCES_ALTERNATES);
     });
 
     then("a language switch marks English as the one it is in", async ({janggi}) => {
@@ -185,7 +187,9 @@ given("someone who reads Korean wants to know where the rules came from", () => 
       });
 
       then("the switch toggles them to the other language's references", async ({janggi}) => {
-        expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/ko/references.html");
+        expect(await janggi.discovery.getCanonicalAddress()).toBe(
+          "https://janggi.neilarmstrong.dev/ko/references.html",
+        );
         expect(await janggi.getPageLanguage()).toBe("ko");
         expect(await janggi.references.languageSwitch.getSelection()).toBe("ko");
       });
@@ -197,7 +201,9 @@ given("someone who reads Korean wants to know where the rules came from", () => 
       });
 
       then("they are on the Korean references, and the switch marks Korean", async ({janggi}) => {
-        expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/ko/references.html");
+        expect(await janggi.discovery.getCanonicalAddress()).toBe(
+          "https://janggi.neilarmstrong.dev/ko/references.html",
+        );
         expect(await janggi.getPageLanguage()).toBe("ko");
         expect(await janggi.references.languageSwitch.getSelection()).toBe("ko");
       });
@@ -220,20 +226,20 @@ given("someone who reads Korean wants to know where the rules came from", () => 
     });
 
     then("the page served to search engines links to the Korean references", async ({janggi}) => {
-      expect(await janggi.getReferencesAddressInPageServedToSearchEngines()).toBe("/ko/references.html");
+      expect(await janggi.discovery.getReferencesAddressInPageServedToSearchEngines()).toBe("/ko/references.html");
     });
   });
 });
 
 given("a player who reads the game in Korean", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.language.setTo("ko");
+    await janggi.settings.you.language.setTo("ko");
     await janggi.languageNotice.dismissIt();
   });
 
   when("they look at the link to the references in the settings", () => {
     then("it leads to the Korean references", async ({janggi}) => {
-      expect(await janggi.settings.getReferencesAddressInGame()).toBe("/ko/references.html");
+      expect(await janggi.settings.you.getReferencesAddressInGame()).toBe("/ko/references.html");
     });
   });
 
@@ -252,7 +258,7 @@ given("a player who reads the game in Korean", () => {
 given("a player who reads the game in English", () => {
   when("they look at the link to the references in the settings", () => {
     then("it leads to the English references", async ({janggi}) => {
-      expect(await janggi.settings.getReferencesAddressInGame()).toBe("/references.html");
+      expect(await janggi.settings.you.getReferencesAddressInGame()).toBe("/references.html");
     });
   });
 });

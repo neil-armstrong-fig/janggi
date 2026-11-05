@@ -8,10 +8,10 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a player opens the game", () => {
   when("nothing has been chosen", () => {
     then("it is read in English", async ({janggi}) => {
-      expect(await janggi.settings.language.getSelected()).toBe("en");
+      expect(await janggi.settings.you.language.getSelected()).toBe("en");
       expect(await janggi.getPageLanguage()).toBe("en");
       expect(await janggi.settings.getTabLabel("Play")).toBe("Play");
-      expect(await janggi.status.getControlLabel("pass")).toBe("Pass");
+      expect(await janggi.status.controls.getControlLabel("pass")).toBe("Pass");
     });
 
     then("nothing is said about a translation", async ({janggi}) => {
@@ -21,11 +21,11 @@ given("a player opens the game", () => {
 
   when("they choose Korean", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.language.setTo("ko");
+      await janggi.settings.you.language.setTo("ko");
     });
 
     then("the page says it is in Korean", async ({janggi}) => {
-      expect(await janggi.settings.language.getSelected()).toBe("ko");
+      expect(await janggi.settings.you.language.getSelected()).toBe("ko");
       expect(await janggi.getPageLanguage()).toBe("ko");
     });
 
@@ -63,8 +63,8 @@ given("a player opens the game", () => {
 
       when("they choose English and then Korean again", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.settings.language.setTo("en");
-          await janggi.settings.language.setTo("ko");
+          await janggi.settings.you.language.setTo("en");
+          await janggi.settings.you.language.setTo("ko");
         });
 
         then("they are told again, having chosen it again", async ({janggi}) => {
@@ -81,52 +81,52 @@ given("a player opens the game", () => {
     });
 
     then("the controls under the board are named in Korean", async ({janggi}) => {
-      expect(await janggi.status.getControlLabel("pass")).toBe("한수쉼");
-      expect(await janggi.status.getControlLabel("bikjang")).toBe("빅장");
-      expect(await janggi.status.getControlLabel("draw")).toBe("무승부");
-      expect(await janggi.status.getControlLabel("undo")).toBe("무르기");
-      expect(await janggi.status.getControlLabel("redo")).toBe("다시 두기");
-      expect(await janggi.status.getControlLabel("settings")).toBe("설정");
+      expect(await janggi.status.controls.getControlLabel("pass")).toBe("한수쉼");
+      expect(await janggi.status.controls.getControlLabel("bikjang")).toBe("빅장");
+      expect(await janggi.status.controls.getControlLabel("draw")).toBe("무승부");
+      expect(await janggi.status.controls.getControlLabel("undo")).toBe("무르기");
+      expect(await janggi.status.controls.getControlLabel("redo")).toBe("다시 두기");
+      expect(await janggi.status.controls.getControlLabel("settings")).toBe("설정");
     });
   });
 
   when("they choose Korean and look at the game's own settings", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.language.setTo("ko");
+      await janggi.settings.you.language.setTo("ko");
     });
 
     then("who plays the other army is named in Korean", async ({janggi}) => {
-      expect(await janggi.settings.opponent.getOptionLabel("Human")).toBe("사람");
-      expect(await janggi.settings.opponent.getOptionLabel("Bot")).toBe("봇");
+      expect(await janggi.settings.play.opponent.getOptionLabel("Human")).toBe("사람");
+      expect(await janggi.settings.play.opponent.getOptionLabel("Bot")).toBe("봇");
     });
 
     then("the two games are named in Korean", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.getOptionLabel("Casual")).toBe("일반");
-      expect(await janggi.settings.matchFormat.getOptionLabel("Scored")).toBe("점수제");
+      expect(await janggi.settings.play.matchFormat.getOptionLabel("Casual")).toBe("일반");
+      expect(await janggi.settings.play.matchFormat.getOptionLabel("Scored")).toBe("점수제");
     });
 
     then("starting again is named in Korean", async ({janggi}) => {
-      expect(await janggi.settings.getNewGameLabel()).toBe("새 게임");
+      expect(await janggi.settings.play.getNewGameLabel()).toBe("새 게임");
     });
   });
 
   when("they choose Korean and look at how the game looks and sounds", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.language.setTo("ko");
+      await janggi.settings.you.language.setTo("ko");
     });
 
     then("what is marked on the board is put in Korean", async ({janggi}) => {
-      expect(await janggi.settings.movableHighlight.getLabel()).toBe("움직일 수 있는 말 표시");
+      expect(await janggi.settings.look.movableHighlight.getLabel()).toBe("움직일 수 있는 말 표시");
     });
 
     then("the sound settings are put in Korean", async ({janggi}) => {
-      expect(await janggi.settings.music.getMuteLabel()).toBe("음악 끄기");
+      expect(await janggi.settings.sound.music.getMuteLabel()).toBe("음악 끄기");
     });
   });
 
   when("they choose Korean and look at their record", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.language.setTo("ko");
+      await janggi.settings.you.language.setTo("ko");
     });
 
     then("the record is named in Korean, and so is clearing it", async ({janggi}) => {
@@ -137,47 +137,47 @@ given("a player opens the game", () => {
 
   when("they choose Korean and play", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.language.setTo("ko");
+      await janggi.settings.you.language.setTo("ko");
       await janggi.languageNotice.dismissIt();
     });
 
     then("the armies are called 초 and 한 on their plaques", async ({janggi}) => {
-      expect(await janggi.status.getArmyName("cho")).toBe("초");
-      expect(await janggi.status.getArmyName("han")).toBe("한");
+      expect(await janggi.status.plaque.getArmyName("cho")).toBe("초");
+      expect(await janggi.status.plaque.getArmyName("han")).toBe("한");
     });
 
     when("cho offers a draw", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.offerDraw();
+        await janggi.status.controls.offerDraw();
       });
 
       then("the offer is put in Korean", async ({janggi}) => {
-        expect(await janggi.status.getDrawOfferLine()).toBe("무승부 · 초 제안");
+        expect(await janggi.status.overlay.drawOffer.getDrawOfferLine()).toBe("무승부 · 초 제안");
       });
     });
   });
 
   when("they choose Korean and come back later", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.language.setTo("ko");
+      await janggi.settings.you.language.setTo("ko");
       await janggi.reload();
     });
 
     then("it is still read in Korean", async ({janggi}) => {
-      expect(await janggi.settings.language.getSelected()).toBe("ko");
-      expect(await janggi.status.getControlLabel("pass")).toBe("한수쉼");
+      expect(await janggi.settings.you.language.getSelected()).toBe("ko");
+      expect(await janggi.status.controls.getControlLabel("pass")).toBe("한수쉼");
     });
   });
 
   when("they choose Korean and then English again", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.language.setTo("ko");
-      await janggi.settings.language.setTo("en");
+      await janggi.settings.you.language.setTo("ko");
+      await janggi.settings.you.language.setTo("en");
     });
 
     then("it is read in English", async ({janggi}) => {
       expect(await janggi.getPageLanguage()).toBe("en");
-      expect(await janggi.status.getControlLabel("pass")).toBe("Pass");
+      expect(await janggi.status.controls.getControlLabel("pass")).toBe("Pass");
     });
 
     then("the address is the game's English page", async ({janggi}) => {
@@ -198,7 +198,7 @@ given("a player opens the game", () => {
   when("they open the Korean page and choose English", () => {
     beforeEach(async ({janggi}) => {
       await janggi.visitKoreanGame();
-      await janggi.settings.language.setTo("en");
+      await janggi.settings.you.language.setTo("en");
     });
 
     then("it is read in English at the English page's address", async ({janggi}) => {

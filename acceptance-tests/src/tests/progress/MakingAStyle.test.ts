@@ -8,7 +8,7 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  */
 given("a player without the XP to make a style", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 299}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 299}));
   });
 
   when("they look at making one", () => {
@@ -20,7 +20,7 @@ given("a player without the XP to make a style", () => {
 
 given("a player with the XP to make a style", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
   });
 
   when("they make a board from the classic one, under a name of their own", () => {
@@ -37,7 +37,7 @@ given("a player with the XP to make a style", () => {
     });
 
     then("the board is wearing it", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelectedName()).toBe("My board");
+      expect(await janggi.settings.look.board.getSelectedName()).toBe("My board");
     });
   });
 
@@ -47,7 +47,7 @@ given("a player with the XP to make a style", () => {
     });
 
     then("the pieces are wearing it", async ({janggi}) => {
-      expect(await janggi.settings.pieceSet.getSelectedName()).toBe("My pieces");
+      expect(await janggi.settings.look.pieceSet.getSelectedName()).toBe("My pieces");
     });
 
     then("it carries the writing of the set it started from", async ({janggi}) => {

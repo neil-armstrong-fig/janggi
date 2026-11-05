@@ -30,7 +30,7 @@ const SHARED_PIECES = {name: "Letters", sides: {han: LETTERED_PIECE, cho: LETTER
  */
 given("a player with no XP is handed styles somebody else made", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 0}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 0}));
   });
 
   when("they import a board", () => {
@@ -50,18 +50,18 @@ given("a player with no XP is handed styles somebody else made", () => {
   when("they import a board and wear it", () => {
     beforeEach(async ({janggi}) => {
       await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
-      await janggi.settings.board.setOwnStyleTo("Midnight");
+      await janggi.settings.look.board.setOwnStyleTo("Midnight");
     });
 
     then("it is the board in use", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelectedName()).toBe("Midnight");
+      expect(await janggi.settings.look.board.getSelectedName()).toBe("Midnight");
     });
   });
 
   when("they import a piece set and wear it", () => {
     beforeEach(async ({janggi}) => {
       await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", SHARED_PIECES));
-      await janggi.settings.pieceSet.setOwnStyleTo("Letters");
+      await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
     });
 
     then("it is among their own piece sets", async ({janggi}) => {

@@ -1,117 +1,18 @@
 import type {Locator, Page} from "@playwright/test";
-import {ELEPHANT_PAIRINGS} from "@janggi/shared/janggi/settings/ElephantPairing";
-import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
 
 /**
- * The settings sheet — the part of it that belongs to no single picker: the 맞상/엇상 line beneath
- * the two setup pickers, New game beneath that, and the tabs the whole sheet is divided into.
+ * The settings sheet itself — opening it, and the tabs it is divided into. What is in a tab is each tab's own
+ * (`tabs/<tab>-pane/`).
  *
- * It holds no other component. Each picker is built by its own `*Dsl` from the page, so this is the
- * counterpart of `SettingsDsl` and nothing else's parent.
+ * It holds no other component, and sets up no locators of its own: the sheet's are `SettingsSheetComponent`'s, so its
+ * constructor only hands the page up. Each tab is built by its own `*Dsl` from the page, so this is the counterpart of
+ * `SettingsDsl` and nothing else's parent.
  */
 export class SettingsPlaywright extends SettingsSheetComponent {
-  private readonly elephantPairing: Locator;
-  private readonly newGame: Locator;
-  private readonly appVersion: Locator;
-
   constructor(page: Page) {
     super(page);
-
-    this.elephantPairing = page.getByTestId("elephant-pairing");
-    this.newGame = page.getByTestId("new-game");
-    this.appVersion = page.getByTestId("app-version");
-  }
-
-  /**
-   * Whether the line is on screen at all. Distinct from `getElephantPairing` returning nothing: an
-   * empty line with no pairing on it would answer the same there, and is a blank row under the
-   * pickers rather than the absence the design intends.
-   */
-  async isElephantPairingShown(): Promise<boolean> {
-    return (await this.elephantPairing.count()) > 0;
-  }
-
-  /**
-   * How the two chosen arrangements sit against each other, or nothing where the pairing is not one
-   * the game has a name for.
-   */
-  async getElephantPairing(): Promise<ElephantPairing | undefined> {
-    if ((await this.elephantPairing.count()) === 0) return undefined;
-
-    const pairing = await this.elephantPairing.getAttribute("data-pairing");
-
-    return ELEPHANT_PAIRINGS.find(candidate => candidate === pairing);
-  }
-
-  async isGuideLinkedFromGame(): Promise<boolean> {
-    const href = (await this.page.getByTestId("guide-open").getAttribute("href")) ?? undefined;
-
-    return href !== undefined && new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href;
-  }
-
-  /** Where the link to the guide in the game goes, as written in the page. */
-  async getGuideAddressInGame(): Promise<string> {
-    return (await this.page.getByTestId("guide-open").getAttribute("href")) ?? "";
-  }
-
-  /** Where the link to the references in the game goes, as written in the page. */
-  async getReferencesAddressInGame(): Promise<string> {
-    return (await this.page.getByTestId("references-open").getAttribute("href")) ?? "";
-  }
-
-  async getDeveloperWebsiteDestination(): Promise<string> {
-    return await this.appHelpDestination("developer-website-open");
-  }
-
-  async getRepositoryDestination(): Promise<string> {
-    return await this.appHelpDestination("repository-open");
-  }
-
-  /** The build the app was made from, as the You tab names it. */
-  async getAppVersion(): Promise<string> {
-    return ((await this.appVersion.textContent()) ?? "").trim();
-  }
-
-  /** The line that names the build, with the word for a version in front of it. */
-  async getVersionWords(): Promise<string> {
-    return ((await this.appVersion.locator("xpath=..").textContent()) ?? "").trim();
-  }
-
-  /** What the app and help links in the You tab say, as the player reads them. */
-  async getAppHelpWords(): Promise<string> {
-    return ((await this.page.getByTestId("app-help").textContent()) ?? "").trim();
-  }
-
-  private async appHelpDestination(testId: string): Promise<string> {
-    const href = (await this.page.getByTestId(testId).getAttribute("href")) ?? undefined;
-    if (href === undefined) throw new Error(`The ${testId} link has no destination`);
-
-    return href;
-  }
-
-  async doExternalAppHelpLinksOpenSeparately(): Promise<boolean> {
-    const developerWebsite = this.page.getByTestId("developer-website-open");
-    const repository = this.page.getByTestId("repository-open");
-
-    return (
-      (await developerWebsite.getAttribute("target")) === "_blank" &&
-      (await developerWebsite.getAttribute("rel")) === "noopener noreferrer" &&
-      (await repository.getAttribute("target")) === "_blank" &&
-      (await repository.getAttribute("rel")) === "noopener noreferrer"
-    );
-  }
-
-  /** Only opens the sheet: dealing a new game closes it, so the player is looking at the new board. */
-  /** The words on the New game button, as written rather than as the stylesheet draws them. */
-  async getNewGameLabel(): Promise<string> {
-    return ((await this.newGame.textContent()) ?? "").trim();
-  }
-
-  async startNewGame(): Promise<void> {
-    await this.openSheet(this.newGame);
-    await this.newGame.click();
   }
 
   /** Opens the sheet and leaves it open, so the board can be watched behind it. */

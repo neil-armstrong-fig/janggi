@@ -32,22 +32,37 @@ src/dsl/
       board/
         BoardDsl.ts
         playwright/BoardPlaywright.ts
+        components/motion/               janggi.board.motion: lifted, in flight, shaking
+      discovery/                         janggi.discovery: what search engines and crawlers are told
       settings/
-        SettingsDsl.ts
+        SettingsDsl.ts                   the sheet and its tabs
         playwright/SettingsPlaywright.ts
+        tabs/
+          look-pane/
+            LookPaneDsl.ts               janggi.settings.look
+            components/
+              board-setting/BoardSettingDsl.ts
+              board-setting/playwright/BoardSettingPlaywright.ts
+              ... and so on, one folder per setting
+          play-pane/                     the same, plus playwright/PlayPanePlaywright.ts
+          sound-pane/
+          you-pane/                      plus playwright/YouPanePlaywright.ts
+      status/
+        StatusDsl.ts                     the game's state, read off the turn line
         components/
-          board-setting/BoardSettingDsl.ts
-          board-setting/playwright/BoardSettingPlaywright.ts
-          piece-set-setting/PieceSetSettingDsl.ts
-          ... and so on, one folder per setting
+          controls/                      janggi.status.controls
+          player-plaque/                 janggi.status.plaque, with clock/ and taken-tray/
+          board-overlay/                 janggi.status.overlay: one child per notice over the board
 ```
 
-**A setting is its own DSL, reached as a member of its parent** — `janggi.settings.board.setTo(...)`
-rather than `janggi.settings.setBoardTo(...)`. A spec then says which control it means before it says
-what to do with it, and a picker's methods, its error messages and its test ids all sit in one folder.
-What stays on the parent is only what belongs to no single child: `setBothSetupsTo` and
-`canChooseSetups` each reach across both armies' pickers, and `startNewGame` presses the button under
-them.
+**A setting is its own DSL, reached as a member of its tab** — `janggi.settings.look.board.setTo(...)`
+rather than `janggi.settings.setBoardTo(...)`. A spec then says where a control is and which it means
+before it says what to do with it, and a picker's methods, its error messages and its test ids all sit in
+one folder. **A tab is a DSL too**, one per tab the app draws (`settings/tabs/<tab>-pane/` on both sides),
+so `SettingsDsl` holds only the sheet and its tabs. What stays on a tab is only what belongs to no single
+setting in it: `play.setBothSetupsTo` and `play.canChooseSetups` each reach across both armies' pickers,
+`play.startNewGame` presses the button under them, and `you` reads the links and the build line. A setting
+moved to another tab in the app moves folder and member here too.
 
 **The settings live in a sheet that is closed until it is opened**, and a spec does not normally open it. Every
 settings `*Playwright` extends `SettingsSheetComponent`, whose `inSheet` opens the sheet, acts, and
@@ -82,24 +97,25 @@ The counterpart first, then the children, and the constructor in the same order 
 the two read down the file the same way:
 
 ```ts
-export class SettingsDsl {
-  private readonly settings: SettingsPlaywright;
+export class PlayPaneDsl {
+  private readonly playPane: PlayPanePlaywright;
 
-  readonly board: BoardSettingDsl;
-  readonly pieceSet: PieceSetSettingDsl;
+  readonly clock: ClockSettingDsl;
+  readonly opponent: OpponentSettingDsl;
 
   constructor(page: Page) {
-    this.settings = new SettingsPlaywright(page);
+    this.playPane = new PlayPanePlaywright(page);
 
-    this.board = new BoardSettingDsl(page);
-    this.pieceSet = new PieceSetSettingDsl(page);
+    this.clock = new ClockSettingDsl(page);
+    this.opponent = new OpponentSettingDsl(page);
   }
 ```
 
 The blank line is the point: **the counterpart and the children are two different things.** The first
 is this object's own half of the pair, private and the only route to the browser; the rest are areas
 of the screen that happen to hang off this one, public because a spec reaches them by name. A `*Dsl`
-with no children — every picker — is the same rule with nothing after the blank line.
+with no children — every picker — is the same rule with nothing after the blank line; one with nothing of
+its own to ask — `LookPaneDsl`, `SoundPaneDsl` — has no counterpart, only children.
 
 **`*Playwright` constructors take the page and set up locators; some take it and do nothing else.**
 `BasePage` and `BaseComponent` both declare a `protected` constructor, so a subclass with no locators
@@ -127,10 +143,13 @@ disagreeing with the browser, which is the one thing a stale field can do.
 ## Where a method goes
 
 `janggi` is the whole application and every area of it hangs off that as a member, so a spec reads
-`janggi.board.getPieceAt(5, 2)` or `janggi.settings.board.setTo("Neon")`.
+`janggi.board.getPieceAt(5, 2)` or `janggi.settings.look.board.setTo("Neon")`.
 
 **The root owns the browser** — opening the app, and the window it is viewed through. **Each member
-answers for its own part of the screen.** A window belongs to nothing on the board, so
+answers for its own part of the screen**, mirrored from the app's folders as far down as they have more than a button
+or two in them (the status row's controls stay one DSL; each notice over the board is its own). The one member that
+is not a part of the screen is `discovery`: what the page tells search engines, crawlers and link previews, named for
+the specs in `src/tests/discovery/` that ask it. A window belongs to nothing on the board, so
 `resizeWindowTo` is on `JanggiDsl`; whether the board fits inside that window is a question about the
 board, so `isFullyOnScreen` is on `board`. Add an area as a new member rather than as a new fixture —
 a second fixture would be a second thing to navigate and keep in step.
@@ -175,6 +194,6 @@ await this.container.waitFor({state: "visible"}); // not locator.isVisible()
   a piece is rendered rather than to a `data-` attribute, and it's what makes the piece sets testable
   at all — it breaks if a glyph stops being `<text>`.
 - **A piece is wrapped in three layers** — hidden while its flight is shown, playing a flourish, and
-  lifted in hand — and two effects queries lean on that. `isPieceRaisedAt` reads the `scale` of the
+  lifted in hand — and two effects queries in `MotionPlaywright` lean on that. `isPieceRaisedAt` reads the `scale` of the
   piece's own parent, the lift layer; `isPieceFullyShownAt` multiplies the opacity of every ancestor,
   since the hiding happens a layer up from the piece. Reorder the layers and both need changing.

@@ -1,0 +1,47 @@
+import type {Page} from "@playwright/test";
+import {OpponentLookSettingPlaywright} from "@src/dsl/janggi/components/settings/tabs/look-pane/components/opponent-look-setting/playwright/OpponentLookSettingPlaywright";
+import {DslError} from "@src/dsl/errors/DslError";
+
+/**
+ * The "Show opponent's board and pieces" switch, reached as `janggi.settings.look.opponentLook`: whether a game against a
+ * friend is drawn in the board and pieces they wear, or in the player's own.
+ */
+export class OpponentLookSettingDsl {
+  private readonly opponentLook: OpponentLookSettingPlaywright;
+
+  constructor(page: Page) {
+    this.opponentLook = new OpponentLookSettingPlaywright(page);
+  }
+
+  async isOn(): Promise<boolean> {
+    try {
+      return await this.opponentLook.isOn();
+    } catch (error) {
+      throw new DslError("Failed to read whether the opponent's board and pieces are shown", error);
+    }
+  }
+
+  async isShown(): Promise<boolean> {
+    try {
+      return await this.opponentLook.isShown();
+    } catch (error) {
+      throw new DslError("Failed to read whether the opponent-look setting is shown", error);
+    }
+  }
+
+  async getExplanation(): Promise<string> {
+    try {
+      return await this.opponentLook.getExplanation();
+    } catch (error) {
+      throw new DslError("Failed to read what the opponent-look setting affects", error);
+    }
+  }
+
+  async setTo(on: boolean): Promise<void> {
+    try {
+      await this.opponentLook.setTo(on);
+    } catch (error) {
+      throw new DslError(`Failed to set showing the opponent's board and pieces to ${on}`, error);
+    }
+  }
+}

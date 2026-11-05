@@ -11,18 +11,18 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  */
 given("a player with no XP", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 0}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 0}));
   });
 
   when("they look at the boards on offer", () => {
     then("the classic board may be worn", async ({janggi}) => {
-      expect(await janggi.settings.board.isLocked("Classic")).toBe(false);
+      expect(await janggi.settings.look.board.isLocked("Classic")).toBe(false);
     });
 
     then("every other board is locked", async ({janggi}) => {
       const boards = ["Neon", "Diagram", "Tournament", "Celadon", "Dancheong", "Hacker"] as const;
 
-      expect(await Promise.all(boards.map(board => janggi.settings.board.isLocked(board)))).toEqual(
+      expect(await Promise.all(boards.map(board => janggi.settings.look.board.isLocked(board)))).toEqual(
         boards.map(() => true),
       );
     });
@@ -32,11 +32,15 @@ given("a player with no XP", () => {
     then("the traditional, hangul and modern sets may be worn", async ({janggi}) => {
       const sets = ["Traditional", "Hangul", "Modern"] as const;
 
-      expect(await Promise.all(sets.map(set => janggi.settings.pieceSet.isLocked(set)))).toEqual([false, false, false]);
+      expect(await Promise.all(sets.map(set => janggi.settings.look.pieceSet.isLocked(set)))).toEqual([
+        false,
+        false,
+        false,
+      ]);
     });
 
     then("the hanja set is locked", async ({janggi}) => {
-      expect(await janggi.settings.pieceSet.isLocked("Hanja")).toBe(true);
+      expect(await janggi.settings.look.pieceSet.isLocked("Hanja")).toBe(true);
     });
   });
 
@@ -49,59 +53,59 @@ given("a player with no XP", () => {
 
 given("a player with 60 XP", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 60}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 60}));
   });
 
   when("they look at the boards on offer", () => {
     then("the neon board may be worn", async ({janggi}) => {
-      expect(await janggi.settings.board.isLocked("Neon")).toBe(false);
+      expect(await janggi.settings.look.board.isLocked("Neon")).toBe(false);
     });
 
     then("the diagram board is still locked", async ({janggi}) => {
-      expect(await janggi.settings.board.isLocked("Diagram")).toBe(true);
+      expect(await janggi.settings.look.board.isLocked("Diagram")).toBe(true);
     });
   });
 
   when("they choose the neon board", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.board.setTo("Neon");
+      await janggi.settings.look.board.setTo("Neon");
     });
 
     then("it is the board in use", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelected()).toBe("Neon");
+      expect(await janggi.settings.look.board.getSelected()).toBe("Neon");
     });
   });
 });
 
 given("a player one XP short of a million", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 999_999}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 999_999}));
   });
 
   when("they look for the hacker theme", () => {
     then("the hacker board is still locked", async ({janggi}) => {
-      expect(await janggi.settings.board.isLocked("Hacker")).toBe(true);
+      expect(await janggi.settings.look.board.isLocked("Hacker")).toBe(true);
     });
 
     then("the hacker pieces are still locked", async ({janggi}) => {
-      expect(await janggi.settings.pieceSet.isLocked("Hacker")).toBe(true);
+      expect(await janggi.settings.look.pieceSet.isLocked("Hacker")).toBe(true);
     });
   });
 });
 
 given("a player with a million XP", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 1_000_000}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 1_000_000}));
   });
 
   when("they choose the hacker board and pieces", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.board.setTo("Hacker");
-      await janggi.settings.pieceSet.setTo("Hacker");
+      await janggi.settings.look.board.setTo("Hacker");
+      await janggi.settings.look.pieceSet.setTo("Hacker");
     });
 
     then("the hacker board is in use", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelected()).toBe("Hacker");
+      expect(await janggi.settings.look.board.getSelected()).toBe("Hacker");
     });
 
     then("each general is marked the way a roguelike marks the player", async ({janggi}) => {
@@ -112,16 +116,16 @@ given("a player with a million XP", () => {
 
 given("a player wearing the neon board", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.board.setTo("Neon");
+    await janggi.settings.look.board.setTo("Neon");
   });
 
   when("they load a save with no XP in it", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.progress.loadSave(saveKeyWith({xp: 0}));
+      await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 0}));
     });
 
     then("the classic board is worn in its place", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelected()).toBe("Classic");
+      expect(await janggi.settings.look.board.getSelected()).toBe("Classic");
     });
   });
 });

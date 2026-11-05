@@ -49,7 +49,7 @@ given("both generals have shuffled off their palace centres and back, twice", ()
     });
 
     then("a note over the board explains that the repeat is held back", async ({janggi}) => {
-      expect(await janggi.status.isRepetitionExplained()).toBe(true);
+      expect(await janggi.status.overlay.repetitionNotice.isRepetitionExplained()).toBe(true);
     });
   });
 
@@ -66,7 +66,7 @@ given("both generals have shuffled off their palace centres and back, twice", ()
     });
 
     then("the note is gone, nothing being held back any more", async ({janggi}) => {
-      expect(await janggi.status.isRepetitionExplained()).toBe(false);
+      expect(await janggi.status.overlay.repetitionNotice.isRepetitionExplained()).toBe(false);
     });
   });
 });

@@ -12,32 +12,32 @@ given("a player who has not signed in, whose browser can be sent notifications",
   });
 
   then("they are not offered them, as they mean nothing without an account", async ({janggi}) => {
-    expect(await janggi.settings.account.getTurnNotifications()).toBe("unavailable");
+    expect(await janggi.settings.you.account.getTurnNotifications()).toBe("unavailable");
   });
 });
 
 given("a signed-in player whose browser can be sent notifications", () => {
   beforeEach(async ({janggi}) => {
     await janggi.playAFriend.useABrowserThatCanBeNotified();
-    await janggi.settings.account.signInWithGoogle();
+    await janggi.settings.you.account.signInWithGoogle();
   });
 
   then("they are offered to be told when it is their turn, which is off until they ask", async ({janggi}) => {
-    expect(await janggi.settings.account.getTurnNotifications()).toBe("off");
-    expect(await janggi.settings.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
+    expect(await janggi.settings.you.account.getTurnNotifications()).toBe("off");
+    expect(await janggi.settings.you.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
   });
 
   when("they turn notifications on", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.account.turnOnTurnNotifications();
+      await janggi.settings.you.account.turnOnTurnNotifications();
     });
 
     then("it shows that they are on", async ({janggi}) => {
-      expect(await janggi.settings.account.getTurnNotifications()).toBe("on");
+      expect(await janggi.settings.you.account.getTurnNotifications()).toBe("on");
     });
 
     then("the server has this device to tell", async ({janggi}) => {
-      expect(await janggi.settings.account.getDevicesToBeToldItsTheirTurn()).toBe(1);
+      expect(await janggi.settings.you.account.getDevicesToBeToldItsTheirTurn()).toBe(1);
     });
 
     when("the app is opened again", () => {
@@ -46,31 +46,31 @@ given("a signed-in player whose browser can be sent notifications", () => {
       });
 
       then("they are still on", async ({janggi}) => {
-        await expect.poll(() => janggi.settings.account.getTurnNotifications()).toBe("on");
+        await expect.poll(() => janggi.settings.you.account.getTurnNotifications()).toBe("on");
       });
     });
 
     when("they turn them off again", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.account.turnOffTurnNotifications();
+        await janggi.settings.you.account.turnOffTurnNotifications();
       });
 
       then("it shows that they are off", async ({janggi}) => {
-        expect(await janggi.settings.account.getTurnNotifications()).toBe("off");
+        expect(await janggi.settings.you.account.getTurnNotifications()).toBe("off");
       });
 
       then("the server has no device to tell", async ({janggi}) => {
-        expect(await janggi.settings.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
+        expect(await janggi.settings.you.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
       });
     });
 
     when("they sign out", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.account.signOutOfGoogle();
+        await janggi.settings.you.account.signOutOfGoogle();
       });
 
       then("the server no longer tells this device of their turns", async ({janggi}) => {
-        expect(await janggi.settings.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
+        expect(await janggi.settings.you.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
       });
     });
   });
@@ -79,22 +79,22 @@ given("a signed-in player whose browser can be sent notifications", () => {
 given("a signed-in player whose browser blocks notifications", () => {
   beforeEach(async ({janggi}) => {
     await janggi.playAFriend.useABrowserThatBlocksNotifications();
-    await janggi.settings.account.signInWithGoogle();
+    await janggi.settings.you.account.signInWithGoogle();
   });
 
   then("they are told that the browser blocks them, and nothing is asked of the server", async ({janggi}) => {
-    expect(await janggi.settings.account.getTurnNotifications()).toBe("blocked");
-    expect(await janggi.settings.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
+    expect(await janggi.settings.you.account.getTurnNotifications()).toBe("blocked");
+    expect(await janggi.settings.you.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
   });
 });
 
 given("a signed-in player whose browser cannot be sent notifications at all", () => {
   beforeEach(async ({janggi}) => {
     await janggi.playAFriend.useABrowserWithoutNotifications();
-    await janggi.settings.account.signInWithGoogle();
+    await janggi.settings.you.account.signInWithGoogle();
   });
 
   then("they are not offered them", async ({janggi}) => {
-    expect(await janggi.settings.account.getTurnNotifications()).toBe("unavailable");
+    expect(await janggi.settings.you.account.getTurnNotifications()).toBe("unavailable");
   });
 });

@@ -8,13 +8,13 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  */
 given("a player who reads the game in Korean", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.language.setTo("ko");
+    await janggi.settings.you.language.setTo("ko");
     await janggi.languageNotice.dismissIt();
   });
 
   when("they have not yet earned the style editor", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.progress.loadSave(saveKeyWith({xp: 0}));
+      await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 0}));
       await janggi.stylesSheet.openStyles();
     });
 

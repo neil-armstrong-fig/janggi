@@ -10,11 +10,11 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a game has just begun", () => {
   when("nobody has played anything yet", () => {
     then("there is nothing to take back", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(false);
+      expect(await janggi.status.controls.canUndo()).toBe(false);
     });
 
     then("there is nothing to play again", async ({janggi}) => {
-      expect(await janggi.status.canRedo()).toBe(false);
+      expect(await janggi.status.controls.canRedo()).toBe(false);
     });
   });
 
@@ -25,16 +25,16 @@ given("a game has just begun", () => {
     });
 
     then("the move can be taken back", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(true);
+      expect(await janggi.status.controls.canUndo()).toBe(true);
     });
 
     then("there is still nothing to play again", async ({janggi}) => {
-      expect(await janggi.status.canRedo()).toBe(false);
+      expect(await janggi.status.controls.canRedo()).toBe(false);
     });
 
     when("the move is taken back", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.undo();
+        await janggi.status.controls.undo();
       });
 
       then("the soldier stands where it started", async ({janggi}) => {
@@ -47,11 +47,11 @@ given("a game has just begun", () => {
       });
 
       then("there is nothing left to take back", async ({janggi}) => {
-        expect(await janggi.status.canUndo()).toBe(false);
+        expect(await janggi.status.controls.canUndo()).toBe(false);
       });
 
       then("the move is waiting to be played again", async ({janggi}) => {
-        expect(await janggi.status.canRedo()).toBe(true);
+        expect(await janggi.status.controls.canRedo()).toBe(true);
       });
 
       then("the board is playable again, and not frozen at the position it was taken back from", async ({janggi}) => {
@@ -60,7 +60,7 @@ given("a game has just begun", () => {
 
       when("the move is played again", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.status.redo();
+          await janggi.status.controls.redo();
         });
 
         then("the soldier stands where it was played to", async ({janggi}) => {
@@ -72,7 +72,7 @@ given("a game has just begun", () => {
         });
 
         then("there is nothing left to play again", async ({janggi}) => {
-          expect(await janggi.status.canRedo()).toBe(false);
+          expect(await janggi.status.controls.canRedo()).toBe(false);
         });
       });
 
@@ -83,7 +83,7 @@ given("a game has just begun", () => {
         });
 
         then("the move that was taken back is forgotten", async ({janggi}) => {
-          expect(await janggi.status.canRedo()).toBe(false);
+          expect(await janggi.status.controls.canRedo()).toBe(false);
         });
 
         then("the move actually played is the one on the board", async ({janggi}) => {
@@ -96,12 +96,12 @@ given("a game has just begun", () => {
 
   when("cho rests the turn", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.pass();
+      await janggi.status.controls.pass();
     });
 
     when("the rested turn is taken back", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.undo();
+        await janggi.status.controls.undo();
       });
 
       then("it is cho to move again", async ({janggi}) => {
@@ -128,17 +128,17 @@ given("cho has played the opening move", () => {
 
   when("play has begun", () => {
     then("neither setup may be chosen", async ({janggi}) => {
-      expect(await janggi.settings.canChooseSetups()).toBe(false);
+      expect(await janggi.settings.play.canChooseSetups()).toBe(false);
     });
   });
 
   when("the opening move is taken back", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.undo();
+      await janggi.status.controls.undo();
     });
 
     then("both setups may be chosen again, the game being back before play", async ({janggi}) => {
-      expect(await janggi.settings.canChooseSetups()).toBe(true);
+      expect(await janggi.settings.play.canChooseSetups()).toBe(true);
     });
   });
 });
@@ -149,8 +149,8 @@ given("cho has played the opening move", () => {
  */
 given("both players have rested a turn and the game is settled on points", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.status.pass();
-    await janggi.status.pass();
+    await janggi.status.controls.pass();
+    await janggi.status.controls.pass();
   });
 
   when("the game has been won", () => {
@@ -159,13 +159,13 @@ given("both players have rested a turn and the game is settled on points", () =>
     });
 
     then("the result can still be taken back", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(true);
+      expect(await janggi.status.controls.canUndo()).toBe(true);
     });
   });
 
   when("the result is taken back", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.undo();
+      await janggi.status.controls.undo();
     });
 
     then("nobody has won", async ({janggi}) => {
@@ -177,7 +177,7 @@ given("both players have rested a turn and the game is settled on points", () =>
     });
 
     then("han may rest the turn or play instead", async ({janggi}) => {
-      expect(await janggi.status.canPass()).toBe(true);
+      expect(await janggi.status.controls.canPass()).toBe(true);
       expect(await janggi.board.canBeMoved(1, 4)).toBe(true);
     });
   });
@@ -189,13 +189,13 @@ given("a game is being played", () => {
       await janggi.board.tap(1, 7);
       await janggi.board.tap(1, 6);
 
-      await janggi.status.undo();
-      await janggi.settings.startNewGame();
+      await janggi.status.controls.undo();
+      await janggi.settings.play.startNewGame();
     });
 
     then("there is nothing to take back or play again on the new game", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(false);
-      expect(await janggi.status.canRedo()).toBe(false);
+      expect(await janggi.status.controls.canUndo()).toBe(false);
+      expect(await janggi.status.controls.canRedo()).toBe(false);
     });
   });
 });

@@ -39,7 +39,7 @@ given("a player has a game in progress when another app release becomes availabl
 
 given("a player who reads the game in Korean when another app release becomes available", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.language.setTo("ko");
+    await janggi.settings.you.language.setTo("ko");
     await janggi.languageNotice.dismissIt();
     await janggi.releaseUpdate.makeAvailable();
   });

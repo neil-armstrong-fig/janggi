@@ -12,11 +12,11 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a casual game between two people has just begun", () => {
   when("cho, to move, offers a draw", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.offerDraw();
+      await janggi.status.controls.offerDraw();
     });
 
     then("han is asked whether to accept, the offer being cho's", async ({janggi}) => {
-      expect(await janggi.status.getDrawOfferedBy()).toBe("cho");
+      expect(await janggi.status.overlay.drawOffer.getDrawOfferedBy()).toBe("cho");
     });
 
     then("nobody has won and the game is not drawn yet", async ({janggi}) => {
@@ -26,7 +26,7 @@ given("a casual game between two people has just begun", () => {
 
     when("han accepts", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.acceptDraw();
+        await janggi.status.overlay.drawOffer.acceptDraw();
       });
 
       then("the game is drawn by agreement", async ({janggi}) => {
@@ -42,13 +42,13 @@ given("a casual game between two people has just begun", () => {
       });
 
       then("the question is gone and no further offer can be made", async ({janggi}) => {
-        expect(await janggi.status.getDrawOfferedBy()).toBeUndefined();
-        expect(await janggi.status.canOfferDraw()).toBe(false);
+        expect(await janggi.status.overlay.drawOffer.getDrawOfferedBy()).toBeUndefined();
+        expect(await janggi.status.controls.canOfferDraw()).toBe(false);
       });
 
       when("the agreement is taken back", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.status.undo();
+          await janggi.status.controls.undo();
         });
 
         then("the game is being played again, with cho to move", async ({janggi}) => {
@@ -60,17 +60,17 @@ given("a casual game between two people has just begun", () => {
 
     when("han declines", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.declineDraw();
+        await janggi.status.overlay.drawOffer.declineDraw();
       });
 
       then("the question is gone and the game carries on", async ({janggi}) => {
-        expect(await janggi.status.getDrawOfferedBy()).toBeUndefined();
+        expect(await janggi.status.overlay.drawOffer.getDrawOfferedBy()).toBeUndefined();
         expect(await janggi.status.isDrawn()).toBe(false);
         expect(await janggi.status.getTurn()).toBe("cho");
       });
 
       then("a note over the board says han declined", async ({janggi}) => {
-        expect(await janggi.status.getDrawDeclinedBy()).toBe("han");
+        expect(await janggi.status.overlay.drawDeclinedNote.getDrawDeclinedBy()).toBe("han");
       });
     });
 
@@ -81,7 +81,7 @@ given("a casual game between two people has just begun", () => {
       });
 
       then("the offer has lapsed, and it is han's turn", async ({janggi}) => {
-        expect(await janggi.status.getDrawOfferedBy()).toBeUndefined();
+        expect(await janggi.status.overlay.drawOffer.getDrawOfferedBy()).toBeUndefined();
         expect(await janggi.status.getTurn()).toBe("han");
       });
     });
@@ -94,14 +94,14 @@ given("a casual game between two people has just begun", () => {
  */
 given("a scored game is being played", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.matchFormat.setTo("Scored");
-    await janggi.settings.hanSetup.setTo("Inner Elephant");
-    await janggi.settings.choSetup.setTo("Inner Elephant");
+    await janggi.settings.play.matchFormat.setTo("Scored");
+    await janggi.settings.play.hanSetup.setTo("Inner Elephant");
+    await janggi.settings.play.choSetup.setTo("Inner Elephant");
   });
 
   when("cho looks for a way to offer a draw", () => {
     then("there is none to press", async ({janggi}) => {
-      expect(await janggi.status.canOfferDraw()).toBe(false);
+      expect(await janggi.status.controls.canOfferDraw()).toBe(false);
     });
   });
 });

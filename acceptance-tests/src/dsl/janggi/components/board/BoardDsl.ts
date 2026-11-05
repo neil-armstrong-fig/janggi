@@ -2,6 +2,7 @@ import type {MarkedMove} from "@src/dsl/janggi/components/board/playwright/Board
 import type {Page} from "@playwright/test";
 import {BoardPlaywright} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
 import {DslError} from "@src/dsl/errors/DslError";
+import {MotionDsl} from "@src/dsl/janggi/components/board/components/motion/MotionDsl";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 
 /**
@@ -9,16 +10,18 @@ import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
  *
  * One method per thing a spec needs to ask, each a call into the `BoardPlaywright` beside it,
  * wrapped so a failure names the intention. Anything about the browser the board is viewed in
- * belongs a level up, on `JanggiDsl`.
- *
- * It is handed its counterpart already built, rather than a Playwright `Page`, so there is nothing
- * here to drive the browser with even by accident.
+ * belongs a level up, on `JanggiDsl`, and what the board is doing rather than what stands on it — a piece lifted or
+ * in flight, the board shaking — is its `motion`.
  */
 export class BoardDsl {
   private readonly board: BoardPlaywright;
 
+  readonly motion: MotionDsl;
+
   constructor(page: Page) {
     this.board = new BoardPlaywright(page);
+
+    this.motion = new MotionDsl(page);
   }
 
   async isVisible(): Promise<boolean> {
@@ -275,69 +278,6 @@ export class BoardDsl {
       return await this.board.isMarkedAsBikjangRisk(file, rank);
     } catch (error) {
       throw new DslError(`Failed to check whether file ${file}, rank ${rank} is marked as a bikjang risk`, error);
-    }
-  }
-
-  /** Whether the piece on an intersection is drawn raised off the board, as a piece in hand is. */
-  async isPieceRaisedAt(file: number, rank: number): Promise<boolean> {
-    try {
-      return await this.board.isPieceRaisedAt(file, rank);
-    } catch (error) {
-      throw new DslError(`Failed to check whether the piece at file ${file}, rank ${rank} is raised`, error);
-    }
-  }
-
-  /** Whether a piece is shown travelling over the board. Only ever yes with motion left on. */
-  async isShowingAPieceInFlight(): Promise<boolean> {
-    try {
-      return await this.board.isShowingAPieceInFlight();
-    } catch (error) {
-      throw new DslError("Failed to check whether a piece is shown in flight", error);
-    }
-  }
-
-  /** Whether a capture is shown landing. Only ever yes with motion left on. */
-  async isShowingAnImpact(): Promise<boolean> {
-    try {
-      return await this.board.isShowingAnImpact();
-    } catch (error) {
-      throw new DslError("Failed to check whether a capture is shown landing", error);
-    }
-  }
-
-  /** Whether the piece on an intersection is fully shown once any motion over it has settled. */
-  async isPieceFullyShownAt(file: number, rank: number): Promise<boolean> {
-    try {
-      return await this.board.isPieceFullyShownAt(file, rank);
-    } catch (error) {
-      throw new DslError(`Failed to check whether the piece at file ${file}, rank ${rank} is fully shown`, error);
-    }
-  }
-
-  /** Whether nothing is left drawn over the board once motion has settled. */
-  async isClearOfMotion(): Promise<boolean> {
-    try {
-      return await this.board.isClearOfMotion();
-    } catch (error) {
-      throw new DslError("Failed to check whether the board is clear of motion", error);
-    }
-  }
-
-  /** Whether the board is being shaken. */
-  async isBeingShaken(): Promise<boolean> {
-    try {
-      return await this.board.isBeingShaken();
-    } catch (error) {
-      throw new DslError("Failed to check whether the board is being shaken", error);
-    }
-  }
-
-  /** Whether the board has come back to rest exactly where it belongs. */
-  async isAtRest(): Promise<boolean> {
-    try {
-      return await this.board.isAtRest();
-    } catch (error) {
-      throw new DslError("Failed to check whether the board is at rest", error);
     }
   }
 

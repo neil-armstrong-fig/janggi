@@ -13,7 +13,7 @@ given("a player has the settings open", () => {
 
   when("they arrange cho's army with the outer elephants", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.choSetup.setTo("Outer Elephant");
+      await janggi.settings.play.choSetup.setTo("Outer Elephant");
     });
 
     then("the settings are still open", async ({janggi}) => {

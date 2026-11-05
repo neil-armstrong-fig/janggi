@@ -41,18 +41,18 @@ given("a player opens the settings", () => {
 
   when("they play a scored game and then choose the look tab", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.matchFormat.setTo("Scored");
+      await janggi.settings.play.matchFormat.setTo("Scored");
       await janggi.settings.selectTab("Look");
     });
 
     then("the game's settings are kept as they were, a tab hiding them and nothing more", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.getSelected()).toBe("Scored");
+      expect(await janggi.settings.play.matchFormat.getSelected()).toBe("Scored");
     });
   });
 
   when("they change a setting on another tab", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.pieceSet.setTo("Hangul");
+      await janggi.settings.look.pieceSet.setTo("Hangul");
     });
 
     then("the tab they were on is still the one showing, put back as they left it", async ({janggi}) => {

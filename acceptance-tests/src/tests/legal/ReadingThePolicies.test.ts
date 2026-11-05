@@ -8,8 +8,8 @@ given("a player deciding whether to sign in with Google", () => {
     });
 
     then("search engines can discover both policies from the homepage and sitemap", async ({janggi}) => {
-      expect(await janggi.isEachPolicyLinkedInPageServedToSearchEngines()).toBe(true);
-      expect(await janggi.isEachPolicyListedInSitemap()).toBe(true);
+      expect(await janggi.discovery.isEachPolicyLinkedInPageServedToSearchEngines()).toBe(true);
+      expect(await janggi.discovery.isEachPolicyListedInSitemap()).toBe(true);
     });
   });
 });

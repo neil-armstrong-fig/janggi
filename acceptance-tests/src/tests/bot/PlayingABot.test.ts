@@ -17,28 +17,28 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player takes on the bot", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.opponent.setTo("Bot");
-    await janggi.settings.botStrength.setTo(800);
+    await janggi.settings.play.opponent.setTo("Bot");
+    await janggi.settings.play.botStrength.setTo(800);
     await janggi.status.waitForTheBotToLoad();
   });
 
   when("nobody has played anything yet", () => {
     then("the opponent may still be changed", async ({janggi}) => {
-      expect(await janggi.settings.opponent.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.opponent.isChoosable()).toBe(true);
     });
 
     then("han is marked as the bot's army, with the strength it plays at", async ({janggi}) => {
-      expect(await janggi.status.isMarkedAsTheBot("han")).toBe(true);
-      expect(await janggi.status.getShownRating("han")).toBe(800);
+      expect(await janggi.status.plaque.isMarkedAsTheBot("han")).toBe(true);
+      expect(await janggi.status.plaque.getShownRating("han")).toBe(800);
     });
 
     then("cho is marked as the player's army, with their own rating", async ({janggi}) => {
-      expect(await janggi.status.isMarkedAsThePlayer("cho")).toBe(true);
-      expect(await janggi.status.getShownRating("cho")).toBe(await janggi.recordSheet.getElo("Casual"));
+      expect(await janggi.status.plaque.isMarkedAsThePlayer("cho")).toBe(true);
+      expect(await janggi.status.plaque.getShownRating("cho")).toBe(await janggi.recordSheet.getElo("Casual"));
     });
 
     then("the bot's army may be arranged too, a casual game having no laying out", async ({janggi}) => {
-      expect(await janggi.settings.hanSetup.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.hanSetup.isChoosable()).toBe(true);
     });
   });
 
@@ -54,48 +54,48 @@ given("a player takes on the bot", () => {
     });
 
     then("nothing can be taken back, a game against the bot being played out", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(false);
+      expect(await janggi.status.controls.canUndo()).toBe(false);
     });
 
     then("the opponent is settled for the rest of the game", async ({janggi}) => {
-      expect(await janggi.settings.opponent.isChoosable()).toBe(false);
+      expect(await janggi.settings.play.opponent.isChoosable()).toBe(false);
     });
   });
 
   when("they play han", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.yourSide.setTo("Han");
+      await janggi.settings.play.yourSide.setTo("Han");
     });
 
     then("the bot holds cho's first move until it is let start", async ({janggi}) => {
-      expect(await janggi.status.isWaitingToLetTheBotStart()).toBe(true);
+      expect(await janggi.status.overlay.botGoAhead.isWaitingToLetTheBotStart()).toBe(true);
       expect(await janggi.status.getTurn()).toBe("cho");
     });
 
     then("nothing is settled yet, so the side and the opponent may still be changed", async ({janggi}) => {
-      expect(await janggi.settings.yourSide.isChoosable()).toBe(true);
-      expect(await janggi.settings.opponent.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.yourSide.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.opponent.isChoosable()).toBe(true);
     });
 
     then("the plaques swap, marking cho as the bot's army and han as the player's", async ({janggi}) => {
-      expect(await janggi.status.isMarkedAsTheBot("cho")).toBe(true);
-      expect(await janggi.status.isMarkedAsThePlayer("han")).toBe(true);
+      expect(await janggi.status.plaque.isMarkedAsTheBot("cho")).toBe(true);
+      expect(await janggi.status.plaque.isMarkedAsThePlayer("han")).toBe(true);
     });
 
     when("they leave the bot as long as it would take to open", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.giveTheBotTimeToOpen();
+        await janggi.status.overlay.botGoAhead.giveTheBotTimeToOpen();
       });
 
       then("cho's first move is still unplayed, and their side may still be changed", async ({janggi}) => {
         expect(await janggi.status.getTurn()).toBe("cho");
-        expect(await janggi.settings.yourSide.isChoosable()).toBe(true);
+        expect(await janggi.settings.play.yourSide.isChoosable()).toBe(true);
       });
     });
 
     when("they let the bot start", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.letTheBotStart();
+        await janggi.status.overlay.botGoAhead.letTheBotStart();
         await janggi.status.waitForTheBot();
       });
 
@@ -104,11 +104,11 @@ given("a player takes on the bot", () => {
       });
 
       then("nothing is held waiting any more", async ({janggi}) => {
-        expect(await janggi.status.isWaitingToLetTheBotStart()).toBe(false);
+        expect(await janggi.status.overlay.botGoAhead.isWaitingToLetTheBotStart()).toBe(false);
       });
 
       then("the opponent is settled for the rest of the game", async ({janggi}) => {
-        expect(await janggi.settings.opponent.isChoosable()).toBe(false);
+        expect(await janggi.settings.play.opponent.isChoosable()).toBe(false);
       });
     });
   });
@@ -116,9 +116,9 @@ given("a player takes on the bot", () => {
 
 given("a player takes on the bot in a scored game", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.matchFormat.setTo("Scored");
-    await janggi.settings.opponent.setTo("Bot");
-    await janggi.settings.botStrength.setTo(800);
+    await janggi.settings.play.matchFormat.setTo("Scored");
+    await janggi.settings.play.opponent.setTo("Bot");
+    await janggi.settings.play.botStrength.setTo(800);
     await janggi.status.waitForTheBotToLoad();
   });
 
@@ -135,23 +135,23 @@ given("a player takes on the bot in a scored game", () => {
 
   when("they play han and lay out first", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.yourSide.setTo("Han");
-      await janggi.settings.hanSetup.setTo("Inner Elephant");
+      await janggi.settings.play.yourSide.setTo("Han");
+      await janggi.settings.play.hanSetup.setTo("Inner Elephant");
       await janggi.status.waitForTheBot();
     });
 
     then("the bot answers the layout, then holds cho's first move until it is let start", async ({janggi}) => {
       expect(await janggi.status.isLayingOut()).toBe(false);
-      expect(await janggi.status.isWaitingToLetTheBotStart()).toBe(true);
+      expect(await janggi.status.overlay.botGoAhead.isWaitingToLetTheBotStart()).toBe(true);
     });
 
     then("the bot's answer is its own, and cannot be changed for it", async ({janggi}) => {
-      expect(await janggi.settings.choSetup.isChoosable()).toBe(false);
+      expect(await janggi.settings.play.choSetup.isChoosable()).toBe(false);
     });
 
     when("they let the bot start", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.letTheBotStart();
+        await janggi.status.overlay.botGoAhead.letTheBotStart();
         await janggi.status.waitForTheBot();
       });
 
@@ -165,14 +165,14 @@ given("a player takes on the bot in a scored game", () => {
 given("two people play at one device", () => {
   when("nobody has played anything yet", () => {
     then("neither army is marked as anybody's, and neither shows a rating", async ({janggi}) => {
-      expect(await janggi.status.isMarkedAsTheBot("han")).toBe(false);
-      expect(await janggi.status.isMarkedAsThePlayer("cho")).toBe(false);
-      expect(await janggi.status.getShownRating("cho")).toBeUndefined();
-      expect(await janggi.status.getShownRating("han")).toBeUndefined();
+      expect(await janggi.status.plaque.isMarkedAsTheBot("han")).toBe(false);
+      expect(await janggi.status.plaque.isMarkedAsThePlayer("cho")).toBe(false);
+      expect(await janggi.status.plaque.getShownRating("cho")).toBeUndefined();
+      expect(await janggi.status.plaque.getShownRating("han")).toBeUndefined();
     });
 
     then("nothing waits to be let start", async ({janggi}) => {
-      expect(await janggi.status.isWaitingToLetTheBotStart()).toBe(false);
+      expect(await janggi.status.overlay.botGoAhead.isWaitingToLetTheBotStart()).toBe(false);
     });
   });
 });

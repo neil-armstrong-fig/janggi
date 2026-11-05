@@ -5,8 +5,8 @@ given("someone searches for a way to play janggi", () => {
     then(
       "the page describes a free Janggi game to play online with a friend or against AI, and offline",
       async ({janggi}) => {
-        expect(await janggi.getPageTitle()).toBe("Play Janggi (Korean Chess) Online with Friends or vs AI");
-        expect(await janggi.getPageDescription()).toBe(
+        expect(await janggi.discovery.getPageTitle()).toBe("Play Janggi (Korean Chess) Online with Friends or vs AI");
+        expect(await janggi.discovery.getPageDescription()).toBe(
           "Play Janggi (Korean chess) online with a friend using a private code, or against eight AI levels. Install it and play offline. Free, and no account needed to play the AI.",
         );
         expect(await janggi.getMainHeading()).toBe("Janggi: Korean Chess");
@@ -14,36 +14,36 @@ given("someone searches for a way to play janggi", () => {
     );
 
     then("search engines are given one address and understand that the web game is free", async ({janggi}) => {
-      expect(await janggi.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/");
-      expect(await janggi.isIdentifiedAsAFreeWebGame()).toBe(true);
+      expect(await janggi.discovery.getCanonicalAddress()).toBe("https://janggi.neilarmstrong.dev/");
+      expect(await janggi.discovery.isIdentifiedAsAFreeWebGame()).toBe(true);
     });
 
     then("the game and guide are listed for search engines to discover", async ({janggi}) => {
-      expect(await janggi.isListedInSitemap()).toBe(true);
+      expect(await janggi.discovery.isListedInSitemap()).toBe(true);
     });
 
     then("the sitemap says when each page last changed, so a crawler knows what to revisit", async ({janggi}) => {
-      expect(await janggi.isEverySitemapEntryDated()).toBe(true);
+      expect(await janggi.discovery.isEverySitemapEntryDated()).toBe(true);
     });
 
     then("crawlers are allowed in and told where the sitemap is", async ({janggi}) => {
-      expect(await janggi.isSitemapAdvertisedToCrawlers()).toBe(true);
+      expect(await janggi.discovery.isSitemapAdvertisedToCrawlers()).toBe(true);
     });
 
     then("search engines that don't run scripts still read what the game is and find the guide", async ({janggi}) => {
-      expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("Janggi: Korean Chess");
-      expect(await janggi.getTextServedToSearchEngines()).toContain("private code");
-      expect(await janggi.isGuideLinkedInPageServedToSearchEngines()).toBe(true);
+      expect(await janggi.discovery.getMainHeadingServedToSearchEngines()).toBe("Janggi: Korean Chess");
+      expect(await janggi.discovery.getTextServedToSearchEngines()).toContain("private code");
+      expect(await janggi.discovery.isGuideLinkedInPageServedToSearchEngines()).toBe(true);
     });
 
     then("the in-depth Janggi guide is linked from the game", async ({janggi}) => {
-      expect(await janggi.settings.isGuideLinkedFromGame()).toBe(true);
+      expect(await janggi.settings.you.isGuideLinkedFromGame()).toBe(true);
     });
 
     then("the developer and the source are linked from App & help", async ({janggi}) => {
-      expect(await janggi.settings.getDeveloperWebsiteDestination()).toBe("https://neilarmstrong.dev");
-      expect(await janggi.settings.getRepositoryDestination()).toBe("https://github.com/neil-armstrong-fig/janggi");
-      expect(await janggi.settings.doExternalAppHelpLinksOpenSeparately()).toBe(true);
+      expect(await janggi.settings.you.getDeveloperWebsiteDestination()).toBe("https://neilarmstrong.dev");
+      expect(await janggi.settings.you.getRepositoryDestination()).toBe("https://github.com/neil-armstrong-fig/janggi");
+      expect(await janggi.settings.you.doExternalAppHelpLinksOpenSeparately()).toBe(true);
     });
   });
 

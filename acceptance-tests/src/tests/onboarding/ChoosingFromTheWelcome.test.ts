@@ -45,8 +45,8 @@ given("a player at the welcome, who has read what Janggi is", () => {
       });
 
       then("the game is read in Korean from then on", async ({janggi}) => {
-        expect(await janggi.settings.language.getSelected()).toBe("ko");
-        expect(await janggi.status.getControlLabel("pass")).toBe("한수쉼");
+        expect(await janggi.settings.you.language.getSelected()).toBe("ko");
+        expect(await janggi.status.controls.getControlLabel("pass")).toBe("한수쉼");
       });
     });
   });
@@ -62,16 +62,16 @@ given("a player at the welcome, who has read what Janggi is", () => {
     });
 
     then("the music and the sound effects are on", async ({janggi}) => {
-      expect(await janggi.settings.music.getVolume()).toBe(FULL_VOLUME);
-      expect(await janggi.settings.soundEffects.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.soundEffects.getVolume()).toBe(FULL_VOLUME);
     });
 
     then("the animations are in full, whatever the device says about motion", async ({janggi}) => {
-      expect(await janggi.settings.effects.getSelected()).toBe("Full");
+      expect(await janggi.settings.look.effects.getSelected()).toBe("Full");
     });
 
     then("the movable pieces are marked", async ({janggi}) => {
-      expect(await janggi.settings.movableHighlight.getSelected()).toBe("Shown");
+      expect(await janggi.settings.look.movableHighlight.getSelected()).toBe("Shown");
     });
   });
 
@@ -83,8 +83,8 @@ given("a player at the welcome, who has read what Janggi is", () => {
     });
 
     then("the music is muted and the sound effects are not", async ({janggi}) => {
-      expect(await janggi.settings.music.getVolume()).toBe(MUTED_VOLUME);
-      expect(await janggi.settings.soundEffects.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(MUTED_VOLUME);
+      expect(await janggi.settings.sound.soundEffects.getVolume()).toBe(FULL_VOLUME);
     });
   });
 
@@ -96,8 +96,8 @@ given("a player at the welcome, who has read what Janggi is", () => {
     });
 
     then("the sound effects are muted and the music is not", async ({janggi}) => {
-      expect(await janggi.settings.soundEffects.getVolume()).toBe(MUTED_VOLUME);
-      expect(await janggi.settings.music.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.soundEffects.getVolume()).toBe(MUTED_VOLUME);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(FULL_VOLUME);
     });
   });
 
@@ -109,7 +109,7 @@ given("a player at the welcome, who has read what Janggi is", () => {
     });
 
     then("the animations are reduced", async ({janggi}) => {
-      expect(await janggi.settings.effects.getSelected()).toBe("Reduced");
+      expect(await janggi.settings.look.effects.getSelected()).toBe("Reduced");
     });
   });
 
@@ -121,7 +121,7 @@ given("a player at the welcome, who has read what Janggi is", () => {
     });
 
     then("the movable pieces are no longer marked", async ({janggi}) => {
-      expect(await janggi.settings.movableHighlight.getSelected()).toBe("Hidden");
+      expect(await janggi.settings.look.movableHighlight.getSelected()).toBe("Hidden");
     });
   });
 });

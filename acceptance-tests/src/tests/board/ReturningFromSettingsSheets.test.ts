@@ -15,7 +15,7 @@ given("a player follows a settings link into another sheet", () => {
 
   when("they go back from playing a friend", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.account.signInWithGoogle();
+      await janggi.settings.you.account.signInWithGoogle();
       await janggi.playAFriend.openPlayAFriend();
       await janggi.playAFriend.goBackToSettings();
     });

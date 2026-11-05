@@ -9,28 +9,28 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player playing another person", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.opponent.setTo("Human");
+    await janggi.settings.play.opponent.setTo("Human");
   });
 
   when("they have not asked what flipping the board does", () => {
     then("nothing explains it", async ({janggi}) => {
-      expect(await janggi.settings.flipBoard.isExplanationShown()).toBe(false);
+      expect(await janggi.settings.play.flipBoard.isExplanationShown()).toBe(false);
     });
   });
 
   when("they ask what flipping the board does", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.flipBoard.toggleExplanation();
+      await janggi.settings.play.flipBoard.toggleExplanation();
     });
 
     then("it says the pieces turn to face Han's player", async ({janggi}) => {
-      expect(await janggi.settings.flipBoard.getExplanationWords()).toContain("face Han's player");
+      expect(await janggi.settings.play.flipBoard.getExplanationWords()).toContain("face Han's player");
     });
   });
 
   when("the board is not set to flip for Han", () => {
     then("it is off by default", async ({janggi}) => {
-      expect(await janggi.settings.flipBoard.isOn()).toBe(false);
+      expect(await janggi.settings.play.flipBoard.isOn()).toBe(false);
     });
 
     when("Cho has moved", () => {
@@ -47,7 +47,7 @@ given("a player playing another person", () => {
 
   when("they set the board to flip for Han", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.flipBoard.setTo(true);
+      await janggi.settings.play.flipBoard.setTo(true);
     });
 
     then("the pieces face Cho for Cho's first move", async ({janggi}) => {
@@ -65,11 +65,11 @@ given("a player playing another person", () => {
       });
 
       then("the controls are along the top, within Han's reach", async ({janggi}) => {
-        expect(await janggi.status.areControlsAboveTheBoard()).toBe(true);
+        expect(await janggi.status.controls.areControlsAboveTheBoard()).toBe(true);
       });
 
       then("the controls are turned to face Han", async ({janggi}) => {
-        expect(await janggi.status.areControlsUpsideDown()).toBe(true);
+        expect(await janggi.status.controls.areControlsUpsideDown()).toBe(true);
       });
 
       when("Han has moved", () => {
@@ -83,8 +83,8 @@ given("a player playing another person", () => {
         });
 
         then("the controls drop back below the board", async ({janggi}) => {
-          expect(await janggi.status.areControlsAboveTheBoard()).toBe(false);
-          expect(await janggi.status.areControlsUpsideDown()).toBe(false);
+          expect(await janggi.status.controls.areControlsAboveTheBoard()).toBe(false);
+          expect(await janggi.status.controls.areControlsUpsideDown()).toBe(false);
         });
       });
     });

@@ -11,7 +11,7 @@ const SQUARE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><pat
 
 given("a player with the XP to make a style, and the drawn set to start from", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
     await janggi.stylesSheet.styleStarter.start("Pieces", "Modern");
   });
 

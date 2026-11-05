@@ -8,13 +8,13 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a game has just begun", () => {
   when("nobody has played anything yet", () => {
     then("cho may rest the turn", async ({janggi}) => {
-      expect(await janggi.status.canPass()).toBe(true);
+      expect(await janggi.status.controls.canPass()).toBe(true);
     });
   });
 
   when("cho rests the turn", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.pass();
+      await janggi.status.controls.pass();
     });
 
     then("it is han to move", async ({janggi}) => {
@@ -31,7 +31,7 @@ given("a game has just begun", () => {
 
     when("han rests the turn as well", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.pass();
+        await janggi.status.controls.pass();
       });
 
       then("the game is over, won by han on the 덤 alone", async ({janggi}) => {
@@ -39,7 +39,7 @@ given("a game has just begun", () => {
       });
 
       then("neither army may rest another turn", async ({janggi}) => {
-        expect(await janggi.status.canPass()).toBe(false);
+        expect(await janggi.status.controls.canPass()).toBe(false);
       });
 
       when("a player reaches for a piece anyway", () => {
@@ -59,7 +59,7 @@ given("a game has just begun", () => {
         await janggi.board.tap(1, 4);
         await janggi.board.tap(1, 5);
 
-        await janggi.status.pass();
+        await janggi.status.controls.pass();
       });
 
       then("nobody has won, the move between having cleared the count", async ({janggi}) => {
@@ -83,7 +83,7 @@ given("han's general is under attack", () => {
 
   when("han would rather rest the turn than answer it", () => {
     then("han may not, a check having to be answered", async ({janggi}) => {
-      expect(await janggi.status.canPass()).toBe(false);
+      expect(await janggi.status.controls.canPass()).toBe(false);
     });
   });
 });

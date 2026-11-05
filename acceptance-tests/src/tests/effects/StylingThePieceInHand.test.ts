@@ -25,7 +25,7 @@ given("motion is left on, and a player is wearing a piece set with a red shadow 
     const styled = {...LETTERS, handling: {shadow: "rgba(255, 0, 0, 0.9)", hoverOutline: 2}};
 
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", styled));
-    await janggi.settings.pieceSet.setOwnStyleTo("Letters");
+    await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 
   when("cho picks up a soldier", () => {
@@ -42,7 +42,7 @@ given("motion is left on, and a player is wearing a piece set with a red shadow 
 given("motion is left on, and a player is wearing a piece set written before sets chose their shadows", () => {
   beforeEach(async ({janggi}) => {
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", LETTERS));
-    await janggi.settings.pieceSet.setOwnStyleTo("Letters");
+    await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 
   when("cho picks up a soldier", () => {

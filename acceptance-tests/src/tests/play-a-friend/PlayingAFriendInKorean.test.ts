@@ -12,11 +12,11 @@ given("a player who reads the game in Korean and is signed in", () => {
   beforeEach(async ({janggi}) => {
     friend = await janggi.openSeparateDevice();
 
-    await janggi.settings.language.setTo("ko");
+    await janggi.settings.you.language.setTo("ko");
     await janggi.languageNotice.dismissIt();
-    await friend.settings.language.setTo("ko");
+    await friend.settings.you.language.setTo("ko");
     await friend.languageNotice.dismissIt();
-    await janggi.settings.account.signInWithGoogle();
+    await janggi.settings.you.account.signInWithGoogle();
     await janggi.playAFriend.openPlayAFriend();
   });
 
@@ -64,7 +64,7 @@ given("a player who reads the game in Korean and is signed in", () => {
 
     when("a friend joins and both come to choose their setups", () => {
       beforeEach(async ({janggi}) => {
-        await friend.settings.account.signInWithGoogleAsAnotherPlayer();
+        await friend.settings.you.account.signInWithGoogleAsAnotherPlayer();
         await friend.playAFriend.openPlayAFriend();
         await friend.playAFriend.joinWithCode(await codeOf(janggi));
       });

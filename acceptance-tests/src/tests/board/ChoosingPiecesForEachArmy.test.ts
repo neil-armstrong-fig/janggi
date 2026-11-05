@@ -8,12 +8,12 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  */
 given("a player who has earned the hanja set", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 30}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 30}));
   });
 
   when("they choose the hangul set", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.pieceSet.setTo("Hangul");
+      await janggi.settings.look.pieceSet.setTo("Hangul");
     });
 
     then("both armies are dressed in it", async ({janggi}) => {
@@ -22,23 +22,23 @@ given("a player who has earned the hanja set", () => {
     });
 
     then("the armies are not chosen apart", async ({janggi}) => {
-      expect(await janggi.settings.pieceSet.isChosenApart()).toBe(false);
+      expect(await janggi.settings.look.pieceSet.isChosenApart()).toBe(false);
     });
 
     when("they choose the armies' pieces apart", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.pieceSet.toggleChoosingApart();
+        await janggi.settings.look.pieceSet.toggleChoosingApart();
       });
 
       then("each army is still in the hangul set", async ({janggi}) => {
-        expect(await janggi.settings.pieceSet.getSelectedNameForArmy("han")).toBe("Hangul");
-        expect(await janggi.settings.pieceSet.getSelectedNameForArmy("cho")).toBe("Hangul");
+        expect(await janggi.settings.look.pieceSet.getSelectedNameForArmy("han")).toBe("Hangul");
+        expect(await janggi.settings.look.pieceSet.getSelectedNameForArmy("cho")).toBe("Hangul");
         expect(await janggi.board.getCharacterAt(5, 2)).toBe("한");
       });
 
       when("they give han the hanja set", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.settings.pieceSet.chooseForArmy("han", "Hanja");
+          await janggi.settings.look.pieceSet.chooseForArmy("han", "Hanja");
         });
 
         then("han's pieces are in hanja, the general included", async ({janggi}) => {
@@ -53,11 +53,11 @@ given("a player who has earned the hanja set", () => {
 
         when("they put both armies back in one set", () => {
           beforeEach(async ({janggi}) => {
-            await janggi.settings.pieceSet.toggleChoosingApart();
+            await janggi.settings.look.pieceSet.toggleChoosingApart();
           });
 
           then("both are in cho's, and the armies are no longer chosen apart", async ({janggi}) => {
-            expect(await janggi.settings.pieceSet.isChosenApart()).toBe(false);
+            expect(await janggi.settings.look.pieceSet.isChosenApart()).toBe(false);
             expect(await janggi.board.getCharacterAt(5, 2)).toBe("한");
           });
         });
@@ -65,7 +65,7 @@ given("a player who has earned the hanja set", () => {
 
       when("they give cho the hanja set", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.settings.pieceSet.chooseForArmy("cho", "Hanja");
+          await janggi.settings.look.pieceSet.chooseForArmy("cho", "Hanja");
         });
 
         then("cho's pieces are in hanja and han's are still in hangul", async ({janggi}) => {

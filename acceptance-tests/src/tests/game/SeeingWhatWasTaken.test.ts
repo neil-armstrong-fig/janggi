@@ -8,8 +8,8 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a game has just begun", () => {
   when("nothing has been taken", () => {
     then("neither army is shown to have lost anything", async ({janggi}) => {
-      expect(await janggi.status.getTakenFrom("cho")).toEqual([]);
-      expect(await janggi.status.getTakenFrom("han")).toEqual([]);
+      expect(await janggi.status.plaque.takenTray.getTakenFrom("cho")).toEqual([]);
+      expect(await janggi.status.plaque.takenTray.getTakenFrom("han")).toEqual([]);
     });
   });
 });
@@ -31,16 +31,16 @@ given("the two soldiers on file 1 have advanced into contact", () => {
     });
 
     then("cho is shown to have lost a soldier", async ({janggi}) => {
-      expect(await janggi.status.getTakenFrom("cho")).toEqual(["soldier"]);
+      expect(await janggi.status.plaque.takenTray.getTakenFrom("cho")).toEqual(["soldier"]);
     });
 
     then("han is shown to have lost nothing", async ({janggi}) => {
-      expect(await janggi.status.getTakenFrom("han")).toEqual([]);
+      expect(await janggi.status.plaque.takenTray.getTakenFrom("han")).toEqual([]);
     });
 
     then("the soldier stands in the place kept for soldiers, whichever army has lost one", async ({janggi}) => {
-      expect(await janggi.status.getTakenSlotOffset("cho", "soldier")).toBe(
-        await janggi.status.getTakenSlotOffset("han", "soldier"),
+      expect(await janggi.status.plaque.takenTray.getTakenSlotOffset("cho", "soldier")).toBe(
+        await janggi.status.plaque.takenTray.getTakenSlotOffset("han", "soldier"),
       );
     });
 
@@ -53,21 +53,21 @@ given("the two soldiers on file 1 have advanced into contact", () => {
       });
 
       then("cho is shown to have lost two soldiers", async ({janggi}) => {
-        expect(await janggi.status.getTakenFrom("cho")).toEqual(["soldier", "soldier"]);
+        expect(await janggi.status.plaque.takenTray.getTakenFrom("cho")).toEqual(["soldier", "soldier"]);
       });
 
       then("the two are one soldier with a count of two", async ({janggi}) => {
-        expect(await janggi.status.getTakenCount("cho", "soldier")).toBe(2);
+        expect(await janggi.status.plaque.takenTray.getTakenCount("cho", "soldier")).toBe(2);
       });
     });
 
     when("the capture is taken back", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.undo();
+        await janggi.status.controls.undo();
       });
 
       then("cho is shown to have lost nothing again", async ({janggi}) => {
-        expect(await janggi.status.getTakenFrom("cho")).toEqual([]);
+        expect(await janggi.status.plaque.takenTray.getTakenFrom("cho")).toEqual([]);
       });
     });
   });

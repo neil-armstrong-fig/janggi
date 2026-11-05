@@ -1,47 +1,25 @@
-import {GamesSettingDsl} from "@src/dsl/janggi/components/settings/components/games-setting/GamesSettingDsl";
-import {OpponentLookSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-look-setting/OpponentLookSettingDsl";
-import {FlipBoardSettingDsl} from "@src/dsl/janggi/components/settings/components/flip-board-setting/FlipBoardSettingDsl";
-import {AccountSettingDsl} from "@src/dsl/janggi/components/settings/components/account-setting/AccountSettingDsl";
-import {LanguageSettingDsl} from "@src/dsl/janggi/components/settings/components/language-setting/LanguageSettingDsl";
-import {BikjangHintSettingDsl} from "@src/dsl/janggi/components/settings/components/bikjang-hint-setting/BikjangHintSettingDsl";
-import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/components/board-setting/BoardSettingDsl";
-import {BotStrengthSettingDsl} from "@src/dsl/janggi/components/settings/components/bot-strength-setting/BotStrengthSettingDsl";
-import {ClockSettingDsl} from "@src/dsl/janggi/components/settings/components/clock-setting/ClockSettingDsl";
-import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/cho-setup-setting/ChoSetupSettingDsl";
 import {DslError} from "@src/dsl/errors/DslError";
-import {EffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/effects-setting/EffectsSettingDsl";
-import {HanSetupSettingDsl} from "@src/dsl/janggi/components/settings/components/han-setup-setting/HanSetupSettingDsl";
-import {InstallButtonDsl} from "@src/dsl/janggi/components/settings/components/install-button/InstallButtonDsl";
-import {MatchFormatSettingDsl} from "@src/dsl/janggi/components/settings/components/match-format-setting/MatchFormatSettingDsl";
-import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/components/movable-highlight-setting/MovableHighlightSettingDsl";
-import {CountdownSettingDsl} from "@src/dsl/janggi/components/settings/components/countdown-setting/CountdownSettingDsl";
-import {MusicSettingDsl} from "@src/dsl/janggi/components/settings/components/music-setting/MusicSettingDsl";
-import {OpacitySettingDsl} from "@src/dsl/janggi/components/settings/components/opacity-setting/OpacitySettingDsl";
-import {OpponentSettingDsl} from "@src/dsl/janggi/components/settings/components/opponent-setting/OpponentSettingDsl";
-import {SoundEffectsSettingDsl} from "@src/dsl/janggi/components/settings/components/sound-effects-setting/SoundEffectsSettingDsl";
-import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/components/piece-set-setting/PieceSetSettingDsl";
-import {ProgressSettingDsl} from "@src/dsl/janggi/components/settings/components/progress-setting/ProgressSettingDsl";
+import {LookPaneDsl} from "@src/dsl/janggi/components/settings/tabs/look-pane/LookPaneDsl";
+import {PlayPaneDsl} from "@src/dsl/janggi/components/settings/tabs/play-pane/PlayPaneDsl";
 import {SettingsPlaywright} from "@src/dsl/janggi/components/settings/playwright/SettingsPlaywright";
+import {SoundPaneDsl} from "@src/dsl/janggi/components/settings/tabs/sound-pane/SoundPaneDsl";
+import {YouPaneDsl} from "@src/dsl/janggi/components/settings/tabs/you-pane/YouPaneDsl";
 import type {Page} from "@playwright/test";
-import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
-import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
-import {YourSideSettingDsl} from "@src/dsl/janggi/components/settings/components/your-side-setting/YourSideSettingDsl";
 
 /**
  * The settings sheet, reached as `janggi.settings`.
  *
- * One member per setting, so a spec says which control it means before it says what to do with it —
- * `janggi.settings.board.setTo("Neon")`. Each member is its own DSL beside its own `*Playwright`,
- * which is what keeps a picker's methods, its error messages and its test ids in one place instead
- * of spread across a class that grows by two methods every time a setting is added.
+ * One member per tab, and one member per setting beneath that, so a spec says where a control is and which it means
+ * before it says what to do with it — `janggi.settings.look.board.setTo("Neon")`. The tabs are the app's own
+ * (`webapp/src/react/pages/game/components/settings/tabs/`), and each setting is its own DSL beside its own
+ * `*Playwright`, which keeps a picker's methods, its error messages and its test ids in one place.
  *
  * A setting is named by the label a player reads on the button, and the names come from
  * `@janggi/shared` — so a spec says what a user would say, and asking for a style the app does not
  * ship is a compile error rather than a click that silently times out.
  *
- * What is left here is only what belongs to no single picker: two methods that reach across both
- * armies' setups, the pairing line those two choices produce, and New game, which deals from them.
+ * What is left here is only the sheet itself and its tabs: opening it, which tab is showing, how the tabs are drawn.
  *
  * None of it asks a spec to open the sheet first. Every action opens it and shuts it again itself —
  * see `SettingsSheetComponent` — so choosing a setting reads the same as it did before there was one.
@@ -49,169 +27,18 @@ import {YourSideSettingDsl} from "@src/dsl/janggi/components/settings/components
 export class SettingsDsl {
   private readonly settings: SettingsPlaywright;
 
-  readonly board: BoardSettingDsl;
-  readonly pieceSet: PieceSetSettingDsl;
-  readonly hanSetup: HanSetupSettingDsl;
-  readonly choSetup: ChoSetupSettingDsl;
-  readonly movableHighlight: MovableHighlightSettingDsl;
-  readonly bikjangHint: BikjangHintSettingDsl;
-  readonly language: LanguageSettingDsl;
-  readonly flipBoard: FlipBoardSettingDsl;
-  readonly clock: ClockSettingDsl;
-  readonly opponentLook: OpponentLookSettingDsl;
-  readonly games: GamesSettingDsl;
-  readonly matchFormat: MatchFormatSettingDsl;
-  readonly opponent: OpponentSettingDsl;
-  readonly botStrength: BotStrengthSettingDsl;
-  readonly yourSide: YourSideSettingDsl;
-  readonly effects: EffectsSettingDsl;
-  readonly opacity: OpacitySettingDsl;
-  readonly soundEffects: SoundEffectsSettingDsl;
-  readonly music: MusicSettingDsl;
-  readonly countdown: CountdownSettingDsl;
-  readonly progress: ProgressSettingDsl;
-  readonly install: InstallButtonDsl;
-  readonly account: AccountSettingDsl;
+  readonly play: PlayPaneDsl;
+  readonly look: LookPaneDsl;
+  readonly sound: SoundPaneDsl;
+  readonly you: YouPaneDsl;
 
   constructor(page: Page) {
     this.settings = new SettingsPlaywright(page);
 
-    this.board = new BoardSettingDsl(page);
-    this.pieceSet = new PieceSetSettingDsl(page);
-    this.hanSetup = new HanSetupSettingDsl(page);
-    this.choSetup = new ChoSetupSettingDsl(page);
-    this.movableHighlight = new MovableHighlightSettingDsl(page);
-    this.bikjangHint = new BikjangHintSettingDsl(page);
-    this.language = new LanguageSettingDsl(page);
-    this.flipBoard = new FlipBoardSettingDsl(page);
-    this.clock = new ClockSettingDsl(page);
-    this.opponentLook = new OpponentLookSettingDsl(page);
-    this.games = new GamesSettingDsl(page);
-    this.matchFormat = new MatchFormatSettingDsl(page);
-    this.opponent = new OpponentSettingDsl(page);
-    this.botStrength = new BotStrengthSettingDsl(page);
-    this.yourSide = new YourSideSettingDsl(page);
-    this.effects = new EffectsSettingDsl(page);
-    this.opacity = new OpacitySettingDsl(page);
-    this.soundEffects = new SoundEffectsSettingDsl(page);
-    this.music = new MusicSettingDsl(page);
-    this.countdown = new CountdownSettingDsl(page);
-    this.progress = new ProgressSettingDsl(page);
-    this.install = new InstallButtonDsl(page);
-    this.account = new AccountSettingDsl(page);
-  }
-
-  /** Both armies at once, for a spec that only cares that they match. */
-  async setBothSetupsTo(name: SetupName): Promise<void> {
-    await this.hanSetup.setTo(name);
-    await this.choSetup.setTo(name);
-  }
-
-  /**
-   * Whether either army's arrangement may still be changed. A back rank is set before play.
-   *
-   * Asks both pickers rather than one. They lock together on the same move count, so asking one
-   * would pass just as happily if the other had been left live.
-   */
-  async canChooseSetups(): Promise<boolean> {
-    try {
-      return (await this.hanSetup.isChoosable()) && (await this.choSetup.isChoosable());
-    } catch (error) {
-      throw new DslError("Failed to check whether the setups can still be chosen", error);
-    }
-  }
-
-  /**
-   * Whether the two arrangements have come to 맞상 or 엇상, or to neither — the classification that
-   * falls out of both choices rather than out of either one, which is why it is here.
-   */
-  /** Whether the pairing line is shown at all — it is absent where there is no pairing to name. */
-  async isElephantPairingShown(): Promise<boolean> {
-    try {
-      return await this.settings.isElephantPairingShown();
-    } catch (error) {
-      throw new DslError("Failed to check whether the pairing line is shown", error);
-    }
-  }
-
-  async getElephantPairing(): Promise<ElephantPairing | undefined> {
-    try {
-      return await this.settings.getElephantPairing();
-    } catch (error) {
-      throw new DslError("Failed to read how the two arrangements pair up", error);
-    }
-  }
-
-  async isGuideLinkedFromGame(): Promise<boolean> {
-    try {
-      return await this.settings.isGuideLinkedFromGame();
-    } catch (error) {
-      throw new DslError("Failed to check whether the Janggi guide is linked from the game", error);
-    }
-  }
-
-  async getGuideAddressInGame(): Promise<string> {
-    try {
-      return await this.settings.getGuideAddressInGame();
-    } catch (error) {
-      throw new DslError("Failed to read where the game's link to the guide goes", error);
-    }
-  }
-
-  async getReferencesAddressInGame(): Promise<string> {
-    try {
-      return await this.settings.getReferencesAddressInGame();
-    } catch (error) {
-      throw new DslError("Failed to read where the game's link to the references goes", error);
-    }
-  }
-
-  async getDeveloperWebsiteDestination(): Promise<string> {
-    try {
-      return await this.settings.getDeveloperWebsiteDestination();
-    } catch (error) {
-      throw new DslError("Failed to read where the developer website link leads", error);
-    }
-  }
-
-  async getRepositoryDestination(): Promise<string> {
-    try {
-      return await this.settings.getRepositoryDestination();
-    } catch (error) {
-      throw new DslError("Failed to read where the Janggi repository link leads", error);
-    }
-  }
-
-  async getAppVersion(): Promise<string> {
-    try {
-      return await this.settings.getAppVersion();
-    } catch (error) {
-      throw new DslError("Failed to read which build of Janggi is running", error);
-    }
-  }
-
-  async getVersionWords(): Promise<string> {
-    try {
-      return await this.settings.getVersionWords();
-    } catch (error) {
-      throw new DslError("Failed to read the line that names the build", error);
-    }
-  }
-
-  async getAppHelpWords(): Promise<string> {
-    try {
-      return await this.settings.getAppHelpWords();
-    } catch (error) {
-      throw new DslError("Failed to read what the app and help links say", error);
-    }
-  }
-
-  async doExternalAppHelpLinksOpenSeparately(): Promise<boolean> {
-    try {
-      return await this.settings.doExternalAppHelpLinksOpenSeparately();
-    } catch (error) {
-      throw new DslError("Failed to check whether the external App & help links open separately", error);
-    }
+    this.play = new PlayPaneDsl(page);
+    this.look = new LookPaneDsl(page);
+    this.sound = new SoundPaneDsl(page);
+    this.you = new YouPaneDsl(page);
   }
 
   /** Opens the sheet and leaves it open, so a spec can watch the board behind it while it chooses. */
@@ -246,15 +73,6 @@ export class SettingsDsl {
       return await this.settings.isTabSelected(name);
     } catch (error) {
       throw new DslError(`Failed to read whether the "${name}" tab is chosen`, error);
-    }
-  }
-
-  /** The words on the New game button, as the player reads them. */
-  async getNewGameLabel(): Promise<string> {
-    try {
-      return await this.settings.getNewGameLabel();
-    } catch (error) {
-      throw new DslError("Failed to read the label on the New game button", error);
     }
   }
 
@@ -327,15 +145,6 @@ export class SettingsDsl {
       return await this.settings.isCoveringTheBoardAt(file, rank);
     } catch (error) {
       throw new DslError(`Failed to check whether the settings cover file ${file}, rank ${rank}`, error);
-    }
-  }
-
-  /** Deals a fresh game from the format and setups chosen, abandoning whatever was being played. */
-  async startNewGame(): Promise<void> {
-    try {
-      await this.settings.startNewGame();
-    } catch (error) {
-      throw new DslError("Failed to start a new game", error);
     }
   }
 }

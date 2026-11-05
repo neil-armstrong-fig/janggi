@@ -7,13 +7,13 @@ given("a player at the game", () => {
     });
 
     then("a save key can still be selected to copy", async ({janggi}) => {
-      expect(await janggi.settings.progress.isSaveKeySelectable()).toBe(true);
+      expect(await janggi.settings.you.progress.isSaveKeySelectable()).toBe(true);
     });
   });
 
   when("a clocked game is reloaded mid-turn", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.clock.setTo("5 min");
+      await janggi.settings.play.clock.setTo("5 min");
       await janggi.board.tap(1, 7);
       await janggi.board.tap(1, 6);
       await janggi.reload();

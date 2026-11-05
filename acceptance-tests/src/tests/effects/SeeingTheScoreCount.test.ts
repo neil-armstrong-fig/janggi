@@ -19,11 +19,11 @@ given("motion is left on", () => {
     });
 
     then("cho's score is shown coming to rest on the seventy points cho is now worth", async ({janggi}) => {
-      expect(await janggi.status.getShownScore("cho")).toBe(70);
+      expect(await janggi.status.plaque.getShownScore("cho")).toBe(70);
     });
 
     then("han's score is shown unchanged", async ({janggi}) => {
-      expect(await janggi.status.getShownScore("han")).toBe(73.5);
+      expect(await janggi.status.plaque.getShownScore("han")).toBe(73.5);
     });
   });
 });

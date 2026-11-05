@@ -10,7 +10,7 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
 /**
  * Playing a friend by a friend code, reached as `janggi.playAFriend`: making a code or taking one, the two choosing their
  * arrangements, and what the game shows of the player opposite. The room behind it is stood in for with the API
- * (`janggi.settings.account.standInForTheApi`), so two devices in a spec meet in one room the way two phones would.
+ * (`janggi.settings.you.account.standInForTheApi`), so two devices in a spec meet in one room the way two phones would.
  */
 export class PlayAFriendDsl {
   private readonly friend: PlayAFriendPlaywright;

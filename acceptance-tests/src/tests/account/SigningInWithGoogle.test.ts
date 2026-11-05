@@ -7,82 +7,82 @@ import {saveKeyWith} from "@src/shared/share-keys/SaveKeyWith";
  */
 given("a player who has earned some progress", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 640, beaten: {Casual: {cho: [800, 1000]}}}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 640, beaten: {Casual: {cho: [800, 1000]}}}));
   });
 
   when("they sign in with Google from the settings, and it is kept in step", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.account.signInWithGoogle();
-      await expect.poll(() => janggi.settings.account.getSyncState()).toBe("synced");
+      await janggi.settings.you.account.signInWithGoogle();
+      await expect.poll(() => janggi.settings.you.account.getSyncState()).toBe("synced");
     });
 
     then("the settings show them signed in", async ({janggi}) => {
-      expect(await janggi.settings.account.isSignedIn()).toBe(true);
+      expect(await janggi.settings.you.account.isSignedIn()).toBe(true);
     });
 
     when("they play on a device they have never used", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.account.moveToANewDevice();
+        await janggi.settings.you.account.moveToANewDevice();
       });
 
       then("nothing of their progress is there until they sign in", async ({janggi}) => {
-        expect(await janggi.settings.progress.getXp()).toBe(0);
+        expect(await janggi.settings.you.progress.getXp()).toBe(0);
       });
 
       when("they sign in there", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.settings.account.signInWithGoogle();
+          await janggi.settings.you.account.signInWithGoogle();
         });
 
         then("their progress is restored", async ({janggi}) => {
-          await expect.poll(() => janggi.settings.progress.getXp()).toBe(640);
+          await expect.poll(() => janggi.settings.you.progress.getXp()).toBe(640);
         });
       });
     });
 
     when("they sign out", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.account.signOutOfGoogle();
+        await janggi.settings.you.account.signOutOfGoogle();
       });
 
       then("signing in is offered again", async ({janggi}) => {
-        expect(await janggi.settings.account.isSignInOffered()).toBe(true);
+        expect(await janggi.settings.you.account.isSignInOffered()).toBe(true);
       });
 
       then("their progress stays on the device", async ({janggi}) => {
-        expect(await janggi.settings.progress.getXp()).toBe(640);
+        expect(await janggi.settings.you.progress.getXp()).toBe(640);
       });
     });
 
     when("they delete their account", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.account.deleteTheAccount();
+        await janggi.settings.you.account.deleteTheAccount();
       });
 
       then("their progress stays on the device", async ({janggi}) => {
-        expect(await janggi.settings.progress.getXp()).toBe(640);
+        expect(await janggi.settings.you.progress.getXp()).toBe(640);
       });
 
       when("they sign in on a device they have never used", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.settings.account.moveToANewDevice();
-          await janggi.settings.account.signInWithGoogle();
+          await janggi.settings.you.account.moveToANewDevice();
+          await janggi.settings.you.account.signInWithGoogle();
         });
 
         then("nothing of theirs is left to restore", async ({janggi}) => {
-          expect(await janggi.settings.progress.getXp()).toBe(0);
+          expect(await janggi.settings.you.progress.getXp()).toBe(0);
         });
       });
     });
 
     when("the API stops answering", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.account.cutOffTheApi();
-        await janggi.settings.progress.loadSave(saveKeyWith({xp: 700}));
+        await janggi.settings.you.account.cutOffTheApi();
+        await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 700}));
       });
 
       then("the settings say syncing is paused", async ({janggi}) => {
-        await expect.poll(() => janggi.settings.account.getSyncState()).toBe("paused");
+        await expect.poll(() => janggi.settings.you.account.getSyncState()).toBe("paused");
       });
 
       when("they carry on playing", () => {

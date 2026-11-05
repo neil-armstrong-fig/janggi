@@ -9,30 +9,30 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a player opens the settings", () => {
   when("nothing has been asked yet", () => {
     then("the formats are not explained", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.isExplanationShown()).toBe(false);
+      expect(await janggi.settings.play.matchFormat.isExplanationShown()).toBe(false);
     });
   });
 
   when("they ask what the formats are", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.matchFormat.toggleExplanation();
+      await janggi.settings.play.matchFormat.toggleExplanation();
     });
 
     then("the formats are explained", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.isExplanationShown()).toBe(true);
+      expect(await janggi.settings.play.matchFormat.isExplanationShown()).toBe(true);
     });
 
     then("the format is still casual, asking having chosen nothing", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.getSelected()).toBe("Casual");
+      expect(await janggi.settings.play.matchFormat.getSelected()).toBe("Casual");
     });
 
     when("they ask again", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.matchFormat.toggleExplanation();
+        await janggi.settings.play.matchFormat.toggleExplanation();
       });
 
       then("the explanation is folded away", async ({janggi}) => {
-        expect(await janggi.settings.matchFormat.isExplanationShown()).toBe(false);
+        expect(await janggi.settings.play.matchFormat.isExplanationShown()).toBe(false);
       });
     });
   });
@@ -46,15 +46,15 @@ given("a game is under way", () => {
 
   when("the player asks what the formats are", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.matchFormat.toggleExplanation();
+      await janggi.settings.play.matchFormat.toggleExplanation();
     });
 
     then("the format can no longer be chosen", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.isChoosable()).toBe(false);
+      expect(await janggi.settings.play.matchFormat.isChoosable()).toBe(false);
     });
 
     then("the formats are explained all the same", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.isExplanationShown()).toBe(true);
+      expect(await janggi.settings.play.matchFormat.isExplanationShown()).toBe(true);
     });
   });
 });

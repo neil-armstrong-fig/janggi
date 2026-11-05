@@ -28,13 +28,13 @@ given("a player who has never played the bot", () => {
 
   when("they start a new game in the middle of a casual one against the bot", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.opponent.setTo("Bot");
-      await janggi.settings.botStrength.setTo(1200);
+      await janggi.settings.play.opponent.setTo("Bot");
+      await janggi.settings.play.botStrength.setTo(1200);
       await janggi.status.waitForTheBotToLoad();
       await janggi.board.tap(1, 7);
       await janggi.board.tap(1, 6);
       await janggi.status.waitForTheBot();
-      await janggi.settings.startNewGame();
+      await janggi.settings.play.startNewGame();
     });
 
     then("the game is recorded as a loss against that bot", async ({janggi}) => {
@@ -96,8 +96,8 @@ given("a player who has never played the bot", () => {
 
   when("they leave the page in the middle of a game against the bot and come back to it", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.opponent.setTo("Bot");
-      await janggi.settings.botStrength.setTo(800);
+      await janggi.settings.play.opponent.setTo("Bot");
+      await janggi.settings.play.botStrength.setTo(800);
       await janggi.status.waitForTheBotToLoad();
       await janggi.board.tap(1, 7);
       await janggi.board.tap(1, 6);
@@ -115,7 +115,7 @@ given("a player who has never played the bot", () => {
 
     when("they then start a new game over it", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.startNewGame();
+        await janggi.settings.play.startNewGame();
       });
 
       then("the game they abandoned is recorded as a loss", async ({janggi}) => {

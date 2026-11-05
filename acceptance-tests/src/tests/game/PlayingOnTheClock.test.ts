@@ -3,7 +3,7 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("two people playing on the clock", () => {
   beforeEach(async ({janggi}) => {
     await janggi.takeHoldOfTime();
-    await janggi.settings.clock.setTo("5 min");
+    await janggi.settings.play.clock.setTo("5 min");
   });
 
   when("a minute passes before anyone has moved", () => {
@@ -12,12 +12,12 @@ given("two people playing on the clock", () => {
     });
 
     then("neither clock has run", async ({janggi}) => {
-      await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 300, periods: 3});
-      await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 300, periods: 3});
+      await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 300, periods: 3});
+      await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 300, periods: 3});
     });
 
     then("the clock can still be changed", async ({janggi}) => {
-      expect(await janggi.settings.clock.canChange()).toBe(true);
+      expect(await janggi.settings.play.clock.canChange()).toBe(true);
     });
   });
 
@@ -28,7 +28,7 @@ given("two people playing on the clock", () => {
     });
 
     then("the clock can no longer be changed", async ({janggi}) => {
-      expect(await janggi.settings.clock.canChange()).toBe(false);
+      expect(await janggi.settings.play.clock.canChange()).toBe(false);
     });
 
     when("a minute passes", () => {
@@ -37,8 +37,8 @@ given("two people playing on the clock", () => {
       });
 
       then("only han's clock has run", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 240, periods: 3});
-        await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 300, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 240, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 300, periods: 3});
       });
     });
 
@@ -51,21 +51,21 @@ given("two people playing on the clock", () => {
       });
 
       then("han's clock has stopped where it was and cho's is running", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 240, periods: 3});
-        await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 270, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 240, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 270, periods: 3});
       });
     });
 
     when("han passes after a minute, and half a minute passes", () => {
       beforeEach(async ({janggi}) => {
         await janggi.letTimePass(60);
-        await janggi.status.pass();
+        await janggi.status.controls.pass();
         await janggi.letTimePass(30);
       });
 
       then("the pass counted as han's turn", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 240, periods: 3});
-        await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 270, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 240, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 270, periods: 3});
       });
     });
 
@@ -75,7 +75,7 @@ given("two people playing on the clock", () => {
       });
 
       then("han is counting down the first period", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 27, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 27, periods: 3});
       });
     });
 
@@ -87,7 +87,7 @@ given("two people playing on the clock", () => {
       });
 
       then("han keeps the period, whole", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 30, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 30, periods: 3});
       });
     });
 
@@ -97,7 +97,7 @@ given("two people playing on the clock", () => {
       });
 
       then("han has one fewer", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 25, periods: 2});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 25, periods: 2});
       });
     });
 
@@ -107,7 +107,7 @@ given("two people playing on the clock", () => {
       });
 
       then("han has nothing left", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 0, periods: 0});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 0, periods: 0});
       });
 
       then("cho has won", async ({janggi}) => {
@@ -115,11 +115,11 @@ given("two people playing on the clock", () => {
       });
 
       then("han may no longer rest a turn", async ({janggi}) => {
-        await expect.poll(() => janggi.status.canPass()).toBe(false);
+        await expect.poll(() => janggi.status.controls.canPass()).toBe(false);
       });
 
       then("han may no longer offer a draw", async ({janggi}) => {
-        await expect.poll(() => janggi.status.canOfferDraw()).toBe(false);
+        await expect.poll(() => janggi.status.controls.canOfferDraw()).toBe(false);
       });
 
       when("the page is reloaded", () => {
@@ -130,11 +130,11 @@ given("two people playing on the clock", () => {
 
         then("han has still lost on time", async ({janggi}) => {
           await expect.poll(() => janggi.status.getWinner()).toBe("cho");
-          await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 0, periods: 0});
+          await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 0, periods: 0});
         });
 
         then("han still may not rest a turn", async ({janggi}) => {
-          await expect.poll(() => janggi.status.canPass()).toBe(false);
+          await expect.poll(() => janggi.status.controls.canPass()).toBe(false);
         });
       });
 
@@ -153,11 +153,11 @@ given("two people playing on the clock", () => {
       when("a new game is dealt", () => {
         beforeEach(async ({janggi}) => {
           await expect.poll(() => janggi.status.getWinner()).toBe("cho");
-          await janggi.settings.startNewGame();
+          await janggi.settings.play.startNewGame();
         });
 
         then("cho may rest a turn again", async ({janggi}) => {
-          await expect.poll(() => janggi.status.canPass()).toBe(true);
+          await expect.poll(() => janggi.status.controls.canPass()).toBe(true);
         });
 
         when("cho reaches for a piece", () => {
@@ -174,59 +174,59 @@ given("two people playing on the clock", () => {
 
     when("han offers a draw, and han's last period runs out before an answer", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.offerDraw();
+        await janggi.status.controls.offerDraw();
         await janggi.letTimePass(390);
       });
 
       then("the offer is no longer asked", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getDrawOfferedBy()).toBeUndefined();
+        await expect.poll(() => janggi.status.overlay.drawOffer.getDrawOfferedBy()).toBeUndefined();
       });
     });
 
     when("han offers a draw that cho declines, and han's last period runs out", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.offerDraw();
-        await janggi.status.declineDraw();
+        await janggi.status.controls.offerDraw();
+        await janggi.status.overlay.drawOffer.declineDraw();
         await janggi.letTimePass(390);
         await expect.poll(() => janggi.status.getWinner()).toBe("cho");
       });
 
       then("the refusal is no longer reported", async ({janggi}) => {
-        expect(await janggi.status.getDrawDeclinedBy()).toBeUndefined();
+        expect(await janggi.status.overlay.drawDeclinedNote.getDrawDeclinedBy()).toBeUndefined();
       });
     });
 
     then("the move cannot be taken back", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(false);
+      expect(await janggi.status.controls.canUndo()).toBe(false);
     });
 
     when("the two agree a draw and a minute passes", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.offerDraw();
-        await janggi.status.acceptDraw();
+        await janggi.status.controls.offerDraw();
+        await janggi.status.overlay.drawOffer.acceptDraw();
         await janggi.letTimePass(60);
       });
 
       then("the clocks have stopped", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 300, periods: 3});
-        await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 300, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 300, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 300, periods: 3});
       });
     });
 
     when("a new game is dealt after a minute, and another minute passes", () => {
       beforeEach(async ({janggi}) => {
         await janggi.letTimePass(60);
-        await janggi.settings.startNewGame();
+        await janggi.settings.play.startNewGame();
         await janggi.letTimePass(60);
       });
 
       then("both clocks are back to all their time, and waiting", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 300, periods: 3});
-        await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 300, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 300, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 300, periods: 3});
       });
 
       then("the clock can be changed again", async ({janggi}) => {
-        expect(await janggi.settings.clock.canChange()).toBe(true);
+        expect(await janggi.settings.play.clock.canChange()).toBe(true);
       });
     });
 
@@ -237,16 +237,16 @@ given("two people playing on the clock", () => {
       });
 
       then("the clock is still on the same format", async ({janggi}) => {
-        expect(await janggi.settings.clock.getSelected()).toBe("5 min");
+        expect(await janggi.settings.play.clock.getSelected()).toBe("5 min");
       });
 
       then("the time han had spent stays spent", async ({janggi}) => {
-        await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 280, periods: 3});
-        await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 300, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 280, periods: 3});
+        await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 300, periods: 3});
       });
 
       then("the move still cannot be taken back", async ({janggi}) => {
-        expect(await janggi.status.canUndo()).toBe(false);
+        expect(await janggi.status.controls.canUndo()).toBe(false);
       });
 
       when("longer than han has left passes", () => {
@@ -255,8 +255,8 @@ given("two people playing on the clock", () => {
         });
 
         then("no time has run", async ({janggi}) => {
-          await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 280, periods: 3});
-          await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 300, periods: 3});
+          await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 280, periods: 3});
+          await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 300, periods: 3});
         });
 
         then("nobody has lost", async ({janggi}) => {
@@ -271,7 +271,7 @@ given("two people playing on the clock", () => {
         });
 
         then("the time han had spent still stays spent", async ({janggi}) => {
-          await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 280, periods: 3});
+          await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 280, periods: 3});
         });
       });
     });
@@ -291,7 +291,7 @@ given("two people playing on the clock", () => {
       });
 
       then("cho may no longer call the bikjang", async ({janggi}) => {
-        await expect.poll(() => janggi.status.canCallBikjang()).toBe(false);
+        await expect.poll(() => janggi.status.controls.canCallBikjang()).toBe(false);
       });
     });
   });

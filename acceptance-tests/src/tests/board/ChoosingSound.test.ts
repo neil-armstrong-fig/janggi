@@ -12,78 +12,78 @@ import {FULL_VOLUME, MUTED_VOLUME} from "@janggi/shared/janggi/settings/Volume";
 given("a user opens the game", () => {
   when("the page has loaded", () => {
     then("the sound effects are at full volume", async ({janggi}) => {
-      expect(await janggi.settings.soundEffects.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.soundEffects.getVolume()).toBe(FULL_VOLUME);
     });
 
     then("the music is at full volume", async ({janggi}) => {
-      expect(await janggi.settings.music.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(FULL_VOLUME);
     });
 
     then("neither is shown as muted", async ({janggi}) => {
-      expect(await janggi.settings.soundEffects.isMuted()).toBe(false);
-      expect(await janggi.settings.music.isMuted()).toBe(false);
+      expect(await janggi.settings.sound.soundEffects.isMuted()).toBe(false);
+      expect(await janggi.settings.sound.music.isMuted()).toBe(false);
     });
   });
 
   when("the music is turned down", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.music.setTo(40);
+      await janggi.settings.sound.music.setTo(40);
     });
 
     then("the music is at that volume", async ({janggi}) => {
-      expect(await janggi.settings.music.getVolume()).toBe(40);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(40);
     });
 
     then("the music is not shown as muted", async ({janggi}) => {
-      expect(await janggi.settings.music.isMuted()).toBe(false);
+      expect(await janggi.settings.sound.music.isMuted()).toBe(false);
     });
 
     then("the sound effects are left at full volume", async ({janggi}) => {
-      expect(await janggi.settings.soundEffects.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.soundEffects.getVolume()).toBe(FULL_VOLUME);
     });
   });
 
   when("the sound effects are slid all the way down", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.soundEffects.setTo(MUTED_VOLUME);
+      await janggi.settings.sound.soundEffects.setTo(MUTED_VOLUME);
     });
 
     then("the sound effects are shown as muted", async ({janggi}) => {
-      expect(await janggi.settings.soundEffects.isMuted()).toBe(true);
+      expect(await janggi.settings.sound.soundEffects.isMuted()).toBe(true);
     });
 
     then("the music is left at full volume", async ({janggi}) => {
-      expect(await janggi.settings.music.getVolume()).toBe(FULL_VOLUME);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(FULL_VOLUME);
     });
   });
 
   when("the music is muted", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.music.toggleMute();
+      await janggi.settings.sound.music.toggleMute();
     });
 
     then("the music is silent", async ({janggi}) => {
-      expect(await janggi.settings.music.getVolume()).toBe(MUTED_VOLUME);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(MUTED_VOLUME);
     });
 
     then("the music is shown as muted", async ({janggi}) => {
-      expect(await janggi.settings.music.isMuted()).toBe(true);
+      expect(await janggi.settings.sound.music.isMuted()).toBe(true);
     });
 
     then("the sound effects are left unmuted", async ({janggi}) => {
-      expect(await janggi.settings.soundEffects.isMuted()).toBe(false);
+      expect(await janggi.settings.sound.soundEffects.isMuted()).toBe(false);
     });
   });
 
   when("the music is turned down, muted and unmuted again", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.music.setTo(40);
-      await janggi.settings.music.toggleMute();
-      await janggi.settings.music.toggleMute();
+      await janggi.settings.sound.music.setTo(40);
+      await janggi.settings.sound.music.toggleMute();
+      await janggi.settings.sound.music.toggleMute();
     });
 
     then("the music is back at the volume it was turned down to", async ({janggi}) => {
-      expect(await janggi.settings.music.getVolume()).toBe(40);
+      expect(await janggi.settings.sound.music.getVolume()).toBe(40);
     });
   });
 });

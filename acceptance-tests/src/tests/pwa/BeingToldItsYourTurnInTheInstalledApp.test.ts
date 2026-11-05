@@ -49,7 +49,7 @@ given("a player whose browser lets the app show notifications", () => {
 
 given("a player who reads the game in Korean, whose browser lets the app show notifications", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.language.setTo("ko");
+    await janggi.settings.you.language.setTo("ko");
     await janggi.playAFriend.allowTheBrowserToShowNotifications();
   });
 

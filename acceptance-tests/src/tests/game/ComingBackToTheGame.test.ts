@@ -7,8 +7,8 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a casual game is under way on a board and piece set the player chose", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.board.setTo("Neon");
-    await janggi.settings.pieceSet.setTo("Hangul");
+    await janggi.settings.look.board.setTo("Neon");
+    await janggi.settings.look.pieceSet.setTo("Hangul");
     await janggi.board.tap(1, 7);
     await janggi.board.tap(1, 6);
   });
@@ -28,23 +28,23 @@ given("a casual game is under way on a board and piece set the player chose", ()
     });
 
     then("the move can still be taken back, the game's record having come back with it", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(true);
+      expect(await janggi.status.controls.canUndo()).toBe(true);
     });
 
     then("the board is still drawn in the style chosen", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelected()).toBe("Neon");
+      expect(await janggi.settings.look.board.getSelected()).toBe("Neon");
     });
 
     then("the pieces are still drawn in the set chosen", async ({janggi}) => {
-      expect(await janggi.settings.pieceSet.getSelected()).toBe("Hangul");
+      expect(await janggi.settings.look.pieceSet.getSelected()).toBe("Hangul");
     });
   });
 });
 
 given("a scored game in which han has laid out and cho has not", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.matchFormat.setTo("Scored");
-    await janggi.settings.hanSetup.setTo("Left Elephant");
+    await janggi.settings.play.matchFormat.setTo("Scored");
+    await janggi.settings.play.hanSetup.setTo("Left Elephant");
   });
 
   when("the page is closed and opened again", () => {
@@ -58,7 +58,7 @@ given("a scored game in which han has laid out and cho has not", () => {
     });
 
     then("han's arrangement is still the one it chose", async ({janggi}) => {
-      expect(await janggi.settings.hanSetup.getSelected()).toBe("Left Elephant");
+      expect(await janggi.settings.play.hanSetup.getSelected()).toBe("Left Elephant");
     });
   });
 });
@@ -67,7 +67,7 @@ given("a game was under way and the player started a new one from the settings",
   beforeEach(async ({janggi}) => {
     await janggi.board.tap(1, 7);
     await janggi.board.tap(1, 6);
-    await janggi.settings.startNewGame();
+    await janggi.settings.play.startNewGame();
   });
 
   when("the page is closed and opened again without another move", () => {
@@ -81,7 +81,7 @@ given("a game was under way and the player started a new one from the settings",
     });
 
     then("there is no move to take back", async ({janggi}) => {
-      expect(await janggi.status.canUndo()).toBe(false);
+      expect(await janggi.status.controls.canUndo()).toBe(false);
     });
   });
 });

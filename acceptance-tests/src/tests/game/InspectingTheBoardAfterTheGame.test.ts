@@ -7,43 +7,43 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a game that has ended", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.status.pass();
-    await janggi.status.pass();
+    await janggi.status.controls.pass();
+    await janggi.status.controls.pass();
   });
 
   then("the result is announced, and the board is not being looked at", async ({janggi}) => {
-    expect(await janggi.status.isResultAnnounced()).toBe(true);
-    expect(await janggi.status.isBoardShown()).toBe(false);
+    expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(true);
+    expect(await janggi.status.overlay.boardPeek.isBoardShown()).toBe(false);
   });
 
   when("the player chooses to show the board", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.showBoard();
+      await janggi.status.overlay.resultBanner.showBoard();
     });
 
     then("the result is put aside and the board is shown", async ({janggi}) => {
-      expect(await janggi.status.isResultAnnounced()).toBe(false);
-      expect(await janggi.status.isBoardShown()).toBe(true);
+      expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(false);
+      expect(await janggi.status.overlay.boardPeek.isBoardShown()).toBe(true);
     });
 
     when("they tap the board", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.tapTheBoardToSeeTheResult();
+        await janggi.status.overlay.boardPeek.tapTheBoardToSeeTheResult();
       });
 
       then("the result is announced again", async ({janggi}) => {
-        expect(await janggi.status.isResultAnnounced()).toBe(true);
-        expect(await janggi.status.isBoardShown()).toBe(false);
+        expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(true);
+        expect(await janggi.status.overlay.boardPeek.isBoardShown()).toBe(false);
       });
     });
 
     when("the last turn is taken back", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.undo();
+        await janggi.status.controls.undo();
       });
 
       then("the board is no longer put aside for a result", async ({janggi}) => {
-        expect(await janggi.status.isBoardShown()).toBe(false);
+        expect(await janggi.status.overlay.boardPeek.isBoardShown()).toBe(false);
       });
     });
   });

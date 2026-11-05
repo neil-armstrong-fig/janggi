@@ -13,7 +13,7 @@ given("a user has the game open", () => {
     });
 
     then("the controls are still above it", async ({janggi}) => {
-      expect(await janggi.status.areControlsClearOfTheBottom(NAVIGATION_BAR_HEIGHT)).toBe(true);
+      expect(await janggi.status.controls.areControlsClearOfTheBottom(NAVIGATION_BAR_HEIGHT)).toBe(true);
     });
   });
 });

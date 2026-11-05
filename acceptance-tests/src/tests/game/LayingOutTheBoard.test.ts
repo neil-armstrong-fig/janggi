@@ -11,24 +11,24 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a scored game is being laid out", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.matchFormat.setTo("Scored");
+    await janggi.settings.play.matchFormat.setTo("Scored");
   });
 
   when("nobody has laid out yet", () => {
     then("the board is waiting on han, and neither army has chosen", async ({janggi}) => {
       expect(await janggi.status.isLayingOut()).toBe(true);
       expect(await janggi.status.getTurn()).toBe("han");
-      expect(await janggi.settings.hanSetup.getSelected()).toBeUndefined();
-      expect(await janggi.settings.choSetup.getSelected()).toBeUndefined();
+      expect(await janggi.settings.play.hanSetup.getSelected()).toBeUndefined();
+      expect(await janggi.settings.play.choSetup.getSelected()).toBeUndefined();
     });
 
     then("han may lay out and cho may not", async ({janggi}) => {
-      expect(await janggi.settings.hanSetup.isChoosable()).toBe(true);
-      expect(await janggi.settings.choSetup.isChoosable()).toBe(false);
+      expect(await janggi.settings.play.hanSetup.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.choSetup.isChoosable()).toBe(false);
     });
 
     then("the turn may not be rested either, there being no turn yet", async ({janggi}) => {
-      expect(await janggi.status.canPass()).toBe(false);
+      expect(await janggi.status.controls.canPass()).toBe(false);
     });
 
     when("a piece is tapped anyway", () => {
@@ -45,22 +45,22 @@ given("a scored game is being laid out", () => {
 
   when("han has laid out", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.hanSetup.setTo("Left Elephant");
+      await janggi.settings.play.hanSetup.setTo("Left Elephant");
     });
 
     then("han may not lay out again", async ({janggi}) => {
-      expect(await janggi.settings.hanSetup.isChoosable()).toBe(false);
-      expect(await janggi.settings.hanSetup.getSelected()).toBe("Left Elephant");
+      expect(await janggi.settings.play.hanSetup.isChoosable()).toBe(false);
+      expect(await janggi.settings.play.hanSetup.getSelected()).toBe("Left Elephant");
     });
 
     then("cho may answer now that there is something to answer", async ({janggi}) => {
-      expect(await janggi.settings.choSetup.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.choSetup.isChoosable()).toBe(true);
     });
 
     then("the board is waiting on cho, and still nothing may be played", async ({janggi}) => {
       expect(await janggi.status.isLayingOut()).toBe(true);
       expect(await janggi.status.getTurn()).toBe("cho");
-      expect(await janggi.status.canPass()).toBe(false);
+      expect(await janggi.status.controls.canPass()).toBe(false);
     });
 
     then("han's own arrangement is already standing on the board", async ({janggi}) => {
@@ -70,8 +70,8 @@ given("a scored game is being laid out", () => {
 
   when("cho has answered", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.hanSetup.setTo("Left Elephant");
-      await janggi.settings.choSetup.setTo("Inner Elephant");
+      await janggi.settings.play.hanSetup.setTo("Left Elephant");
+      await janggi.settings.play.choSetup.setTo("Inner Elephant");
     });
 
     then("the game begins, with cho to move", async ({janggi}) => {
@@ -80,7 +80,7 @@ given("a scored game is being laid out", () => {
     });
 
     then("the turn may now be rested, there being a turn to rest", async ({janggi}) => {
-      expect(await janggi.status.canPass()).toBe(true);
+      expect(await janggi.status.controls.canPass()).toBe(true);
     });
 
     when("cho picks a soldier up", () => {
@@ -95,11 +95,11 @@ given("a scored game is being laid out", () => {
     });
 
     then("cho may still change its mind, which is what the deom pays for", async ({janggi}) => {
-      expect(await janggi.settings.choSetup.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.choSetup.isChoosable()).toBe(true);
     });
 
     then("han still may not", async ({janggi}) => {
-      expect(await janggi.settings.hanSetup.isChoosable()).toBe(false);
+      expect(await janggi.settings.play.hanSetup.isChoosable()).toBe(false);
     });
   });
 });
@@ -116,25 +116,25 @@ given("a casual game is being laid out", () => {
     });
 
     then("both armies open on the common arrangement", async ({janggi}) => {
-      expect(await janggi.settings.hanSetup.getSelected()).toBe("Inner Elephant");
-      expect(await janggi.settings.choSetup.getSelected()).toBe("Inner Elephant");
+      expect(await janggi.settings.play.hanSetup.getSelected()).toBe("Inner Elephant");
+      expect(await janggi.settings.play.choSetup.getSelected()).toBe("Inner Elephant");
     });
 
     then("either army may arrange, in any order", async ({janggi}) => {
-      expect(await janggi.settings.canChooseSetups()).toBe(true);
+      expect(await janggi.settings.play.canChooseSetups()).toBe(true);
     });
   });
 
   when("cho arranges before han, which a scored game would refuse", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.choSetup.setTo("Outer Elephant");
-      await janggi.settings.hanSetup.setTo("Left Elephant");
+      await janggi.settings.play.choSetup.setTo("Outer Elephant");
+      await janggi.settings.play.hanSetup.setTo("Left Elephant");
     });
 
     then("both arrangements took, and han may still think again", async ({janggi}) => {
-      expect(await janggi.settings.choSetup.getSelected()).toBe("Outer Elephant");
-      expect(await janggi.settings.hanSetup.getSelected()).toBe("Left Elephant");
-      expect(await janggi.settings.hanSetup.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.choSetup.getSelected()).toBe("Outer Elephant");
+      expect(await janggi.settings.play.hanSetup.getSelected()).toBe("Left Elephant");
+      expect(await janggi.settings.play.hanSetup.isChoosable()).toBe(true);
     });
   });
 });
@@ -148,39 +148,39 @@ given("a casual game is being laid out", () => {
 given("both armies have chosen where their elephants stand", () => {
   when("they choose the same asymmetric arrangement", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setBothSetupsTo("Left Elephant");
+      await janggi.settings.play.setBothSetupsTo("Left Elephant");
     });
 
     then("the board says it is eotsang", async ({janggi}) => {
-      expect(await janggi.settings.getElephantPairing()).toBe("eotsang");
+      expect(await janggi.settings.play.getElephantPairing()).toBe("eotsang");
     });
   });
 
   when("they choose opposite asymmetric arrangements", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.hanSetup.setTo("Left Elephant");
-      await janggi.settings.choSetup.setTo("Right Elephant");
+      await janggi.settings.play.hanSetup.setTo("Left Elephant");
+      await janggi.settings.play.choSetup.setTo("Right Elephant");
     });
 
     then("the board says it is matsang", async ({janggi}) => {
-      expect(await janggi.settings.getElephantPairing()).toBe("matsang");
+      expect(await janggi.settings.play.getElephantPairing()).toBe("matsang");
     });
 
     then("nothing is barred by it — the game is playable as any other", async ({janggi}) => {
       expect(await janggi.status.getTurn()).toBe("cho");
-      expect(await janggi.status.canPass()).toBe(true);
+      expect(await janggi.status.controls.canPass()).toBe(true);
     });
   });
 
   when("either of them chose a symmetric arrangement", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.hanSetup.setTo("Left Elephant");
-      await janggi.settings.choSetup.setTo("Inner Elephant");
+      await janggi.settings.play.hanSetup.setTo("Left Elephant");
+      await janggi.settings.play.choSetup.setTo("Inner Elephant");
     });
 
     then("there is no pairing to name, and no line saying so", async ({janggi}) => {
-      expect(await janggi.settings.getElephantPairing()).toBeUndefined();
-      expect(await janggi.settings.isElephantPairingShown()).toBe(false);
+      expect(await janggi.settings.play.getElephantPairing()).toBeUndefined();
+      expect(await janggi.settings.play.isElephantPairingShown()).toBe(false);
     });
   });
 });

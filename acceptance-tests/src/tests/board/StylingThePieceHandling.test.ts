@@ -25,7 +25,7 @@ given("a player wearing a piece set that thickens its outlines threefold under t
     const styled = {...LETTERS, handling: {shadow: "rgba(0, 0, 0, 0.45)", hoverOutline: 3}};
 
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", styled));
-    await janggi.settings.pieceSet.setOwnStyleTo("Letters");
+    await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 
   then("a piece's outline is drawn as the set says while nothing is over it", async ({janggi}) => {
@@ -50,7 +50,7 @@ given("a player wearing a piece set that thickens its outlines threefold under t
 given("a player wearing a piece set written before sets could say how they are handled", () => {
   beforeEach(async ({janggi}) => {
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", LETTERS));
-    await janggi.settings.pieceSet.setOwnStyleTo("Letters");
+    await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 
   when("the pointer rests on a piece", () => {

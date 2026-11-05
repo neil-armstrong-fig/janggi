@@ -19,7 +19,7 @@ given("someone searches in Korean for how to play janggi", () => {
     then("the page describes the guide in Korean", async ({janggi}) => {
       expect(await janggi.getPageLanguage()).toBe("ko");
       expect(await janggi.guide.getPageTitle()).toBe("장기 두는 법 · 규칙과 말의 움직임 · 무료 장기 게임");
-      expect(await janggi.getPageDescription()).toBe(
+      expect(await janggi.discovery.getPageDescription()).toBe(
         "장기판과 일곱 종류의 말, 궁성과 포의 규칙, 빅장과 한수쉼까지. 장기 두는 법을 처음부터 쉽게 배우고 무료로 대국해 보세요.",
       );
       expect(await janggi.guide.getMainHeading()).toBe("장기 두는 법");
@@ -58,24 +58,26 @@ given("someone searches in Korean for how to play janggi", () => {
     });
 
     then("search engines are told it is the Korean twin of the English guide", async ({janggi}) => {
-      expect(await janggi.getLanguageAlternates()).toEqual(GUIDE_ALTERNATES);
+      expect(await janggi.discovery.getLanguageAlternates()).toEqual(GUIDE_ALTERNATES);
     });
 
     then("search engines understand that it is written in Korean", async ({janggi}) => {
-      expect(await janggi.getSearchDataLanguage()).toBe("ko");
+      expect(await janggi.discovery.getSearchDataLanguage()).toBe("ko");
     });
 
     then("it is shared with a card that is written in Korean", async ({janggi}) => {
-      expect(await janggi.getSocialImageAddress()).toBe("https://janggi.neilarmstrong.dev/social-card-ko.png");
+      expect(await janggi.discovery.getSocialImageAddress()).toBe(
+        "https://janggi.neilarmstrong.dev/social-card-ko.png",
+      );
     });
 
     then("search engines that don't run scripts read it, and its notice, in Korean too", async ({janggi}) => {
-      expect(await janggi.getMainHeadingServedToSearchEngines()).toBe("장기 두는 법");
-      expect(await janggi.getTextServedToSearchEngines()).toContain("기계 번역");
+      expect(await janggi.discovery.getMainHeadingServedToSearchEngines()).toBe("장기 두는 법");
+      expect(await janggi.discovery.getTextServedToSearchEngines()).toContain("기계 번역");
     });
 
     then("search engines that follow links can reach the English guide from it", async ({janggi}) => {
-      expect(await janggi.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/learn.html");
+      expect(await janggi.discovery.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/learn.html");
     });
 
     then("it leads straight back to the game in Korean", async ({janggi}) => {
@@ -143,11 +145,11 @@ given("someone searches in Korean for how to play janggi", () => {
     });
 
     then("search engines are told it has a Korean twin", async ({janggi}) => {
-      expect(await janggi.getLanguageAlternates()).toEqual(GUIDE_ALTERNATES);
+      expect(await janggi.discovery.getLanguageAlternates()).toEqual(GUIDE_ALTERNATES);
     });
 
     then("search engines that follow links can reach the Korean guide from it", async ({janggi}) => {
-      expect(await janggi.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/ko/learn.html");
+      expect(await janggi.discovery.getOtherLanguageAddressInPageServedToSearchEngines()).toBe("/ko/learn.html");
     });
 
     then("it does not carry the machine translation notice", async ({janggi}) => {
@@ -155,7 +157,7 @@ given("someone searches in Korean for how to play janggi", () => {
     });
 
     then("the sitemap tells the same story as the pages", async ({janggi}) => {
-      expect(await janggi.getSitemapLanguageAlternatesOfTheKoreanGuide()).toEqual(GUIDE_ALTERNATES);
+      expect(await janggi.discovery.getSitemapLanguageAlternatesOfTheKoreanGuide()).toEqual(GUIDE_ALTERNATES);
     });
 
     then("a language switch marks English as the one it is in", async ({janggi}) => {

@@ -17,11 +17,11 @@ given("a user opens the game for the first time", () => {
     });
 
     then("modern pieces are in use", async ({janggi}) => {
-      expect(await janggi.settings.pieceSet.getSelected()).toBe("Modern");
+      expect(await janggi.settings.look.pieceSet.getSelected()).toBe("Modern");
     });
 
     then("the opponent is the bot", async ({janggi}) => {
-      expect(await janggi.settings.opponent.getSelected()).toBe("Bot");
+      expect(await janggi.settings.play.opponent.getSelected()).toBe("Bot");
     });
   });
 });

@@ -7,20 +7,20 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("motion is left on", () => {
   when("both players rest a turn, one after the other", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.pass();
-      await janggi.status.pass();
+      await janggi.status.controls.pass();
+      await janggi.status.controls.pass();
     });
 
     then("the board is shaken as the game ends", async ({janggi}) => {
-      expect(await janggi.board.isBeingShaken()).toBe(true);
+      expect(await janggi.board.motion.isBeingShaken()).toBe(true);
     });
 
     then("the board comes back to rest", async ({janggi}) => {
-      expect(await janggi.board.isAtRest()).toBe(true);
+      expect(await janggi.board.motion.isAtRest()).toBe(true);
     });
 
     then("the result is announced over the board", async ({janggi}) => {
-      expect(await janggi.status.isResultAnnounced()).toBe(true);
+      expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(true);
     });
   });
 });

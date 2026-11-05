@@ -18,7 +18,7 @@ given("a player wearing a board that picks its own colours for the hints", () =>
     const styled = {...MIDNIGHT, hints: {colour: "#ff0000", outline: "#000000", selection: "rgba(0, 255, 0, 0.3)"}};
 
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", styled));
-    await janggi.settings.board.setOwnStyleTo("Midnight");
+    await janggi.settings.look.board.setOwnStyleTo("Midnight");
   });
 
   when("cho picks up a soldier", () => {
@@ -39,7 +39,7 @@ given("a player wearing a board that picks its own colours for the hints", () =>
 given("a player wearing a board written before boards carried colours for the hints", () => {
   beforeEach(async ({janggi}) => {
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", MIDNIGHT));
-    await janggi.settings.board.setOwnStyleTo("Midnight");
+    await janggi.settings.look.board.setOwnStyleTo("Midnight");
   });
 
   when("cho picks up a soldier", () => {

@@ -16,23 +16,23 @@ given("a player in a game with a friend, and a game of their own", () => {
   beforeEach(async ({janggi}) => {
     friend = await janggi.openSeparateDevice();
 
-    await janggi.settings.account.signInWithGoogle();
-    await friend.settings.account.signInWithGoogleAsAnotherPlayer();
+    await janggi.settings.you.account.signInWithGoogle();
+    await friend.settings.you.account.signInWithGoogleAsAnotherPlayer();
     await playTogether(janggi, friend);
   });
 
   when("the player switches to their own game", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.games.switchTo("local");
+      await janggi.settings.play.games.switchTo("local");
     });
 
     then("the board shows their own game, at its start", async ({janggi}) => {
-      expect(await janggi.settings.games.getShown()).toBe("local");
+      expect(await janggi.settings.play.games.getShown()).toBe("local");
       expect(await janggi.board.getPieceAt(1, 7)).toEqual({side: "cho", type: "soldier"});
     });
 
     then("the friend's look can still be chosen for the online game waiting beside it", async ({janggi}) => {
-      expect(await janggi.settings.opponentLook.isShown()).toBe(true);
+      expect(await janggi.settings.look.opponentLook.isShown()).toBe(true);
     });
 
     when("they play a move in it, and the friend plays one in theirs", () => {
@@ -44,7 +44,7 @@ given("a player in a game with a friend, and a game of their own", () => {
       });
 
       then("the player is told the game with their friend is waiting on them", async ({janggi}) => {
-        await expect.poll(() => janggi.settings.games.isYourMoveWaiting()).toBe(true);
+        await expect.poll(() => janggi.settings.play.games.isYourMoveWaiting()).toBe(true);
       });
 
       then("their own game keeps the move they played", async ({janggi}) => {
@@ -54,12 +54,12 @@ given("a player in a game with a friend, and a game of their own", () => {
 
       when("they switch back to the game with their friend", () => {
         beforeEach(async ({janggi}) => {
-          await expect.poll(() => janggi.settings.games.isYourMoveWaiting()).toBe(true);
-          await janggi.settings.games.switchTo("friend");
+          await expect.poll(() => janggi.settings.play.games.isYourMoveWaiting()).toBe(true);
+          await janggi.settings.play.games.switchTo("friend");
         });
 
         then("the board shows the move their friend made while they were away", async ({janggi}) => {
-          expect(await janggi.settings.games.getShown()).toBe("friend");
+          expect(await janggi.settings.play.games.getShown()).toBe("friend");
           expect(await janggi.board.getPieceAt(1, 6)).toEqual({side: "cho", type: "soldier"});
           expect(await janggi.board.getPieceAt(3, 6)).toBeUndefined();
         });

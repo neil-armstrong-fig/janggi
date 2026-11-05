@@ -21,15 +21,15 @@ given("motion is left on", () => {
     });
 
     then("the soldier is shown travelling between the two points", async ({janggi}) => {
-      expect(await janggi.board.isShowingAPieceInFlight()).toBe(true);
+      expect(await janggi.board.motion.isShowingAPieceInFlight()).toBe(true);
     });
 
     then("the soldier is fully shown on the point it moved to once it has arrived", async ({janggi}) => {
-      expect(await janggi.board.isPieceFullyShownAt(1, 6)).toBe(true);
+      expect(await janggi.board.motion.isPieceFullyShownAt(1, 6)).toBe(true);
     });
 
     then("nothing is left drawn over the board once it has arrived", async ({janggi}) => {
-      expect(await janggi.board.isClearOfMotion()).toBe(true);
+      expect(await janggi.board.motion.isClearOfMotion()).toBe(true);
     });
   });
 
@@ -46,37 +46,37 @@ given("motion is left on", () => {
     });
 
     then("the capture is shown landing", async ({janggi}) => {
-      expect(await janggi.board.isShowingAnImpact()).toBe(true);
+      expect(await janggi.board.motion.isShowingAnImpact()).toBe(true);
     });
 
     then("the board is shaken by it", async ({janggi}) => {
-      expect(await janggi.board.isBeingShaken()).toBe(true);
+      expect(await janggi.board.motion.isBeingShaken()).toBe(true);
     });
 
     then("the taking soldier is fully shown on the point it took", async ({janggi}) => {
-      expect(await janggi.board.isPieceFullyShownAt(1, 6)).toBe(true);
+      expect(await janggi.board.motion.isPieceFullyShownAt(1, 6)).toBe(true);
     });
 
     then("nothing is left drawn over the board once the capture has landed", async ({janggi}) => {
-      expect(await janggi.board.isClearOfMotion()).toBe(true);
+      expect(await janggi.board.motion.isClearOfMotion()).toBe(true);
     });
 
     then("the board comes back to rest after being shaken", async ({janggi}) => {
-      expect(await janggi.board.isAtRest()).toBe(true);
+      expect(await janggi.board.motion.isAtRest()).toBe(true);
     });
 
     when("the capture is taken back", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.undo();
+        await janggi.status.controls.undo();
       });
 
       then("both soldiers are fully shown where they stood before it", async ({janggi}) => {
-        expect(await janggi.board.isPieceFullyShownAt(1, 5)).toBe(true);
-        expect(await janggi.board.isPieceFullyShownAt(1, 6)).toBe(true);
+        expect(await janggi.board.motion.isPieceFullyShownAt(1, 5)).toBe(true);
+        expect(await janggi.board.motion.isPieceFullyShownAt(1, 6)).toBe(true);
       });
 
       then("nothing is left drawn over the board", async ({janggi}) => {
-        expect(await janggi.board.isClearOfMotion()).toBe(true);
+        expect(await janggi.board.motion.isClearOfMotion()).toBe(true);
       });
     });
   });

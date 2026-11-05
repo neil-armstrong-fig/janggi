@@ -11,12 +11,12 @@ given("a player opens the web game on a phone", () => {
     });
 
     then("Settings offers to install the app", async ({janggi}) => {
-      expect(await janggi.settings.install.isShown()).toBe(true);
+      expect(await janggi.settings.you.install.isShown()).toBe(true);
     });
 
     when("they choose to install it from Settings", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.install.choose();
+        await janggi.settings.you.install.choose();
       });
 
       then("the browser's installation process starts", async ({janggi}) => {
@@ -27,7 +27,7 @@ given("a player opens the web game on a phone", () => {
 
   when("the browser does not offer installation", () => {
     then("Settings has no installation action", async ({janggi}) => {
-      expect(await janggi.settings.install.isShown()).toBe(false);
+      expect(await janggi.settings.you.install.isShown()).toBe(false);
     });
   });
 });
@@ -40,7 +40,7 @@ given("a player opens the web game on a wider screen", () => {
 
   when("they view Settings", () => {
     then("the phone installation action stays out of the way", async ({janggi}) => {
-      expect(await janggi.settings.install.isShown()).toBe(false);
+      expect(await janggi.settings.you.install.isShown()).toBe(false);
     });
   });
 });

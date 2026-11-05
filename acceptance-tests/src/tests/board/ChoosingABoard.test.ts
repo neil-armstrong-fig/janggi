@@ -9,11 +9,11 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a user is choosing a board", () => {
   when("a different board is chosen", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.board.setTo("Neon");
+      await janggi.settings.look.board.setTo("Neon");
     });
 
     then("it is the one now in use", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelected()).toBe("Neon");
+      expect(await janggi.settings.look.board.getSelected()).toBe("Neon");
     });
 
     then("every piece is left standing where it was", async ({janggi}) => {
@@ -27,8 +27,8 @@ given("a user is choosing a board", () => {
    * afterwards is what the criterion is about. */
   when("the board is changed after a piece set was chosen", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.pieceSet.setTo("Hangul");
-      await janggi.settings.board.setTo("Neon");
+      await janggi.settings.look.pieceSet.setTo("Hangul");
+      await janggi.settings.look.board.setTo("Neon");
     });
 
     then("the pieces are still wearing the set that was chosen", async ({janggi}) => {
@@ -38,12 +38,12 @@ given("a user is choosing a board", () => {
 
   when("the board is changed back", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.board.setTo("Neon");
-      await janggi.settings.board.setTo("Classic");
+      await janggi.settings.look.board.setTo("Neon");
+      await janggi.settings.look.board.setTo("Classic");
     });
 
     then("the original is in use again", async ({janggi}) => {
-      expect(await janggi.settings.board.getSelected()).toBe("Classic");
+      expect(await janggi.settings.look.board.getSelected()).toBe("Classic");
       expect(await janggi.board.getPieceCount()).toBe(32);
     });
   });

@@ -52,7 +52,7 @@ given("cho has advanced a soldier", () => {
 
   when("han rests its turn instead", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.pass();
+      await janggi.status.controls.pass();
     });
 
     then("cho's move is no longer marked, the last turn having moved nothing", async ({janggi}) => {
@@ -63,7 +63,7 @@ given("cho has advanced a soldier", () => {
 
   when("the move is taken back", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.undo();
+      await janggi.status.controls.undo();
     });
 
     then("nothing is marked, there being no move before it", async ({janggi}) => {

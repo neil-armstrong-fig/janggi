@@ -239,7 +239,7 @@ given("a player who is on the tour's account step", () => {
 
   when("they sign in and go on", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.account.signInWithGoogle();
+      await janggi.settings.you.account.signInWithGoogle();
       await janggi.onboarding.nextTourStep();
     });
 

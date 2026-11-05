@@ -20,7 +20,7 @@ locators). `src/tests/AGENTS.md` covers writing and organising specs (`given`/`w
 The DSL, and nothing else — no `page`, `context`, `browser` or `testInfo`. **`@janggi/shared` is the
 exception, and is meant to be used**: it holds the janggi vocabulary, so an assertion naming a piece
 type or a setting is checked against the same union the app is. `{side: "cho", type: "bishop"}` and
-`janggi.settings.pieceSet.setTo("Hanguul")` are both compile errors. Enforced three ways: the argument
+`janggi.settings.look.pieceSet.setTo("Hanguul")` are both compile errors. Enforced three ways: the argument
 type, `withDslOnly` rebuilding the argument object at runtime, and a lint rule banning both Playwright
 and `@src/dsl/**` under `src/tests/`.
 
@@ -33,7 +33,7 @@ Assertions use the shared vocabulary from `@janggi/shared/janggi/`, never string
 
 ```ts
 expect(await janggi.board.getPieceAt(5, 9)).toEqual({side: "cho", type: "general"});
-await janggi.settings.pieceSet.setTo("Hangul");
+await janggi.settings.look.pieceSet.setTo("Hangul");
 ```
 
 `getPieceAt` parses the webapp's `data-piece` attribute back into a `Piece`, and every settings method

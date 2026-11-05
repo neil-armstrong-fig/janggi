@@ -3,7 +3,7 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("two people playing on the clock", () => {
   beforeEach(async ({janggi}) => {
     await janggi.takeHoldOfTime();
-    await janggi.settings.clock.setTo("5 min");
+    await janggi.settings.play.clock.setTo("5 min");
   });
 
   when("the page is reloaded before anyone has moved", () => {
@@ -12,7 +12,7 @@ given("two people playing on the clock", () => {
     });
 
     then("there is nothing to resume", async ({janggi}) => {
-      await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 300, periods: 3});
+      await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 300, periods: 3});
       expect(await janggi.resumeGame.isShown()).toBe(false);
     });
   });
@@ -71,7 +71,7 @@ given("two people playing on the clock", () => {
           });
 
           then("han's clock runs on from where it was held", async ({janggi}) => {
-            await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 250, periods: 3});
+            await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 250, periods: 3});
           });
         });
 
@@ -84,8 +84,8 @@ given("two people playing on the clock", () => {
           });
 
           then("han's turn was charged and cho's clock is running", async ({janggi}) => {
-            await expect.poll(() => janggi.status.getClock("han")).toEqual({seconds: 250, periods: 3});
-            await expect.poll(() => janggi.status.getClock("cho")).toEqual({seconds: 270, periods: 3});
+            await expect.poll(() => janggi.status.plaque.clock.getClock("han")).toEqual({seconds: 250, periods: 3});
+            await expect.poll(() => janggi.status.plaque.clock.getClock("cho")).toEqual({seconds: 270, periods: 3});
           });
         });
 
@@ -105,7 +105,7 @@ given("two people playing on the clock", () => {
 
     when("the board is set to flip for han and the page is reloaded", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.flipBoard.setTo(true);
+        await janggi.settings.play.flipBoard.setTo(true);
         await janggi.reload();
       });
 

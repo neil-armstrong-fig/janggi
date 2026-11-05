@@ -11,7 +11,7 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a player is looking at the board", () => {
   when("nothing has been chosen yet", () => {
     then("the pieces that can move are marked, that being the default", async ({janggi}) => {
-      expect(await janggi.settings.movableHighlight.getSelected()).toBe("Shown");
+      expect(await janggi.settings.look.movableHighlight.getSelected()).toBe("Shown");
     });
 
     then("cho's pieces are marked, cho being the one to move", async ({janggi}) => {
@@ -31,7 +31,7 @@ given("a player is looking at the board", () => {
 
   when("the highlight is turned off", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.movableHighlight.setTo("Hidden");
+      await janggi.settings.look.movableHighlight.setTo("Hidden");
     });
 
     then("nothing is marked any more", async ({janggi}) => {
@@ -41,11 +41,11 @@ given("a player is looking at the board", () => {
 
     when("it is turned back on", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.movableHighlight.setTo("Shown");
+        await janggi.settings.look.movableHighlight.setTo("Shown");
       });
 
       then("the marks come back", async ({janggi}) => {
-        expect(await janggi.settings.movableHighlight.getSelected()).toBe("Shown");
+        expect(await janggi.settings.look.movableHighlight.getSelected()).toBe("Shown");
         expect(await janggi.board.canBeMoved(1, 10)).toBe(true);
       });
     });

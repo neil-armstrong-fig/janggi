@@ -11,43 +11,43 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a game is being played", () => {
   when("nothing has decided it", () => {
     then("no result is announced", async ({janggi}) => {
-      expect(await janggi.status.isResultAnnounced()).toBe(false);
+      expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(false);
     });
   });
 
   when("both players rest a turn, one after the other", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.status.pass();
-      await janggi.status.pass();
+      await janggi.status.controls.pass();
+      await janggi.status.controls.pass();
     });
 
     then("the result is announced over the board", async ({janggi}) => {
-      expect(await janggi.status.isResultAnnounced()).toBe(true);
+      expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(true);
     });
 
     when("the second rested turn is taken back", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.undo();
+        await janggi.status.controls.undo();
       });
 
       then("the announcement is withdrawn, the game going on", async ({janggi}) => {
-        expect(await janggi.status.isResultAnnounced()).toBe(false);
+        expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(false);
       });
     });
 
     when("a new game is started from the announcement", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.startNewGame();
+        await janggi.status.overlay.resultBanner.startNewGame();
       });
 
       then("the announcement is gone", async ({janggi}) => {
-        expect(await janggi.status.isResultAnnounced()).toBe(false);
+        expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(false);
       });
 
       then("a fresh game is dealt, with cho to move and nothing to take back", async ({janggi}) => {
         expect(await janggi.status.getTurn()).toBe("cho");
         expect(await janggi.status.getWinner()).toBeUndefined();
-        expect(await janggi.status.canUndo()).toBe(false);
+        expect(await janggi.status.controls.canUndo()).toBe(false);
       });
     });
   });

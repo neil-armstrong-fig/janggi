@@ -10,16 +10,16 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a user opens the game", () => {
   then("the countdown is on", async ({janggi}) => {
-    expect(await janggi.settings.countdown.isOn()).toBe(true);
+    expect(await janggi.settings.sound.countdown.isOn()).toBe(true);
   });
 
   when("the countdown is turned off", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.countdown.setTo(false);
+      await janggi.settings.sound.countdown.setTo(false);
     });
 
     then("it is off", async ({janggi}) => {
-      expect(await janggi.settings.countdown.isOn()).toBe(false);
+      expect(await janggi.settings.sound.countdown.isOn()).toBe(false);
     });
 
     when("the page is reloaded", () => {
@@ -28,17 +28,17 @@ given("a user opens the game", () => {
       });
 
       then("it is still off", async ({janggi}) => {
-        expect(await janggi.settings.countdown.isOn()).toBe(false);
+        expect(await janggi.settings.sound.countdown.isOn()).toBe(false);
       });
     });
 
     when("it is turned back on", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.settings.countdown.setTo(true);
+        await janggi.settings.sound.countdown.setTo(true);
       });
 
       then("it is on", async ({janggi}) => {
-        expect(await janggi.settings.countdown.isOn()).toBe(true);
+        expect(await janggi.settings.sound.countdown.isOn()).toBe(true);
       });
     });
   });

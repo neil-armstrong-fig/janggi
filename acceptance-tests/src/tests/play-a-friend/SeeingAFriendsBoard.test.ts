@@ -22,27 +22,27 @@ given("a player, and a friend who wears a board and a set of pieces of their own
   beforeEach(async ({janggi}) => {
     friend = await janggi.openSeparateDevice();
 
-    await janggi.settings.board.setTo("Classic");
-    await janggi.settings.pieceSet.setTo("Hangul");
-    await friend.settings.board.setTo("Neon");
-    await friend.settings.pieceSet.setTo("Hanja");
+    await janggi.settings.look.board.setTo("Classic");
+    await janggi.settings.look.pieceSet.setTo("Hangul");
+    await friend.settings.look.board.setTo("Neon");
+    await friend.settings.look.pieceSet.setTo("Hanja");
 
     hostsOwnSurface = await janggi.board.getSurfaceAt(1);
     hostsOwnGeneral = await janggi.board.getCharacterAt(5, 2);
     friendsOwnSurface = await friend.board.getSurfaceAt(1);
     friendsOwnGeneral = await friend.board.getCharacterAt(5, 9);
 
-    await friend.settings.board.setTo("Diagram");
+    await friend.settings.look.board.setTo("Diagram");
     diagramSurface = await friend.board.getSurfaceAt(1);
-    await friend.settings.board.setTo("Neon");
+    await friend.settings.look.board.setTo("Neon");
 
-    await janggi.settings.account.signInWithGoogle();
-    await friend.settings.account.signInWithGoogleAsAnotherPlayer();
+    await janggi.settings.you.account.signInWithGoogle();
+    await friend.settings.you.account.signInWithGoogleAsAnotherPlayer();
   });
 
   when("they are playing only on this device", () => {
     then("the setting for an online opponent's look is not shown", async ({janggi}) => {
-      expect(await janggi.settings.opponentLook.isShown()).toBe(false);
+      expect(await janggi.settings.look.opponentLook.isShown()).toBe(false);
     });
   });
 
@@ -52,11 +52,11 @@ given("a player, and a friend who wears a board and a set of pieces of their own
     });
 
     then("the online opponent's look can be chosen", async ({janggi}) => {
-      expect(await janggi.settings.opponentLook.isShown()).toBe(true);
+      expect(await janggi.settings.look.opponentLook.isShown()).toBe(true);
     });
 
     then("the setting says it affects online PvP only", async ({janggi}) => {
-      expect(await janggi.settings.opponentLook.getExplanation()).toContain("Online PvP only");
+      expect(await janggi.settings.look.opponentLook.getExplanation()).toContain("Online PvP only");
     });
 
     then("their friend's half of the board is drawn as their friend's board is", async ({janggi}) => {
@@ -80,7 +80,7 @@ given("a player, and a friend who wears a board and a set of pieces of their own
   when("their friend changes their board half way through the game", () => {
     beforeEach(async ({janggi}) => {
       await playTogether(janggi, friend);
-      await friend.settings.board.setTo("Diagram");
+      await friend.settings.look.board.setTo("Diagram");
     });
 
     then("their friend's half of the board follows to the board their friend chose", async ({janggi}) => {
@@ -91,7 +91,7 @@ given("a player, and a friend who wears a board and a set of pieces of their own
   when("they have turned showing the opponent's board and pieces off, and the two play", () => {
     beforeEach(async ({janggi}) => {
       await playTogether(janggi, friend);
-      await janggi.settings.opponentLook.setTo(false);
+      await janggi.settings.look.opponentLook.setTo(false);
     });
 
     then("both halves of the board stay as they have it", async ({janggi}) => {

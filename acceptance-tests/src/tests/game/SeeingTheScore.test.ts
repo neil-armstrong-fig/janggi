@@ -7,8 +7,8 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a game has just begun", () => {
   when("nothing has been taken", () => {
     then("both armies are worth the seventy-two points they were dealt, and han its 덤", async ({janggi}) => {
-      expect(await janggi.status.getScore("cho")).toBe(72);
-      expect(await janggi.status.getScore("han")).toBe(73.5);
+      expect(await janggi.status.plaque.getScore("cho")).toBe(72);
+      expect(await janggi.status.plaque.getScore("han")).toBe(73.5);
     });
   });
 });
@@ -30,8 +30,8 @@ given("the two soldiers on file 1 have advanced into contact", () => {
     });
 
     then("cho is down the two points a soldier is worth, and han is untouched", async ({janggi}) => {
-      expect(await janggi.status.getScore("cho")).toBe(70);
-      expect(await janggi.status.getScore("han")).toBe(73.5);
+      expect(await janggi.status.plaque.getScore("cho")).toBe(70);
+      expect(await janggi.status.plaque.getScore("han")).toBe(73.5);
     });
   });
 });

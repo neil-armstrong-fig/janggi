@@ -7,17 +7,17 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player who reads the game in Korean", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.language.setTo("ko");
+    await janggi.settings.you.language.setTo("ko");
     await janggi.languageNotice.dismissIt();
   });
 
   when("they ask what the match formats mean", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.matchFormat.toggleExplanation();
+      await janggi.settings.play.matchFormat.toggleExplanation();
     });
 
     then("the answer is in Korean", async ({janggi}) => {
-      const words = await janggi.settings.matchFormat.getExplanationWords();
+      const words = await janggi.settings.play.matchFormat.getExplanationWords();
 
       expect(words).toContain("대한장기협회의 대회 방식입니다");
       expect(words).not.toContain("tournament game");
@@ -34,15 +34,15 @@ given("a player who reads the game in Korean", () => {
     beforeEach(async ({janggi}) => {
       await janggi.resizeWindowTo(1024, 900);
       await janggi.debug.setProgress({xp: 0, beaten: {}});
-      await janggi.settings.opponent.setTo("Bot");
+      await janggi.settings.play.opponent.setTo("Bot");
     });
 
     then("the settings name the next unlock in Korean, keeping the style's own name", async ({janggi}) => {
-      expect(await janggi.settings.progress.getNextUnlockWords()).toBe("다음 해금, 30 XP: Hanja 말");
+      expect(await janggi.settings.you.progress.getNextUnlockWords()).toBe("다음 해금, 30 XP: Hanja 말");
     });
 
     then("the plaque says the same in Korean", async ({janggi}) => {
-      await expect.poll(() => janggi.status.getNextUnlock("cho")).toBe("(다음 해금: 30 XP, Hanja 말)");
+      await expect.poll(() => janggi.status.plaque.getNextUnlock("cho")).toBe("(다음 해금: 30 XP, Hanja 말)");
     });
   });
 });

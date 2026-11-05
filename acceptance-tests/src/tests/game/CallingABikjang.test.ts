@@ -19,7 +19,7 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
 
   when("the game is being played casually", () => {
     then("cho may call the bikjang", async ({janggi}) => {
-      expect(await janggi.status.canCallBikjang()).toBe(true);
+      expect(await janggi.status.controls.canCallBikjang()).toBe(true);
     });
 
     then("nobody has won and the game is not drawn yet", async ({janggi}) => {
@@ -29,7 +29,7 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
 
     when("cho calls it", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.callBikjang();
+        await janggi.status.controls.callBikjang();
       });
 
       then("the game is drawn", async ({janggi}) => {
@@ -39,7 +39,7 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
       then(
         "the announcement explains the bikjang, which chess has no such thing as, naming cho as its caller",
         async ({janggi}) => {
-          expect(await janggi.status.getBikjangCaller()).toBe("cho");
+          expect(await janggi.status.overlay.resultBanner.getBikjangCaller()).toBe("cho");
         },
       );
 
@@ -52,8 +52,8 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
       });
 
       then("neither army may rest a turn or call again", async ({janggi}) => {
-        expect(await janggi.status.canPass()).toBe(false);
-        expect(await janggi.status.canCallBikjang()).toBe(false);
+        expect(await janggi.status.controls.canPass()).toBe(false);
+        expect(await janggi.status.controls.canCallBikjang()).toBe(false);
       });
 
       when("a player reaches for a piece anyway", () => {
@@ -69,7 +69,7 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
 
       when("the call is taken back", () => {
         beforeEach(async ({janggi}) => {
-          await janggi.status.undo();
+          await janggi.status.controls.undo();
         });
 
         then("the game is being played again", async ({janggi}) => {
@@ -78,7 +78,7 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
         });
 
         then("the bikjang is still there to be called", async ({janggi}) => {
-          expect(await janggi.status.canCallBikjang()).toBe(true);
+          expect(await janggi.status.controls.canCallBikjang()).toBe(true);
         });
       });
     });
@@ -90,7 +90,7 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
       });
 
       then("there is no longer a bikjang to call", async ({janggi}) => {
-        expect(await janggi.status.canCallBikjang()).toBe(false);
+        expect(await janggi.status.controls.canCallBikjang()).toBe(false);
       });
     });
   });
@@ -104,11 +104,11 @@ given("the two soldiers on file 5 have stepped aside, leaving the generals facin
  */
 given("a scored game has reached the same position", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.matchFormat.setTo("Scored");
+    await janggi.settings.play.matchFormat.setTo("Scored");
     // A scored game is laid out before it is played — han first, then cho. Until both have, the
     // board answers nothing, and the criteria below would pass for the wrong reason.
-    await janggi.settings.hanSetup.setTo("Inner Elephant");
-    await janggi.settings.choSetup.setTo("Inner Elephant");
+    await janggi.settings.play.hanSetup.setTo("Inner Elephant");
+    await janggi.settings.play.choSetup.setTo("Inner Elephant");
     await janggi.board.tap(5, 7);
     await janggi.board.tap(4, 7);
     await janggi.board.tap(5, 4);
@@ -117,7 +117,7 @@ given("a scored game has reached the same position", () => {
 
   when("both armies are still whole", () => {
     then("the generals are facing, and the call is refused all the same", async ({janggi}) => {
-      expect(await janggi.status.canCallBikjang()).toBe(false);
+      expect(await janggi.status.controls.canCallBikjang()).toBe(false);
     });
 
     then("the game carries on", async ({janggi}) => {
@@ -135,21 +135,21 @@ given("a scored game has reached the same position", () => {
 given("a game is about to start", () => {
   when("nothing has been played yet", () => {
     then("the format is casual, which is the game played online", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.getSelected()).toBe("Casual");
+      expect(await janggi.settings.play.matchFormat.getSelected()).toBe("Casual");
     });
 
     then("the format may still be chosen", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.isChoosable()).toBe(true);
+      expect(await janggi.settings.play.matchFormat.isChoosable()).toBe(true);
     });
   });
 
   when("the format is changed", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.matchFormat.setTo("Scored");
+      await janggi.settings.play.matchFormat.setTo("Scored");
     });
 
     then("the scored game is the one being played", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.getSelected()).toBe("Scored");
+      expect(await janggi.settings.play.matchFormat.getSelected()).toBe("Scored");
     });
 
     then("the board is dealt afresh, a format being no more changeable mid-game than a back rank", async ({janggi}) => {
@@ -165,16 +165,16 @@ given("a game is about to start", () => {
     });
 
     then("the format may no longer be chosen", async ({janggi}) => {
-      expect(await janggi.settings.matchFormat.isChoosable()).toBe(false);
+      expect(await janggi.settings.play.matchFormat.isChoosable()).toBe(false);
     });
 
     when("the move is taken back", () => {
       beforeEach(async ({janggi}) => {
-        await janggi.status.undo();
+        await janggi.status.controls.undo();
       });
 
       then("the format may be chosen again", async ({janggi}) => {
-        expect(await janggi.settings.matchFormat.isChoosable()).toBe(true);
+        expect(await janggi.settings.play.matchFormat.isChoosable()).toBe(true);
       });
     });
   });

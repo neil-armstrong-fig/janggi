@@ -12,7 +12,7 @@ const CLASSIC_INK = "rgb(74, 49, 22)";
 
 given("a player with the XP to make a style", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
   });
 
   when("they start a board from the classic one", () => {
@@ -95,7 +95,7 @@ given("a player with the XP to make a style", () => {
           await janggi.board.tap(4, 7);
           await janggi.board.tap(5, 4);
           await janggi.board.tap(4, 4);
-          await janggi.status.callBikjang();
+          await janggi.status.controls.callBikjang();
         });
 
         then("the line between them is drawn in it", async ({janggi}) => {
@@ -252,7 +252,7 @@ given("a player with the XP to make a style", () => {
       });
 
       then("the game's pieces are wearing it", async ({janggi}) => {
-        expect(await janggi.settings.pieceSet.getSelectedName()).toBe("Small pieces");
+        expect(await janggi.settings.look.pieceSet.getSelectedName()).toBe("Small pieces");
       });
     });
   });
@@ -260,7 +260,7 @@ given("a player with the XP to make a style", () => {
 
 given("a player with the XP to make a style, and the hanja set to start from", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
     await janggi.stylesSheet.styleStarter.start("Pieces", "Hanja");
   });
 
@@ -312,7 +312,7 @@ given("a player with the XP to make a style, and the hanja set to start from", (
 
 given("a player with the XP to make a style, and a board to start from", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
     await janggi.stylesSheet.styleStarter.start("Board", "Classic");
   });
 
@@ -333,7 +333,7 @@ given("a player with the XP to make a style, and a board to start from", () => {
 
 given("a player who has made a board of their own", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
     await janggi.stylesSheet.makeStyle("Board", "Classic", "Mine");
     await janggi.stylesSheet.styleStarter.start("Board", "Mine");
   });
@@ -357,10 +357,10 @@ given("a player who has made a board of their own", () => {
 
 given("a player who dresses han in hanja and cho in hangul, making a board", () => {
   beforeEach(async ({janggi}) => {
-    await janggi.settings.progress.loadSave(saveKeyWith({xp: 300}));
-    await janggi.settings.pieceSet.setTo("Hangul");
-    await janggi.settings.pieceSet.toggleChoosingApart();
-    await janggi.settings.pieceSet.chooseForArmy("han", "Hanja");
+    await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.look.pieceSet.setTo("Hangul");
+    await janggi.settings.look.pieceSet.toggleChoosingApart();
+    await janggi.settings.look.pieceSet.chooseForArmy("han", "Hanja");
     await janggi.stylesSheet.styleStarter.start("Board", "Classic");
   });
 

@@ -12,12 +12,12 @@ given("a game is under way", () => {
   });
 
   then("the setups can no longer be chosen", async ({janggi}) => {
-    expect(await janggi.settings.canChooseSetups()).toBe(false);
+    expect(await janggi.settings.play.canChooseSetups()).toBe(false);
   });
 
   when("a new game is started", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.startNewGame();
+      await janggi.settings.play.startNewGame();
     });
 
     then("the pieces are back where they began", async ({janggi}) => {
@@ -31,19 +31,19 @@ given("a game is under way", () => {
     });
 
     then("the setups can be chosen again", async ({janggi}) => {
-      expect(await janggi.settings.canChooseSetups()).toBe(true);
+      expect(await janggi.settings.play.canChooseSetups()).toBe(true);
     });
   });
 });
 
 given("no move has been played yet", () => {
   then("the setups can be chosen", async ({janggi}) => {
-    expect(await janggi.settings.canChooseSetups()).toBe(true);
+    expect(await janggi.settings.play.canChooseSetups()).toBe(true);
   });
 
   when("an arrangement is chosen", () => {
     beforeEach(async ({janggi}) => {
-      await janggi.settings.setBothSetupsTo("Outer Elephant");
+      await janggi.settings.play.setBothSetupsTo("Outer Elephant");
     });
 
     then("the board is dealt again from it", async ({janggi}) => {
