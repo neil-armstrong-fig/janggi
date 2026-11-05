@@ -24,6 +24,7 @@
     "acceptance-tests": "pnpm --filter @janggi/acceptance-tests acceptance-tests",
     "acceptance-tests:bot-games": "pnpm --filter @janggi/acceptance-tests acceptance-tests:bot-games",
     "acceptance-tests:pwa": "pnpm --filter @janggi/acceptance-tests acceptance-tests:pwa",
+    "acceptance-tests:unreleased": "pnpm --filter @janggi/acceptance-tests acceptance-tests:unreleased",
     "acceptance-tests:local": "pnpm --filter @janggi/acceptance-tests acceptance-tests:local",
     "acceptance-tests:production": "pnpm --filter @janggi/acceptance-tests acceptance-tests:production",
     "acceptance-tests:headed": "pnpm --filter @janggi/acceptance-tests acceptance-tests:headed",

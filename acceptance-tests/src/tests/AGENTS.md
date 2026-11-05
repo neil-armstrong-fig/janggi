@@ -104,6 +104,11 @@ deploy, but need the production service worker that the Vite development server 
 The default projects ignore `PWA_SPECS`; `playwright.pwa.config.ts` (`pnpm acceptance-tests:pwa`) runs
 them against a compiled build in CI and against GitHub Pages after deployment.
 
+**The specs for work not yet in production are in `src/tests/unreleased/`,** because a production build, which the
+default projects also run against on the live site, does not contain it. The default projects ignore `UNRELEASED_SPECS`;
+`playwright.unreleased.config.ts` runs them. When a feature is released, its specs move out to their subject's folder
+(`webapp/AGENTS.md` has the rest).
+
 ## Returning players, and the onboarding specs
 
 **Every spec starts as a returning player.** A first visit is greeted by a welcome that stands over the

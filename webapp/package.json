@@ -8,6 +8,7 @@
     "start:preview": "pnpm compile && vite preview",
     "build": "pnpm checks && pnpm compile",
     "compile": "tsc --noEmit && vite build",
+    "check:unreleased": "node scripts/check-unreleased.mjs",
     "generate-icon": "node scripts/generate-icon.mjs",
     "preview": "vite preview",
     "checks": "pnpm lint && pnpm format:check && pnpm type-check && pnpm test",

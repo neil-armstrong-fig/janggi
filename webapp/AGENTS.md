@@ -50,6 +50,14 @@ reintroduce it.
 
 ## Conventions
 
+- **Work not yet in production goes behind `UNRELEASED`** (`src/unreleased/Unreleased.ts`): `{UNRELEASED && <Thing />}`,
+  with a static import, which the build removes. It is on under `pnpm start` and in a build compiled with
+  `VITE_UNRELEASED=true`, and off in anything deployed. Wear at least one test id beginning `unreleased-` per gated
+  feature, because that is what `pnpm --filter @janggi/webapp check:unreleased` looks for in `build/`; CI runs it before a deploy.
+  Its words stay inline in English until release, and its specs go in `acceptance-tests/src/tests/unreleased/`. To
+  release a feature: delete its check, move its words to `Messages` with their Korean, rename its test ids, and move its
+  specs out of `unreleased/`. This only gates the site: the API deploys from `main` by itself, so a real endpoint for
+  unreleased work needs a gate of its own.
 - `BASE_PATH` sets where the app is served from (`/` locally and on the custom domain) and drives
   the PWA manifest's `start_url`/`scope`. Do not hardcode absolute asset paths.
 - Tailwind v4 has no config file — use utilities in JSX. Colour tokens live in the `@theme` block in

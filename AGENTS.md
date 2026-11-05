@@ -42,6 +42,7 @@ pnpm start               # dev server on http://localhost:3000 — fine for a fe
 pnpm start:preview       # compile, then serve the build on http://localhost:3000 — what CI tests
 pnpm acceptance-tests    # needs one of the two running in another terminal; preview for the whole suite
 pnpm acceptance-tests:pwa # release updates; needs `pnpm start:preview` running
+pnpm acceptance-tests:unreleased # work not yet in production; needs `pnpm start` running
 pnpm install-browsers    # one-time Playwright chromium download
 pnpm api:dev             # the API Worker locally (`wrangler dev`, port 8787); see `api/AGENTS.md`
 pnpm test:properties     # the property tests, which `pnpm checks` leaves out
@@ -268,7 +269,10 @@ deploys `main` to GitHub Pages, gated on both. It also deploys the API with Alch
 on the same two, and does nothing until the `CLOUDFLARE_API_TOKEN` secret exists. `property-tests.yml` and `bot-games.yml` run on every
 push/PR and on demand, and go **red on failure but gate nothing** — a fresh seed / a non-deterministic
 real engine means a failure isn't reproducible from the same commit. **If branch protection is ever
-turned on, leave both out of required checks**, or they become a gate by the back door.
+turned on, leave both out of required checks**, or they become a gate by the back door. The same goes for
+`ci.yml`'s `unreleased` job, which runs the specs for work not yet in production (`webapp/AGENTS.md`) and gates
+nothing, so half-built work never holds up a release. Its other half does gate: `check:unreleased` stops a deploy
+whose build contains that work.
 
 Pages serves
 the site from the root of its custom domain, `janggi.neilarmstrong.dev` (set in the repo's Pages

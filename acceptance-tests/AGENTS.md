@@ -81,6 +81,7 @@ pnpm start:preview                  # terminal 1, instead — compile, then serv
 pnpm acceptance-tests               # terminal 2 — desktop + mobile projects
 pnpm acceptance-tests --project=mobile
 pnpm acceptance-tests:bot-games     # the whole game against the bot, which the line above leaves out
+pnpm acceptance-tests:unreleased    # work not yet in production, also left out; on `pnpm start`, or a build with VITE_UNRELEASED=true
 pnpm acceptance-tests:headed        # watch it drive
 pnpm acceptance-tests:ui            # time-travel debugging
 ```

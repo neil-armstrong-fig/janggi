@@ -4,12 +4,14 @@ import {BotSettings} from "@src/react/pages/game/components/settings/tabs/play-p
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/tabs/play-pane/components/elephant-pairing-line/ElephantPairingLine";
 import {FlipBoardSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/flip-board-setting/FlipBoardSetting";
 import {GamesSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/games-setting/GamesSetting";
+import {InDevelopment} from "@src/react/pages/game/components/settings/tabs/play-pane/components/in-development/InDevelopment";
 import {MatchFormatSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/match-format-setting/MatchFormatSetting";
 import {NewGameButton} from "@src/react/pages/game/components/settings/tabs/play-pane/components/new-game-button/NewGameButton";
 import {OpponentSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-setting/OpponentSetting";
 import {RecordButton} from "@src/react/pages/game/components/settings/tabs/play-pane/components/record-button/RecordButton";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
 import {SetupSettings} from "@src/react/pages/game/components/settings/tabs/play-pane/components/setup-settings/SetupSettings";
+import {UNRELEASED} from "@src/unreleased/Unreleased";
 
 /**
  * The Play tab: what a player opens the sheet for before a game — the format, who the opponent is,
@@ -57,6 +59,8 @@ export function PlayPane({selected}: Props): React.JSX.Element {
       <SetupSettings />
 
       <ElephantPairingLine />
+
+      {UNRELEASED && <InDevelopment />}
     </SettingsPane>
   );
 }

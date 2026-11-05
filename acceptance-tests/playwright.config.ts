@@ -30,6 +30,12 @@ export const BOT_GAME_SPECS = "**/bot/PlayingTheBotToTheEnd.test.ts";
  */
 export const PWA_SPECS = "**/pwa/**";
 
+/**
+ * The work not yet in production, which a production build does not contain. `playwright.unreleased.config.ts`
+ * runs these against a build that has it.
+ */
+export const UNRELEASED_SPECS = "**/unreleased/**";
+
 export default defineConfig<AcceptanceTestOptions>({
   testDir: "./src/tests",
   outputDir: "./test-results",
@@ -54,13 +60,13 @@ export default defineConfig<AcceptanceTestOptions>({
   projects: [
     {
       name: "desktop",
-      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS, PWA_SPECS],
+      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS, PWA_SPECS, UNRELEASED_SPECS],
       use: {...devices["Desktop Chrome"], reducedMotion: "reduce", effects: "Reduced"},
     },
     // A real touch viewport, so tap targets and layout are covered on every run.
     {
       name: "mobile",
-      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS, PWA_SPECS],
+      testIgnore: [EFFECTS_SPECS, BOT_GAME_SPECS, PWA_SPECS, UNRELEASED_SPECS],
       use: {...devices["Pixel 5"], reducedMotion: "reduce", effects: "Reduced"},
     },
 

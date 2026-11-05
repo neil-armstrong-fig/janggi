@@ -176,6 +176,14 @@ export class SettingsDsl {
     }
   }
 
+  async getFeaturesInDevelopment(): Promise<string[]> {
+    try {
+      return await this.settings.getFeaturesInDevelopment();
+    } catch (error) {
+      throw new DslError("Failed to read what is in development", error);
+    }
+  }
+
   async getAppVersion(): Promise<string> {
     try {
       return await this.settings.getAppVersion();

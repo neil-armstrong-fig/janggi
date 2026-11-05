@@ -4,6 +4,8 @@ Locate by `data-testid` — that attribute is the contract with the webapp. Rena
 webapp and specs break. Listed rather than counted, because a count of them went stale twice while it
 was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
 
+- **`data-testid`, unreleased** — a build with the work not yet in production: `unreleased-in-development` and each
+  `unreleased-feature` in it. The `unreleased-` prefix is what `check:unreleased` looks for in a production build.
 - **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`,
   `guide`, `guide-play`, `guide-install`, `guide-rules-source`, `guide-fairy-stockfish-source`,
   `guide-piece-style-traditional`, `guide-piece-style-hangul`, `guide-piece-style-modern` and

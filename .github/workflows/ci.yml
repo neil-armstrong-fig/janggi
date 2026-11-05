@@ -31,6 +31,53 @@ jobs:
 
       - run: pnpm --filter @janggi/webapp compile
 
+      # Work not yet in production must not be in a production build. Stops the deploy if it is.
+      - run: pnpm --filter @janggi/webapp check:unreleased
+
+  # The work not yet in production, on a build compiled with it. Goes red on failure but nothing `needs` it, so
+  # half-built work never holds up a release. Add it to no required checks.
+  unreleased:
+    name: Acceptance tests (unreleased work)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @janggi/acceptance-tests exec playwright install --with-deps chromium
+
+      - run: pnpm --filter @janggi/webapp compile
+        env:
+          VITE_UNRELEASED: "true"
+
+      - name: Serve the build
+        run: pnpm --filter @janggi/webapp preview &
+
+      - name: Wait for the server
+        run: |
+          for _ in $(seq 1 60); do
+            curl -sf http://localhost:3000 >/dev/null && exit 0
+            sleep 1
+          done
+          echo "The preview server never came up" >&2
+          exit 1
+
+      - run: pnpm acceptance-tests:unreleased
+
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-unreleased
+          path: acceptance-tests/playwright-report/
+          retention-days: 7
+
   acceptance-tests:
     name: Acceptance tests (local)
     runs-on: ubuntu-latest
@@ -126,6 +173,9 @@ jobs:
         run: pnpm --filter @janggi/webapp compile
         env:
           BASE_PATH: /
+
+      # Checked again here because this is the build that ships.
+      - run: pnpm --filter @janggi/webapp check:unreleased
 
       - uses: actions/configure-pages@v6
 

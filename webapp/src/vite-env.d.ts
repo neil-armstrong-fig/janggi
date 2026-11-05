@@ -11,4 +11,6 @@ interface ImportMetaEnv {
   readonly VITE_API_ORIGIN?: string;
   /** The short hash of the commit the build was made from, set by `vite.config.ts`; absent where there is none. */
   readonly VITE_BUILD_ID?: string;
+  /** `"true"` to compile the work not yet in production into a build; `Unreleased.ts` reads it. Never set for a deploy. */
+  readonly VITE_UNRELEASED?: string;
 }
