@@ -1,5 +1,5 @@
-import {parseFriendCode} from "./ParseFriendCode.js";
-import type {FriendCode} from "./FriendCode.js";
+import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
+import type {FriendCode} from "@janggi/shared/janggi/online/friend-code/FriendCode";
 
 /** The query parameter a shared link carries the code in: `https://…/?join=ABCDEFGH`. */
 export const JOIN_QUERY_PARAMETER = "join";

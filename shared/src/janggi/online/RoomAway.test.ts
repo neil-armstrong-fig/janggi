@@ -1,4 +1,4 @@
-import {DEFAULT_ROOM_AWAY_DAYS, ROOM_AWAY_DAYS} from "./RoomAway.js";
+import {DEFAULT_ROOM_AWAY_DAYS, ROOM_AWAY_DAYS} from "@janggi/shared/janggi/online/RoomAway";
 import {expect, it} from "vitest";
 
 it("offers the default among its choices, and in order", () => {

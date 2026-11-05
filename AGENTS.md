@@ -275,8 +275,8 @@ push/PR and on demand, and go **red on failure but gate nothing** — a fresh se
 real engine means a failure isn't reproducible from the same commit. **If branch protection is ever
 turned on, leave both out of required checks**, or they become a gate by the back door. The same goes for
 `ci.yml`'s `unreleased` job, which runs the specs for work not yet in production (`webapp/AGENTS.md`) and gates
-nothing, so half-built work never holds up a release. Its other half does gate: `check:unreleased` stops a deploy
-whose build contains that work.
+nothing, so half-built work never holds up a release. That work ships in the build, hidden unless the address has
+`?IN_DEVELOPMENT=true`.
 
 Pages serves
 the site from the root of its custom domain, `janggi.neilarmstrong.dev` (set in the repo's Pages

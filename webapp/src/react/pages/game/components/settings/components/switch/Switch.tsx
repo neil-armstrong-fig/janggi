@@ -8,18 +8,21 @@ interface Props {
   readonly testId: string;
   readonly label: string;
   readonly on: boolean;
+  /** A switch whose choice is no longer available — a clock, once play has begun. */
+  readonly disabled?: boolean;
   readonly onToggle: () => void;
 }
 
-export function Switch({testId, label, on, onToggle}: Props): React.JSX.Element {
+export function Switch({testId, label, on, disabled = false, onToggle}: Props): React.JSX.Element {
   return (
     <button
       type="button"
       data-testid={testId}
       aria-pressed={on}
+      disabled={disabled}
       onClick={onToggle}
       className={clsx(
-        "flex h-9 cursor-pointer items-center gap-3 self-start rounded-lg px-2 text-xs transition-colors duration-150 motion-reduce:transition-none",
+        "flex h-9 cursor-pointer items-center gap-3 self-start rounded-lg px-2 text-xs transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
         on && "text-wood",
         !on && "text-white/60 hover:bg-white/10",
       )}

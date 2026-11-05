@@ -11,7 +11,6 @@ import {OpponentSetting} from "@src/react/pages/game/components/settings/tabs/pl
 import {RecordButton} from "@src/react/pages/game/components/settings/tabs/play-pane/components/record-button/RecordButton";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
 import {SetupSettings} from "@src/react/pages/game/components/settings/tabs/play-pane/components/setup-settings/SetupSettings";
-import {IN_DEVELOPMENT} from "@src/unreleased/InDevelopment";
 
 /**
  * The Play tab: what a player opens the sheet for before a game — the format, who the opponent is,
@@ -54,7 +53,7 @@ export function PlayPane({selected}: Props): React.JSX.Element {
 
       <FlipBoardSetting />
 
-      {IN_DEVELOPMENT && <ClockSetting />}
+      <ClockSetting />
 
       <BotSettings />
 

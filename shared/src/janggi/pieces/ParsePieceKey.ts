@@ -1,6 +1,6 @@
-import type {Piece} from "./Piece.js";
-import {PIECE_TYPES} from "./PieceType.js";
-import {SIDES} from "./Side.js";
+import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
+import {PIECE_TYPES} from "@janggi/shared/janggi/pieces/PieceType";
+import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 
 /**
  * Reads a piece back out of the key the webapp marked it with. The inverse of `toPieceKey`.

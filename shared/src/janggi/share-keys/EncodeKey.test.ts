@@ -1,5 +1,5 @@
 import {expect, it} from "vitest";
-import {encodeKey} from "./EncodeKey.js";
+import {encodeKey} from "@janggi/shared/janggi/share-keys/EncodeKey";
 
 it("opens with the kind of thing the key carries", () => {
   expect(encodeKey("board", {})).toMatch(/^janggi-board:/);

@@ -1,4 +1,4 @@
-import type {ShareKeyKind} from "./ShareKeyKind.js";
+import type {ShareKeyKind} from "@janggi/shared/janggi/share-keys/ShareKeyKind";
 
 /**
  * A value as a key a player can copy out of the app and paste into another copy of it: the kind of

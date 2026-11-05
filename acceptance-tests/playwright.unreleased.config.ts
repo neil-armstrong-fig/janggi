@@ -3,9 +3,9 @@ import baseConfig, {UNRELEASED_SPECS} from "./playwright.config";
 import {defineConfig, devices} from "@playwright/test";
 
 /**
- * The work not yet in production, which only a build with it switched on can show: the development server, or
- * one compiled with `VITE_UNRELEASED=true`. The default projects ignore these, since that suite also runs against
- * the live site. A failure here goes red but gates no deploy, so half-built work never holds up a release.
+ * The work not yet in production, which any server shows once the address asks for it, so each project opens the app
+ * with `?IN_DEVELOPMENT=true`. The default projects ignore these, as a player opening the site does not see that work.
+ * A failure here goes red but gates no deploy, so half-built work never holds up a release.
  */
 export default defineConfig<AcceptanceTestOptions>({
   ...baseConfig,
@@ -13,12 +13,12 @@ export default defineConfig<AcceptanceTestOptions>({
     {
       name: "desktop-unreleased",
       testMatch: UNRELEASED_SPECS,
-      use: {...devices["Desktop Chrome"], reducedMotion: "reduce", effects: "Reduced"},
+      use: {...devices["Desktop Chrome"], reducedMotion: "reduce", effects: "Reduced", inDevelopment: true},
     },
     {
       name: "mobile-unreleased",
       testMatch: UNRELEASED_SPECS,
-      use: {...devices["Pixel 5"], reducedMotion: "reduce", effects: "Reduced"},
+      use: {...devices["Pixel 5"], reducedMotion: "reduce", effects: "Reduced", inDevelopment: true},
     },
   ],
 });

@@ -1,5 +1,5 @@
-import {FRIEND_CODE_ALPHABET, FRIEND_CODE_LENGTH} from "./FriendCode.js";
-import type {FriendCode} from "./FriendCode.js";
+import {FRIEND_CODE_ALPHABET, FRIEND_CODE_LENGTH} from "@janggi/shared/janggi/online/friend-code/FriendCode";
+import type {FriendCode} from "@janggi/shared/janggi/online/friend-code/FriendCode";
 
 /**
  * The code a player typed, or undefined where it is not one. Case, spaces and the hyphen `formatFriendCode` writes are

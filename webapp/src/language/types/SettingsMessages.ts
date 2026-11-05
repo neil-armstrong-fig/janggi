@@ -6,4 +6,6 @@ export interface SettingsMessages {
   readonly back: string;
   /** The label of the (?) beside a picker, handed what the picker is called. */
   readonly whatEachMeans: (label: string) => string;
+  /** The label of the (?) beside a switch, handed what the switch is called. */
+  readonly whatItMeans: (label: string) => string;
 }

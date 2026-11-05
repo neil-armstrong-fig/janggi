@@ -24,7 +24,10 @@ import type {SettingsSliceState} from "@src/redux/settings/types/SettingsSliceSt
 import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceState";
 import {toastReducer} from "@src/redux/toast/ToastSlice";
 import type {ToastSliceState} from "@src/redux/toast/types/ToastSliceState";
+import {CLOCK_STORAGE_KEY} from "@src/redux/clock/storage/ClockStorageKey";
+import {clockAsLeft} from "@src/redux/clock/storage/ClockAsLeft";
 import {clockReducer} from "@src/redux/clock/ClockSlice";
+import {loadClock} from "@src/redux/clock/storage/LoadClock";
 import type {ClockSliceState} from "@src/redux/clock/types/ClockSliceState";
 import {botEngineReducer} from "@src/redux/bot-engine/BotEngineSlice";
 import {botKeptWithinReach} from "@src/redux/game/GameSlice";
@@ -83,9 +86,9 @@ export interface RootState {
 
 /**
  * The slices that are written to the device. The engine's is not, being what this page has started, and nor
- * are the sheets' or the toast's: a page opens with none up. Nor is the clock's yet: it is an example, and a page opens with it off.
+ * are the sheets' or the toast's: a page opens with none up.
  */
-type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast" | "clock">;
+type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast">;
 
 /** What is compared, to know a slice has changed, and then written: a slice itself, except where what is kept is less than the slice (`keptValue`). */
 type KeptValue = RootState[KeptSlice] | string | undefined;
@@ -146,6 +149,7 @@ export function createStore(storage?: Storage): AppStore {
       account: loadAccount(storage),
       syncLedger: loadSyncLedger(storage),
       friend: loadFriend(storage),
+      clock: loadClock(storage, game),
     },
   });
 
@@ -176,8 +180,10 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
     "syncLedger",
     "account",
     "friend",
+    "clock",
   ];
   const keys: Record<KeptSlice, string> = {
+    clock: CLOCK_STORAGE_KEY,
     friend: FRIEND_STORAGE_KEY,
     game: GAME_STORAGE_KEY,
     preferences: PREFERENCES_STORAGE_KEY,
@@ -206,9 +212,13 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
   // Firefox for Android commits `localStorage` to disk five seconds after the last write, and a swipe
   // away from the app switcher kills the page with no warning, so a game started in the last five
   // seconds is lost and the one before it comes back. Writing everything again as the page is hidden is
-  // the last chance a page is given. Best effort: the browser decides when the disk sees it.
+  // the last chance a page is given. Best effort: the browser decides when the disk sees it. It is also the only write
+  // that knows the page is going, so the clock's stamp is made here.
   const writeAll = (): void => {
-    return slices.forEach(slice => saveJson(storage, keys[slice], writtenOf(slice, keptValue(kept.getState(), slice))));
+    const state = kept.getState();
+    const now = Date.now();
+
+    slices.forEach(slice => saveJson(storage, keys[slice], writtenOnLeaving(slice, state, now)));
   };
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") writeAll();
@@ -237,6 +247,12 @@ function writtenOf(slice: KeptSlice, value: KeptValue): unknown {
   if (slice === "friend") return {code: value};
 
   return value;
+}
+
+function writtenOnLeaving(slice: KeptSlice, state: RootState, now: number): unknown {
+  if (slice === "clock") return clockAsLeft(state.clock, now);
+
+  return writtenOf(slice, keptValue(state, slice));
 }
 
 /** `localStorage`, where there is one to reach — reading the property itself throws where it is blocked. */

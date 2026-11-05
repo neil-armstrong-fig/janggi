@@ -12,6 +12,22 @@ given("a player playing another person", () => {
     await janggi.settings.opponent.setTo("Human");
   });
 
+  when("they have not asked what flipping the board does", () => {
+    then("nothing explains it", async ({janggi}) => {
+      expect(await janggi.settings.flipBoard.isExplanationShown()).toBe(false);
+    });
+  });
+
+  when("they ask what flipping the board does", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.flipBoard.toggleExplanation();
+    });
+
+    then("it says the pieces turn to face Han's player", async ({janggi}) => {
+      expect(await janggi.settings.flipBoard.getExplanationWords()).toContain("face Han's player");
+    });
+  });
+
   when("the board is not set to flip for Han", () => {
     then("it is off by default", async ({janggi}) => {
       expect(await janggi.settings.flipBoard.isOn()).toBe(false);

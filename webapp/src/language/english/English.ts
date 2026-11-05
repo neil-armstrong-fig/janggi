@@ -30,6 +30,7 @@ export const ENGLISH: Messages = {
   result: {
     won: side => `${sideName(side)} wins by checkmate`,
     wonOnPoints: side => `${sideName(side)} wins on points`,
+    lostOnTime: side => `${sideName(side)} lost on time`,
     drawn: {bikjang: "Drawn by bikjang", repetition: "Drawn by repetition", agreement: "Drawn by agreement"},
     newGame: "New game",
     unlocked: unlocks => `🔓 Unlocked: ${unlocks}`,
@@ -134,6 +135,34 @@ export const ENGLISH: Messages = {
       },
       both: "In both, two passes in a row end the game on points, and Han starts 1.5 points up for moving second. Your rating is kept separately for each.",
     },
+  },
+  clock: {
+    label: "Clock",
+    formatLabel: "Time",
+    formats: {
+      "5 min": "5 min + 30s ×3",
+      "10 min": "10 min + 30s ×3",
+      "20 min": "20 min + 30s ×3",
+      Custom: "Custom",
+    },
+    minutes: "Minutes",
+    secondsAPeriod: "Seconds a period",
+    periods: "Periods",
+    explanation: {
+      intro: "Each player has their own clock, which only runs on their turn. It has two parts.",
+      freeTime: "First comes free time: minutes to spend however you like across the whole game.",
+      overtime:
+        "When that runs out you are in overtime (초읽기), and each move must be made within a short period. Move in time and the period starts again in full for your next move. Let it run out and it is used up, and the next one starts.",
+      lostOnTime:
+        "Run out of your last period and you lose on time (시간패), however well you were doing on the board.",
+      readingAFormat: "So 5 min + 30s ×3 means 5 minutes of free time, then 3 overtime periods of 30 seconds each.",
+      smallPrint:
+        "Time starts after the first move and runs even with the app in the background; a reload holds it until you resume. Moves cannot be taken back. On a plaque, 0:27 ×2 means 27 seconds left, with 2 periods left, including this one.",
+    },
+  },
+  resume: {
+    pausedLine: "Your game is paused. Tap Resume once the device is back on the table, and your clock starts again.",
+    resume: "Resume",
   },
   look: {
     board: "Board",
@@ -426,6 +455,7 @@ export const ENGLISH: Messages = {
     notYetChosen: "Not yet chosen",
     back: "Back",
     whatEachMeans: label => `What each ${label.toLowerCase()} means`,
+    whatItMeans: label => `What "${label}" means`,
   },
   unlocks: {
     theme: name => `${name} theme`,

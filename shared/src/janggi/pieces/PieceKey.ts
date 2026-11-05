@@ -1,5 +1,5 @@
-import type {PieceType} from "./PieceType.js";
-import type {Side} from "./Side.js";
+import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /**
  * A piece's identity as one string: the key a per-piece style override is stored under, and the

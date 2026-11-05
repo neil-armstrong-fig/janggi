@@ -1,6 +1,6 @@
 import {expect, it} from "vitest";
-import {parsePieceKey} from "./ParsePieceKey.js";
-import {toPieceKey} from "./ToPieceKey.js";
+import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
+import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
 
 it("reads back the piece a key was built from", () => {
   expect(parsePieceKey("cho-elephant")).toEqual({side: "cho", type: "elephant"});

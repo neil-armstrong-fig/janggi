@@ -1,4 +1,4 @@
-import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
+import {ExplainedSwitch} from "@src/react/pages/game/components/settings/tabs/play-pane/components/explained-switch/ExplainedSwitch";
 import {flipBoardForHanChosen} from "@src/redux/preferences/PreferencesSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
@@ -19,15 +19,14 @@ export function FlipBoardSetting(): React.JSX.Element {
   const {play} = useMessages();
 
   return (
-    <div hidden={!isHuman} className="flex flex-col gap-0.5">
-      <Switch
-        testId="flip-board-toggle"
+    <div hidden={!isHuman}>
+      <ExplainedSwitch
+        id="flip-board"
         on={flipBoardForHan}
         label={play.flipBoard}
+        explanation={play.flipBoardHelp}
         onToggle={() => dispatch(flipBoardForHanChosen(!flipBoardForHan))}
       />
-
-      <p className="px-2 text-xs text-white/40">{play.flipBoardHelp}</p>
     </div>
   );
 }

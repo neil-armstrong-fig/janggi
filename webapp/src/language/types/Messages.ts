@@ -15,6 +15,8 @@ import type {SoundMessages} from "@src/language/types/SoundMessages";
 import type {ToastMessages} from "@src/language/types/ToastMessages";
 import type {TourMessages} from "@src/language/types/TourMessages";
 import type {YouMessages} from "@src/language/types/you/YouMessages";
+import type {ClockMessages} from "@src/language/types/ClockMessages";
+import type {ResumeMessages} from "@src/language/types/ResumeMessages";
 import type {TranslationNoticeMessages} from "@src/language/types/TranslationNoticeMessages";
 import type {WelcomeMessages} from "@src/language/types/WelcomeMessages";
 import type {RecordMessages} from "@src/language/types/RecordMessages";
@@ -43,6 +45,8 @@ export interface Messages {
   readonly announcements: AnnouncementMessages;
   readonly result: ResultMessages;
   readonly play: PlayMessages;
+  readonly clock: ClockMessages;
+  readonly resume: ResumeMessages;
   readonly look: LookMessages;
   readonly sound: SoundMessages;
   readonly record: RecordMessages;

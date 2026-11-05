@@ -78,6 +78,18 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
     return key;
   }
 
+  async isSaveKeySelectable(): Promise<boolean> {
+    let selectable = false;
+
+    await this.inSheet(this.transferToggle, async () => {
+      await this.unfoldTransfer();
+      await this.copy.click();
+      selectable = await this.key.evaluate(element => getComputedStyle(element).userSelect !== "none");
+    });
+
+    return selectable;
+  }
+
   async isSaveTransferOpen(): Promise<boolean> {
     return (await this.transferToggle.getAttribute("aria-expanded")) === "true";
   }

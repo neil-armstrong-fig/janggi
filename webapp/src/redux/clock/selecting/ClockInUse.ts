@@ -5,7 +5,8 @@ import {withAFriend} from "@src/redux/online/selecting/WithAFriend";
 
 /**
  * The format this game is played to, if it has one. Only two people at one device have one: the bot moves almost at
- * once, which would make the clocks unfair, and time in a game with a friend has to be the room's to keep.
+ * once, which would make the clocks unfair, and time in a game with a friend has to be the room's to keep. See
+ * `docs/rules.md` §6.7.
  */
 export function clockInUse({clock, friend, game}: ClockedState): TimeControl | undefined {
   if (game.opponent.name !== "Human" || withAFriend(friend)) return undefined;

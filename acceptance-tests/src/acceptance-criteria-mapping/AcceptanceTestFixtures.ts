@@ -41,12 +41,14 @@ export interface AcceptanceTestOptions {
   effects: EffectsName;
   keepShippedOpponent: boolean;
   freshPlayer: boolean;
+  inDevelopment: boolean;
 }
 
 export const test = base.extend<AcceptanceTestFixtures & AcceptanceTestOptions>({
   effects: ["Full", {option: true}],
   keepShippedOpponent: [false, {option: true}],
   freshPlayer: [false, {option: true}],
+  inDevelopment: [false, {option: true}],
 
   janggi: async (
     {
@@ -61,11 +63,12 @@ export const test = base.extend<AcceptanceTestFixtures & AcceptanceTestOptions>(
       effects,
       keepShippedOpponent,
       freshPlayer,
+      inDevelopment,
     },
     use,
   ) => {
     const context = {baseURL, viewport, isMobile, hasTouch, userAgent, deviceScaleFactor, reducedMotion};
-    const janggi = new JanggiDsl(page, {context, effects, keepShippedOpponent, freshPlayer});
+    const janggi = new JanggiDsl(page, {context, effects, keepShippedOpponent, freshPlayer, inDevelopment});
 
     await janggi.begin();
     await use(janggi);

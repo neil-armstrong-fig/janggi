@@ -1,4 +1,4 @@
-import type {WireMove} from "./WireMove.js";
+import type {WireMove} from "@janggi/shared/janggi/online/messages/action/WireMove";
 
 /** A move: the piece on one point goes to another. */
 export interface MoveAction {

@@ -1,5 +1,5 @@
 import {expect, it} from "vitest";
-import {parseFriendCode} from "./ParseFriendCode.js";
+import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
 
 it("reads a code of eight characters from the alphabet", () => {
   expect(parseFriendCode("ABCD2345")).toBe("ABCD2345");

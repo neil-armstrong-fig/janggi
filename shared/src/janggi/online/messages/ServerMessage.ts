@@ -1,6 +1,6 @@
-import type {Introduction} from "./Introduction.js";
-import type {Look} from "./Look.js";
-import type {RejectionReason} from "./RejectionReason.js";
+import type {Introduction} from "@janggi/shared/janggi/online/messages/Introduction";
+import type {Look} from "@janggi/shared/janggi/online/messages/Look";
+import type {RejectionReason} from "@janggi/shared/janggi/online/messages/RejectionReason";
 import type {RoomAction} from "@janggi/shared/janggi/online/messages/action/RoomAction";
 import type {SeatedAction} from "@janggi/shared/janggi/online/messages/action/SeatedAction";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";

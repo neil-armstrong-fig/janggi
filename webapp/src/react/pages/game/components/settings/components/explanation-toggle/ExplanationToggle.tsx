@@ -17,7 +17,7 @@ interface Props {
  * out-of-flow pseudo-element centred on it, so the row is no taller for it. Filled while unfolded, so
  * the question that opened the explanation reads as the thing that will close it.
  *
- * Shared by a picker's label and by the progress prose, which is why it takes what it is read out as
+ * Shared by a picker's label, a switch and the progress prose, which is why it takes what it is read out as
  * rather than working it out from a picker.
  */
 export function ExplanationToggle({testId, ariaLabel, expanded, controls, onToggle}: Props): React.JSX.Element {

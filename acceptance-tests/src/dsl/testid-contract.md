@@ -4,10 +4,13 @@ Locate by `data-testid` — that attribute is the contract with the webapp. Rena
 webapp and specs break. Listed rather than counted, because a count of them went stale twice while it
 was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
 
-- **`data-testid`, unreleased** — a build with the work not yet in production. The clock: `unreleased-clock-setting` (with `hidden` where it is not offered), `unreleased-clock-picker` with each
-  `unreleased-clock-option-*`, `unreleased-clock-explain` and `unreleased-clock-explanation` (the (?) and what it unfolds), `unreleased-clock-custom-minutes`, `-period-seconds` and `-periods`, the Preview's
-  `unreleased-clock-pose-picker`, and `unreleased-clock-cho` / `-han` on the plaques carrying `data-state`,
-  `data-seconds` and `data-periods`. The `unreleased-` prefix is what `check:unreleased` looks for in a production build.
+- **`data-testid`, the clock** — `clock-setting` (with `hidden` where it is not offered), `clock-toggle` (with `aria-pressed`), `clock-picker` with each
+  `clock-option-*`, `clock-explain` and `clock-explanation` (the (?) beside the switch and what it unfolds), `clock-custom-minutes`, `-period-seconds` and `-periods`,
+  and `clock-cho` / `-han` on the plaques carrying `data-state`,
+  `data-seconds` and `data-periods`.
+- **`data-testid`, resuming** — `resume-game`, the dialog a clocked game comes back to after a reload (carrying `data-side` and
+  `data-flipped`), with `resume-game-resume` and `resume-game-clock-cho` / `-han` carrying `data-seconds` and `data-periods`.
+- **`data-testid`, unreleased** — work behind `IN_DEVELOPMENT` wears ids beginning `unreleased-`. None at present.
 - **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`,
   `guide`, `guide-play`, `guide-install`, `guide-rules-source`, `guide-fairy-stockfish-source`,
   `guide-piece-style-traditional`, `guide-piece-style-hangul`, `guide-piece-style-modern` and

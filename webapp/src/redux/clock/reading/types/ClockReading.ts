@@ -1,4 +1,4 @@
-import type {ClockReadingState} from "@src/redux/clock/poses/types/ClockReadingState";
+import type {ClockReadingState} from "@src/redux/clock/reading/types/ClockReadingState";
 
 /** What one army's clock shows. */
 export interface ClockReading {

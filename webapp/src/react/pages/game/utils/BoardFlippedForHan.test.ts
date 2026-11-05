@@ -1,5 +1,5 @@
 import type {Opponent} from "@src/redux/game/types/Opponent";
-import {boardFlippedForHan} from "@src/react/pages/game/components/status/utils/BoardFlippedForHan";
+import {boardFlippedForHan} from "@src/react/pages/game/utils/BoardFlippedForHan";
 import {expect, it} from "vitest";
 
 it("flips the board on Han's move against a person, where it was asked for", () => {

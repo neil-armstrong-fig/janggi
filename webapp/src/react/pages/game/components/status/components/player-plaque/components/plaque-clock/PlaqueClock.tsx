@@ -1,33 +1,34 @@
-import type {ClockReadingState} from "@src/redux/clock/poses/types/ClockReadingState";
+import type {ClockReadingState} from "@src/redux/clock/reading/types/ClockReadingState";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {clockInUse} from "@src/redux/clock/selecting/ClockInUse";
-import {clockReadingOf} from "@src/redux/clock/poses/ClockReadingOf";
+import {clockFaceOf} from "@src/react/pages/game/clock-face/ClockFaceOf";
+import {clockReadingFor} from "@src/redux/clock/selecting/ClockReadingFor";
 import {clsx} from "clsx";
+import {shallowEqual} from "react-redux";
 import {useAppSelector} from "@src/redux/Hooks";
+import {useClockNow} from "@src/react/pages/game/components/status/components/player-plaque/components/plaque-clock/hooks/use-clock-now/UseClockNow";
 
 /**
  * One army's clock on its plaque, beside its score, in a game that has one: minutes and seconds, and once the free
  * time has gone, the periods left. The army to move is lit, as its plaque is.
  *
- * An example for now: it shows the clock's pose and nothing runs. Its words are drawn from figures, so nothing here
- * waits on `src/language/`. Only a build with `IN_DEVELOPMENT` draws it.
+ * It works out what it shows from when the turn began, so time passing redraws this and nothing else. Its words are drawn
+ * from figures, so there is nothing here to translate.
  */
 interface Props {
   readonly side: Side;
 }
 
 export function PlaqueClock({side}: Props): React.JSX.Element | undefined {
-  const timeControl = useAppSelector(clockInUse);
-  const pose = useAppSelector(state => state.clock.pose);
-  const toMove = useAppSelector(state => state.game.played.present.sideToMove === side);
+  const now = useClockNow(side);
+  const toMove = useAppSelector(rootState => rootState.game.played.present.sideToMove === side);
+  const clockReading = useAppSelector(rootState => clockReadingFor(rootState, side, now), shallowEqual);
+  if (!clockReading) return undefined;
 
-  if (!timeControl) return undefined;
-
-  const {state, seconds, periods} = clockReadingOf(timeControl, pose, toMove);
+  const {state, seconds, periods} = clockReading;
 
   return (
     <span
-      data-testid={`unreleased-clock-${side}`}
+      data-testid={`clock-${side}`}
       data-state={state}
       data-seconds={seconds}
       data-periods={periods}
@@ -38,16 +39,11 @@ export function PlaqueClock({side}: Props): React.JSX.Element | undefined {
         toMove && state === "low" && "motion-safe:animate-pulse",
       )}
     >
-      {faceOf(seconds)}
+      {clockFaceOf(seconds)}
 
       {state !== "free" && periods > 0 && <span className="ml-1 text-xs font-medium opacity-80">×{periods}</span>}
     </span>
   );
-}
-
-/** Seconds as a clock's face writes them: 272 is 4:32. */
-function faceOf(seconds: number): string {
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
 const TONES: Record<ClockReadingState, string> = {

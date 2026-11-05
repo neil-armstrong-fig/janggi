@@ -8,6 +8,8 @@ import type {Side} from "@janggi/shared/janggi/pieces/Side";
 export interface ResultMessages {
   readonly won: (side: Side) => string;
   readonly wonOnPoints: (side: Side) => string;
+  /** Handed the army that ran out of time (시간패), not the one that won. */
+  readonly lostOnTime: (side: Side) => string;
   readonly drawn: Record<DrawnBy, string>;
   readonly newGame: string;
   readonly unlocked: (unlocks: string) => string;

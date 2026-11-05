@@ -175,15 +175,14 @@ export function ResultBanner({
   );
 }
 
-function wordingOf(status: GameStatus, {result, sides}: Messages): Wording | undefined {
+function wordingOf(status: GameStatus, {result}: Messages): Wording | undefined {
   switch (status.kind) {
     case "won":
       return {korean: "외통", plain: result.won(status.by)};
     case "wonOnPoints":
       return {korean: "점수승", plain: result.wonOnPoints(status.by)};
     case "wonOnTime":
-      // In English until the clock is released, as `IN_DEVELOPMENT` work stays (`webapp/AGENTS.md`).
-      return {korean: "시간패", plain: `${sides[opponentOf(status.by)]} lost on time`};
+      return {korean: "시간패", plain: result.lostOnTime(opponentOf(status.by))};
     case "drawn":
       return {korean: status.by === "bikjang" ? "빅장" : "무승부", plain: result.drawn[status.by]};
     case "toMove":

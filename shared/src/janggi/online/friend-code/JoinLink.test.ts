@@ -1,6 +1,6 @@
 import {expect, it} from "vitest";
-import {friendCodeInSearch, joinLinkFor} from "./JoinLink.js";
-import {parseFriendCode} from "./ParseFriendCode.js";
+import {friendCodeInSearch, joinLinkFor} from "@janggi/shared/janggi/online/friend-code/JoinLink";
+import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
 
 const code = parseFriendCode("ABCD2345")!;
 

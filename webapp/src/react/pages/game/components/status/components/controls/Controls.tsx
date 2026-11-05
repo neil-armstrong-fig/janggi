@@ -18,6 +18,8 @@ import {canCallBikjang} from "@janggi/engine/bikjang/CanCallBikjang";
 import {canPass} from "@janggi/engine/passing/CanPass";
 import {canRedo} from "@src/record/redo/CanRedo";
 import {canUndo} from "@src/record/undo/CanUndo";
+import {clockInUse} from "@src/redux/clock/selecting/ClockInUse";
+import {sideWaitingToResume} from "@src/redux/clock/selecting/SideWaitingToResume";
 import {isArranged} from "@janggi/engine/setups/IsArranged";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 
@@ -30,11 +32,14 @@ import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-g
  *
  * Undo and Redo are the only two controls here **not** gated on the game still being undecided —
  * taking back the turn that ended a game is the ordinary reason to reach for one. Against the bot they
- * are off altogether, because that game is rated and a rating that can be taken back is not one.
+ * are off altogether, because that game is rated and a rating that can be taken back is not one. On a clock they are off
+ * too: time spent cannot be taken back, so neither can the turn it was spent on.
  *
  * While the game waits on the bot, Pass, Bikjang and Draw are off too: the turn is not the player's to
  * rest, nor the call or the offer theirs to make. Nor is there anything to rest, call or offer on a
- * board still being laid out — the pieces on screen then are only what `boardShownFor` is painting.
+ * board still being laid out — the pieces on screen then are only what `boardShownFor` is painting. Nor once an army has
+ * lost on time (시간패), which the position cannot say, so the engine's own checks would still allow them. Nor while a
+ * clocked game waits to be resumed after a reload (`ResumeGame`).
  *
  * **It reads the game and dispatches for itself.** What it is handed is only what the store does not
  * hold: the tick every control makes before it acts, the sound being the page's, and opening the settings
@@ -54,14 +59,22 @@ interface Props {
 export function Controls({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
   const friend = useAppSelector(state => state.friend);
-  const {botsTurn, engineHoldsPlay} = useGameStatus();
+  const clockIsOn = useAppSelector(state => clockInUse(state) !== undefined);
+  const waitingToResume = useAppSelector(state => sideWaitingToResume(state) !== undefined);
+  const {status, botsTurn, engineHoldsPlay} = useGameStatus();
   const dispatch = useAppDispatch();
 
   const game = played.present;
   const againstBot = opponent.name === "Bot";
   // In a game with a friend a control is for this player's own army's turn, and only asks the room.
-  const playersTurn = isArranged(phase) && !botsTurn && !engineHoldsPlay && friendAllowsPlay(friend, game);
-  const takingBackAllowed = !againstBot && !withAFriend(friend);
+  const playersTurn =
+    isArranged(phase) &&
+    !botsTurn &&
+    !engineHoldsPlay &&
+    status.kind !== "wonOnTime" &&
+    !waitingToResume &&
+    friendAllowsPlay(friend, game);
+  const takingBackAllowed = !againstBot && !withAFriend(friend) && !clockIsOn;
   const offerWaiting = drawOffer !== undefined && !drawOffer.declined;
 
   // Every control ticks before it does what it does, so each handler below is one call rather than the

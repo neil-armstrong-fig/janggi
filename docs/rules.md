@@ -349,7 +349,9 @@ Everything above is encoded in `engine/src/`, and as of 2026-09-09 so is
 everything below that is a rule of play — §6.6's setup phase included, which was
 the last of them. Each item says what was decided where the sources conflict.
 What is left unimplemented is 묵장 and 자장 in §6.1, and they say for themselves
-why they are not rules of a position at all.
+why they are not rules of a position at all. §6.7's clock is not in the engine
+either, since a position cannot say how long anyone took: it lives in
+`webapp/src/redux/clock/`.
 
 ### 6.1 Check and checkmate
 
@@ -822,6 +824,113 @@ scored one start empty.
 The 맞상/엇상 line sits under the two pickers and names the pairing where the game
 has a name for one, and is absent entirely where it does not.
 
+### 6.7 Time controls (자유시간, 초읽기, 시간패)
+
+A clock gives each army **free time** (자유시간) and then **overtime** (초읽기): a
+number of periods of so many seconds each. What the sources settle is the
+formats. What happens when the last period runs out is mostly left unsaid.
+
+**The formats** (all retrieved 2026-11-05):
+
+> "각자 자유시간은 최소 15분 이상이며 총 대국 시간은 60분 이상으로 한다.
+> 초읽기는 30초 3회 이상이 주어진다." — 대한장기협회, 대회 방식과 대국 시간
+
+> "아마대회 : 각자 자유시간 20분, 30초 초읽기 3회이며 대회일정에 따라 총대국시간의
+> 제약을 둘 수 있다. 프로대회 : 각자 자유시간 30분 이상, 초읽기 3회로 총 대국시간의
+> 제한은 없다. (단,TV기전은 예외)" — 한게임 장기 규칙
+
+The **total game time** (총 대국시간) is a separate limit, and it does not lose
+anyone the game: play stops and the pieces are counted (§6.5), a referee ruling
+where the remaining pieces could still win. 한게임's rulings add that a win on the
+board beats the points: "기물점수보다 승부로 이긴 사람이 승한다".
+
+5 minutes + 30s x 30 sometimes appears as a format, and comes from a 궁장기 manual
+rather than standard janggi. That federation's own regulations say 5 minutes +
+30s x 3. No source was found on clocks in casual play.
+
+**Losing on time is not a written rule of janggi.** A dedicated search on
+2026-11-05 found no janggi regulation that says what happens to a player who
+uses up the last period, either way. Not finding it is not proof there is none,
+since a tournament's own notice may say, but none of the main rule sets does:
+
+- The KJA and 한게임 use 시간패 only for a player who never arrives, whose free time
+  runs out with nobody at the board.
+- 대한장기연맹's 2020 rules list how a game ends without mentioning a clock:
+  "대국시간 내에 궁을 잡고 이기거나 기권, 실격 등으로 대국 종료 시 완승과 완패로 결정".
+  Its rules leave the time format itself to each event: "대국시간 등은 별도 공지에
+  의해 결정한다".
+- 굴비 장기's survey of the rule sources, side by side, lists only the no-show under
+  시간패.
+- The nearest ruling says how a period is used, not what follows the last one:
+  "초읽기에서 마지막 10을 부름과 동시에 놓았다면? - 초읽기를 사용한 것으로 본다."
+  (한게임). That does agree with a period reaching exactly zero being used up.
+
+Two lines look as though they answer it, and neither does:
+
+> "30분 안에 끝내야 하는 시간 관계상 초읽기 3-40초를 주고 시간 안에 두지 못하면
+> 한수 쉬고 상대방이 둔다." — 대한장기협회, 대국 규칙
+
+> "대국자들 또한 시간 패를 당하지 않으려면 신속히 두어야 할 것이다." — 한국장기연맹,
+> 궁장기 regulations
+
+The first is a different kind of clock, on our reading of it: a limit on each
+move with no count of periods, in an event that must end within thirty minutes
+and is then settled on points. With no last period to run out of, a missed move
+can only cost that turn, so it says nothing about a format with periods. The
+second uses the word for time running out in play, but of a different game.
+
+Losing after the last period is the convention in games with the same kind of
+clock, such as go's byoyomi, and is what a player from chess would expect of a
+flag falling.
+
+**Increment (a Fischer clock) is not part of janggi's rule sets.** Every format
+found is free time and periods, and none of the sources here mentions adding
+time per move. So the clock here does not offer one: periods are janggi's own,
+and a difference from chess worth keeping.
+
+**What the clock here does.** Each of these is a decision rather than a source:
+
+- **Running out of the last period loses (시간패), whatever the score on the
+  board**, and whether or not the other army could still win. A count of periods
+  only means something if using them all costs something, and it is what a
+  player from chess expects. `spending/IsOutOfTime.ts`, and
+  `react/pages/game/hooks/use-clock-keeper/UseClockKeeper.ts` for the flag
+  falling.
+- **Free time goes first, then the periods.** A move within a period keeps it,
+  whole, for the next turn, and a period that reaches exactly zero is used up.
+  `spending/ClockAfterTurn.ts`.
+- **The first move is free**, with no time limit, since there may be some
+  rejigging of the phone before play begins. The reply is what starts the clock.
+- **Nothing pauses it but a reload**: not the background, and not the phone
+  asleep. It is for intense play, and a casual game just uses no clock. A reload
+  is a free pause, since it takes effort: time away does not count, and the turn
+  starts again from the Resume tap on the dialog the reload brings up
+  (`resuming/ClockAfterResume.ts`). Turning the clock off instead would make a
+  reload the way out of a time shortage.
+- **Two people at one device only.** The bot moves almost at once, which would
+  make the clocks unfair, and time in a game with a friend has to be the
+  server's to keep (`online-play.md`). `selecting/ClockInUse.ts`. So a loss on
+  time never touches a rating.
+- **Undo and Redo are off on a clock**: time spent cannot be taken back, so
+  neither can the turn it was spent on.
+- **There is no total game time**, and so no stopping to count the pieces.
+- **The formats on offer**, behind a switch that starts off, are 5, 10 or 20
+  minutes + 30s x 3, 20 being the amateur format above. Custom allows 0-180
+  minutes and 0-60 periods of 5-120 seconds, and 0 minutes with 0 periods
+  becomes one period, so a format always has some time in it.
+- **The clock is kept on the device** over a reload (`storage/LoadClock.ts`),
+  and time already spent on the turn stays spent: the page stamps the moment it
+  is hidden or left (`storage/ClockAsLeft.ts`). A page killed with no warning
+  leaves no stamp and charges none of the turn, and a stamp from before the turn
+  counts as none. A turn held past its time loses on load. A finished game, or
+  one against the bot, keeps its format with nothing to resume. It is kept in
+  localStorage, not IndexedDB, whose write is asynchronous and less sure to land
+  as the page dies.
+
+The face rounds seconds up, so 0:00 only ever means the time has gone, and it
+shows low time in the last ten seconds of the last period, or of free time where
+a format has no periods. Both are `reading/ClockReadingOf.ts`.
+
 ---
 
 ## 7. Sources
@@ -835,6 +944,11 @@ has a name for one, and is absent entirely where it does not.
 | 대한장기협회, live 대국규정                 | <http://www.kja.or.kr/business/business5.php>                                                 | the 30-point bikjang and repetition rules **as currently published**, and the general-capture exception | **Authoritative and current** — validated 2026-09-09 |
 | 대한장기연맹, 장기규칙 개정 (2020-01-01)    | <https://kojf.net/bbs/board.php?bo_table=board_notice&wr_id=478>                               | a second federation abolishing the draw outright; piece values; league points | **Authoritative** for that federation |
 | 대한장기연맹, 2022년도 대국규칙 개정        | <http://kojf.net/bbs/board.php?bo_table=board_notice&wr_id=706>                                | a pass is not a move; two consecutive passes end the game on points | **Authoritative** for that federation |
+| 대한장기협회, 대회 방식과 대국 시간         | <http://www.kja.or.kr/business/business6.php>                                                 | minimum free time, total game time and overtime; 시간패 for a player who never arrives | **Authoritative and current** — retrieved 2026-11-05 |
+| 대한장기협회, 대국 규칙                     | <http://www.kja.or.kr/business/business5.php>                                                 | a late player resting a turn, under a per-move limit in a thirty-minute event | **Authoritative**, for that event |
+| 굴비 장기, Rules                            | <https://www.gulbijanggi.com/rules.html>                                                      | rule sources side by side: 시간패 listed only for a no-show            | A hobby site, but it quotes its sources |
+| 한게임 장기 규칙                            | <https://janggi.hangame.com/tip.nhn?page=rule>                                                | amateur and professional formats; total game time ending in a count; a win on the board beating points | Good, and carries rulings the KJA's pages do not |
+| 한국장기연맹, 궁장기 regulations            | <http://www.kingjanggi.or.kr/wp/?page_id=334>                                                 | 5 minutes + 30s x 3; 시간패 for time running out in play | A different game, so only corroboration |
 | `docs/opening-setups.md`                   | this repository                                                                                | the setup phase, setup order, 맞상/엇상, opening advice                 | See its own confidence table                      |
 
 **Retrieval notes for anyone repeating this.** The KJA archive is **EUC-KR** —
@@ -843,7 +957,8 @@ but serves `curl` fine. en.wikipedia's article truncates when fetched whole;
 pull one section at a time through
 `api.php?action=parse&page=Janggi&prop=wikitext&section=N`. namu.wiki is
 Cloudflare-blocked by every route tried — `opening-setups.md` §9 lists them all,
-do not spend the time again.
+do not spend the time again. `kja.or.kr` and `kingjanggi.or.kr` have broken
+HTTPS, so fetch them with plain http.
 
 ---
 
@@ -864,3 +979,5 @@ do not spend the time again.
 | Han lays out first, Cho answers having seen it, and Han may not revise         | **High** — the KJA's 대국규정 「판차림의 순서」 states all three in one clause, and en.wikipedia, namu.wiki, pychess and chessvariants all corroborate it. That the engine enforces it in the *scored* format alone is a decision rather than a source; see §6.6 |
 | 맞상 is barred from official play                                              | **Low** — asserted twice by 장하영 프로 in newspaper columns, and **not present** in the archived KJA 대국규칙 or 대국규정 read in full. Which is why the engine classifies the pairing and refuses nothing; see §6.6 and `opening-setups.md` §5.4 |
 | Stalemate cannot occur, because a player with no move passes                                   | **High** — en.wikipedia states it, and it follows from the pass rule under either reading      |
+| The formats: at least 15 minutes + 30s x 3 in official play, 20 minutes + 30s x 3 for amateurs | **High** — the KJA states the minimums and 한게임 the amateur and professional formats, and they agree |
+| Using up the last period loses the game                                                        | **Moderate** — implied by what a count of periods is for, stated by no source for standard janggi, and the KJA has one event where a late player rests a turn instead. A decision; see §6.7 |

@@ -1,4 +1,4 @@
-import type {BeatenLadders} from "./BeatenLadders.js";
+import type {BeatenLadders} from "@janggi/shared/janggi/progress/BeatenLadders";
 
 /** The version written into new save keys. */
 export const LATEST_SAVE_VERSION = 1;

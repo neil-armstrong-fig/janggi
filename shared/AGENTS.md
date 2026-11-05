@@ -30,10 +30,10 @@ with the same functions against the same `SaveKeyJson`. Reach for `shared` where
 contract between packages, not wherever code happens to repeat — behaviour belongs in the engine (see
 the vocabulary-vs-rules split below), not here.
 
-**Within `shared`, one folder reaches another by the package's own name** —
-`@janggi/shared/janggi/settings/BotElo` — and a sibling as `./X.js`. `../` is refused everywhere, and
-an `@src` alias cannot work here: this package is compiled as raw source by whichever package imports
-it, so `@src` would resolve into that package's tree.
+**Within `shared/src`, every import uses the package's own name, with no extension** —
+`@janggi/shared/janggi/settings/BotElo`, a sibling included. `../` is refused everywhere, and an `@src`
+alias cannot work here: this package is compiled as raw source by whichever package imports it, so
+`@src` would resolve into that package's tree.
 
 The settings unions are the **built-ins only**. A `BoardStyle`'s own `name` stays a plain string
 because a user-authored style may be called anything; the union is what a built-in must be called, so

@@ -11,6 +11,8 @@ import {bikjangHintShown} from "@src/react/pages/game/components/board/component
 import {bikjangRisksFor} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangRisksFor";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
+import {sideOutOfTime} from "@src/redux/clock/selecting/SideOutOfTime";
+import {sideWaitingToResume} from "@src/redux/clock/selecting/SideWaitingToResume";
 import {cellMarksAt} from "@src/react/pages/game/components/board/components/intersections/cell-marks/CellMarksAt";
 import {flourishesOf} from "@src/react/pages/game/components/board/components/intersections/motion/flourishes-of/FlourishesOf";
 import {hintDelay} from "@src/react/pages/game/components/board/components/intersections/motion/HintDelay";
@@ -65,6 +67,8 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   const {played, phase, opponent} = useAppSelector(state => state.game);
   const engineStatus = useAppSelector(state => state.botEngine.status);
   const friend = useAppSelector(state => state.friend);
+  const timeLost = useAppSelector(state => sideOutOfTime(state) !== undefined);
+  const waitingToResume = useAppSelector(state => sideWaitingToResume(state) !== undefined);
   const dispatch = useAppDispatch();
   const {movableHighlight, bikjangHint, effects} = usePreferences();
   const game = played.present;
@@ -72,8 +76,12 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   // be touched until both armies have chosen. Closed while the bot is thinking too, and while its engine
   // is not up: a first move made then would begin a rated game against nobody.
   // And, in a game with a friend, until it is this player's army's turn: the room is the judge of the rest.
+  // And for good once an army has lost on time (시간패), which the position cannot say; and while a clocked game waits
+  // to be resumed after a reload, until the player to move says so.
   const playable =
     isArranged(phase) &&
+    !timeLost &&
+    !waitingToResume &&
     friendAllowsPlay(friend, game) &&
     botDutyFor(played, phase, opponent) === undefined &&
     !botEngineHoldsPlay(played, opponent, engineStatus);

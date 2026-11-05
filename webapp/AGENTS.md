@@ -32,7 +32,7 @@ root `AGENTS.md` — a violation of any of these is a lint error:
   engine sees). Moved over so far: the tabs, controls, turn line, result banner and its explanations, the Play, Look and Sound tabs, plaques,
   draw offer and bot notices, the repetition note, the record sheet, welcome and tour, and the You tab with the toast and the
   rename answers (`you`, `toasts`; Redux reaches them through `messagesOf` and the language in the store), playing a friend,
-  piece names for screen readers, the match-format explanation, unlock names, and the styles sheet and editor (`styles`). Still English: the
+  piece names for screen readers, the clock, the match-format explanation, unlock names, and the styles sheet and editor (`styles`). Still English: the
   legal pages, a style checker's notes on a field of its JSON (`Reading`), and style names, which stay as proper names in every language. The Korean is shown with a note (`LanguageNotice`) that it is a work in progress; take that
   out when it is not. The guide has `GuideMessages` of its own (`guideMessagesOf`), handed to `LearnPage` as props rather than carried by every
   game page, and its Korean is a machine translation that opens with a notice (`translationNotice`); take that out once a native speaker has read it. The references have `ReferencesMessages` (`referencesMessagesOf`) on the same terms.
@@ -50,12 +50,13 @@ reintroduce it.
 
 ## Conventions
 
-- **Work not yet in production goes behind `IN_DEVELOPMENT`** (`src/unreleased/InDevelopment.ts`): `{IN_DEVELOPMENT && <Thing />}`,
-  with a static import, which the build removes. It is on under `pnpm start` and in a build compiled with
-  `VITE_UNRELEASED=true`, and off in anything deployed. Wear at least one test id beginning `unreleased-` per gated
-  feature, because that is what `pnpm --filter @janggi/webapp check:unreleased` looks for in `build/`; CI runs it before a deploy.
+- **Work not yet in production goes behind `IN_DEVELOPMENT`** (`src/unreleased/InDevelopment.ts`): `{IN_DEVELOPMENT && <Thing />}`.
+  It is on under `pnpm start`, and anywhere else only with `?IN_DEVELOPMENT=true` in the address; `?IN_DEVELOPMENT=false`
+  turns it off under `pnpm start`. It is one switch for all such work, read once as the page opens and not kept. **The code ships in
+  every build, so this hides work and does not protect it**: anyone can turn it on, and nothing secret or harmful to a
+  player's saved data belongs behind it. Wear test ids beginning `unreleased-` so a reader can see what is gated.
   Its words stay inline in English until release, and its specs go in `acceptance-tests/src/tests/unreleased/`. To
-  release a feature: delete its check, move its words to `Messages` with their Korean, rename its test ids, and move its
+  release a feature: remove its gate, move its words to `Messages` with their Korean, rename its test ids, and move its
   specs out of `unreleased/`. This only gates the site: the API deploys from `main` by itself, so a real endpoint for
   unreleased work needs a gate of its own.
 - `BASE_PATH` sets where the app is served from (`/` locally and on the custom domain) and drives

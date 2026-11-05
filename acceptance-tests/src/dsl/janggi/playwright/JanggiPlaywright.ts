@@ -96,6 +96,12 @@ export class JanggiPlaywright extends BasePage {
     await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
   }
 
+  /** Opens the game with the address saying whether work not yet in production is on, and waits as `open` does. */
+  async openWithWorkInDevelopment(on: boolean): Promise<void> {
+    await this.page.goto(`./?IN_DEVELOPMENT=${on}`);
+    await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
+  }
+
   /** Goes to the game's Korean page, and waits as `open` does. */
   async visitKoreanGame(): Promise<void> {
     await this.page.goto(new URL("ko/", this.page.url()).href);
@@ -153,6 +159,19 @@ export class JanggiPlaywright extends BasePage {
     this.cdpSession ??= await this.page.context().newCDPSession(this.page);
     await this.cdpSession.send("Network.enable");
     await this.cdpSession.send("Network.setBypassServiceWorker", {bypass});
+  }
+
+  /** Pausing has to land ahead of the time it starts from, so a second ahead is where time then stands. */
+  async takeHoldOfTime(): Promise<void> {
+    const now = Date.now();
+
+    await this.page.clock.install({time: now});
+    await this.page.clock.pauseAt(now + 1000);
+  }
+
+  /** Fires what fell due only once, as a page coming back from the background would, rather than every tick between. */
+  async letTimePass(seconds: number): Promise<void> {
+    await this.page.clock.fastForward(seconds * 1000);
   }
 
   async reload(): Promise<void> {

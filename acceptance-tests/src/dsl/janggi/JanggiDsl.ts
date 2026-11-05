@@ -15,6 +15,7 @@ import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordShee
 import {LanguageNoticeDsl} from "@src/dsl/janggi/components/language-notice/LanguageNoticeDsl";
 import {ToastDsl} from "@src/dsl/janggi/components/toast/ToastDsl";
 import {ReleaseUpdateDsl} from "@src/dsl/janggi/components/release-update/ReleaseUpdateDsl";
+import {ResumeGameDsl} from "@src/dsl/janggi/components/resume-game/ResumeGameDsl";
 import {ReferencesDsl} from "@src/dsl/janggi/components/references/ReferencesDsl";
 import {SettingsDsl} from "@src/dsl/janggi/components/settings/SettingsDsl";
 import {StatusDsl} from "@src/dsl/janggi/components/status/StatusDsl";
@@ -56,6 +57,7 @@ export class JanggiDsl {
   readonly recordSheet: RecordSheetDsl;
   readonly references: ReferencesDsl;
   readonly releaseUpdate: ReleaseUpdateDsl;
+  readonly resumeGame: ResumeGameDsl;
   readonly toast: ToastDsl;
   readonly languageNotice: LanguageNoticeDsl;
   readonly stylesSheet: StylesSheetDsl;
@@ -77,6 +79,7 @@ export class JanggiDsl {
     this.recordSheet = new RecordSheetDsl(page);
     this.references = new ReferencesDsl(page);
     this.releaseUpdate = new ReleaseUpdateDsl(page);
+    this.resumeGame = new ResumeGameDsl(page);
     this.toast = new ToastDsl(page);
     this.languageNotice = new LanguageNoticeDsl(page);
     this.stylesSheet = new StylesSheetDsl(page);
@@ -147,7 +150,11 @@ export class JanggiDsl {
 
   async navigateToPage(): Promise<void> {
     try {
-      await this.janggi.open();
+      if (this.setup.inDevelopment) {
+        await this.janggi.openWithWorkInDevelopment(true);
+      } else {
+        await this.janggi.open();
+      }
     } catch (error) {
       throw new DslError("Failed to navigate to the game", error);
     }
@@ -448,6 +455,23 @@ export class JanggiDsl {
       return await this.janggi.getKoreanWordsSplitAcrossLines();
     } catch (error) {
       throw new DslError("Failed to read which Korean words a line ends in the middle of", error);
+    }
+  }
+
+  /** Stops the page's time flowing by itself, so that only `letTimePass` moves it. Before anything starts a timer. */
+  async takeHoldOfTime(): Promise<void> {
+    try {
+      await this.janggi.takeHoldOfTime();
+    } catch (error) {
+      throw new DslError("Failed to take hold of the page's time", error);
+    }
+  }
+
+  async letTimePass(seconds: number): Promise<void> {
+    try {
+      await this.janggi.letTimePass(seconds);
+    } catch (error) {
+      throw new DslError(`Failed to let ${seconds} seconds pass`, error);
     }
   }
 

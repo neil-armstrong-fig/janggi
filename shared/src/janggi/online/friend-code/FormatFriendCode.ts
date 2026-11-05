@@ -1,4 +1,4 @@
-import type {FriendCode} from "./FriendCode.js";
+import type {FriendCode} from "@janggi/shared/janggi/online/friend-code/FriendCode";
 
 /** The code in two halves, `ABCD-EFGH`, which is easier to read out and to check by eye; `parseFriendCode` takes it back. */
 export function formatFriendCode(code: FriendCode): string {

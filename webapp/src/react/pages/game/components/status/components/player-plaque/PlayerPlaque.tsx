@@ -10,7 +10,6 @@ import {plaqueStateOf} from "@src/react/pages/game/components/status/components/
 import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {inFriendGame} from "@src/redux/online/selecting/InFriendGame";
 import {takenFrom} from "@janggi/engine/scoring/TakenFrom";
-import {IN_DEVELOPMENT} from "@src/unreleased/InDevelopment";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
@@ -130,7 +129,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
       <TakenTray side={side} taken={takenFrom(game, side)} pieceStyle={pieceStyle} popping={effects.full} />
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
-        {IN_DEVELOPMENT && <PlaqueClock side={side} />}
+        <PlaqueClock side={side} />
 
         <span
           data-testid={`score-${side}`}

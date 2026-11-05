@@ -1,6 +1,6 @@
 import {expect, it} from "vitest";
-import {decodeKey} from "./DecodeKey.js";
-import {encodeKey} from "./EncodeKey.js";
+import {decodeKey} from "@janggi/shared/janggi/share-keys/DecodeKey";
+import {encodeKey} from "@janggi/shared/janggi/share-keys/EncodeKey";
 
 const value = {name: "한초", characters: {general: {han: "漢", cho: "楚"}}, size: 0.86};
 

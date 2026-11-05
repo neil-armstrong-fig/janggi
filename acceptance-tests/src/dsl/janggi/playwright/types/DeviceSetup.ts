@@ -14,10 +14,13 @@ import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
  * against a person at the same device, so unrelated criteria remain in control of both armies; the one spec about the
  * shipped opponent keeps it. A spec that asks for a fresh player is handed the app as a first visit finds it and nothing
  * more: the welcome is in the way of Settings, so the rest is left to the spec.
+ *
+ * The specs for work not yet in production open the app with it switched on, through the address as anyone would.
  */
 export interface DeviceSetup {
   readonly context: BrowserContextOptions;
   readonly effects: EffectsName;
   readonly keepShippedOpponent: boolean;
   readonly freshPlayer: boolean;
+  readonly inDevelopment: boolean;
 }

@@ -20,9 +20,11 @@ import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAu
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
 import {useHaptics} from "@src/react/pages/game/hooks/use-haptics/UseHaptics";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
+import {useClockKeeper} from "@src/react/pages/game/hooks/use-clock-keeper/UseClockKeeper";
 import {useRatedGame} from "@src/react/pages/game/hooks/use-rated-game/UseRatedGame";
 import {useState} from "react";
 import {LanguageNotice} from "@src/react/pages/game/components/language-notice/LanguageNotice";
+import {ResumeGame} from "@src/react/pages/game/components/resume-game/ResumeGame";
 
 /**
  * The screen a game is played on, in the four sections the acceptance-test DSL already names:
@@ -49,6 +51,10 @@ import {LanguageNotice} from "@src/react/pages/game/components/language-notice/L
  * shows it moving while the sound and the buzz answer the same change. Asked once and handed down,
  * none of them can disagree about what just happened. The sound and the buzz are played from here
  * for the same reason: they belong to no one section.
+ *
+ * **Nothing on the game page can be selected as text** (`select-none` on `main`), so it plays like a game rather than
+ * reading like a website. A box that holds text to copy, such as a key, opts back in with `select-text`. The guide and
+ * the references are pages to read, and keep it.
  *
  * Everything else comes from the store, and each section reads it for itself — the game, and the
  * player's preferences through `usePreferences`.
@@ -77,10 +83,11 @@ export function GamePage(): React.JSX.Element {
   useLanguageAddress(language);
   useBotOpponent(engine);
   useRatedGame(moment);
+  useClockKeeper(moment);
   useFriendRoom();
 
   return (
-    <main className="flex h-full w-full flex-col bg-ground p-2">
+    <main className="flex h-full w-full flex-col bg-ground p-2 select-none">
       <h1 className="sr-only">{messages.heading}</h1>
 
       <FriendStrip />
@@ -102,6 +109,8 @@ export function GamePage(): React.JSX.Element {
       <LanguageNotice />
 
       <FriendSignIn />
+
+      <ResumeGame />
     </main>
   );
 }

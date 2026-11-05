@@ -1,4 +1,4 @@
-import type {ClockReading} from "@src/dsl/janggi/components/status/types/ClockReading";
+import type {ClockReading} from "@src/dsl/janggi/components/types/ClockReading";
 import type {Page} from "@playwright/test";
 import {DslError} from "@src/dsl/errors/DslError";
 import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
@@ -284,6 +284,15 @@ export class StatusDsl {
       return await this.status.isClockShown(side);
     } catch (error) {
       throw new DslError(`Failed to check whether ${side}'s plaque shows a clock`, error);
+    }
+  }
+
+  /** Whether the line saying whose turn it is can be selected as text, which the words of a game should not be. */
+  async isTurnLineSelectable(): Promise<boolean> {
+    try {
+      return await this.status.isTurnLineSelectable();
+    } catch (error) {
+      throw new DslError("Failed to read whether the turn line can be selected", error);
     }
   }
 

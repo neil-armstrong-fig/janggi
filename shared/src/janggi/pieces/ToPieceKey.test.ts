@@ -1,5 +1,5 @@
 import {expect, it} from "vitest";
-import {toPieceKey} from "./ToPieceKey.js";
+import {toPieceKey} from "@janggi/shared/janggi/pieces/ToPieceKey";
 
 it("joins a piece's side and type into one key", () => {
   expect(toPieceKey({side: "han", type: "general"})).toBe("han-general");

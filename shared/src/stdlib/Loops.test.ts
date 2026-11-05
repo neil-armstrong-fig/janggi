@@ -1,5 +1,5 @@
 import {expect, it} from "vitest";
-import {repeatMap} from "./Loops.js";
+import {repeatMap} from "@janggi/shared/stdlib/Loops";
 
 it("maps over each index", () => {
   expect(repeatMap(3, index => index * 2)).toEqual([0, 2, 4]);

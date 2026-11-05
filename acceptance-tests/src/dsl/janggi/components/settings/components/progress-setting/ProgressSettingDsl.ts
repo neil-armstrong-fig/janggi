@@ -62,6 +62,15 @@ export class ProgressSettingDsl {
     }
   }
 
+  /** Whether the save key's text can be selected, as text to copy should be wherever the page is not a game. */
+  async isSaveKeySelectable(): Promise<boolean> {
+    try {
+      return await this.progress.isSaveKeySelectable();
+    } catch (error) {
+      throw new DslError("Failed to read whether the save key can be selected", error);
+    }
+  }
+
   /** Whether the last text loaded was refused as not being a save key. */
   async isSaveRefused(): Promise<boolean> {
     try {

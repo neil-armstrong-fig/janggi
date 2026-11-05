@@ -1,4 +1,4 @@
-import type {OnboardingStage} from "./OnboardingStage.js";
+import type {OnboardingStage} from "@janggi/shared/janggi/onboarding/OnboardingStage";
 
 /**
  * Where the onboarding is kept in `localStorage`. Versioned, so a later change to its shape can be read

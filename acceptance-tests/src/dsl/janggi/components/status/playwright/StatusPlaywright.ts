@@ -1,4 +1,4 @@
-import type {ClockReading} from "@src/dsl/janggi/components/status/types/ClockReading";
+import type {ClockReading} from "@src/dsl/janggi/components/types/ClockReading";
 import type {Locator, Page} from "@playwright/test";
 import {DRAWN_BY} from "@janggi/shared/janggi/results/DrawnBy";
 import type {DrawnBy} from "@janggi/shared/janggi/results/DrawnBy";
@@ -70,7 +70,7 @@ export class StatusPlaywright extends BaseComponent {
     this.drawDecline = page.getByTestId("draw-decline");
     this.drawDeclined = page.getByTestId("draw-declined");
     this.scores = {cho: page.getByTestId("score-cho"), han: page.getByTestId("score-han")};
-    this.clocks = {cho: page.getByTestId("unreleased-clock-cho"), han: page.getByTestId("unreleased-clock-han")};
+    this.clocks = {cho: page.getByTestId("clock-cho"), han: page.getByTestId("clock-han")};
     this.taken = {cho: page.getByTestId("taken-cho"), han: page.getByTestId("taken-han")};
     this.result = page.getByTestId("result");
     this.showBoardButton = page.getByTestId("result-show-board");
@@ -589,6 +589,12 @@ export class StatusPlaywright extends BaseComponent {
    * The value is validated against the real union, the way `parsePieceKey` does it, so an attribute
    * naming an army that does not exist comes back as "nothing there" rather than as a `Side`.
    */
+  async isTurnLineSelectable(): Promise<boolean> {
+    await this.container.waitFor({state: "visible"});
+
+    return await this.container.evaluate(element => getComputedStyle(element).userSelect !== "none");
+  }
+
   async getTurn(): Promise<Side | undefined> {
     await this.container.waitFor({state: "visible"});
 

@@ -1,4 +1,4 @@
-import type {ShareKeyKind} from "./ShareKeyKind.js";
+import type {ShareKeyKind} from "@janggi/shared/janggi/share-keys/ShareKeyKind";
 
 /**
  * Whatever `encodeKey` put into a key of `kind`, or undefined where the text is not one: another kind of

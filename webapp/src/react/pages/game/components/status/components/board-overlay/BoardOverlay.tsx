@@ -45,7 +45,8 @@ import {useState} from "react";
  * only thing here that is not derived.
  *
  * A draw on offer is a conversation, and it is held here: the question with its two buttons between two
- * people, and a note where the offer was refused.
+ * people, and a note where the offer was refused. Time running out ends that conversation with the game (시간패), the one
+ * way a game ends with an offer still standing.
  *
  * **It reads the game and dispatches for itself**, and is handed only the tick a press makes — the sound
  * being the page's. The announcement and the notices beneath it are handed what they draw: each is a
@@ -83,15 +84,18 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   // standing is what ended it. `outcomeOf` has already said so; this is the one thing it does not say.
   const repetitionEndedIt = status.kind !== "won" && endsAGameByRepetition(game);
 
+  const lostOnTime = status.kind === "wonOnTime";
+
   // Between two people an offer waits on the other's tap. Against the bot the answer comes from the bot
   // itself, so there is nobody here to ask — only a refusal to report.
   const offerAwaitsAnAnswer =
+    !lostOnTime &&
     drawOffer !== undefined &&
     !drawOffer.declined &&
     botSide === undefined &&
     // With a friend only the one who was offered the draw is asked (`isAskedToAnswerDraw`).
     isAskedToAnswerDraw(friend, drawOffer.by);
-  const offerRefused = drawOffer?.declined ? opponentOf(drawOffer.by) : undefined;
+  const offerRefused = drawOffer?.declined && !lostOnTime ? opponentOf(drawOffer.by) : undefined;
 
   const nextBotElo = newlyUnlockedBotElo({status, opponent, format: phase.format, beaten});
 

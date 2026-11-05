@@ -44,7 +44,8 @@ export interface MoveSelection {
  *
  * `playable` closes it from the other end, and is a fact no position carries: a scored board still
  * being laid out has pieces on it only because something must be drawn, and none of them is anybody's
- * to pick up until both armies have chosen. See `docs/rules.md` §6.6.
+ * to pick up until both armies have chosen (`docs/rules.md` §6.6), and an army that has lost on time has lost whatever
+ * is still on the board.
  */
 export function useMoveSelection(game: GameState, onMove: (move: Move) => void, playable: boolean): MoveSelection {
   const [selected, setSelected] = useState<Position | undefined>(undefined);
