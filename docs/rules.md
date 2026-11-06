@@ -181,6 +181,15 @@ is so often stuck in the opening.
 This is not the xiangqi elephant. It is far longer-ranged, and **it crosses to
 the enemy half freely** — there is no river.
 
+**Shown on the guide.** Blocking is the part a player who knows chess gets
+wrong, since a knight jumps. So the guide's horse and elephant cards
+(`learn/…/movement-snapshot/`) trace each route out from the piece, then stand
+a piece in the way: on the horse's straight step, two moves go; on the
+elephant's straight step two go, and on its first diagonal point one. The
+routes come from `routes/RoutesOf.ts` and the cut from
+`blocking/BlockOnRoute.ts`, both written from this section; motion reduced
+shows both blockers at once.
+
 ### 4.5 Chariot (차)
 
 > "車는 가로막는 다른 기물만 없다면 전후좌우로 또는 궁성의 대각선을 타고
@@ -705,6 +714,11 @@ people from the opening, and `…/bot/OfferingADrawToTheBot.test.ts` the bot's
 refusal. **What ends a looping endgame is deeper than anyone can tap** — under
 thirty points a side — so it is covered by unit tests on `outcomeOf` and its
 neighbours, per `webapp/AGENTS.md`.
+
+The guide says the same in its "Repeating a position" card (section 04): the
+move that would stand a position a third time is not offered, unlike chess's
+draw, and under thirty points each it is, and ends the game — drawn when
+casual, on points when scored.
 
 ### 6.5 Scoring, piece values and the 덤
 

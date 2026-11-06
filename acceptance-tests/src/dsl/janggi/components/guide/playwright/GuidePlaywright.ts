@@ -185,11 +185,21 @@ export class GuidePlaywright extends BasePage {
   }
 
   async getMovementBlockerCount(type: PieceType): Promise<number> {
-    return await this.pieces[type].getByTestId("guide-movement-blocker").count();
+    return await this.countDrawn(this.pieces[type].getByTestId("guide-movement-blocker"));
   }
 
   async getCutOffDestinationCount(type: PieceType): Promise<number> {
-    return await this.pieces[type].getByTestId("guide-movement-cut-off").count();
+    return await this.countDrawn(this.pieces[type].getByTestId("guide-movement-cut-off"));
+  }
+
+  /**
+   * Only those drawn at all: Playwright counts an element at opacity 0 as visible, and the example's pieces and crosses
+   * come and go by opacity. The specs run with motion reduced, where each stands still at what the example settles on.
+   */
+  private async countDrawn(marks: Locator): Promise<number> {
+    return await marks.evaluateAll(elements => {
+      return elements.filter(element => getComputedStyle(element).opacity !== "0").length;
+    });
   }
 
   async getPieceMark(type: PieceType): Promise<string> {
