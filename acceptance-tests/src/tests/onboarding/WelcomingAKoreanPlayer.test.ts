@@ -27,6 +27,10 @@ given("a player whose browser prefers Korean opens the game for the first time",
       expect(await janggi.getPageLanguage()).toBe("ko");
     });
 
+    then("the address is the game's Korean page", async ({janggi}) => {
+      expect(await janggi.getAddressPath()).toBe("/ko/");
+    });
+
     then("they are told that the Korean is a work in progress", async ({janggi}) => {
       expect(await janggi.languageNotice.isShown()).toBe(true);
     });
