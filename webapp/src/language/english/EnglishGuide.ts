@@ -96,14 +96,18 @@ export const ENGLISH_GUIDE: GuideMessages = {
       horse: {
         name: "Horse",
         mark: "마",
-        description: "Steps one point straight, then one diagonally outward. Any piece on the first point blocks it.",
-        caption: "One step straight, then one step diagonally out. The first step can be blocked.",
+        description:
+          "Steps one point straight, then one diagonally outward. Unlike a chess knight it cannot jump: a piece of either army on that first point (멱) blocks both moves beyond it.",
+        caption:
+          "One step straight, then one diagonally out. A piece on the straight step cuts off the two moves through it.",
       },
       elephant: {
         name: "Elephant",
         mark: "상",
-        description: "Steps one point straight, then two diagonally outward. Either point on its route can block it.",
-        caption: "One step straight, then two diagonally out. Either point on the route can be blocked.",
+        description:
+          "Steps one point straight, then two diagonally outward, anywhere on the board. It cannot jump either: a piece on the straight step or on the first diagonal point blocks it.",
+        caption:
+          "One step straight, then two diagonally out. A piece on the straight step cuts off two moves; one on the first diagonal point cuts off one.",
       },
       soldier: {
         name: "Soldier",
@@ -157,6 +161,10 @@ export const ENGLISH_GUIDE: GuideMessages = {
         marked: "bikjang",
         after: " (빅장). What that call decides depends on the match format.",
       },
+    },
+    repetition: {
+      title: "Repeating a position",
+      body: "A move that would bring the same position back a third time is not allowed. In chess that repetition would be a draw; here the move is simply not on offer. Once both sides are under 30 points it is allowed, and it ends the game: drawn in casual play, decided on points in scored play.",
     },
     sources: {
       start: "The ",

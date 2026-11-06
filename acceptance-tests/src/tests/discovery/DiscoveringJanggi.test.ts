@@ -72,6 +72,7 @@ given("someone searches for a way to play janggi", () => {
       expect(content).toContain("장기");
       expect(content).toContain("9 × 10");
       expect(content).toContain("bikjang");
+      expect(content).toContain("Repeating a position");
       expect(content).toContain("Fairy-Stockfish");
       expect(content).not.toContain("No download");
       expect(content).not.toContain("Install it as a web app");
@@ -98,6 +99,11 @@ given("someone searches for a way to play janggi", () => {
       expect(await janggi.guide.getPieceMark("horse")).toBe("馬");
     });
 
+    then("it shows pieces in the horse's way, each cutting off the two moves behind it", async ({janggi}) => {
+      expect(await janggi.guide.getMovementBlockerCount("horse")).toBe(2);
+      expect(await janggi.guide.getCutOffDestinationCount("horse")).toBe(4);
+    });
+
     when("they choose the Hangul pieces", () => {
       beforeEach(async ({janggi}) => {
         await janggi.guide.setPieceStyleTo("Hangul");
@@ -116,6 +122,33 @@ given("someone searches for a way to play janggi", () => {
       then("the example uses the same picture piece as the game", async ({janggi}) => {
         expect(await janggi.guide.getPieceMark("horse")).toBe("drawing");
       });
+    });
+  });
+
+  when("they open the elephant's movement example", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.guide.visitGuide();
+      await janggi.guide.openPiece("elephant");
+    });
+
+    then("it shows that a piece on either point of its route stops it", async ({janggi}) => {
+      expect(await janggi.guide.getMovementBlockerCount("elephant")).toBe(2);
+      expect(await janggi.guide.getCutOffDestinationCount("elephant")).toBe(3);
+    });
+  });
+
+  when("they open two pieces side by side on a wide screen, then close one", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.resizeWindowTo(1280, 900);
+      await janggi.guide.visitGuide();
+      await janggi.guide.openPiece("horse");
+      await janggi.guide.openPiece("elephant");
+      await janggi.guide.closePiece("horse");
+    });
+
+    then("the closed one folds back to its summary while the other stays open", async ({janggi}) => {
+      expect(await janggi.guide.isPieceFolded("horse")).toBe(true);
+      expect(await janggi.guide.isPieceOpen("elephant")).toBe(true);
     });
   });
 

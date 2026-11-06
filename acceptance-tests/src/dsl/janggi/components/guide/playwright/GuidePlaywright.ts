@@ -88,6 +88,10 @@ export class GuidePlaywright extends BasePage {
     await this.pieces[type].locator("summary").click();
   }
 
+  async closePiece(type: PieceType): Promise<void> {
+    await this.pieces[type].locator("summary").click();
+  }
+
   async setPieceStyleTo(name: GuidePieceStyleName): Promise<void> {
     await this.pieceStyles[name].click();
   }
@@ -166,12 +170,30 @@ export class GuidePlaywright extends BasePage {
     return ((await this.pieces[type].getAttribute("open")) ?? undefined) !== undefined;
   }
 
+  /** Closed and drawn no taller than its summary, rather than stretched to the height of an open card beside it. */
+  async isPieceFolded(type: PieceType): Promise<boolean> {
+    const card = await this.pieces[type].boundingBox();
+    const summary = await this.pieces[type].locator("summary").boundingBox();
+    if (!card || !summary) return false;
+
+    // The card's own border, top and bottom, is all it may add to its summary.
+    return !(await this.isPieceOpen(type)) && card.height - summary.height <= 3;
+  }
+
   async getMovementDestinationCount(type: PieceType): Promise<number> {
     return await this.pieces[type].getByTestId("guide-movement-destination").count();
   }
 
+  async getMovementBlockerCount(type: PieceType): Promise<number> {
+    return await this.pieces[type].getByTestId("guide-movement-blocker").count();
+  }
+
+  async getCutOffDestinationCount(type: PieceType): Promise<number> {
+    return await this.pieces[type].getByTestId("guide-movement-cut-off").count();
+  }
+
   async getPieceMark(type: PieceType): Promise<string> {
-    const piece = this.pieces[type].getByTestId("piece");
+    const piece = this.pieces[type].getByTestId("guide-movement-piece").getByTestId("piece");
     const character = piece.locator("text");
     if ((await character.count()) > 0) return (await character.textContent()) ?? "";
 

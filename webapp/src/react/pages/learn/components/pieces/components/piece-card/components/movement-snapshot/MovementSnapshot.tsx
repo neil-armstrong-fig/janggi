@@ -1,29 +1,41 @@
+import type {
+  BlockTurn,
+  MovementBlock,
+} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/blocking/types/MovementBlock";
+import type {MovementPoint} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/types/MovementPoint";
+import type {MovementRoute} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/routes/types/MovementRoute";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
-import {Piece} from "@src/react/pages/game/components/board/components/piece/Piece";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
+import {RouteLine} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/components/route-line/RouteLine";
+import {StandingPiece} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/components/standing-piece/StandingPiece";
+import {blockOnRoute} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/blocking/BlockOnRoute";
+import {pointAt} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/geometry/PointAt";
+import {routesOf} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/routes/RoutesOf";
 
 interface Props {
   readonly pieceType: PieceType;
   readonly pieceName: string;
+  /** What the piece stood in a horse's or elephant's way is called, in the language of the guide. */
+  readonly blockerName: string;
   readonly pieceStyle: PieceSetStyle;
   /** What the example shows, in the language of the guide. It is written beneath and read aloud for the figure. */
   readonly caption: string;
 }
 
-interface MovementPoint {
-  readonly file: number;
-  readonly rank: number;
-}
-
 interface MovementExample {
-  readonly destinations: readonly MovementPoint[];
+  readonly destinations?: readonly MovementPoint[];
   readonly screens?: readonly MovementPoint[];
   readonly palace?: boolean;
+  /** For a piece that goes by way of other points (the horse and elephant), each way it goes, traced out. */
+  readonly routes?: readonly MovementRoute[];
+  /** Pieces stood in those routes' way, one turn after another, to show what stops it. */
+  readonly blocks?: readonly MovementBlock[];
 }
 
 /** A seven-by-seven crop: enough board to show a piece's complete movement shape, and no more. */
-export function MovementSnapshot({pieceType, pieceName, pieceStyle, caption}: Props): React.JSX.Element {
+export function MovementSnapshot({pieceType, pieceName, blockerName, pieceStyle, caption}: Props): React.JSX.Element {
   const example = MOVEMENT_EXAMPLES[pieceType];
+  const blocks = example.blocks ?? [];
 
   return (
     <figure
@@ -62,7 +74,11 @@ export function MovementSnapshot({pieceType, pieceName, pieceStyle, caption}: Pr
             </g>
           )}
 
-          {example.destinations.map(destination => (
+          {example.routes?.map(route => (
+            <RouteLine key={`route-${routeKey(route)}`} route={route} block={blockOnRoute(route, blocks)} />
+          ))}
+
+          {example.destinations?.map(destination => (
             <circle
               key={`destination-${pointKey(destination)}`}
               data-testid="guide-movement-destination"
@@ -84,9 +100,26 @@ export function MovementSnapshot({pieceType, pieceName, pieceStyle, caption}: Pr
           ))}
         </svg>
 
-        <div className="absolute z-1 aspect-square w-[15%] -translate-x-1/2 -translate-y-1/2" style={piecePosition()}>
-          <Piece piece={{side: "cho", type: pieceType}} name={pieceName} style={pieceStyle} emphasised={false} />
-        </div>
+        <StandingPiece
+          at={{file: CENTRE, rank: CENTRE}}
+          piece={{side: "cho", type: pieceType}}
+          name={pieceName}
+          style={pieceStyle}
+          testId="guide-movement-piece"
+        />
+
+        {blocks.map(block => (
+          <StandingPiece
+            key={`blocker-${block.turn}`}
+            at={block.at}
+            piece={BLOCKER}
+            name={blockerName}
+            style={pieceStyle}
+            testId="guide-movement-blocker"
+            motion={BLOCKER_MOTION[block.turn]}
+            unspoken
+          />
+        ))}
       </div>
 
       <figcaption className="text-sm leading-relaxed text-wood/70">{caption}</figcaption>
@@ -94,23 +127,26 @@ export function MovementSnapshot({pieceType, pieceName, pieceStyle, caption}: Pr
   );
 }
 
-function pointAt(index: number): number {
-  return BOARD_START + index * BOARD_STEP;
-}
-
 function pointKey(point: MovementPoint): string {
   return `${point.file}-${point.rank}`;
 }
 
-function piecePosition(): React.CSSProperties {
-  return {left: `${pointAt(CENTRE)}%`, top: `${pointAt(CENTRE)}%`};
+function routeKey(route: MovementRoute): string {
+  return route.points.map(pointKey).join("_");
 }
 
-const BOARD_START = 8;
-const BOARD_END = 92;
-const BOARD_STEP = 14;
 const CENTRE = 3;
-const BOARD_COORDINATES = [8, 22, 36, 50, 64, 78, 92] as const;
+const BOARD_COORDINATES = [0, 1, 2, 3, 4, 5, 6].map(pointAt);
+const BOARD_START = pointAt(0);
+const BOARD_END = pointAt(6);
+
+/** Any piece of either army blocks, so the example stands the other army's soldier in the way. */
+const BLOCKER = {side: "han", type: "soldier"} as const;
+
+const BLOCKER_MOTION: Readonly<Record<BlockTurn, string>> = {
+  first: "animate-[guide-blocker-first_8s_linear_infinite]",
+  second: "animate-[guide-blocker-second_8s_linear_infinite]",
+};
 
 const ALL_ADJACENT: readonly MovementPoint[] = [
   {file: 2, rank: 2},
@@ -121,28 +157,6 @@ const ALL_ADJACENT: readonly MovementPoint[] = [
   {file: 2, rank: 4},
   {file: 3, rank: 4},
   {file: 4, rank: 4},
-];
-
-const HORSE_DESTINATIONS: readonly MovementPoint[] = [
-  {file: 1, rank: 2},
-  {file: 1, rank: 4},
-  {file: 2, rank: 1},
-  {file: 4, rank: 1},
-  {file: 5, rank: 2},
-  {file: 5, rank: 4},
-  {file: 2, rank: 5},
-  {file: 4, rank: 5},
-];
-
-const ELEPHANT_DESTINATIONS: readonly MovementPoint[] = [
-  {file: 0, rank: 1},
-  {file: 0, rank: 5},
-  {file: 1, rank: 0},
-  {file: 5, rank: 0},
-  {file: 6, rank: 1},
-  {file: 6, rank: 5},
-  {file: 1, rank: 6},
-  {file: 5, rank: 6},
 ];
 
 const CHARIOT_DESTINATIONS: readonly MovementPoint[] = [
@@ -174,10 +188,20 @@ const MOVEMENT_EXAMPLES: Readonly<Record<PieceType, MovementExample>> = {
     palace: true,
   },
   horse: {
-    destinations: HORSE_DESTINATIONS,
+    routes: routesOf(1),
+    // A piece on the straight step above, then on the one to the right: each takes away the two ways through it.
+    blocks: [
+      {turn: "first", at: {file: 3, rank: 2}},
+      {turn: "second", at: {file: 4, rank: 3}},
+    ],
   },
   elephant: {
-    destinations: ELEPHANT_DESTINATIONS,
+    routes: routesOf(2),
+    // A piece on the straight step above takes two ways; then one on a diagonal step to the upper right takes one.
+    blocks: [
+      {turn: "first", at: {file: 3, rank: 2}},
+      {turn: "second", at: {file: 5, rank: 2}},
+    ],
   },
   chariot: {
     destinations: CHARIOT_DESTINATIONS,

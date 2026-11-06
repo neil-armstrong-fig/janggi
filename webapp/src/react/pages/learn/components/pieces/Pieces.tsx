@@ -66,13 +66,14 @@ export function Pieces({messages}: Props): React.JSX.Element {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {CARD_ORDER.map(pieceType => (
           <PieceCard
             key={pieceType}
             pieceType={pieceType}
             pieceStyle={pieceStyle}
             messages={messages.pieces[pieceType]}
+            blockerName={messages.pieces.soldier.name}
           />
         ))}
       </div>

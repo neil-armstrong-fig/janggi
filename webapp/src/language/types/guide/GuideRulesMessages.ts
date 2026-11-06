@@ -11,6 +11,8 @@ export interface GuideRulesMessages {
   readonly openings: GuideRuleMessages;
   readonly passing: GuideRuleMessages;
   readonly bikjang: GuideBikjangRuleMessages;
+  /** That the move repeating a position a third time is refused, unlike chess's draw, and what happens under 30 points. */
+  readonly repetition: GuideRuleMessages;
   /** Where each rule is researched, linking the rules and match sources and the opening research. */
   readonly sources: SentenceWithTwoLinks;
 }

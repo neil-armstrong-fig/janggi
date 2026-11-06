@@ -55,6 +55,12 @@ export function DistinctiveRules({messages, links}: Props): React.JSX.Element {
             {messages.bikjang.body.after}
           </p>
         </article>
+
+        <article className="rounded-xl border border-wood/15 bg-ground-raised/60 p-6">
+          <h3 className="mb-2 text-base font-bold">{messages.repetition.title}</h3>
+
+          <p className="text-sm leading-relaxed text-wood/70">{messages.repetition.body}</p>
+        </article>
       </div>
 
       <p className="mt-4 border-l-3 border-gold bg-gold/5 px-5 py-4 text-wood/80">

@@ -192,6 +192,38 @@ export class GuideDsl {
     }
   }
 
+  async closePiece(type: PieceType): Promise<void> {
+    try {
+      await this.guide.closePiece(type);
+    } catch (error) {
+      throw new DslError(`Failed to close the ${type} movement example`, error);
+    }
+  }
+
+  async isPieceFolded(type: PieceType): Promise<boolean> {
+    try {
+      return await this.guide.isPieceFolded(type);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the ${type} card is folded`, error);
+    }
+  }
+
+  async getMovementBlockerCount(type: PieceType): Promise<number> {
+    try {
+      return await this.guide.getMovementBlockerCount(type);
+    } catch (error) {
+      throw new DslError(`Failed to count the pieces shown in the ${type}'s way`, error);
+    }
+  }
+
+  async getCutOffDestinationCount(type: PieceType): Promise<number> {
+    try {
+      return await this.guide.getCutOffDestinationCount(type);
+    } catch (error) {
+      throw new DslError(`Failed to count the ${type}'s destinations shown cut off`, error);
+    }
+  }
+
   async getPieceMark(type: PieceType): Promise<string> {
     try {
       return await this.guide.getPieceMark(type);

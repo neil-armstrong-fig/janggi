@@ -14,7 +14,8 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
 - **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`,
   `guide`, `guide-play`, `guide-install`, `guide-rules-source`, `guide-fairy-stockfish-source`,
   `guide-piece-style-traditional`, `guide-piece-style-hangul`, `guide-piece-style-modern` and
-  `guide-movement-destination`; `record` (the record sheet, `inert` while closed) with `record-elo`
+  `guide-movement-destination` (with `guide-movement-piece`, the piece an example moves; `guide-movement-blocker`, a
+  piece in its way; and `guide-movement-cut-off`, the mark over a destination that piece takes away); `record` (the record sheet, `inert` while closed) with `record-elo`
   carrying `data-elo`; and the
   controls `new-game`, `result-new-game`, `result-show-board`, `result-peek` (the board-sized tap that brings the result back, present only while it is put aside), `pass`, `bikjang`, `draw`, `undo`, `redo`, `settings-open`,
   `settings-close`, `settings-scroll` (each pane's scrolling column), `settings-install`, `record-open`, `record-back`, `record-close`, `record-reset`, `guide-open`,

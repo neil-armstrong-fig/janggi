@@ -7,9 +7,11 @@ interface Props {
   readonly pieceType: PieceType;
   readonly pieceStyle: PieceSetStyle;
   readonly messages: GuidePieceMessages;
+  /** What the piece an example stands in the way is called: the soldier's name, in the language of the guide. */
+  readonly blockerName: string;
 }
 
-export function PieceCard({pieceType, pieceStyle, messages}: Props): React.JSX.Element {
+export function PieceCard({pieceType, pieceStyle, messages, blockerName}: Props): React.JSX.Element {
   return (
     <details
       className="group rounded-xl border border-wood/15 bg-ground-raised/60"
@@ -27,6 +29,7 @@ export function PieceCard({pieceType, pieceStyle, messages}: Props): React.JSX.E
       <MovementSnapshot
         pieceType={pieceType}
         pieceName={messages.name}
+        blockerName={blockerName}
         pieceStyle={pieceStyle}
         caption={messages.caption}
       />

@@ -206,6 +206,135 @@
   }
 }
 
+/*
+ * The guide's horse and elephant examples, one 8s loop: the routes trace out, a piece drops into the way and the
+ * routes behind it dim under a cross, it lifts, a second does the same, and everything fades to start again. A
+ * route is drawn inside the group that dims it, so the two opacities multiply rather than fight. Each still state
+ * (motion reduced) is the class beneath the animation: both pieces in the way at once.
+ */
+@keyframes guide-route-trace {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  14% {
+    stroke-dashoffset: 0;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes guide-landing-show {
+  0%,
+  10% {
+    opacity: 0;
+  }
+  16%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes guide-blocker-first {
+  0%,
+  22% {
+    opacity: 0;
+    scale: 1.4;
+  }
+  28%,
+  52% {
+    opacity: 1;
+    scale: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+    scale: 1;
+  }
+}
+
+@keyframes guide-blocker-second {
+  0%,
+  60% {
+    opacity: 0;
+    scale: 1.4;
+  }
+  66%,
+  90% {
+    opacity: 1;
+    scale: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+    scale: 1;
+  }
+}
+
+@keyframes guide-cut-first {
+  0%,
+  30% {
+    opacity: 1;
+  }
+  34%,
+  52% {
+    opacity: 0.25;
+  }
+  58%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes guide-cut-second {
+  0%,
+  68% {
+    opacity: 1;
+  }
+  72%,
+  100% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes guide-cross-first {
+  0%,
+  30% {
+    opacity: 0;
+  }
+  34%,
+  52% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes guide-cross-second {
+  0%,
+  68% {
+    opacity: 0;
+  }
+  72%,
+  90% {
+    opacity: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes danger-pulse {
   0%,
   100% {
