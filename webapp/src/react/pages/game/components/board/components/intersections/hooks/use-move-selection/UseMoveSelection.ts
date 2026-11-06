@@ -20,6 +20,13 @@ export interface MoveSelection {
   readonly hover: (position: Position | undefined) => void;
 }
 
+/** Which moves the board offers: none unless it is `playable`, and of those only `only`, where one move is asked for. */
+export interface AllowedMoves {
+  readonly playable: boolean;
+  /** The one move the player may make — the tutorial's — or undefined, for any the engine allows. */
+  readonly only?: Move | undefined;
+}
+
 /**
  * Picking a piece up and putting it down, which is the whole of how a game is played by touch.
  *
@@ -46,16 +53,23 @@ export interface MoveSelection {
  * being laid out has pieces on it only because something must be drawn, and none of them is anybody's
  * to pick up until both armies have chosen (`docs/rules.md` §6.6), and an army that has lost on time has lost whatever
  * is still on the board.
+ *
+ * `only` narrows it to one move, for the tutorial that tells the player what to play: no other piece is picked up, and
+ * the one that is goes nowhere else. The engine is still the gate — a move it would refuse is offered by neither.
  */
-export function useMoveSelection(game: GameState, onMove: (move: Move) => void, playable: boolean): MoveSelection {
+export function useMoveSelection(
+  game: GameState,
+  onMove: (move: Move) => void,
+  {playable, only}: AllowedMoves,
+): MoveSelection {
   const [selected, setSelected] = useState<Position | undefined>(undefined);
   const [hovered, setHovered] = useState<Position | undefined>(undefined);
 
   const closed = !playable || gameIsOver(game);
-  const held = closed ? undefined : heldAt(game, selected);
+  const held = closed ? undefined : heldAt(game, selected, only);
   const asking = closed ? undefined : (held ?? hovered);
-  const destinations = useMemo(() => (asking ? movesFrom(game, asking) : NOWHERE), [game, asking]);
-  const covered = useMemo(() => (asking ? coveredFrom(game, asking) : NOWHERE), [game, asking]);
+  const destinations = useMemo(() => destinationsFrom(game, asking, only), [game, asking, only]);
+  const covered = useMemo(() => coveredOf(game, asking, only), [game, asking, only]);
 
   return {
     selected: held,
@@ -73,7 +87,7 @@ export function useMoveSelection(game: GameState, onMove: (move: Move) => void, 
         return;
       }
 
-      setSelected(pickedUpAt(game, held, position));
+      setSelected(pickedUpAt({game, held, position, only}));
     },
   };
 }
@@ -83,10 +97,10 @@ export function useMoveSelection(game: GameState, onMove: (move: Move) => void, 
  * standing there if it is this army's, and nothing otherwise — so tapping the enemy, an empty
  * point, or the held piece a second time all put it down.
  */
-function pickedUpAt(game: GameState, held: Position | undefined, position: Position): Position | undefined {
+function pickedUpAt({game, held, position, only}: Tapped): Position | undefined {
   if (held && toPositionKey(held) === toPositionKey(position)) return undefined;
 
-  return heldAt(game, position);
+  return heldAt(game, position, only);
 }
 
 /**
@@ -103,8 +117,9 @@ function pickedUpAt(game: GameState, held: Position | undefined, position: Posit
  * and `movesFrom` already answers nothing there — while a hover over the *enemy's* piece is the
  * deliberate preview this hook's docblock describes, not a stale hold.
  */
-function heldAt(game: GameState, position: Position | undefined): Position | undefined {
+function heldAt(game: GameState, position: Position | undefined, only: Move | undefined): Position | undefined {
   if (!position) return undefined;
+  if (only && toPositionKey(only.from) !== toPositionKey(position)) return undefined;
 
   const piece = pieceAt(piecesByPosition(game.pieces), position);
   if (piece?.side === game.sideToMove) {
@@ -114,10 +129,37 @@ function heldAt(game: GameState, position: Position | undefined): Position | und
   return undefined;
 }
 
+/** Where the piece in question may go: anywhere the engine allows, or — with one move asked for — that move's end alone. */
+function destinationsFrom(game: GameState, asking: Position | undefined, only: Move | undefined): readonly Position[] {
+  if (!asking) return NOWHERE;
+
+  const allowed = movesFrom(game, asking);
+  if (!only) return allowed;
+
+  if (toPositionKey(only.from) !== toPositionKey(asking)) return NOWHERE;
+
+  return allowed.filter(destination => toPositionKey(destination) === toPositionKey(only.to));
+}
+
+/** The points of its own army the piece in question would land on — none where one move is asked for, which goes elsewhere. */
+function coveredOf(game: GameState, asking: Position | undefined, only: Move | undefined): readonly Position[] {
+  if (!asking || only) return NOWHERE;
+
+  return coveredFrom(game, asking);
+}
+
 function isAmong(positions: readonly Position[], position: Position): boolean {
   const key = toPositionKey(position);
 
   return positions.some(candidate => toPositionKey(candidate) === key);
+}
+
+/** A tap on the board, and what it lands on. */
+interface Tapped {
+  readonly game: GameState;
+  readonly held: Position | undefined;
+  readonly position: Position;
+  readonly only: Move | undefined;
 }
 
 /** A stable empty list, so nothing downstream re-renders because a new one was built. */

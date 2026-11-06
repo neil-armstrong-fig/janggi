@@ -5,7 +5,7 @@ import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {Locator, Page} from "@playwright/test";
 import {expect} from "@playwright/test";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
-import type {SpotlightedPoint} from "@src/dsl/janggi/components/onboarding/types/SpotlightedPoint";
+import type {SpotlightedPoint} from "@src/dsl/janggi/components/types/SpotlightedPoint";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 import type {SoundChoiceName} from "@janggi/shared/janggi/onboarding/SoundChoiceName";
 
@@ -14,6 +14,7 @@ export class OnboardingPlaywright extends BaseComponent {
   private readonly next: Locator;
   private readonly skip: Locator;
   private readonly startTour: Locator;
+  private readonly startTutorial: Locator;
   private readonly tour: Locator;
   private readonly tourStep: Locator;
   private readonly tourTitle: Locator;
@@ -38,6 +39,7 @@ export class OnboardingPlaywright extends BaseComponent {
     this.next = page.getByTestId("welcome-next");
     this.skip = page.getByTestId("welcome-skip");
     this.startTour = page.getByTestId("welcome-start-tour");
+    this.startTutorial = page.getByTestId("welcome-start-tutorial");
     this.tour = page.getByTestId("tour");
     this.tourStep = page.getByTestId("tour-step");
     this.tourTitle = page.getByTestId("tour-title");
@@ -75,6 +77,10 @@ export class OnboardingPlaywright extends BaseComponent {
 
   async startTheTour(): Promise<void> {
     await this.startTour.click();
+  }
+
+  async startTheTutorial(): Promise<void> {
+    await this.startTutorial.click();
   }
 
   async pressEscape(): Promise<void> {

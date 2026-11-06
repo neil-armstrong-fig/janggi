@@ -2,6 +2,7 @@ import type {Locator, Page} from "@playwright/test";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
+import {isUnderTheSettings} from "@src/dsl/janggi/components/under-the-settings/playwright/IsUnderTheSettings";
 
 /**
  * The locators behind `ResultBannerDsl` — the announcement of a game's result over the board: what it says, and the next game it offers.
@@ -73,5 +74,17 @@ export class ResultBannerPlaywright extends BaseComponent {
    */
   async isResultAnnounced(): Promise<boolean> {
     return (await this.result.count()) > 0;
+  }
+
+  /** Whether the open settings sheet stands over the announcement's Show board button. */
+  async isUnderTheSettings(): Promise<boolean> {
+    return await isUnderTheSettings(this.page, this.showBoardButton);
+  }
+
+  /** Whether the announcement, once it is up, offers New game at all. */
+  async isNewGameOffered(): Promise<boolean> {
+    await this.result.waitFor({state: "visible"});
+
+    return (await this.newGame.count()) > 0;
   }
 }

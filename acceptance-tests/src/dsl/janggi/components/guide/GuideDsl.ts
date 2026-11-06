@@ -4,6 +4,7 @@ import type {GuidePieceStyleName} from "@src/dsl/janggi/components/guide/types/G
 import {LanguageSwitchDsl} from "@src/dsl/janggi/components/language-switch/LanguageSwitchDsl";
 import type {Page} from "@playwright/test";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
+import type {TutorialOffer} from "@janggi/shared/janggi/tutorial/TutorialOffer";
 
 export class GuideDsl {
   private readonly guide: GuidePlaywright;
@@ -21,6 +22,22 @@ export class GuideDsl {
       await this.guide.visitGuide();
     } catch (error) {
       throw new DslError("Failed to visit the Janggi guide", error);
+    }
+  }
+
+  async playTheTutorial(): Promise<void> {
+    try {
+      await this.guide.playTheTutorial();
+    } catch (error) {
+      throw new DslError("Failed to follow the Janggi guide's link to the tutorial", error);
+    }
+  }
+
+  async getTutorialOffer(): Promise<TutorialOffer> {
+    try {
+      return await this.guide.getTutorialOffer();
+    } catch (error) {
+      throw new DslError("Failed to read what the Janggi guide's link to the tutorial offers", error);
     }
   }
 

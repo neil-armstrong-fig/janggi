@@ -22,5 +22,14 @@ interface Props {
 export function DrawButton({enabled, onOffer}: Props): React.JSX.Element {
   const {controls} = useMessages();
 
-  return <ControlButton testId="draw" label={controls.draw} icon={<EqualIcon />} enabled={enabled} onPress={onOffer} />;
+  return (
+    <ControlButton
+      testId="draw"
+      label={controls.draw}
+      icon={<EqualIcon />}
+      enabled={enabled}
+      onPress={onOffer}
+      tourTarget="draw"
+    />
+  );
 }

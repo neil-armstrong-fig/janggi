@@ -1,5 +1,6 @@
 import {actInGame} from "@src/redux/online/acting/ActInGame";
 import {isAskedToAnswerDraw} from "@src/redux/online/selecting/IsAskedToAnswerDraw";
+import {inTheTutorial} from "@src/redux/tutorial/selecting/InTheTutorial";
 import {startAnotherGame} from "@src/redux/online/acting/StartAnotherGame";
 import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
 import {botEngineRetried} from "@src/redux/bot-engine/BotEngineSlice";
@@ -60,6 +61,7 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
   const {xp, beaten} = useAppSelector(state => state.progress);
   const friend = useAppSelector(state => state.friend);
+  const tutorial = useAppSelector(inTheTutorial);
   const {effects} = usePreferences();
   const {status, botsTurn, awaitingGoAhead, engineHoldsPlay, botEngine} = useGameStatus();
   const dispatch = useAppDispatch();
@@ -93,6 +95,8 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
     drawOffer !== undefined &&
     !drawOffer.declined &&
     botSide === undefined &&
+    // In the tutorial the script answers for Han (`useScriptedOpponent`), so there is nobody here to ask.
+    !tutorial &&
     // With a friend only the one who was offered the draw is asked (`isAskedToAnswerDraw`).
     isAskedToAnswerDraw(friend, drawOffer.by);
   const offerRefused = drawOffer?.declined && !lostOnTime ? opponentOf(drawOffer.by) : undefined;
@@ -149,7 +153,7 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
           animated={effects.full}
           nextBotElo={nextBotElo}
           onShowBoard={() => setGamePutAside(game)}
-          onStartNewGame={pressedStartAnotherGame}
+          onStartNewGame={tutorial ? undefined : pressedStartAnotherGame}
           onStartNewGameAtBotElo={elo => pressed(botStrengthChosen(elo))}
         />
       )}

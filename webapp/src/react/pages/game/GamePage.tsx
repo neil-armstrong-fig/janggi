@@ -26,6 +26,9 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
 import {useClockKeeper} from "@src/react/pages/game/hooks/use-clock-keeper/UseClockKeeper";
 import {useRatedGame} from "@src/react/pages/game/hooks/use-rated-game/UseRatedGame";
 import {useState} from "react";
+import {Tutorial} from "@src/react/pages/game/components/tutorial/Tutorial";
+import {useScriptedOpponent} from "@src/react/pages/game/hooks/use-scripted-opponent/UseScriptedOpponent";
+import {useTutorialLink} from "@src/react/pages/game/hooks/use-tutorial-link/UseTutorialLink";
 import {LanguageNotice} from "@src/react/pages/game/components/language-notice/LanguageNotice";
 import {ResumeGame} from "@src/react/pages/game/components/resume-game/ResumeGame";
 
@@ -100,6 +103,8 @@ export function GamePage(): React.JSX.Element {
   useRatedGame(moment);
   useClockKeeper(moment);
   useFriendRoom();
+  useScriptedOpponent();
+  useTutorialLink();
 
   return (
     <main className="flex h-full w-full flex-col bg-ground p-2 select-none">
@@ -110,6 +115,8 @@ export function GamePage(): React.JSX.Element {
       <Status onControlPressed={() => sound("controlPressed")}>
         <Board moment={moment} onPickUp={() => sound("pieceLifted")} />
       </Status>
+
+      <Tutorial />
 
       <Settings />
 

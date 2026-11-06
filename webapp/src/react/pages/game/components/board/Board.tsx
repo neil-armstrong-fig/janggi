@@ -70,6 +70,7 @@ export function Board({moment, onPickUp}: Props): React.JSX.Element {
   return (
     <BoardGrid
       testId="board"
+      tourTarget="board"
       surface={armyBoardStyles.han.surface}
       bottomSurface={armyBoardStyles.cho.surface}
       gridRef={shaken}

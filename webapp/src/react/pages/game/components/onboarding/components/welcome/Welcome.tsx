@@ -1,6 +1,7 @@
 import {WelcomeChoices} from "@src/react/pages/game/components/onboarding/components/welcome/components/welcome-choices/WelcomeChoices";
 import {WelcomeIntro} from "@src/react/pages/game/components/onboarding/components/welcome/components/welcome-intro/WelcomeIntro";
 import {onboardingSkipped, tourStarted} from "@src/redux/onboarding/OnboardingSlice";
+import {startTheTutorial} from "@src/redux/tutorial/actions/StartTheTutorial";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {useEscapeKey} from "@src/react/pages/game/components/onboarding/hooks/use-escape-key/UseEscapeKey";
 import {useState} from "react";
@@ -33,7 +34,12 @@ export function Welcome(): React.JSX.Element {
       >
         {!choosing && <WelcomeIntro onContinue={() => setChoosing(true)} />}
 
-        {choosing && <WelcomeChoices onStartTour={() => dispatch(tourStarted())} />}
+        {choosing && (
+          <WelcomeChoices
+            onStartTour={() => dispatch(tourStarted())}
+            onStartTutorial={() => dispatch(startTheTutorial())}
+          />
+        )}
 
         <button
           type="button"

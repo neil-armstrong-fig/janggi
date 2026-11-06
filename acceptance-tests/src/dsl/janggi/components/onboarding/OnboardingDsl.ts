@@ -5,7 +5,7 @@ import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {Page} from "@playwright/test";
 import type {TourButtonName} from "@src/dsl/janggi/components/onboarding/types/TourButtonName";
-import type {SpotlightedPoint} from "@src/dsl/janggi/components/onboarding/types/SpotlightedPoint";
+import type {SpotlightedPoint} from "@src/dsl/janggi/components/types/SpotlightedPoint";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 import type {SoundChoiceName} from "@janggi/shared/janggi/onboarding/SoundChoiceName";
 
@@ -43,6 +43,14 @@ export class OnboardingDsl {
       await this.onboarding.startTheTour();
     } catch (error) {
       throw new DslError("Failed to start the tour from the welcome", error);
+    }
+  }
+
+  async startTheTutorial(): Promise<void> {
+    try {
+      await this.onboarding.startTheTutorial();
+    } catch (error) {
+      throw new DslError("Failed to start the tutorial from the welcome", error);
     }
   }
 

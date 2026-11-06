@@ -1,10 +1,10 @@
-import {ENGLISH} from "@src/language/english/English";
+import {ENGLISH_MESSAGES} from "@src/language/messages/english/EnglishMessages";
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
 import {expect, it} from "vitest";
 import {pictographFromSvg} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/pictograph-controls/svg-import/PictographFromSvg";
 
-const WORDS = ENGLISH.styles.refusals;
+const WORDS = ENGLISH_MESSAGES.styles.refusals;
 
 function svg(body: string, attributes = 'viewBox="0 0 10 10"'): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" ${attributes}>${body}</svg>`;

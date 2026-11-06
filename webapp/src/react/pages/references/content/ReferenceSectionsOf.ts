@@ -1,5 +1,5 @@
 import type {ReferenceSection} from "@src/react/pages/references/types/ReferenceSection";
-import type {ReferencesMessages} from "@src/language/types/references/ReferencesMessages";
+import type {ReferencesMessages} from "@src/language/references/references-messages/ReferencesMessages";
 
 /**
  * Reader-facing acknowledgements. The evidence and its limitations live in docs/rules.md,

@@ -1,4 +1,4 @@
-import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
+import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
 import type {StyleOutcome} from "@src/react/pages/game/components/styles-sheet/types/StyleOutcome";
 import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
 import {decodeKey} from "@janggi/shared/janggi/share-keys/DecodeKey";

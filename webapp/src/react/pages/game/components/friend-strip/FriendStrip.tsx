@@ -1,4 +1,4 @@
-import type {FriendStripMessages} from "@src/language/types/friend/FriendStripMessages";
+import type {FriendStripMessages} from "@src/language/friend/friend-messages/types/FriendStripMessages";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {FriendConnectionStatus} from "@janggi/shared/janggi/online/FriendConnectionStatus";
 import type {FriendSliceState} from "@src/redux/online/types/FriendSliceState";

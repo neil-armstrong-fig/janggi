@@ -3,7 +3,7 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 /**
  * The announcement of a result covers the middle of the board, which is where a player wants to look once the game is
  * over. Show board puts it aside, and a note over the board says that tapping the board brings it back, since nothing
- * else on the board would say so.
+ * else on the board would say so. Neither stands over the settings sheet when it is opened.
  */
 given("a game that has ended", () => {
   beforeEach(async ({janggi}) => {
@@ -14,6 +14,16 @@ given("a game that has ended", () => {
   then("the result is announced, and the board is not being looked at", async ({janggi}) => {
     expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(true);
     expect(await janggi.status.overlay.boardPeek.isBoardShown()).toBe(false);
+  });
+
+  when("the player opens the settings", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+    });
+
+    then("the settings stand over the result", async ({janggi}) => {
+      await expect.poll(() => janggi.status.overlay.resultBanner.isUnderTheSettings()).toBe(true);
+    });
   });
 
   when("the player chooses to show the board", () => {
@@ -34,6 +44,16 @@ given("a game that has ended", () => {
       then("the result is announced again", async ({janggi}) => {
         expect(await janggi.status.overlay.resultBanner.isResultAnnounced()).toBe(true);
         expect(await janggi.status.overlay.boardPeek.isBoardShown()).toBe(false);
+      });
+    });
+
+    when("the player opens the settings", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+      });
+
+      then("the settings stand over the board's tap back to the result", async ({janggi}) => {
+        await expect.poll(() => janggi.status.overlay.boardPeek.isUnderTheSettings()).toBe(true);
       });
     });
 

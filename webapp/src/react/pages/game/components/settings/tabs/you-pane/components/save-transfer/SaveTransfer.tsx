@@ -5,7 +5,7 @@ import type {PasteResult} from "@src/react/pages/game/components/paste-key/types
 import {SaveBuilder} from "@src/redux/saves/SaveBuilder";
 import {ShareKey} from "@src/react/pages/game/components/share-key/ShareKey";
 import type {AppDispatch} from "@src/redux/Store";
-import type {YouSaveTransferMessages} from "@src/language/types/you/YouSaveTransferMessages";
+import type {YouSaveTransferMessages} from "@src/language/settings/you/you-messages/types/YouSaveTransferMessages";
 import {saveFrom} from "@src/redux/saves/SaveFrom";
 import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";

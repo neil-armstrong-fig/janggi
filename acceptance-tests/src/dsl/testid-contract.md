@@ -10,7 +10,18 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `data-seconds` and `data-periods`.
 - **`data-testid`, resuming** — `resume-game`, the dialog a clocked game comes back to after a reload (carrying `data-side` and
   `data-flipped`), with `resume-game-resume` and `resume-game-clock-cho` / `-han` carrying `data-seconds` and `data-periods`.
-- **`data-testid`, unreleased** — work behind `IN_DEVELOPMENT` wears ids beginning `unreleased-`. None at present.
+- **`data-testid`, unreleased** — work behind `IN_DEVELOPMENT` wears ids beginning `unreleased-`, listed here until it is released.
+- **`data-testid`, the guided tutorial** — `tutorial` (its card, carrying `data-scene`, `data-step`, `data-steps` (how many the scene has), `data-replying`, `data-asking-for` — `point`, `pass`,
+  `bikjang` or `draw`, absent once the scene is over — `data-won`, `data-closing` on the card after the last scene, and
+  `data-dock`), `tutorial-title`,
+  `tutorial-narration`, `tutorial-collapse`, `tutorial-expand`, `tutorial-next`,
+  `tutorial-leave`, `tutorial-finish` (the closing card's), `tutorial-holds-play` (the Play
+  tab while it has the board), and its three ways in, `tutorial-start` (the You tab, with
+  `tutorial-start-over` beside it once part way),
+  `welcome-start-tutorial` and `guide-tutorial`; the You tab's and the guide's carry `data-offer`, one of
+  `TUTORIAL_OFFERS` in `@janggi/shared`. The point it rings wears `data-tour-target="point"`, as the
+  tour's does, and the controls it rings `data-tour-target="pass"`, `"bikjang"` and `"draw"`. A point the step tells of a
+  move to it being held back wears `data-held-back` on its `cell-f<file>r<rank>`.
 - **`data-testid`, fixed** — `board`, `turn`, `piece`, `settings`, `elephant-pairing`, `result`,
   `guide`, `guide-play`, `guide-install`, `guide-rules-source`, `guide-fairy-stockfish-source`,
   `guide-piece-style-traditional`, `guide-piece-style-hangul`, `guide-piece-style-modern` and

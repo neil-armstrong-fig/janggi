@@ -24,6 +24,13 @@ export function BikjangButton({enabled, onCall}: Props): React.JSX.Element {
   const {controls} = useMessages();
 
   return (
-    <ControlButton testId="bikjang" label={controls.bikjang} icon={<FacingIcon />} enabled={enabled} onPress={onCall} />
+    <ControlButton
+      testId="bikjang"
+      label={controls.bikjang}
+      icon={<FacingIcon />}
+      enabled={enabled}
+      onPress={onCall}
+      tourTarget="bikjang"
+    />
   );
 }

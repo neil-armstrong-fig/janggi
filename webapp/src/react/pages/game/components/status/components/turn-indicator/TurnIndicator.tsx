@@ -1,7 +1,7 @@
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
-import type {AnnouncementMessages} from "@src/language/types/AnnouncementMessages";
+import type {AnnouncementMessages} from "@src/language/status/announcement-messages/AnnouncementMessages";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";

@@ -1,3 +1,4 @@
+import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 import {CELL_ASPECT_RATIO} from "@src/react/pages/game/components/board/utils/CellAspectRatio";
 import {FILE_COUNT, RANK_COUNT} from "@janggi/engine/board/BoardDimensions";
 
@@ -18,15 +19,18 @@ interface Props {
   readonly bottomSurface?: string;
   /** Handed to the grid itself, for the board that shakes. */
   readonly gridRef?: React.Ref<HTMLDivElement>;
+  /** What the tour or the tutorial knows the grid as, for the game's own board. */
+  readonly tourTarget?: TourTargetName;
   readonly children: React.ReactNode;
 }
 
-export function BoardGrid({testId, surface, bottomSurface, gridRef, children}: Props): React.JSX.Element {
+export function BoardGrid({testId, surface, bottomSurface, gridRef, tourTarget, children}: Props): React.JSX.Element {
   return (
     <div className="flex h-full w-full items-center justify-center" style={{containerType: "size"}}>
       <div
         ref={gridRef}
         data-testid={testId}
+        data-tour-target={tourTarget}
         className="relative grid"
         style={{
           // minmax(0, ...) rather than a bare 1fr: a track's automatic minimum is its content's

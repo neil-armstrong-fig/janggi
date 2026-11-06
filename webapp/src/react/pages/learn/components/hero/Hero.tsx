@@ -1,7 +1,9 @@
 import {clsx} from "clsx";
-import type {GuideHeroMessages} from "@src/language/types/guide/GuideHeroMessages";
+import {tutorialAddressOf} from "@src/react/pages/tutorial-link/TutorialLink";
+import type {GuideHeroMessages} from "@src/language/guide/guide-messages/types/GuideHeroMessages";
 import type {GuideLinks} from "@src/react/pages/learn/links/types/GuideLinks";
 import {useInstallation} from "@src/react/pages/hooks/use-installation/UseInstallation";
+import {useTutorialOffer} from "@src/react/pages/learn/components/hero/hooks/use-tutorial-offer/UseTutorialOffer";
 
 interface Props {
   readonly messages: GuideHeroMessages;
@@ -10,6 +12,7 @@ interface Props {
 
 export function Hero({messages, links}: Props): React.JSX.Element {
   const installation = useInstallation();
+  const tutorialOffer = useTutorialOffer();
 
   return (
     <section
@@ -35,6 +38,15 @@ export function Hero({messages, links}: Props): React.JSX.Element {
             href={links.game}
           >
             {messages.play}
+          </a>
+
+          <a
+            className="inline-flex min-h-12 items-center justify-center rounded-lg border border-gold/60 px-5 py-3 font-bold text-wood no-underline hover:bg-wood/10 focus:outline-2 focus:outline-offset-4 focus:outline-gold"
+            data-testid="guide-tutorial"
+            data-offer={tutorialOffer}
+            href={tutorialAddressOf(links.game)}
+          >
+            {messages.tutorial[tutorialOffer]}
           </a>
 
           {installation.canInstall && (

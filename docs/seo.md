@@ -43,14 +43,14 @@ it says so, and it is worth a native speaker's read before it is relied on.
 - **The Korean guide**, `webapp/ko/learn.html`, is drawn by the same `LearnPage`
   as the English one, given `language="ko"`. `PRERENDERED_PAGES` carries that
   prop and matches a page by its whole path, because `learn.html` is also the end
-  of `ko/learn.html`. Its words are `KOREAN_GUIDE`
-  (`src/language/korean/KoreanGuide.ts`), a `GuideMessages` as `ENGLISH_GUIDE` is,
+  of `ko/learn.html`. Its words are `KOREAN_GUIDE_MESSAGES`
+  (`src/language/guide/`), a `GuideMessages` as `ENGLISH_GUIDE_MESSAGES` is,
   looked up by `guideMessagesOf`; the guide is not part of `Messages`, which
   every game page carries. It was **machine translated and has not been read by a
   native speaker**, so it opens with a notice in Korean and English
   (`TranslationNotice`, `translation-notice`) that links the English guide
   and cannot be dismissed. **To remove it, set `translationNotice` to `undefined`
-  in `KOREAN_GUIDE`** once someone has read it. Its link to the rules research is
+  in `KOREAN_GUIDE_MESSAGES`** once someone has read it. Its link to the rules research is
   English and says "(영어)". Its head has the `hreflang`
   pair (also in `learn.html`), `og:locale ko_KR`, the Korean social card and
   JSON-LD with `inLanguage: ko` and `translationOfWork`; the sitemap has both
@@ -60,7 +60,7 @@ it says so, and it is worth a native speaker's read before it is relied on.
 - **The Korean references**, `webapp/ko/references.html`, follow the guide:
   `ReferencesPage` given `language="ko"`, the same `PRERENDERED_PAGES` prop, the
   same notice and switch, its head and sitemap entries with the `hreflang` trio.
-  Its words are `KOREAN_REFERENCES`, also machine translated; a source's title
+  Its words are `KOREAN_REFERENCES_MESSAGES`, also machine translated; a source's title
   and authors stay as they wrote them. To remove the notice, set
   `translationNotice` to `undefined` there. The Korean game, `/ko/` and the
   Korean guide all link to it, and the English page links to it by its switch.

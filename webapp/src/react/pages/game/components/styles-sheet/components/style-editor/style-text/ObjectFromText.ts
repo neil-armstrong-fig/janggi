@@ -1,4 +1,4 @@
-import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
+import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import type {Unchecked} from "@src/redux/untrusted/types/Unchecked";
 import {isObject} from "@src/redux/untrusted/IsObject";

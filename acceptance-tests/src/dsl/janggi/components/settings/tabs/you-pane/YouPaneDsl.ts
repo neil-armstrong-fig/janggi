@@ -5,6 +5,7 @@ import {ProgressSettingDsl} from "@src/dsl/janggi/components/settings/tabs/you-p
 import {InstallButtonDsl} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/install-button/InstallButtonDsl";
 import {AccountSettingDsl} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/AccountSettingDsl";
 import type {Page} from "@playwright/test";
+import type {TutorialOffer} from "@janggi/shared/janggi/tutorial/TutorialOffer";
 
 /**
  * The You tab of the settings sheet, reached as `janggi.settings.you`: one member per setting the app draws in it
@@ -25,6 +26,46 @@ export class YouPaneDsl {
     this.progress = new ProgressSettingDsl(page);
     this.install = new InstallButtonDsl(page);
     this.account = new AccountSettingDsl(page);
+  }
+
+  async startTheTutorial(): Promise<void> {
+    try {
+      await this.youPane.startTheTutorial();
+    } catch (error) {
+      throw new DslError("Failed to start the tutorial from the You tab", error);
+    }
+  }
+
+  async startTheTutorialOver(): Promise<void> {
+    try {
+      await this.youPane.startTheTutorialOver();
+    } catch (error) {
+      throw new DslError("Failed to start the tutorial over from the You tab", error);
+    }
+  }
+
+  async getTutorialOffer(): Promise<TutorialOffer> {
+    try {
+      return await this.youPane.getTutorialOffer();
+    } catch (error) {
+      throw new DslError("Failed to read what the You tab offers of the tutorial", error);
+    }
+  }
+
+  async canStartTheTutorial(): Promise<boolean> {
+    try {
+      return await this.youPane.canStartTheTutorial();
+    } catch (error) {
+      throw new DslError("Failed to check whether the You tab can start the tutorial", error);
+    }
+  }
+
+  async isTutorialStartOverOffered(): Promise<boolean> {
+    try {
+      return await this.youPane.isTutorialStartOverOffered();
+    } catch (error) {
+      throw new DslError("Failed to check whether the You tab offers to start the tutorial over", error);
+    }
   }
 
   async isGuideLinkedFromGame(): Promise<boolean> {

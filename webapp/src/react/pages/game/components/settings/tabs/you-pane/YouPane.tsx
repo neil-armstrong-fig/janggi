@@ -9,6 +9,7 @@ import {ReferencesLink} from "@src/react/pages/game/components/settings/tabs/you
 import {ReplayTourButton} from "@src/react/pages/game/components/settings/tabs/you-pane/components/replay-tour-button/ReplayTourButton";
 import {RepositoryLink} from "@src/react/pages/game/components/settings/tabs/you-pane/components/repository-link/RepositoryLink";
 import {SaveTransfer} from "@src/react/pages/game/components/settings/tabs/you-pane/components/save-transfer/SaveTransfer";
+import {TutorialButton} from "@src/react/pages/game/components/settings/tabs/you-pane/components/tutorial-button/TutorialButton";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 
@@ -43,6 +44,8 @@ export function YouPane({selected}: Props): React.JSX.Element {
         <GuideLink />
 
         <ReplayTourButton />
+
+        <TutorialButton />
 
         <ReferencesLink />
 

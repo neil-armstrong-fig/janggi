@@ -1,5 +1,5 @@
 import type {GuideLinks} from "@src/react/pages/learn/links/types/GuideLinks";
-import type {GuideMatchFormatsMessages} from "@src/language/types/guide/GuideMatchFormatsMessages";
+import type {GuideMatchFormatsMessages} from "@src/language/guide/guide-messages/types/GuideMatchFormatsMessages";
 
 interface Props {
   readonly messages: GuideMatchFormatsMessages;

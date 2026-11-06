@@ -1,4 +1,4 @@
-import type {GuideRulesMessages} from "@src/language/types/guide/GuideRulesMessages";
+import type {GuideRulesMessages} from "@src/language/guide/guide-rules-messages/GuideRulesMessages";
 import type {GuideLinks} from "@src/react/pages/learn/links/types/GuideLinks";
 
 interface Props {

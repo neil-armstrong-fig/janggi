@@ -59,6 +59,24 @@ export class ResultBannerDsl {
     }
   }
 
+  /** Whether the settings, once opened, stand over the announcement rather than under it. */
+  async isUnderTheSettings(): Promise<boolean> {
+    try {
+      return await this.resultBanner.isUnderTheSettings();
+    } catch (error) {
+      throw new DslError("Failed to check whether the settings stand over the result", error);
+    }
+  }
+
+  /** Whether the announcement offers New game, which the tutorial's does not: there is no game of its own to deal next. */
+  async isNewGameOffered(): Promise<boolean> {
+    try {
+      return await this.resultBanner.isNewGameOffered();
+    } catch (error) {
+      throw new DslError("Failed to check whether the result offers a new game", error);
+    }
+  }
+
   /** How full the XP bar on the announced result is, in whole percent, or undefined where none is drawn. */
   async getResultXpBarPercent(): Promise<number | undefined> {
     try {

@@ -9,6 +9,8 @@ import type {TimeControlName} from "@janggi/shared/janggi/settings/TimeControlNa
 import {clockAfterCharge} from "@src/redux/clock/spending/ClockAfterCharge";
 import {clockAfterFlag} from "@src/redux/clock/spending/ClockAfterFlag";
 import {clockAfterResume} from "@src/redux/clock/resuming/ClockAfterResume";
+import {tutorialLeft} from "@src/redux/tutorial/actions/TutorialLeft";
+import {tutorialStarted} from "@src/redux/tutorial/actions/TutorialStarted";
 import {clockTurnedOff} from "@src/redux/clock/time-controls/ClockTurnedOff";
 import {formatWhenOnAfter} from "@src/redux/clock/time-controls/FormatWhenOnAfter";
 import {freshArmiesOf} from "@src/redux/clock/spending/FreshArmiesOf";
@@ -77,6 +79,8 @@ export const clockSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(friendGameDealt, clockTurnedOff);
     builder.addCase(localGameRestored, clockTurnedOff);
+    builder.addCase(tutorialStarted, clockTurnedOff);
+    builder.addCase(tutorialLeft, (_state, action): ClockSliceState => action.payload.clock);
   },
 });
 

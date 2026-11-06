@@ -1,11 +1,11 @@
-import {ENGLISH} from "@src/language/english/English";
+import {ENGLISH_MESSAGES} from "@src/language/messages/english/EnglishMessages";
 import {classicStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/ClassicStyle";
 import {encodeKey} from "@janggi/shared/janggi/share-keys/EncodeKey";
 import {expect, it} from "vitest";
 import {hangulPieces} from "@src/react/pages/game/components/board/piece-styles/builtin/hangul/HangulPieces";
 import {styleImportFrom} from "@src/react/pages/game/components/styles-sheet/style-import/StyleImportFrom";
 
-const WORDS = ENGLISH.styles.refusals;
+const WORDS = ENGLISH_MESSAGES.styles.refusals;
 
 const board = {...classicStyle, name: "Shared board"};
 const pieces = {...hangulPieces, name: "Shared pieces"};

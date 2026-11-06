@@ -5,7 +5,7 @@ import type {Reward} from "@src/react/pages/game/components/status/components/bo
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
-import type {Messages} from "@src/language/types/Messages";
+import type {Messages} from "@src/language/messages/Messages";
 import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {XpBar} from "@src/react/pages/game/components/xp-bar/XpBar";
@@ -38,6 +38,9 @@ import type {Wording} from "@src/react/pages/game/components/status/components/b
  * climb is to face the bot above; New game itself still replays the same one.
  *
  * With effects in full it slams in, over a single soft flash of the board. Otherwise it is simply there.
+ *
+ * It stands on the sheets' layer (`z-20`), over the board by coming after it in the page and under any sheet by coming
+ * before it, so the settings opened over a finished game are not read through the announcement.
  */
 interface Props {
   readonly status: GameStatus;
@@ -57,7 +60,8 @@ interface Props {
   readonly nextBotElo: BotElo | undefined;
   /** Puts the announcement aside to look at the board beneath it. */
   readonly onShowBoard: () => void;
-  readonly onStartNewGame: () => void;
+  /** Deals the next game, or undefined where there is none to deal: the tutorial's game is left by its own card. */
+  readonly onStartNewGame: (() => void) | undefined;
   readonly onStartNewGameAtBotElo: (elo: BotElo) => void;
 }
 
@@ -84,7 +88,7 @@ export function ResultBanner({
     <div
       data-testid="result"
       data-result={status.kind}
-      className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center opacity-95 md:opacity-95"
+      className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center opacity-95 md:opacity-95"
     >
       {animated && <span className="absolute inset-0 bg-white opacity-0 animate-[result-flash_600ms_ease-out_both]" />}
 
@@ -142,14 +146,16 @@ export function ResultBanner({
           </p>
         )}
 
-        <button
-          type="button"
-          data-testid="result-new-game"
-          onClick={onStartNewGame}
-          className="pointer-events-auto mt-3 h-10 w-full cursor-pointer rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
-        >
-          {result.newGame}
-        </button>
+        {onStartNewGame && (
+          <button
+            type="button"
+            data-testid="result-new-game"
+            onClick={onStartNewGame}
+            className="pointer-events-auto mt-3 h-10 w-full cursor-pointer rounded-xl bg-wood px-5 text-sm font-semibold tracking-wide text-ink uppercase shadow transition-[transform,background-color] duration-150 hover:bg-wood/90 active:scale-[0.97] motion-reduce:transition-none"
+          >
+            {result.newGame}
+          </button>
+        )}
 
         <button
           type="button"

@@ -3,11 +3,18 @@ import type {PayloadAction} from "@reduxjs/toolkit";
 import type {TourStepsSkipped} from "@src/redux/onboarding/touring/types/TourStepsSkipped";
 import {createSlice} from "@reduxjs/toolkit";
 import {tourBegun, tourStepBack, tourStepForward} from "@src/redux/onboarding/touring/Touring";
+import {tutorialStarted} from "@src/redux/tutorial/actions/TutorialStarted";
+
+/** Neither the welcome nor the tour, for good. */
+const ONBOARDING_DONE: OnboardingSliceState = {stage: "done", tourStep: 0};
 
 /**
  * Whether a player is being shown around. It starts on the welcome, which is what a device with nothing
  * kept on it gets; `loadOnboarding` decides whether that is so, and a player who has already played is
  * never sent back to it. What each step means is in `touring/`, and this only says which rule an action runs.
+ *
+ * Starting the guided tutorial ends it too, however it was started — the welcome, the You tab or the guide's link — so
+ * neither the welcome nor a tour card stands over it.
  */
 export const onboardingSlice = createSlice({
   name: "onboarding",
@@ -25,7 +32,10 @@ export const onboardingSlice = createSlice({
     },
 
     /** Skipping the welcome or the tour, wherever the player is — neither is shown again. */
-    onboardingSkipped: (): OnboardingSliceState => ({stage: "done", tourStep: 0}),
+    onboardingSkipped: (): OnboardingSliceState => ONBOARDING_DONE,
+  },
+  extraReducers: builder => {
+    builder.addCase(tutorialStarted, (): OnboardingSliceState => ONBOARDING_DONE);
   },
 });
 

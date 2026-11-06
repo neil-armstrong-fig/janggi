@@ -1,4 +1,6 @@
 import type {Locator, Page} from "@playwright/test";
+import {TUTORIAL_OFFERS} from "@janggi/shared/janggi/tutorial/TutorialOffer";
+import type {TutorialOffer} from "@janggi/shared/janggi/tutorial/TutorialOffer";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
 /**
@@ -10,11 +12,58 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  */
 export class YouPanePlaywright extends SettingsSheetComponent {
   private readonly appVersion: Locator;
+  private readonly tutorialStart: Locator;
+  private readonly tutorialStartOver: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.appVersion = page.getByTestId("app-version");
+    this.tutorialStart = page.getByTestId("tutorial-start");
+    this.tutorialStartOver = page.getByTestId("tutorial-start-over");
+  }
+
+  /** Starts the tutorial, or resumes it where the player has come part way, which puts the sheet away itself. */
+  async startTheTutorial(): Promise<void> {
+    await this.openSheet(this.tutorialStart);
+    await this.tutorialStart.click();
+  }
+
+  /** Starts the tutorial again from its first scene, where the player had come part way. */
+  async startTheTutorialOver(): Promise<void> {
+    await this.openSheet(this.tutorialStartOver);
+    await this.tutorialStartOver.click();
+  }
+
+  /** What the tutorial's button offers, read off its `data-offer`. */
+  async getTutorialOffer(): Promise<TutorialOffer> {
+    let offer: string | undefined;
+    await this.inSheet(this.tutorialStart, async () => {
+      offer = (await this.tutorialStart.getAttribute("data-offer")) ?? undefined;
+    });
+
+    const found = TUTORIAL_OFFERS.find(candidate => candidate === offer);
+    if (found === undefined) throw new Error(`The tutorial's button offers "${String(offer)}"`);
+
+    return found;
+  }
+
+  async canStartTheTutorial(): Promise<boolean> {
+    let startable = false;
+    await this.inSheet(this.tutorialStart, async () => {
+      startable = await this.tutorialStart.isEnabled();
+    });
+
+    return startable;
+  }
+
+  async isTutorialStartOverOffered(): Promise<boolean> {
+    let offered = false;
+    await this.inSheet(this.tutorialStart, async () => {
+      offered = await this.tutorialStartOver.isVisible();
+    });
+
+    return offered;
   }
 
   async isGuideLinkedFromGame(): Promise<boolean> {

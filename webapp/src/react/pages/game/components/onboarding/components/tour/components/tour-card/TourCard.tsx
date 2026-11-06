@@ -2,7 +2,7 @@ import {clsx} from "clsx";
 import {CheckIcon} from "@src/react/pages/game/components/svg-icon/icons/check/CheckIcon";
 import {ChevronLeftIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-left/ChevronLeftIcon";
 import {ChevronRightIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-right/ChevronRightIcon";
-import type {TourStepWords} from "@src/language/types/TourStepWords";
+import type {TourStepWords} from "@src/language/onboarding/tour-messages/types/TourStepWords";
 import type {TourStep} from "@src/react/pages/game/components/onboarding/components/tour/types/TourStep";
 import {useGuideAddress} from "@src/react/pages/game/hooks/use-guide-address/UseGuideAddress";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

@@ -1,7 +1,10 @@
 import {BasePage} from "@src/dsl/playwright/BasePage";
+import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 import type {Locator, Page} from "@playwright/test";
 import type {GuidePieceStyleName} from "@src/dsl/janggi/components/guide/types/GuidePieceStyleName";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
+import {TUTORIAL_OFFERS} from "@janggi/shared/janggi/tutorial/TutorialOffer";
+import type {TutorialOffer} from "@janggi/shared/janggi/tutorial/TutorialOffer";
 
 type Bounds = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
 
@@ -10,6 +13,7 @@ export class GuidePlaywright extends BasePage {
   private readonly translationNotice: Locator;
   private readonly englishGuide: Locator;
   private readonly play: Locator;
+  private readonly tutorialLink: Locator;
   private readonly pieces: Record<PieceType, Locator>;
   private readonly pieceStyles: Record<GuidePieceStyleName, Locator>;
 
@@ -20,6 +24,7 @@ export class GuidePlaywright extends BasePage {
     this.translationNotice = page.getByTestId("translation-notice");
     this.englishGuide = page.getByTestId("translation-notice-original");
     this.play = page.getByTestId("guide-play");
+    this.tutorialLink = page.getByTestId("guide-tutorial");
     this.pieces = {
       general: page.getByTestId("guide-piece-general"),
       guard: page.getByTestId("guide-piece-guard"),
@@ -45,6 +50,24 @@ export class GuidePlaywright extends BasePage {
   async visitKoreanGuide(): Promise<void> {
     await this.page.goto(new URL("ko/learn.html", this.page.url()).href);
     await this.waitUntilReady();
+  }
+
+  /** Follows the guide's link to the tutorial, and waits for the game as `JanggiPlaywright.open` does. */
+  async playTheTutorial(): Promise<void> {
+    await this.tutorialLink.click();
+    await this.page.waitForURL(url => !url.pathname.endsWith("learn.html"));
+    await this.page.waitForFunction(() => globalThis.crossOriginIsolated, undefined, {timeout: ISOLATION_TIMEOUT_MS});
+  }
+
+  /** What the guide's link to the tutorial offers, read off its `data-offer`. */
+  async getTutorialOffer(): Promise<TutorialOffer> {
+    await this.tutorialLink.waitFor({state: "visible"});
+    const offer = await this.tutorialLink.getAttribute("data-offer");
+
+    const found = TUTORIAL_OFFERS.find(candidate => candidate === offer);
+    if (found === undefined) throw new Error(`The guide's link to the tutorial offers "${String(offer)}"`);
+
+    return found;
   }
 
   private async waitUntilReady(): Promise<void> {

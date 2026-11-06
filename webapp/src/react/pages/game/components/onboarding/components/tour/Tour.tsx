@@ -3,7 +3,7 @@ import {TOUR_STEPS} from "@src/react/pages/game/components/onboarding/components
 import {TOUR_STEP_NAMES} from "@janggi/shared/janggi/onboarding/TourStepName";
 import {stepsSkipped} from "@src/react/pages/game/components/onboarding/components/tour/tour-steps/steps-skipped/StepsSkipped";
 import {TourCard} from "@src/react/pages/game/components/onboarding/components/tour/components/tour-card/TourCard";
-import {TourSpotlight} from "@src/react/pages/game/components/onboarding/components/tour/components/tour-spotlight/TourSpotlight";
+import {TourSpotlight} from "@src/react/pages/game/components/tour-spotlight/TourSpotlight";
 import type {TourSheet} from "@src/react/pages/game/components/onboarding/components/tour/types/TourStep";
 import {onboardingSkipped, tourSteppedBack, tourSteppedForward} from "@src/redux/onboarding/OnboardingSlice";
 import {useAdvanceOnMove} from "@src/react/pages/game/components/onboarding/hooks/use-advance-on-move/UseAdvanceOnMove";
@@ -11,7 +11,7 @@ import {useAdvanceOnTap} from "@src/react/pages/game/components/onboarding/hooks
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffectEvent, useLayoutEffect} from "react";
 import {useEscapeKey} from "@src/react/pages/game/components/onboarding/hooks/use-escape-key/UseEscapeKey";
-import {useTargetRect} from "@src/react/pages/game/components/onboarding/hooks/use-target-rect/UseTargetRect";
+import {useTargetRect} from "@src/react/pages/game/hooks/use-target-rect/UseTargetRect";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
 

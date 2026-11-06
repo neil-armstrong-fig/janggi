@@ -47,6 +47,13 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
     return ((await this.newGame.textContent()) ?? "").trim();
   }
 
+  /** Whether New game is on the tab and may be pressed. Read without opening the sheet, which is always in the page. */
+  async canStartNewGame(): Promise<boolean> {
+    if ((await this.newGame.count()) === 0) return false;
+
+    return await this.newGame.isEnabled();
+  }
+
   /** Only opens the sheet: dealing a new game closes it, so the player is looking at the new board. */
   async startNewGame(): Promise<void> {
     await this.openSheet(this.newGame);

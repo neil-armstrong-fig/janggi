@@ -1,4 +1,4 @@
-import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
+import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";

@@ -1,4 +1,4 @@
-import type {FormatSummaryMessages} from "@src/language/types/format-explanation/FormatSummaryMessages";
+import type {FormatSummaryMessages} from "@src/language/settings/play-messages/types/FormatSummaryMessages";
 import {WordRunsText} from "@src/react/pages/game/components/settings/tabs/play-pane/components/match-format-setting/components/match-format-explanation/components/format-summary/components/word-runs-text/WordRunsText";
 
 interface Props {

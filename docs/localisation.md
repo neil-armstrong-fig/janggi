@@ -14,8 +14,10 @@ English can play a game from the first screen to the result.
   offer, bot notices, the repeated-position note, the record sheet, the welcome
   and the tour, and the whole You tab: the account, the progress, the app and
   help links and the save key, with the answers the game gives to them and the
-  one toast (`you` and `toasts` in `Messages`). Also playing a friend, and the
-  styles sheet and editor (`styles`, the lowest priority for a reviewer).
+  toasts (`you` and `toasts` in `Messages`). Also playing a friend, the guided
+  tutorial (`tutorial`: every scene's words, keyed by `TutorialSceneName` and
+  held to each scene's steps by `TutorialScenes.test.ts`), and the styles sheet
+  and editor (`styles`, the lowest priority for a reviewer).
 - **Out of scope for now:** the legal pages (the guide and references have
   machine-translated Korean versions of their own, below; the legal pages stay
   English on purpose, a machine translation of legal text being able to change
@@ -36,10 +38,34 @@ English can play a game from the first screen to the result.
 ## Architecture
 
 - `webapp/src/language/` holds every word a player reads: one `Messages` value
-  per language (`english/English.ts`, `korean/Korean.ts`), looked up with
+  per language (`messages/english/EnglishMessages.ts`,
+  `messages/korean/KoreanMessages.ts`), looked up with
   `messagesOf`. It may import `@janggi/shared` and nothing else, so both the
   page and the store can reach it. A language is a value of `Messages`, so a
   string left out does not compile.
+- **One folder per area, split by what the words are for** as the page is:
+  `messages/` (the whole), `status/`, `clock/`, `settings/` (with `you/`),
+  `record/`, `onboarding/`, `friend/`, `styles/`, `tutorial/`, `guide/` and
+  `references/`.
+- **Inside an area, one folder per translated type**, named for it, with the
+  type at its root and a translation per language beneath, named for the type
+  too: `clock/clock-messages/ClockMessages.ts`, then
+  `clock/clock-messages/english/EnglishClockMessages.ts` (exporting
+  `ENGLISH_CLOCK_MESSAGES`) and `korean/KoreanClockMessages.ts`. The one type
+  with several translations a language, `TutorialSceneWords`, names each file
+  for its scene (`EnglishTheWholeGame.ts`).
+- **A supporting type used by one other type only is written in that type's
+  file**, unexported, below it (`ClockExplanationMessages` in
+  `ClockMessages.ts`). One anything else imports — a component, a translation,
+  a second type — has a file of its own in a `types/` folder, at the level it
+  is shared from: the type folder's (`you-messages/types/`), the area's
+  (`tutorial/types/TutorialNarrationWords.ts`), or the language's
+  (`types/SentenceWithTwoLinks.ts`, used by the guide, the You tab and the
+  record sheet). A
+  lookup sits at its area's root (`guide/GuideMessagesOf.ts`), `messagesOf` at
+  the language's. What every area needs, an army's name, is in `sides/`, apart
+  from `EnglishMessages.ts` so an area naming a side does not import the whole
+  language.
 - Components read it through `useMessages()`
   (`webapp/src/react/pages/game/hooks/use-messages/`). A component never writes
   English itself.
@@ -91,8 +117,8 @@ translation is accepted.**
 
 ## The guide, machine translated
 
-The guide has its own words, `GuideMessages` (`english/EnglishGuide.ts`,
-`korean/KoreanGuide.ts`), looked up by `guideMessagesOf` and handed to
+The guide has its own words, `GuideMessages` (`guide/guide-messages/`,
+with its sections' own beside it), looked up by `guideMessagesOf` and handed to
 `LearnPage` as props. It is **not part of `Messages`**: about sixty passages of
 prose that every game page would otherwise carry, drawn on a page that has no
 store. Where a sentence has a bold word or a link in it (`MarkedText`,
@@ -104,14 +130,14 @@ The Korean was **machine translated from the English by an assistant and has not
 been read by a native speaker**, so the page opens with a notice saying so in
 Korean and English, which links the English guide and cannot be dismissed. To
 remove it once someone has read it, set `translationNotice` to `undefined` in
-`KOREAN_GUIDE`. Terms to check first: the piece names (`궁(왕)`, `졸·병(卒·兵)`),
+`KOREAN_GUIDE_MESSAGES`. Terms to check first: the piece names (`궁(왕)`, `졸·병(卒·兵)`),
 `rules.openings` (상차림), the two formats (일반, 점수제 and 대회 방식), `hero.facts`,
 and the wording of 외통 against 장군 in `winning`.
 
 ## The references, machine translated
 
 The references page has the same shape as the guide: `ReferencesMessages`
-(`english/EnglishReferences.ts`, `korean/KoreanReferences.ts`), looked up by
+(`references/references-messages/`), looked up by
 `referencesMessagesOf` and not part of `Messages`. `referenceSectionsOf` builds
 the page's sections from those words, keeping URLs and licences in one place.
 
@@ -120,7 +146,7 @@ its authors, in the code as literals. The labels this project wrote (`linkNames`
 and what each source contributed (`descriptions`) are translated. Where the
 English says a source is "In Korean", the Korean says instead when one is in
 English. It opens with the same `TranslationNotice`; remove it by setting
-`translationNotice` to `undefined` in `KOREAN_REFERENCES`. A Korean reader reaches
+`translationNotice` to `undefined` in `KOREAN_REFERENCES_MESSAGES`. A Korean reader reaches
 it from the You tab, `/ko/` and the Korean guide (`addressOfReferences`).
 
 ## Why no i18n library
@@ -170,7 +196,7 @@ Terms a native speaker should check first:
 ## The reviewer's table
 
 A native speaker finds an English-to-Korean table far easier than reading code.
-It is made by flattening `ENGLISH` and `KOREAN`, and the guide's and references'
+It is made by flattening `ENGLISH_MESSAGES` and `KOREAN_MESSAGES`, and the guide's and references'
 words beside them:
 
 1. A temporary Vitest file (deleted after) walks both objects, calling each
@@ -181,7 +207,7 @@ words beside them:
 3. The page is published as a private Artifact and shared by the owner.
 
 The page is a snapshot and its link is private and perishable, so regenerate it
-rather than rely on it. Reviewer changes go into `Korean.ts` only; the types and
+rather than rely on it. Reviewer changes go into the `korean/` folders only; the types and
 `MessagesOf.test.ts` catch anything missing.
 
 ## Still English
@@ -198,7 +224,8 @@ description of a setup; those are `play.setupDescriptions`.
 
 ## Adding a language, or changing a string
 
-- Add the code to `LANGUAGE_NAMES`, write a `Messages` value, add it to
+- Add the code to `LANGUAGE_NAMES`, write a `Messages` value as a folder
+  beside every `english/` one, add it to
   `messagesOf`, and give it a name in `language.names` of every language. Add a
   row to `MessagesOf.test.ts`.
 - Acceptance specs run on the English fixture. A spec in another language

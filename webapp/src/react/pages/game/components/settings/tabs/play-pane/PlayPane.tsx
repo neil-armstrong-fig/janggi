@@ -1,5 +1,7 @@
 import {sheetClosed} from "@src/redux/settings/SettingsSlice";
-import {useAppDispatch} from "@src/redux/Hooks";
+import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
+import {inTheTutorial} from "@src/redux/tutorial/selecting/InTheTutorial";
+import {TutorialHoldsPlay} from "@src/react/pages/game/components/settings/tabs/play-pane/components/tutorial-holds-play/TutorialHoldsPlay";
 import {BotSettings} from "@src/react/pages/game/components/settings/tabs/play-pane/components/bot-settings/BotSettings";
 import {ClockSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/clock-setting/ClockSetting";
 import {ElephantPairingLine} from "@src/react/pages/game/components/settings/tabs/play-pane/components/elephant-pairing-line/ElephantPairingLine";
@@ -21,6 +23,9 @@ import {SetupSettings} from "@src/react/pages/game/components/settings/tabs/play
  * in the thumb's reach however far the settings above have been scrolled. New game deals from the
  * settings above it, which is why it lives beside them and not in the row of controls under the board.
  *
+ * **While the tutorial has the board** the tab holds only the way out of it (`TutorialHoldsPlay`): every setting here
+ * deals a game, which would land on the tutorial's.
+ *
  * It is layout, and only layout: each setting reads and dispatches for itself. What it is handed is
  * what the store does not hold — whether its tab is showing, and what to do once a game has been dealt
  * or the record is asked for, both of which are the page's sheets to close and open.
@@ -31,6 +36,15 @@ interface Props {
 
 export function PlayPane({selected}: Props): React.JSX.Element {
   const dispatch = useAppDispatch();
+  const tutorial = useAppSelector(inTheTutorial);
+
+  if (tutorial) {
+    return (
+      <SettingsPane name="Play" selected={selected}>
+        <TutorialHoldsPlay />
+      </SettingsPane>
+    );
+  }
 
   return (
     <SettingsPane

@@ -29,6 +29,9 @@ import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 import {friendGameDealt} from "@src/redux/online/actions/FriendGameDealt";
 import {gamesSwapped} from "@src/redux/online/actions/GamesSwapped";
 import {localGameRestored} from "@src/redux/online/actions/LocalGameRestored";
+import {tutorialLeft} from "@src/redux/tutorial/actions/TutorialLeft";
+import {tutorialStarted} from "@src/redux/tutorial/actions/TutorialStarted";
+import {tutorialSceneStarted} from "@src/redux/tutorial/actions/TutorialSceneStarted";
 import {syncMerged} from "@src/redux/account/actions/SyncMerged";
 import {friendPhaseFor} from "@src/redux/online/dealing/FriendPhaseFor";
 import {settledSide} from "@src/redux/game/sides/SettledSide";
@@ -77,7 +80,9 @@ import {withinReach} from "@src/redux/game/within-reach/WithinReach";
  *
  * `friendGameDealt` deals what a room dealt, as a casual game between two people with the player on the army the room
  * gave them; `localGameRestored` puts back the game they had before it. Neither is the player's own to dispatch: the friend
- * game's `redux/online/` is what does, and the game it deals is played by the actions above, as any is.
+ * game's `redux/online/` is what does, and the game it deals is played by the actions above, as any is. `tutorialStarted`
+ * and `tutorialLeft` are the same pair for the guided tutorial (`redux/tutorial/`), which parks the player's game, and
+ * `tutorialSceneStarted` deals each of its scenes after the first.
  *
  * `botLetOpen` touches neither the board nor the record. It is the player saying a game against the
  * bot may start, which a bot holding cho's first move waits for; every deal takes it back.
@@ -163,6 +168,9 @@ export const gameSlice = createSlice({
     }));
     builder.addCase(gamesSwapped, (_state, action): GameSliceState => action.payload.incoming);
     builder.addCase(localGameRestored, (_state, action): GameSliceState => action.payload);
+    builder.addCase(tutorialStarted, (_state, action): GameSliceState => action.payload.lesson);
+    builder.addCase(tutorialSceneStarted, (_state, action): GameSliceState => action.payload.lesson);
+    builder.addCase(tutorialLeft, (_state, action): GameSliceState => action.payload.game);
     builder.addCase(syncMerged, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
   },
 });

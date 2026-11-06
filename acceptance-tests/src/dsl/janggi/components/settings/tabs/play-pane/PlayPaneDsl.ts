@@ -94,6 +94,15 @@ export class PlayPaneDsl {
     }
   }
 
+  /** Whether the tab offers a fresh game to deal at all. */
+  async canStartNewGame(): Promise<boolean> {
+    try {
+      return await this.playPane.canStartNewGame();
+    } catch (error) {
+      throw new DslError("Failed to check whether a new game can be started", error);
+    }
+  }
+
   /** Deals a fresh game from the format and setups chosen, abandoning whatever was being played. */
   async startNewGame(): Promise<void> {
     try {

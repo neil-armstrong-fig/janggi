@@ -13,6 +13,7 @@ import type {InstallationAppearance} from "@src/dsl/janggi/types/InstallationApp
 import type {Page} from "@playwright/test";
 import {RecordSheetDsl} from "@src/dsl/janggi/components/record-sheet/RecordSheetDsl";
 import {LanguageNoticeDsl} from "@src/dsl/janggi/components/language-notice/LanguageNoticeDsl";
+import {TutorialDsl} from "@src/dsl/janggi/components/tutorial/TutorialDsl";
 import {ToastDsl} from "@src/dsl/janggi/components/toast/ToastDsl";
 import {ReleaseUpdateDsl} from "@src/dsl/janggi/components/release-update/ReleaseUpdateDsl";
 import {ResumeGameDsl} from "@src/dsl/janggi/components/resume-game/ResumeGameDsl";
@@ -59,6 +60,7 @@ export class JanggiDsl {
   readonly releaseUpdate: ReleaseUpdateDsl;
   readonly resumeGame: ResumeGameDsl;
   readonly toast: ToastDsl;
+  readonly tutorial: TutorialDsl;
   readonly languageNotice: LanguageNoticeDsl;
   readonly stylesSheet: StylesSheetDsl;
   readonly debug: DebugDsl;
@@ -82,6 +84,7 @@ export class JanggiDsl {
     this.releaseUpdate = new ReleaseUpdateDsl(page);
     this.resumeGame = new ResumeGameDsl(page);
     this.toast = new ToastDsl(page);
+    this.tutorial = new TutorialDsl(page);
     this.languageNotice = new LanguageNoticeDsl(page);
     this.stylesSheet = new StylesSheetDsl(page);
     this.debug = new DebugDsl(page);

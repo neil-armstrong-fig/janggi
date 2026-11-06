@@ -1,4 +1,4 @@
-import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
+import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
 import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {objectFromText} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/ObjectFromText";

@@ -1,4 +1,4 @@
-import type {WordRuns} from "@src/language/types/format-explanation/WordRuns";
+import type {WordRuns} from "@src/language/settings/play-messages/types/WordRuns";
 
 interface Props {
   readonly runs: WordRuns;

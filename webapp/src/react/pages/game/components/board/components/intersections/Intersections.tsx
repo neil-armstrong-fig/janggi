@@ -18,6 +18,10 @@ import {flourishesOf} from "@src/react/pages/game/components/board/components/in
 import {hintDelay} from "@src/react/pages/game/components/board/components/intersections/motion/HintDelay";
 import {tourPointOf} from "@src/react/pages/game/components/board/components/intersections/tour-point/TourPointOf";
 import {tourStepNameOf} from "@src/redux/onboarding/touring/TourStepNameOf";
+import {askedMoveOf} from "@src/react/pages/game/tutorial/asked-move/AskedMoveOf";
+import {heldBackKeyOf} from "@src/react/pages/game/components/board/components/intersections/held-back/HeldBackKeyOf";
+import {tutorialPointOf} from "@src/react/pages/game/components/board/components/intersections/tutorial-point/TutorialPointOf";
+import {useTutorialSituation} from "@src/react/pages/game/hooks/use-tutorial-situation/UseTutorialSituation";
 import {isArranged} from "@janggi/engine/setups/IsArranged";
 import {lastMoveOf} from "@src/react/pages/game/components/board/components/intersections/last-move/LastMoveOf";
 import {liftAt} from "@src/react/pages/game/components/board/components/intersections/motion/LiftAt";
@@ -71,14 +75,18 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   const waitingToResume = useAppSelector(state => sideWaitingToResume(state) !== undefined);
   const dispatch = useAppDispatch();
   const {movableHighlight, bikjangHint, effects} = usePreferences();
+  const tutorial = useTutorialSituation();
+  const askedMove = askedMoveOf(tutorial, "player");
   const game = played.present;
   // False while a scored board is still being laid out — the pieces are drawn, but nothing on them may
   // be touched until both armies have chosen. Closed while the bot is thinking too, and while its engine
   // is not up: a first move made then would begin a rated game against nobody.
   // And, in a game with a friend, until it is this player's army's turn: the room is the judge of the rest.
   // And for good once an army has lost on time (시간패), which the position cannot say; and while a clocked game waits
-  // to be resumed after a reload, until the player to move says so.
+  // to be resumed after a reload, until the player to move says so. And, in the tutorial, but for the move it asks for:
+  // closed while the script answers for the other army, and once it has run out.
   const playable =
+    (tutorial === undefined || askedMove !== undefined) &&
     isArranged(phase) &&
     !timeLost &&
     !waitingToResume &&
@@ -89,10 +97,15 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   const {selected, hovered, destinations, covered, tap, hover} = useMoveSelection(
     game,
     move => dispatch(actInGame({kind: "move", move: wireOfMove(move)}, moved(move))),
-    playable,
+    {playable, only: askedMove},
   );
   const tourStep = useAppSelector(state => tourStepNameOf(state.onboarding));
-  const tourPointKey = tourPointOf({step: tourStep, game, playable, selected, destinations});
+  const tourPointKey = tutorialPointOf(
+    tutorial,
+    selected,
+    tourPointOf({step: tourStep, game, playable, selected, destinations}),
+  );
+  const heldBackKey = heldBackKeyOf(tutorial);
   const placedPieces = useMemo(() => piecesByPosition(game.pieces), [game.pieces]);
   const reachable = useMemo(() => new Set(destinations.map(toPositionKey)), [destinations]);
   const coveredKeys = useMemo(() => new Set(covered.map(toPositionKey)), [covered]);
@@ -108,8 +121,8 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
   // On [game] rather than on every render: the cells re-render as the pointer crosses them, and
   // asking the engine for every legal move on the board is not something to do per hover.
   const movable = useMemo(
-    () => (movableHighlight.shown ? movablePieces(game, playable) : NOTHING),
-    [game, movableHighlight.shown, playable],
+    () => (movableHighlight.shown ? movablePieces(game, playable, askedMove) : NOTHING),
+    [game, movableHighlight.shown, playable, askedMove],
   );
   const attackerKeys = useMemo(() => new Set((threat?.attackers ?? []).map(toPositionKey)), [threat]);
   const flourishes = useMemo(() => (animated ? flourishesOf(moment, game) : NO_FLOURISHES), [animated, moment, game]);
@@ -152,6 +165,7 @@ export function Intersections({threat, concealed, moment, onPickUp}: Props): Rea
             hovered={hoveredKey === key}
             concealed={concealed === key}
             tourTarget={tourPointKey === key ? "point" : undefined}
+            heldBack={heldBackKey === key}
             lift={liftAt(key, {heldKey, hoveredKey, animated})}
             flourish={flourishes.get(key)}
             hintDelay={

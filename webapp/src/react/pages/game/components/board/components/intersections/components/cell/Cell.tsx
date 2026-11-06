@@ -1,6 +1,7 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {CellLines} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cell-lines/CellLines";
 import {CoverHint} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/cover-hint/CoverHint";
+import {HeldBackMark} from "@src/react/pages/game/components/board/components/intersections/components/cell/components/held-back-mark/HeldBackMark";
 import {CELL_SVG_PROPS} from "@src/react/pages/game/components/board/components/intersections/components/cell/utils/CellViewBox";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
@@ -43,7 +44,8 @@ import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePre
  * it, both in the colours the board style gives in `lastMove`, and says which end it was in
  * `data-last-move`. A point in a check is ringed in red — the general under attack in
  * `data-under-attack`, each piece attacking it in `data-attacking`. A point the piece in hand may go to
- * where the move would leave a bikjang to call has 빅장 written on its move hint. All of these are
+ * where the move would leave a bikjang to call has 빅장 written on its move hint. A point the tutorial tells of a move
+ * to it being held back is struck through (`data-held-back`). All of these are
  * marks rather than motion, so they stay when effects are reduced.
  */
 interface Props {
@@ -73,6 +75,8 @@ interface Props {
   readonly hintDelay: number | undefined;
   /** What the tour is pointing at this point as, where it points at it. */
   readonly tourTarget?: TourTargetName;
+  /** Whether a move to this point is held back, as the tutorial's step tells of it (`HeldBackMark`). */
+  readonly heldBack?: boolean;
   readonly onTap: (position: Position) => void;
   readonly onHover: (position: Position | undefined) => void;
   /** Worn instead of the player's board style, by a board that shows a style that is not the one in use. */
@@ -98,6 +102,7 @@ export function Cell({
   flourish,
   hintDelay,
   tourTarget,
+  heldBack,
   onTap,
   onHover,
   boardStyle,
@@ -122,6 +127,7 @@ export function Cell({
       data-under-attack={underAttack || undefined}
       data-attacking={attacking || undefined}
       data-tour-target={tourTarget}
+      data-held-back={heldBack || undefined}
       onClick={() => onTap(position)}
       onPointerEnter={() => onHover(position)}
       onPointerLeave={() => onHover(undefined)}
@@ -180,6 +186,8 @@ export function Cell({
       )}
 
       {covered && <CoverHint hintsStyle={styleBoardStyle.hints} delay={hintDelay} />}
+
+      {heldBack && <HeldBackMark />}
     </button>
   );
 }

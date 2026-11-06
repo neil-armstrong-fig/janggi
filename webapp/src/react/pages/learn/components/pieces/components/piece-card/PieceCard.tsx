@@ -1,4 +1,4 @@
-import type {GuidePieceMessages} from "@src/language/types/guide/GuidePieceMessages";
+import type {GuidePieceMessages} from "@src/language/guide/guide-pieces-messages/types/GuidePieceMessages";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {MovementSnapshot} from "@src/react/pages/learn/components/pieces/components/piece-card/components/movement-snapshot/MovementSnapshot";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";

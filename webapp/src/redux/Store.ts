@@ -57,6 +57,12 @@ import {loadFriend} from "@src/redux/online/storage/LoadFriend";
 import {restoredRatings} from "@src/redux/restored-ratings/RestoredRatings";
 import {saveJson} from "@src/redux/device-storage/SaveJson";
 import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
+import type {TutorialSliceState} from "@src/redux/tutorial/types/TutorialSliceState";
+import {tutorialReducer} from "@src/redux/tutorial/TutorialSlice";
+import type {TutorialProgress} from "@src/redux/tutorial/types/TutorialProgress";
+import {TUTORIAL_STORAGE_KEY} from "@src/redux/tutorial/storage/TutorialStorageKey";
+import {loadTutorialProgress} from "@src/redux/tutorial/storage/LoadTutorialProgress";
+import {noTutorial} from "@src/redux/tutorial/no-tutorial/NoTutorial";
 import {languageOfAddress} from "@src/language/address/LanguageOfAddress";
 
 export const store = createStore(deviceStorage());
@@ -82,16 +88,18 @@ export interface RootState {
   readonly friend: FriendSliceState;
   readonly toast: ToastSliceState;
   readonly clock: ClockSliceState;
+  readonly tutorial: TutorialSliceState;
 }
 
 /**
  * The slices that are written to the device. The engine's is not, being what this page has started, and nor
- * are the sheets' or the toast's: a page opens with none up.
+ * are the sheets' or the toast's: a page opens with none up. Of the tutorial's only how far the player came is kept
+ * (`keptValue`): a page opens on the player's own game.
  */
 type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast">;
 
 /** What is compared, to know a slice has changed, and then written: a slice itself, except where what is kept is less than the slice (`keptValue`). */
-type KeptValue = RootState[KeptSlice] | string | undefined;
+type KeptValue = RootState[KeptSlice] | TutorialProgress | string | undefined;
 
 export type AppStore = ReturnType<typeof configureStore<RootState>>;
 export type AppDispatch = AppStore["dispatch"];
@@ -138,6 +146,7 @@ export function createStore(storage?: Storage): AppStore {
       friend: friendReducer,
       toast: toastReducer,
       clock: clockReducer,
+      tutorial: tutorialReducer,
     },
     preloadedState: {
       game,
@@ -150,6 +159,7 @@ export function createStore(storage?: Storage): AppStore {
       syncLedger: loadSyncLedger(storage),
       friend: loadFriend(storage),
       clock: loadClock(storage, game),
+      tutorial: noTutorial(loadTutorialProgress(storage)),
     },
   });
 
@@ -181,6 +191,7 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
     "account",
     "friend",
     "clock",
+    "tutorial",
   ];
   const keys: Record<KeptSlice, string> = {
     clock: CLOCK_STORAGE_KEY,
@@ -193,6 +204,7 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
     onboarding: ONBOARDING_STORAGE_KEY,
     account: ACCOUNT_STORAGE_KEY,
     syncLedger: SYNC_LEDGER_STORAGE_KEY,
+    tutorial: TUTORIAL_STORAGE_KEY,
   };
 
   let saved = kept.getState();
@@ -229,9 +241,14 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
 /**
  * What is kept of a slice. Nearly always the slice; but while a friend game is on the board, **the game kept is the one it
  * set aside**, so a reload brings back the player's own game rather than a friend's — which the room holds, and puts back
- * (`friend/FriendSlice.ts`). And of the friend slice only the room's code is kept.
+ * (`friend/FriendSlice.ts`). And of the friend slice only the room's code is kept. While the tutorial has the board, the game
+ * and the clock kept are the ones it parked, the clock holding its turn, so a reload finds the player's own game; and of
+ * the tutorial's own slice, only how far the player came.
  */
 function keptValue(state: RootState, slice: KeptSlice): KeptValue {
+  const {parked} = state.tutorial;
+  if (parked !== undefined && (slice === "game" || slice === "clock")) return parked[slice];
+
   if (slice === "game") {
     if (state.friend.viewing === "friend") return state.friend.parkedGame ?? state.game;
 
@@ -239,6 +256,8 @@ function keptValue(state: RootState, slice: KeptSlice): KeptValue {
   }
 
   if (slice === "friend") return state.friend.code;
+
+  if (slice === "tutorial") return state.tutorial.progress;
 
   return state[slice];
 }
@@ -250,7 +269,7 @@ function writtenOf(slice: KeptSlice, value: KeptValue): unknown {
 }
 
 function writtenOnLeaving(slice: KeptSlice, state: RootState, now: number): unknown {
-  if (slice === "clock") return clockAsLeft(state.clock, now);
+  if (slice === "clock" && state.tutorial.parked === undefined) return clockAsLeft(state.clock, now);
 
   return writtenOf(slice, keptValue(state, slice));
 }

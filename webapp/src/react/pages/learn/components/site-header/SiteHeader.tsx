@@ -1,4 +1,4 @@
-import type {GuideHeaderMessages} from "@src/language/types/guide/GuideHeaderMessages";
+import type {GuideHeaderMessages} from "@src/language/guide/guide-messages/types/GuideHeaderMessages";
 import type {GuideLinks} from "@src/react/pages/learn/links/types/GuideLinks";
 import {LanguageSwitch} from "@src/react/pages/components/language-switch/LanguageSwitch";
 import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";

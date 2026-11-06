@@ -1,4 +1,4 @@
-import type {StyleRefusalMessages} from "@src/language/types/styles/StyleRefusalMessages";
+import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
 import type {WrittenStyle} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/types/WrittenStyle";
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";

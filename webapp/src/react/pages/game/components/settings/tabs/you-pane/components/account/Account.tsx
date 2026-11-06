@@ -4,7 +4,7 @@ import {LegalLinks} from "@src/react/pages/game/components/settings/tabs/you-pan
 import {NameForm} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/name-form/NameForm";
 import {TurnNotifications} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account/components/turn-notifications/TurnNotifications";
 import type {SyncState} from "@src/redux/account/types/SyncState";
-import type {YouSyncMessages} from "@src/language/types/you/YouSyncMessages";
+import type {YouSyncMessages} from "@src/language/settings/you/you-messages/types/YouSyncMessages";
 import {clsx} from "clsx";
 import {deleteAccount} from "@src/redux/account/actions/DeleteAccount";
 import {signIn} from "@src/redux/account/actions/SignIn";

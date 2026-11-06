@@ -1,4 +1,4 @@
-import type {GuidePiecesMessages} from "@src/language/types/guide/GuidePiecesMessages";
+import type {GuidePiecesMessages} from "@src/language/guide/guide-pieces-messages/GuidePiecesMessages";
 import {hangulPieces} from "@src/react/pages/game/components/board/piece-styles/builtin/hangul/HangulPieces";
 import {modernPieces} from "@src/react/pages/game/components/board/piece-styles/builtin/modern/ModernPieces";
 import {PieceCard} from "@src/react/pages/learn/components/pieces/components/piece-card/PieceCard";

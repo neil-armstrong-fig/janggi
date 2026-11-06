@@ -7,7 +7,8 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
  * Nothing on the board explains that a tap brings the result back — the game is over, so the board would otherwise
  * do nothing at all, which looks broken. So the note says it in words, for as long as the result is put aside, and
  * the whole board is the target, not a corner of it, so there is no hidden spot to find. The pieces stay in sight
- * beneath it, and the note sits at the top edge as `RepetitionNotice` does.
+ * beneath it, and the note sits at the top edge as `RepetitionNotice` does. Both stand on the sheets' layer (`z-20`),
+ * earlier in the page than any sheet, so an opened sheet covers them, and its taps are its own.
  */
 interface Props {
   readonly onTap: () => void;
@@ -23,12 +24,12 @@ export function BoardPeek({onTap}: Props): React.JSX.Element {
         data-testid="result-peek"
         aria-label={overlays.peekLabel}
         onClick={onTap}
-        className="absolute inset-0 z-30 cursor-pointer"
+        className="absolute inset-0 z-20 cursor-pointer"
       />
 
       <p
         role="status"
-        className="pointer-events-none absolute inset-x-2 top-2 z-30 mx-auto w-fit max-w-sm rounded-xl border border-white/15 bg-ground/85 px-3 py-1.5 text-center text-xs leading-snug text-white/80 shadow-lg shadow-black backdrop-blur-sm"
+        className="pointer-events-none absolute inset-x-2 top-2 z-20 mx-auto w-fit max-w-sm rounded-xl border border-white/15 bg-ground/85 px-3 py-1.5 text-center text-xs leading-snug text-white/80 shadow-lg shadow-black backdrop-blur-sm"
       >
         {overlays.peekNote}
       </p>

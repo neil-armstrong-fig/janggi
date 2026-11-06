@@ -1,10 +1,10 @@
-import {ENGLISH} from "@src/language/english/English";
+import {ENGLISH_MESSAGES} from "@src/language/messages/english/EnglishMessages";
 import {classicStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/ClassicStyle";
 import {editedStyle} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/EditedStyle";
 import {expect, it} from "vitest";
 import {hangulPieces} from "@src/react/pages/game/components/board/piece-styles/builtin/hangul/HangulPieces";
 
-const WORDS = ENGLISH.styles.refusals;
+const WORDS = ENGLISH_MESSAGES.styles.refusals;
 
 const boardJson = JSON.stringify({...classicStyle, name: undefined});
 

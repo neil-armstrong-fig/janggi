@@ -37,6 +37,8 @@ const ANOTHER_CHO_SOLDIER: Position = {file: 3, rank: 7};
 const FORWARD: Position = {file: 1, rank: 6};
 const SIDEWAYS: Position = {file: 2, rank: 7};
 const EMPTY_POINT: Position = {file: 5, rank: 5};
+/** The one move a tutorial step asks for: the soldier on file 3 stepping forward. */
+const ASKED_FOR: Move = {from: ANOTHER_CHO_SOLDIER, to: {file: 3, rank: 6}};
 
 /** Hemmed in at the start of an inner elephant opening, with its own soldier on its one landing point. */
 const CHO_ELEPHANT: Position = {file: 3, rank: 10};
@@ -419,6 +421,49 @@ describe("when the board changes under a piece being held", () => {
   });
 });
 
+describe("with one move asked for", () => {
+  beforeEach(() => {
+    played = [];
+    selection = renderHook(() => {
+      return useMoveSelection(openingGame(), move => played.push(move), {playable: true, only: ASKED_FOR});
+    }).result;
+  });
+
+  it("picks up nothing but the piece that move begins from", () => {
+    act(() => selection.current.tap(CHO_SOLDIER));
+
+    expect(selection.current.selected).toBeUndefined();
+  });
+
+  it("shows nowhere for another piece the pointer rests on", () => {
+    act(() => selection.current.hover(CHO_SOLDIER));
+
+    expect(selection.current.destinations).toEqual([]);
+  });
+
+  describe("when its piece is picked up", () => {
+    beforeEach(() => {
+      act(() => selection.current.tap(ANOTHER_CHO_SOLDIER));
+    });
+
+    it("offers only where the move ends", () => {
+      expect(selection.current.destinations).toEqual([ASKED_FOR.to]);
+    });
+
+    it("plays nothing when a point the piece could otherwise reach is tapped", () => {
+      act(() => selection.current.tap({file: 2, rank: 7}));
+
+      expect(played).toEqual([]);
+    });
+
+    it("plays the move when its end is tapped", () => {
+      act(() => selection.current.tap(ASKED_FOR.to));
+
+      expect(played).toEqual([ASKED_FOR]);
+    });
+  });
+});
+
 /**
  * What `renderHook` hands back, named here because the type that names it cannot be imported: the
  * lint rule allows only `renderHook`, `act`, `waitFor` and `cleanup` from `@testing-library/react`.
@@ -437,7 +482,7 @@ function renderOn(game: GameState, playable = true): Rendered {
   played = [];
 
   const {result, rerender} = renderHook(
-    (shown: Shown) => useMoveSelection(shown.game, move => played.push(move), shown.playable),
+    (shown: Shown) => useMoveSelection(shown.game, move => played.push(move), {playable: shown.playable}),
     {initialProps: {game, playable}},
   );
 

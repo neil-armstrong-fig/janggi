@@ -21,6 +21,9 @@ import {canUndo} from "@src/record/undo/CanUndo";
 import {clockInUse} from "@src/redux/clock/selecting/ClockInUse";
 import {sideWaitingToResume} from "@src/redux/clock/selecting/SideWaitingToResume";
 import {isArranged} from "@janggi/engine/setups/IsArranged";
+import {askedControlOf} from "@src/react/pages/game/tutorial/asked-control/AskedControlOf";
+import {useTutorialSituation} from "@src/react/pages/game/hooks/use-tutorial-situation/UseTutorialSituation";
+import type {TutorialControl} from "@src/react/pages/game/tutorial/types/TutorialControl";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 
 /**
@@ -48,6 +51,9 @@ import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-g
  * **In a game with a friend** Undo and Redo are off, as against the bot — a move is the room's, and cannot be taken back — and
  * Pass, Bikjang and Draw are for this player's own army's turn, and ask the room rather than act.
  *
+ * **In the tutorial** each is off unless its step asks for it, Undo and Redo always: its game is a script, and a turn taken
+ * back, rested, called or offered that it did not ask for would step off it.
+ *
  * Starting a new game is not in the row. It lives in the settings sheet, beside the format and the
  * setups it deals from, where a stray thumb cannot abandon a game half played — and on the announcement
  * of a result, where there is no game left to abandon.
@@ -62,6 +68,8 @@ export function Controls({onControlPressed}: Props): React.JSX.Element {
   const clockIsOn = useAppSelector(state => clockInUse(state) !== undefined);
   const waitingToResume = useAppSelector(state => sideWaitingToResume(state) !== undefined);
   const {status, botsTurn, engineHoldsPlay} = useGameStatus();
+  const tutorial = useTutorialSituation();
+  const askedControl = askedControlOf(tutorial);
   const dispatch = useAppDispatch();
 
   const game = played.present;
@@ -74,8 +82,13 @@ export function Controls({onControlPressed}: Props): React.JSX.Element {
     status.kind !== "wonOnTime" &&
     !waitingToResume &&
     friendAllowsPlay(friend, game);
-  const takingBackAllowed = !againstBot && !withAFriend(friend) && !clockIsOn;
+  const takingBackAllowed = !againstBot && !withAFriend(friend) && !clockIsOn && tutorial === undefined;
   const offerWaiting = drawOffer !== undefined && !drawOffer.declined;
+
+  // Outside the tutorial every control is the player's to reach for; inside it, only the one its step asks for.
+  function lessonAllows(control: TutorialControl): boolean {
+    return tutorial === undefined || askedControl === control;
+  }
 
   // Every control ticks before it does what it does, so each handler below is one call rather than the
   // tick and the dispatch repeated.
@@ -99,15 +112,18 @@ export function Controls({onControlPressed}: Props): React.JSX.Element {
 
       <RedoButton enabled={takingBackAllowed && canRedo(played)} onRedo={() => pressed(playedAgain())} />
 
-      <PassButton enabled={playersTurn && canPass(game)} onPass={() => pressedInGame({kind: "pass"}, passed())} />
+      <PassButton
+        enabled={playersTurn && lessonAllows("pass") && canPass(game)}
+        onPass={() => pressedInGame({kind: "pass"}, passed())}
+      />
 
       <BikjangButton
-        enabled={playersTurn && canCallBikjang(game)}
+        enabled={playersTurn && lessonAllows("bikjang") && canCallBikjang(game)}
         onCall={() => pressedInGame({kind: "call-bikjang"}, bikjangCalled())}
       />
 
       <DrawButton
-        enabled={playersTurn && !offerWaiting && canAgreeADraw(game)}
+        enabled={playersTurn && lessonAllows("draw") && !offerWaiting && canAgreeADraw(game)}
         onOffer={() => pressedInGame({kind: "offer-draw"}, drawOffered())}
       />
 

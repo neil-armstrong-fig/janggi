@@ -19,6 +19,8 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
 
 interface Props {
   readonly onStartTour: () => void;
+  /** Ends the welcome for the guided tutorial instead. */
+  readonly onStartTutorial: () => void;
 }
 
 /**
@@ -27,7 +29,7 @@ interface Props {
  * name, so a player who cannot read the rest of the screen can find theirs. Each is worn as it is pressed, so Off is
  * silent at once. The rest of Settings is left out on purpose; it would be a wall.
  */
-export function WelcomeChoices({onStartTour}: Props): React.JSX.Element {
+export function WelcomeChoices({onStartTour, onStartTutorial}: Props): React.JSX.Element {
   const dispatch = useAppDispatch();
   const {welcome, language} = useMessages();
   const preferences = usePreferences();
@@ -98,6 +100,15 @@ export function WelcomeChoices({onStartTour}: Props): React.JSX.Element {
         className="cursor-pointer rounded-lg bg-gold px-4 py-3 font-semibold text-ink"
       >
         {welcome.takeTheTour}
+      </button>
+
+      <button
+        type="button"
+        data-testid="welcome-start-tutorial"
+        onClick={onStartTutorial}
+        className="cursor-pointer rounded-lg border border-gold/60 px-4 py-3 font-semibold text-wood"
+      >
+        {welcome.startTheTutorial}
       </button>
     </>
   );

@@ -1,4 +1,4 @@
-import type {Messages} from "@src/language/types/Messages";
+import type {Messages} from "@src/language/messages/Messages";
 import {messagesOf} from "@src/language/MessagesOf";
 import {useAppSelector} from "@src/redux/Hooks";
 

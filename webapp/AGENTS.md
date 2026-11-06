@@ -24,7 +24,7 @@ root `AGENTS.md` — a violation of any of these is a lint error:
 - `src/bot/` may import `@janggi/engine` and `@janggi/shared` only — never the store, the page or the
   sound, nor React or Redux.
 - `src/styles/` may import neither the page, the store nor the sound.
-- `src/language/` is every word of the game a player reads, one `Messages` per language (`english/`, `korean/`), looked up by
+- `src/language/` is every word of the game a player reads, one `Messages` per language, in a folder per area, then one per translated type with an `english/` and `korean/` folder beneath it (`docs/localisation.md`), looked up by
   `messagesOf`. It may import `@janggi/shared` and nothing else, so the page and the store can both reach it. Components get
   the words through `useMessages` (`react/pages/game/hooks/`) rather than writing them; an id in the code (a tab, a side, a
   way of drawing) stays English, and what a player reads for it is looked up here. A sentence is a function, so each
@@ -32,7 +32,7 @@ root `AGENTS.md` — a violation of any of these is a lint error:
   engine sees). Moved over so far: the tabs, controls, turn line, result banner and its explanations, the Play, Look and Sound tabs, plaques,
   draw offer and bot notices, the repetition note, the record sheet, welcome and tour, and the You tab with the toast and the
   rename answers (`you`, `toasts`; Redux reaches them through `messagesOf` and the language in the store), playing a friend,
-  piece names for screen readers, the clock, the match-format explanation, unlock names, and the styles sheet and editor (`styles`). Still English: the
+  piece names for screen readers, the clock, the match-format explanation, unlock names, the guided tutorial (`tutorial`), and the styles sheet and editor (`styles`). Still English: the
   legal pages, a style checker's notes on a field of its JSON (`Reading`), and style names, which stay as proper names in every language. The Korean is shown with a note (`LanguageNotice`) that it is a work in progress; take that
   out when it is not. The guide has `GuideMessages` of its own (`guideMessagesOf`), handed to `LearnPage` as props rather than carried by every
   game page, and its Korean is a machine translation that opens with a notice (`translationNotice`); take that out once a native speaker has read it. The references have `ReferencesMessages` (`referencesMessagesOf`) on the same terms.

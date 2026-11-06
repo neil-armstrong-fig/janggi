@@ -7,9 +7,11 @@ import {saveLoaded} from "@src/redux/saves/actions/SaveLoaded";
 import {syncMerged} from "@src/redux/account/actions/SyncMerged";
 import {withBeaten} from "@src/redux/progress/climbing/WithBeaten";
 import {xpFor} from "@src/redux/progress/xp/XpFor";
+import {tutorialCompleted} from "@src/redux/tutorial/actions/TutorialCompleted";
+import {withXpAdded} from "@src/redux/progress/xp/WithXpAdded";
 
 /**
- * The player's progress: XP earned by every decided game against the bot, and the strengths beaten on
+ * The player's progress: XP earned by every decided game against the bot (and once, by the tutorial), and the strengths beaten on
  * each of the four ladders — each army, in each format — which is what opens the rung above.
  *
  * A win is recorded on the ladder it was won on and nowhere else: the format it was played in, and the
@@ -26,7 +28,7 @@ export const progressSlice = createSlice({
       const {format, botElo, playerSide, result} = action.payload;
 
       return {
-        xp: Math.min(state.xp + xpFor(format, result), Number.MAX_SAFE_INTEGER),
+        xp: withXpAdded(state.xp, xpFor(format, result)),
         beaten: result === "won" ? withBeaten(state.beaten, format, playerSide, botElo) : state.beaten,
       };
     },
@@ -34,6 +36,10 @@ export const progressSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(saveLoaded, (_state, action): ProgressSliceState => action.payload.progress);
     builder.addCase(syncMerged, (_state, action): ProgressSliceState => action.payload.progress);
+    builder.addCase(tutorialCompleted, (state, action): ProgressSliceState => ({
+      ...state,
+      xp: withXpAdded(state.xp, action.payload),
+    }));
   },
 });
 

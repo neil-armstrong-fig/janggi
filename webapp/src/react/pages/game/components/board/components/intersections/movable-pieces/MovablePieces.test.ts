@@ -11,6 +11,12 @@ import {movablePieces} from "@src/react/pages/game/components/board/components/i
 import {newGame} from "@janggi/engine/NewGame";
 import {toPositionKey} from "@janggi/engine/board/PositionKeys";
 
+it("marks only the piece the one move asked for begins from", () => {
+  const movable = movablePieces(opening(), PLAYABLE, {from: {file: 3, rank: 7}, to: {file: 3, rank: 6}});
+
+  expect([...movable]).toEqual([toPositionKey({file: 3, rank: 7})]);
+});
+
 it("marks the army to move, and only that army", () => {
   const movable = movablePieces(opening(), PLAYABLE);
 

@@ -22,5 +22,14 @@ interface Props {
 export function PassButton({enabled, onPass}: Props): React.JSX.Element {
   const {controls} = useMessages();
 
-  return <ControlButton testId="pass" label={controls.pass} icon={<PauseIcon />} enabled={enabled} onPress={onPass} />;
+  return (
+    <ControlButton
+      testId="pass"
+      label={controls.pass}
+      icon={<PauseIcon />}
+      enabled={enabled}
+      onPress={onPass}
+      tourTarget="pass"
+    />
+  );
 }

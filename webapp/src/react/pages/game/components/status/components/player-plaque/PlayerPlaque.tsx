@@ -9,7 +9,8 @@ import {plaquePlayerFor} from "@src/react/pages/game/components/status/component
 import {plaqueStateOf} from "@src/react/pages/game/components/status/components/player-plaque/plaque-state/PlaqueStateOf";
 import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {inFriendGame} from "@src/redux/online/selecting/InFriendGame";
-import {takenFrom} from "@janggi/engine/scoring/TakenFrom";
+import {inAPosedScene} from "@src/redux/tutorial/selecting/InAPosedScene";
+import {takenShownFrom} from "@src/react/pages/game/components/status/components/player-plaque/taken-shown/TakenShownFrom";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
@@ -47,7 +48,8 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
  *
  * **It is handed only which army it is**, and reads the rest for itself: the game, the rating, the XP, the
  * piece set the losses are drawn in, and what the game is doing, through `useGameStatus`. Nothing here is
- * stored — the state, the score and the losses are all derived from the position on each render.
+ * stored — the state, the score and the losses are all derived from the position on each render. A tutorial scene posed
+ * as a position shows no losses, having lost nothing by a move (`takenShownFrom`).
  */
 interface Props {
   readonly side: Side;
@@ -61,6 +63,7 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
   const {status} = useGameStatus();
   const {locale, sides, plaque, unlocks} = useMessages();
   const ownedByYou = useAppSelector(state => inFriendGame(state.friend) && state.friend.ownSide === side);
+  const posed = useAppSelector(inAPosedScene);
 
   const game = played.present;
   const state = plaqueStateOf(status, side);
@@ -126,7 +129,12 @@ export function PlayerPlaque({side}: Props): React.JSX.Element {
         </span>
       )}
 
-      <TakenTray side={side} taken={takenFrom(game, side)} pieceStyle={pieceStyle} popping={effects.full} />
+      <TakenTray
+        side={side}
+        taken={takenShownFrom({game, side, posed})}
+        pieceStyle={pieceStyle}
+        popping={effects.full}
+      />
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
         <PlaqueClock side={side} />

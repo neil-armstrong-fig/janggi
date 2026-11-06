@@ -1,7 +1,7 @@
 import {Closing} from "@src/react/pages/learn/components/closing/Closing";
 import {DistinctiveRules} from "@src/react/pages/learn/components/distinctive-rules/DistinctiveRules";
 import {guideLinksOf} from "@src/react/pages/learn/links/GuideLinksOf";
-import {guideMessagesOf} from "@src/language/GuideMessagesOf";
+import {guideMessagesOf} from "@src/language/guide/GuideMessagesOf";
 import {Hero} from "@src/react/pages/learn/components/hero/Hero";
 import {Introduction} from "@src/react/pages/learn/components/introduction/Introduction";
 import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";

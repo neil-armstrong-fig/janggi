@@ -4,7 +4,7 @@ import {LanguageSwitch} from "@src/react/pages/components/language-switch/Langua
 import {messagesOf} from "@src/language/MessagesOf";
 import {referenceSectionsOf} from "@src/react/pages/references/content/ReferenceSectionsOf";
 import {ReferenceSection} from "@src/react/pages/references/components/reference-section/ReferenceSection";
-import {referencesMessagesOf} from "@src/language/ReferencesMessagesOf";
+import {referencesMessagesOf} from "@src/language/references/ReferencesMessagesOf";
 import {ReleaseUpdate} from "@src/react/release-update/ReleaseUpdate";
 import {TranslationNotice} from "@src/react/pages/components/translation-notice/TranslationNotice";
 

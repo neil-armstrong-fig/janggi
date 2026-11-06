@@ -1,8 +1,8 @@
-import {ENGLISH} from "@src/language/english/English";
+import {ENGLISH_MESSAGES} from "@src/language/messages/english/EnglishMessages";
 import {expect, it} from "vitest";
 import {objectFromText} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/ObjectFromText";
 
-const WORDS = ENGLISH.styles.refusals;
+const WORDS = ENGLISH_MESSAGES.styles.refusals;
 
 it("reads the one object the text is", () => {
   expect(objectFromText('{"surface": "#fff"}', WORDS)).toEqual({kind: "accepted", value: {surface: "#fff"}});

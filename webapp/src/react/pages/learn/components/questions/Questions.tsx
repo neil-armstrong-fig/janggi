@@ -1,4 +1,4 @@
-import type {GuideQuestionsMessages} from "@src/language/types/guide/GuideQuestionsMessages";
+import type {GuideQuestionsMessages} from "@src/language/guide/guide-questions-messages/GuideQuestionsMessages";
 
 interface Props {
   readonly messages: GuideQuestionsMessages;

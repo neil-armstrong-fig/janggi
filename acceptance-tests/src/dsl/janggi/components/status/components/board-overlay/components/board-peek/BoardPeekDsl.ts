@@ -21,6 +21,15 @@ export class BoardPeekDsl {
     }
   }
 
+  /** Whether the settings, once opened, stand over the board's tap back to the result rather than under it. */
+  async isUnderTheSettings(): Promise<boolean> {
+    try {
+      return await this.boardPeek.isUnderTheSettings();
+    } catch (error) {
+      throw new DslError("Failed to check whether the settings stand over the board's tap", error);
+    }
+  }
+
   /** Whether the result is put aside, and the board being looked at. */
   async isBoardShown(): Promise<boolean> {
     try {

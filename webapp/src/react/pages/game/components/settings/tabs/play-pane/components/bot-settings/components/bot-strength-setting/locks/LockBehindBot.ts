@@ -1,4 +1,4 @@
-import type {BotLock} from "@src/language/types/BotLock";
+import type {BotLock} from "@src/language/settings/play-messages/types/BotLock";
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";

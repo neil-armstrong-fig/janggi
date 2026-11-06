@@ -1,4 +1,4 @@
-import type {ReleaseMessages} from "@src/language/types/ReleaseMessages";
+import type {ReleaseMessages} from "@src/language/messages/types/ReleaseMessages";
 import {useReleaseUpdate} from "@src/react/release-update/hooks/use-release-update/UseReleaseUpdate";
 
 interface Props {

@@ -1,10 +1,10 @@
-import {ENGLISH} from "@src/language/english/English";
+import {ENGLISH_MESSAGES} from "@src/language/messages/english/EnglishMessages";
 import {boardFromText} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/board-style-editor/board-text/BoardFromText";
 import {classicStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/ClassicStyle";
 import {expect, it} from "vitest";
 import {writtenOut} from "@src/react/pages/game/components/styles-sheet/components/style-editor/hooks/use-style-draft/written-out/WrittenOut";
 
-const WORDS = ENGLISH.styles.refusals;
+const WORDS = ENGLISH_MESSAGES.styles.refusals;
 
 it("reads back a style as it was written out, name aside", () => {
   expect(boardFromText(writtenOut(classicStyle), WORDS)).toEqual({

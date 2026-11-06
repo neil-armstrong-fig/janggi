@@ -1,4 +1,5 @@
 import type {GameState} from "@janggi/engine/types/GameState";
+import type {Move} from "@janggi/engine/types/Move";
 import type {PositionKey} from "@janggi/engine/board/types/Position";
 import {gameIsOver} from "@src/react/pages/game/components/board/components/intersections/movable-pieces/game-is-over/GameIsOver";
 import {legalMovesFor} from "@janggi/engine/LegalMovesFor";
@@ -18,11 +19,17 @@ import {toPositionKey} from "@janggi/engine/board/PositionKeys";
  * end — the position on screen is only what `BoardShownFor.ts` is painting until both armies have
  * chosen, and no piece on it is anybody's to move yet.
  *
+ * Only the piece `only` begins from, where one move is asked for (the tutorial's) and the engine allows it.
+ *
  * A set of keys rather than a list of positions, because the board asks the question ninety times,
  * once per intersection.
  */
-export function movablePieces(game: GameState, playable: boolean): ReadonlySet<PositionKey> {
+export function movablePieces(game: GameState, playable: boolean, only?: Move): ReadonlySet<PositionKey> {
   if (!playable || gameIsOver(game)) return new Set();
 
-  return new Set(legalMovesFor(game).map(({from}) => toPositionKey(from)));
+  const froms = legalMovesFor(game).map(({from}) => toPositionKey(from));
+
+  if (only === undefined) return new Set(froms);
+
+  return new Set(froms.filter(from => from === toPositionKey(only.from)));
 }
