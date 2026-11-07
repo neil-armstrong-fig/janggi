@@ -14,6 +14,7 @@ export const KOREAN_PLAY_MESSAGES: PlayMessages = {
   yourSide: "내 진영",
   sideChoiceNames: {Cho: "초", Han: "한", Random: "무작위"},
   setup: "상차림",
+  setupNotChosen: "선택 전",
   setupOf: side => `${koreanSideName(side)} 상차림`,
   setupNames: {
     "Inner Elephant": "안상차림",

@@ -57,14 +57,38 @@ export class LegalPlaywright extends BasePage {
       .locator("[data-testid='settings-tab'][aria-selected='true']")
       .getAttribute("data-tab");
     await this.page.locator("[data-testid='settings-tab'][data-tab='You']").click();
+    const pane = this.page.getByTestId("settings-pane").and(this.page.locator('[data-pane="You"]'));
+    const previousName = await this.openGroupName(pane);
+    const account = pane.getByTestId("settings-group").and(this.page.locator('[data-group="Account"]'));
+    const needsOpening = (await account.getAttribute("data-open")) !== "true";
+    if (needsOpening) await account.getByTestId("settings-group-toggle").click();
     await this.privacyLink.waitFor({state: "visible"});
 
     const answer = await question();
+
+    if (needsOpening) {
+      if (previousName === undefined) {
+        await account.getByTestId("settings-group-toggle").click();
+      } else {
+        await pane
+          .getByTestId("settings-group")
+          .and(this.page.locator(`[data-group="${previousName}"]`))
+          .getByTestId("settings-group-toggle")
+          .click();
+      }
+    }
 
     await this.page.locator(`[data-testid='settings-tab'][data-tab='${leftOn}']`).click();
     await this.page.getByTestId("settings-close").click();
 
     return answer;
+  }
+
+  private async openGroupName(pane: Locator): Promise<string | undefined> {
+    const open = pane.locator('[data-testid="settings-group"][data-open="true"]');
+    if ((await open.count()) === 0) return undefined;
+
+    return (await open.getAttribute("data-group")) ?? undefined;
   }
 
   async getPageTitle(): Promise<string> {

@@ -33,7 +33,7 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `references-open`, `developer-website-open`, `repository-open`, `app-version` (the short commit hash of the build, last in the You tab), `privacy-open`, `terms-open`,
   and the question reset opens, `record-reset-confirm` and `record-reset-cancel`. The progress section:
   `progress-xp` and `progress-next-unlock` carrying `data-xp`, `progress-xp-bar` carrying `data-percent`
-  (absent once everything is unlocked), `save-transfer-toggle` (`aria-expanded`; the save key section is folded away until it is pressed), `save-copy` and the `save-key` it shows,
+  (absent once everything is unlocked), the SaveTransfer `settings-group-toggle` (`aria-expanded`; the save key section is folded away until it is pressed), `save-copy` and the `save-key` it shows,
   and `save-load-input`, `save-load-submit` and `save-load-message` carrying `data-accepted`. The account section of
   the You tab: `account` (the card, with `data-highlighted` while a signed-out player who chose Online is being shown it), `account-sign-in` where nobody is signed in; `account-signed-in`, `account-sign-out`,
   `account-name` carrying `data-name`, `account-name-input`, `account-name-save` and `account-name-message` carrying
@@ -115,7 +115,13 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `settings-pane` carrying `data-pane` with the
   same label, `hidden` unless its tab is showing. The tab-switching `inSheet` drives (see the DSL
   `AGENTS.md`) is these two. In the Play pane, `setup-army-han` and `setup-army-cho` are the
-  `aria-pressed` buttons choosing which army's setup grid is showing.
+  `aria-pressed` buttons choosing which army's setup grid is showing, and `han-setup-grid` and `cho-setup-grid`
+  are those grids, `hidden` unless the switch shows them. `bot-settings` holds the bot's strength and
+  side, `hidden` unless the opponent is the bot.
+- **On a settings group** — the Play, Look and You panes are folded into groups, each a `settings-group` carrying `data-group`
+  (a `PlayGroupName`, `LookGroupName` or `YouGroupName`), and `data-open` (`true` or `false`). Its line is the `settings-group-toggle` button (`aria-expanded`), holding
+  `settings-group-summary`, what the group is set to. `inSheet` opens the group holding a control that is
+  out of sight, after choosing its tab.
 - **On the Janggi guide** — `guide-piece-<type>` is an expandable movement card, and `guide-section`
   is every top-level section of the reading page. `guide` wraps the page and carries
   `data-guide-ready` once it has finished rendering, `guide-play` is its primary route into the game,

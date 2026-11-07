@@ -20,6 +20,23 @@ export class OpacitySettingPlaywright extends SettingsSheetComponent {
     return Number(await this.slider.inputValue());
   }
 
+  async getBackdropBlur(): Promise<number> {
+    return await this.sheet.evaluate(sheet => parseFloat(getComputedStyle(sheet).backdropFilter.replace("blur(", "")));
+  }
+
+  async getRenderedOpacity(): Promise<Opacity> {
+    return await this.sheet.evaluate(sheet => {
+      const colour = getComputedStyle(sheet).backgroundColor;
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Expected a canvas context to read the rendered colour");
+
+      context.fillStyle = colour;
+      context.fillRect(0, 0, 1, 1);
+      return Math.round(((context.getImageData(0, 0, 1, 1).data[3] ?? 0) / 255) * 100);
+    });
+  }
+
   async getMinimum(): Promise<Opacity> {
     return Number(await this.slider.getAttribute("min"));
   }

@@ -10,12 +10,14 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  */
 export class ChoSetupSettingPlaywright extends SettingsSheetComponent {
   private readonly army: Locator;
+  private readonly grid: Locator;
   private readonly options: Record<SetupName, Locator>;
 
   constructor(page: Page) {
     super(page);
 
     this.army = page.getByTestId("setup-army-cho");
+    this.grid = page.getByTestId("cho-setup-grid");
     this.options = {
       "Inner Elephant": page.getByTestId("cho-setup-option-inner-elephant"),
       "Outer Elephant": page.getByTestId("cho-setup-option-outer-elephant"),
@@ -31,9 +33,12 @@ export class ChoSetupSettingPlaywright extends SettingsSheetComponent {
     });
   }
 
-  /** Whether this army's grid is on screen — the other's is hidden, not removed. */
+  /**
+   * Whether this army's grid is the one the switch shows — the other's is hidden, not removed. Read off `hidden`, so
+   * it answers the same with the sheet shut or the setups folded away.
+   */
   async isShown(): Promise<boolean> {
-    return await this.options["Inner Elephant"].isVisible();
+    return (await this.grid.getAttribute("hidden")) === null;
   }
 
   /** Whether the picker is still live — the pickers lock once a move has been played, all options at once. */

@@ -14,6 +14,7 @@ export const ENGLISH_PLAY_MESSAGES: PlayMessages = {
   yourSide: "Your side",
   sideChoiceNames: {Cho: "Cho", Han: "Han", Random: "Random"},
   setup: "Setup",
+  setupNotChosen: "Not chosen",
   setupOf: side => `${englishSideName(side)}'s setup`,
   setupNames: {
     "Inner Elephant": "Inner Elephant",

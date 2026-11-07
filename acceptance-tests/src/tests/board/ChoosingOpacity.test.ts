@@ -44,3 +44,29 @@ given("a user opens the game", () => {
     });
   });
 });
+
+given("the settings sheet is open", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.settings.openTheSettings();
+  });
+
+  when("the board is behind the settings", () => {
+    then("board detail is softened behind the text", async ({janggi}) => {
+      expect(await janggi.settings.look.opacity.getBackdropBlur()).toBeGreaterThanOrEqual(8);
+    });
+  });
+
+  when.each(
+    [80, 90, 100],
+    opacity => `the player chooses ${opacity}% opacity`,
+    opacity => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.look.opacity.setTo(opacity);
+      });
+
+      then("the rendered background follows the choice", async ({janggi}) => {
+        expect(await janggi.settings.look.opacity.getRenderedOpacity()).toBe(opacity);
+      });
+    },
+  );
+});

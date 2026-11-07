@@ -22,6 +22,8 @@ export interface PlayMessages {
   readonly yourSide: string;
   readonly sideChoiceNames: Record<SideChoiceName, string>;
   readonly setup: string;
+  /** What the setup line says for an army that has not laid out yet, as in a scored game waiting on Han. */
+  readonly setupNotChosen: string;
   /** What an army's own opening arrangement is called, as a heading. */
   readonly setupOf: (side: Side) => string;
   readonly setupNames: Record<SetupName, string>;

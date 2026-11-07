@@ -1,8 +1,11 @@
-import {BoardHints} from "@src/react/pages/game/components/settings/tabs/look-pane/components/board-hints/BoardHints";
-import {BoardSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/board-setting/BoardSetting";
+import {SettingsSection} from "@src/react/pages/game/components/settings/components/settings-section/SettingsSection";
+import {BoardHintsGroup} from "@src/react/pages/game/components/settings/tabs/look-pane/components/board-hints-group/BoardHintsGroup";
+import {PiecesGroup} from "@src/react/pages/game/components/settings/tabs/look-pane/components/pieces-group/PiecesGroup";
+import {BoardGroup} from "@src/react/pages/game/components/settings/tabs/look-pane/components/board-group/BoardGroup";
+import {useState} from "react";
+import type {LookGroupName} from "@janggi/shared/janggi/settings/LookGroupName";
 import {OpacitySetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/opacity-setting/OpacitySetting";
 import {OpponentLookSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/opponent-look-setting/OpponentLookSetting";
-import {PieceSetSetting} from "@src/react/pages/game/components/settings/tabs/look-pane/components/piece-set-setting/PieceSetSetting";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
 import {StylesButton} from "@src/react/pages/game/components/settings/tabs/look-pane/components/styles-button/StylesButton";
 
@@ -21,19 +24,30 @@ interface Props {
 }
 
 export function LookPane({selected}: Props): React.JSX.Element {
+  const [open, setOpen] = useState<LookGroupName | undefined>(undefined);
+  const toggle = (name: LookGroupName): void => {
+    if (open === name) {
+      setOpen(undefined);
+    } else {
+      setOpen(name);
+    }
+  };
+
   return (
     <SettingsPane name="Look" selected={selected}>
-      <BoardSetting />
+      <BoardGroup open={open === "Board"} onToggle={() => toggle("Board")} />
 
-      <PieceSetSetting />
+      <PiecesGroup open={open === "Pieces"} onToggle={() => toggle("Pieces")} />
 
       <StylesButton />
 
-      <BoardHints />
+      <BoardHintsGroup open={open === "BoardHints"} onToggle={() => toggle("BoardHints")} />
 
       <OpponentLookSetting />
 
-      <OpacitySetting />
+      <SettingsSection>
+        <OpacitySetting />
+      </SettingsSection>
     </SettingsPane>
   );
 }

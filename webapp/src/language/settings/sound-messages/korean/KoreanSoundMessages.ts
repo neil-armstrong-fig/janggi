@@ -2,6 +2,7 @@ import type {SoundMessages} from "@src/language/settings/sound-messages/SoundMes
 
 /** The Sound tab, in Korean. */
 export const KOREAN_SOUND_MESSAGES: SoundMessages = {
+  clock: "시계",
   soundEffects: "효과음",
   muteSoundEffects: "효과음 끄기",
   music: "음악",

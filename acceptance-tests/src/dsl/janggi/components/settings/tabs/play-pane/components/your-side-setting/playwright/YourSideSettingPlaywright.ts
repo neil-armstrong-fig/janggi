@@ -8,13 +8,13 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  * buttons, and it is only laid out while the opponent is the bot.
  */
 export class YourSideSettingPlaywright extends SettingsSheetComponent {
-  private readonly picker: Locator;
+  private readonly botSettings: Locator;
   private readonly options: Record<SideChoiceName, Locator>;
 
   constructor(page: Page) {
     super(page);
 
-    this.picker = page.getByTestId("your-side-picker");
+    this.botSettings = page.getByTestId("bot-settings");
     this.options = {
       Cho: page.getByTestId("your-side-option-cho"),
       Han: page.getByTestId("your-side-option-han"),
@@ -22,9 +22,12 @@ export class YourSideSettingPlaywright extends SettingsSheetComponent {
     };
   }
 
-  /** Whether the picker is laid out at all, which it is only against the bot. */
+  /**
+   * Whether the picker is laid out at all, which it is only against the bot. Read off the bot's settings' `hidden`, so
+   * it answers the same with the sheet shut or the opponent's group folded away.
+   */
   async isShown(): Promise<boolean> {
-    return await this.picker.isVisible();
+    return (await this.botSettings.getAttribute("hidden")) === null;
   }
 
   async isChoosable(): Promise<boolean> {

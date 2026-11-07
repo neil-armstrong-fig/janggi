@@ -3,6 +3,11 @@ import {koreanSideName} from "@src/language/sides/korean/KoreanSideName";
 
 /** The Look tab, in Korean. */
 export const KOREAN_LOOK_MESSAGES: LookMessages = {
+  hintsSummary: (hints, fullMotion) => {
+    if (fullMotion) return `힌트 ${hints}개 · 전체 움직임`;
+
+    return `힌트 ${hints}개 · 줄인 움직임`;
+  },
   board: "판",
   pieces: "말",
   boardOf: side => `${koreanSideName(side)} 판`,

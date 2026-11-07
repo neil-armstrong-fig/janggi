@@ -12,6 +12,17 @@ export const KOREAN_YOU_MESSAGES: YouMessages = {
     barLabel: "다음 해금까지의 진행도",
   },
   account: {
+    summary: (name, sync) => `${name} · ${sync}`,
+    signedOut: "로그아웃됨",
+    syncSummary: sync => {
+      if (sync === "idle") return "동기화 중…";
+
+      if (sync === "synced") return "동기화됨";
+
+      if (sync === "paused") return "동기화 일시 중지";
+
+      return "이 기기에만 저장";
+    },
     label: "계정",
     heading: "내 게임 동기화하기",
     signedOutIntro:
@@ -65,6 +76,8 @@ export const KOREAN_YOU_MESSAGES: YouMessages = {
   },
   version: "버전",
   saveTransfer: {
+    heading: "저장 키",
+    summary: "복사 또는 불러오기",
     toggle: "내 진행 상황을 다른 기기로 옮기기",
     explanation:
       "저장 키를 쓰면 계정이나 인터넷 연결 없이도 진행 상황을 직접 옮길 수 있어, 장기를 완전히 오프라인으로 쓸 수 있습니다. 키에는 XP, 이긴 봇, 직접 만든 스타일이 들어 있으며, 키를 불러오면 지금의 XP는 키에 담긴 XP로 대체됩니다. 키를 옮기는 것이 번거롭다면 위에서 Google로 로그인하면 모두 자동으로 동기화됩니다.",

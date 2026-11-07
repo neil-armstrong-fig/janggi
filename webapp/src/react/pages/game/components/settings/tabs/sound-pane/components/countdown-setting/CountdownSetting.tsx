@@ -14,11 +14,14 @@ export function CountdownSetting(): React.JSX.Element {
   const {sound} = useMessages();
 
   return (
-    <Switch
-      testId="countdown-toggle"
-      on={countdown}
-      label={sound.countdown}
-      onToggle={() => dispatch(countdownChosen(!countdown))}
-    />
+    <div className="flex flex-col gap-2">
+      <p className="border-b border-wood/25 pb-2 text-sm font-semibold text-wood">{sound.clock}</p>
+      <Switch
+        testId="countdown-toggle"
+        on={countdown}
+        label={sound.countdown}
+        onToggle={() => dispatch(countdownChosen(!countdown))}
+      />
+    </div>
   );
 }

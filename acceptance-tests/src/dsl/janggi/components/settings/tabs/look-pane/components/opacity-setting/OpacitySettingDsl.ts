@@ -27,6 +27,22 @@ export class OpacitySettingDsl {
     }
   }
 
+  async getBackdropBlur(): Promise<number> {
+    try {
+      return await this.opacity.getBackdropBlur();
+    } catch (error) {
+      throw new DslError("Failed to read the sheet's backdrop blur", error);
+    }
+  }
+
+  async getRenderedOpacity(): Promise<Opacity> {
+    try {
+      return await this.opacity.getRenderedOpacity();
+    } catch (error) {
+      throw new DslError("Failed to read the sheet's rendered opacity", error);
+    }
+  }
+
   async getMinimum(): Promise<Opacity> {
     try {
       return await this.opacity.getMinimum();

@@ -26,7 +26,10 @@ export class ProgressSettingPlaywright extends SettingsSheetComponent {
     this.xp = page.getByTestId("progress-xp");
     this.xpBar = page.getByTestId("progress-xp-bar");
     this.nextUnlock = page.getByTestId("progress-next-unlock");
-    this.transferToggle = page.getByTestId("save-transfer-toggle");
+    this.transferToggle = page
+      .getByTestId("settings-group")
+      .and(page.locator('[data-group="SaveTransfer"]'))
+      .getByTestId("settings-group-toggle");
     this.copy = page.getByTestId("save-copy");
     this.key = page.getByTestId("save-key");
     this.input = page.getByTestId("save-load-input");

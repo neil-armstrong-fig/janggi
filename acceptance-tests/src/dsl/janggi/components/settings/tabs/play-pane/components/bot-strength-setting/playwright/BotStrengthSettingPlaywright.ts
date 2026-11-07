@@ -10,12 +10,14 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  * it takes to open.
  */
 export class BotStrengthSettingPlaywright extends SettingsSheetComponent {
+  private readonly botSettings: Locator;
   private readonly select: Locator;
   private readonly options: Record<BotElo, Locator>;
 
   constructor(page: Page) {
     super(page);
 
+    this.botSettings = page.getByTestId("bot-settings");
     this.select = page.getByTestId("bot-strength-select");
     this.options = {
       800: page.getByTestId("bot-strength-option-800"),
@@ -29,9 +31,12 @@ export class BotStrengthSettingPlaywright extends SettingsSheetComponent {
     };
   }
 
-  /** Whether the picker is laid out at all, which it is only against the bot. */
+  /**
+   * Whether the picker is laid out at all, which it is only against the bot. Read off the bot's settings' `hidden`, so
+   * it answers the same with the sheet shut or the opponent's group folded away.
+   */
   async isShown(): Promise<boolean> {
-    return await this.select.isVisible();
+    return (await this.botSettings.getAttribute("hidden")) === null;
   }
 
   async isChoosable(): Promise<boolean> {

@@ -3,6 +3,18 @@ import {englishSideName} from "@src/language/sides/english/EnglishSideName";
 
 /** The Look tab, in English. */
 export const ENGLISH_LOOK_MESSAGES: LookMessages = {
+  hintsSummary: (hints, fullMotion) => {
+    if (hints === 1) {
+      if (fullMotion) return "1 hint · Full motion";
+
+      return "1 hint · Reduced motion";
+    }
+
+    const count = `${hints} hints`;
+    if (fullMotion) return `${count} · Full motion`;
+
+    return `${count} · Reduced motion`;
+  },
   board: "Board",
   pieces: "Pieces",
   boardOf: side => `${englishSideName(side)}'s board`,

@@ -2,6 +2,7 @@ import type {SoundMessages} from "@src/language/settings/sound-messages/SoundMes
 
 /** The Sound tab, in English. */
 export const ENGLISH_SOUND_MESSAGES: SoundMessages = {
+  clock: "Clock",
   soundEffects: "Sound effects",
   muteSoundEffects: "Mute sound effects",
   music: "Music",

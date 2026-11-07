@@ -12,6 +12,17 @@ export const ENGLISH_YOU_MESSAGES: YouMessages = {
     barLabel: "Progress to the next unlock",
   },
   account: {
+    summary: (name, sync) => `${name} · ${sync}`,
+    signedOut: "Signed out",
+    syncSummary: sync => {
+      if (sync === "idle") return "Syncing…";
+
+      if (sync === "synced") return "Synced";
+
+      if (sync === "paused") return "Sync paused";
+
+      return "Device only";
+    },
     label: "Account",
     heading: "Keep your game in sync",
     signedOutIntro:
@@ -66,6 +77,8 @@ export const ENGLISH_YOU_MESSAGES: YouMessages = {
   },
   version: "Version",
   saveTransfer: {
+    heading: "Save key",
+    summary: "Copy or load",
     toggle: "Move your progress to another device",
     explanation:
       "A save key lets you move your progress by hand, with no account and no connection, so Janggi can stay fully offline. It holds your XP, the bots you have beaten and your own styles, and loading one replaces your XP. If you would rather not copy keys around, signing in with Google above keeps everything in sync for you.",

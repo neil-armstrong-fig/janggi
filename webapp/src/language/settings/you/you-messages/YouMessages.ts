@@ -14,6 +14,9 @@ export interface YouMessages {
 
 /** The optional Google account: signing in and out, what is kept, the display name and being told it is your turn. */
 interface YouAccountMessages {
+  readonly summary: (name: string, sync: string) => string;
+  readonly signedOut: string;
+  readonly syncSummary: (sync: string) => string;
   readonly label: string;
   readonly heading: string;
   readonly signedOutIntro: string;

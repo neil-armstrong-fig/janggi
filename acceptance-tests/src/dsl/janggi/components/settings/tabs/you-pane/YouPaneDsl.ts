@@ -1,3 +1,5 @@
+import type {GroupAppearance} from "@src/dsl/janggi/components/settings/types/GroupAppearance";
+import type {YouGroupName} from "@janggi/shared/janggi/settings/YouGroupName";
 import {YouPanePlaywright} from "@src/dsl/janggi/components/settings/tabs/you-pane/playwright/YouPanePlaywright";
 import {DslError} from "@src/dsl/errors/DslError";
 import {LanguageSettingDsl} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/language-setting/LanguageSettingDsl";
@@ -26,6 +28,62 @@ export class YouPaneDsl {
     this.progress = new ProgressSettingDsl(page);
     this.install = new InstallButtonDsl(page);
     this.account = new AccountSettingDsl(page);
+  }
+
+  async getGroupAppearance(name: YouGroupName): Promise<GroupAppearance> {
+    try {
+      return await this.youPane.getGroupAppearance(name);
+    } catch (error) {
+      throw new DslError("Failed to read group appearance", error);
+    }
+  }
+
+  async isPlayerOverviewVisible(): Promise<boolean> {
+    try {
+      return await this.youPane.isPlayerOverviewVisible();
+    } catch (error) {
+      throw new DslError("Failed to check visible help and progress", error);
+    }
+  }
+
+  async isAccountSignInVisible(): Promise<boolean> {
+    try {
+      return await this.youPane.isAccountSignInVisible();
+    } catch (error) {
+      throw new DslError("Failed to check sign-in visibility", error);
+    }
+  }
+
+  async openGroup(name: YouGroupName): Promise<void> {
+    try {
+      await this.youPane.openGroup(name);
+    } catch (error) {
+      throw new DslError(`Failed to open the ${name} group in You`, error);
+    }
+  }
+
+  async closeGroup(name: YouGroupName): Promise<void> {
+    try {
+      await this.youPane.closeGroup(name);
+    } catch (error) {
+      throw new DslError(`Failed to close the ${name} group in You`, error);
+    }
+  }
+
+  async isGroupOpen(name: YouGroupName): Promise<boolean> {
+    try {
+      return await this.youPane.isGroupOpen(name);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the ${name} group in You`, error);
+    }
+  }
+
+  async getGroupSummary(name: YouGroupName): Promise<string> {
+    try {
+      return await this.youPane.getGroupSummary(name);
+    } catch (error) {
+      throw new DslError(`Failed to read the summary of the ${name} group in You`, error);
+    }
   }
 
   async startTheTutorial(): Promise<void> {

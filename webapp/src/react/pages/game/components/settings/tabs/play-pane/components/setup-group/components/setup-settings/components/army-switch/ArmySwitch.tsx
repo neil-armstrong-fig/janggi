@@ -1,0 +1,43 @@
+import type {Side} from "@janggi/shared/janggi/pieces/Side";
+import {clsx} from "clsx";
+import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
+
+/**
+ * Cho | Han, in the order they move: which army's opening setup is showing beneath it.
+ *
+ * The two armies choose separately, but they share one place in the sheet, because two grids of setups
+ * would not fit a phone's sheet. Pressing an army only turns that army's grid up — it chooses nothing
+ * about the game. It draws no label of its own: the Setup group it sits in already names it.
+ */
+interface Props {
+  readonly showing: Side;
+  readonly onShow: (side: Side) => void;
+}
+
+export function ArmySwitch({showing, onShow}: Props): React.JSX.Element {
+  const {play, sides} = useMessages();
+
+  return (
+    <div role="group" aria-label={play.armySwitchLabel} className="flex gap-1 rounded-xl bg-black/25 p-1">
+      {SIDES_IN_PLAY_ORDER.map(side => (
+        <button
+          key={side}
+          type="button"
+          data-testid={`setup-army-${side}`}
+          aria-pressed={side === showing}
+          onClick={() => onShow(side)}
+          className={clsx(
+            "min-h-11 flex-1 cursor-pointer rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 motion-reduce:transition-none",
+            side === showing && "bg-wood text-ink shadow",
+            side !== showing && "text-white/70 hover:bg-white/10",
+          )}
+        >
+          {sides[side]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Cho moves first, so it is listed first, as the Play a friend sheet does. */
+const SIDES_IN_PLAY_ORDER: readonly Side[] = ["cho", "han"];

@@ -1,3 +1,7 @@
+import type {GroupAppearance} from "@src/dsl/janggi/components/settings/types/GroupAppearance";
+import {LookPanePlaywright} from "@src/dsl/janggi/components/settings/tabs/look-pane/playwright/LookPanePlaywright";
+import {DslError} from "@src/dsl/errors/DslError";
+import type {LookGroupName} from "@janggi/shared/janggi/settings/LookGroupName";
 import {BoardSettingDsl} from "@src/dsl/janggi/components/settings/tabs/look-pane/components/board-setting/BoardSettingDsl";
 import {PieceSetSettingDsl} from "@src/dsl/janggi/components/settings/tabs/look-pane/components/piece-set-setting/PieceSetSettingDsl";
 import {MovableHighlightSettingDsl} from "@src/dsl/janggi/components/settings/tabs/look-pane/components/movable-highlight-setting/MovableHighlightSettingDsl";
@@ -12,6 +16,8 @@ import type {Page} from "@playwright/test";
  * (`webapp/src/react/pages/game/components/settings/tabs/look-pane/`).
  */
 export class LookPaneDsl {
+  private readonly lookPane: LookPanePlaywright;
+
   readonly board: BoardSettingDsl;
   readonly pieceSet: PieceSetSettingDsl;
   readonly movableHighlight: MovableHighlightSettingDsl;
@@ -21,6 +27,8 @@ export class LookPaneDsl {
   readonly effects: EffectsSettingDsl;
 
   constructor(page: Page) {
+    this.lookPane = new LookPanePlaywright(page);
+
     this.board = new BoardSettingDsl(page);
     this.pieceSet = new PieceSetSettingDsl(page);
     this.movableHighlight = new MovableHighlightSettingDsl(page);
@@ -28,5 +36,45 @@ export class LookPaneDsl {
     this.opponentLook = new OpponentLookSettingDsl(page);
     this.opacity = new OpacitySettingDsl(page);
     this.effects = new EffectsSettingDsl(page);
+  }
+
+  async getGroupAppearance(name: LookGroupName): Promise<GroupAppearance> {
+    try {
+      return await this.lookPane.getGroupAppearance(name);
+    } catch (error) {
+      throw new DslError("Failed to read group appearance", error);
+    }
+  }
+
+  async openGroup(name: LookGroupName): Promise<void> {
+    try {
+      await this.lookPane.openGroup(name);
+    } catch (error) {
+      throw new DslError(`Failed to open the ${name} group in Look`, error);
+    }
+  }
+
+  async closeGroup(name: LookGroupName): Promise<void> {
+    try {
+      await this.lookPane.closeGroup(name);
+    } catch (error) {
+      throw new DslError(`Failed to close the ${name} group in Look`, error);
+    }
+  }
+
+  async isGroupOpen(name: LookGroupName): Promise<boolean> {
+    try {
+      return await this.lookPane.isGroupOpen(name);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the ${name} group in Look`, error);
+    }
+  }
+
+  async getGroupSummary(name: LookGroupName): Promise<string> {
+    try {
+      return await this.lookPane.getGroupSummary(name);
+    } catch (error) {
+      throw new DslError(`Failed to read the summary of the ${name} group in Look`, error);
+    }
   }
 }

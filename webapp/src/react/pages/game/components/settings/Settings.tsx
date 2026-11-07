@@ -80,7 +80,7 @@ export function Settings(): React.JSX.Element {
         inert={!open}
         style={{"--sheet-opacity": `${sheetOpacity}%`} as SheetPanelStyle}
         className={clsx(
-          "settings-sheet-panel fixed inset-x-0 bottom-0 z-20 mx-auto flex h-[60dvh] w-full max-w-lg flex-col rounded-t-2xl backdrop-blur-[1px] transition-transform duration-300 ease-out select-none not-supports-[backdrop-filter:blur(1px)]:bg-ground-raised motion-reduce:transition-none",
+          "settings-sheet-panel fixed inset-x-0 bottom-0 z-20 mx-auto flex h-[60dvh] w-full max-w-lg flex-col rounded-t-2xl backdrop-blur-[8px] transition-transform duration-300 ease-out select-none not-supports-[backdrop-filter:blur(1px)]:bg-ground-raised motion-reduce:transition-none",
           open && "translate-y-0 shadow-2xl shadow-black",
           !open && "translate-y-full",
         )}

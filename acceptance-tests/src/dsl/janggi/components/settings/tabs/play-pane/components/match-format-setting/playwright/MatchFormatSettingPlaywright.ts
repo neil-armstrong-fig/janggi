@@ -74,10 +74,13 @@ export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
     return ((await this.options[name].textContent()) ?? "").trim();
   }
 
-  /** Whether the format may still be chosen, which the buttons say by being enabled or not. */
+  /**
+   * Whether the format may still be chosen, which the buttons say by being enabled or not. Waits for the button to be in
+   * the page rather than on screen, since its group may be folded away.
+   */
   async isChoosable(): Promise<boolean> {
     const casual = this.options.Casual;
-    await casual.waitFor({state: "visible"});
+    await casual.waitFor({state: "attached"});
 
     return await casual.isEnabled();
   }

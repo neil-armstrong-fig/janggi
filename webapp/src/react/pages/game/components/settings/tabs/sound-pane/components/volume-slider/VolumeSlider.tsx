@@ -46,8 +46,8 @@ export function VolumeSlider({id, label, muteLabel, volume, onChange}: Props): R
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-baseline justify-between">
-        <label htmlFor={`${id}-volume`} className="text-xs font-medium text-white/60">
+      <div className="flex items-baseline justify-between border-b border-wood/25 pb-2">
+        <label htmlFor={`${id}-volume`} className="text-sm font-semibold text-wood">
           {label}
         </label>
 

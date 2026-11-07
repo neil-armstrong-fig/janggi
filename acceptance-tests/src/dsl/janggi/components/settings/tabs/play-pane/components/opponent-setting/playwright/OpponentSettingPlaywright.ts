@@ -40,10 +40,13 @@ export class OpponentSettingPlaywright extends SettingsSheetComponent {
     return ((await this.options[name].textContent()) ?? "").trim();
   }
 
-  /** Whether the opponent may still be chosen, which the buttons say by being enabled or not. */
+  /**
+   * Whether the opponent may still be chosen, which the buttons say by being enabled or not. Waits for the button to be in
+   * the page rather than on screen, since its group may be folded away.
+   */
   async isChoosable(): Promise<boolean> {
     const human = this.options.Human;
-    await human.waitFor({state: "visible"});
+    await human.waitFor({state: "attached"});
 
     return await human.isEnabled();
   }

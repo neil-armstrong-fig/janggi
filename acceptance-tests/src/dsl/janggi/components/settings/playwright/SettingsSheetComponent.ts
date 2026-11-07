@@ -1,3 +1,4 @@
+import type {GroupAppearance} from "@src/dsl/janggi/components/settings/types/GroupAppearance";
 import type {Locator, Page} from "@playwright/test";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 
@@ -19,6 +20,11 @@ import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
  * not showing, and puts the tab the player was on back afterwards. Putting it back matters: the fixture
  * turns the effects down before every spec, and a sheet left on another tab would be a spec's starting
  * state that no player ever saw.
+ *
+ * The Play tab is folded into groups, one open at a time, and a folded group's controls are out of reach
+ * too. So `inSheet` opens the group holding the control as well, and **puts back the group that was open**
+ * afterwards, for the same reason as the tab: the fixture chooses the opponent before every spec, and a
+ * tab left on the opponent's group would be a starting state no player opens the app to.
  *
  * A base class rather than a component another `*Playwright` holds, so each picker still owns only
  * its own locators and nothing becomes anybody's parent. Here rather than in `src/dsl/playwright/`
@@ -48,7 +54,9 @@ export abstract class SettingsSheetComponent extends BaseComponent {
       const needsSwitching = (await tab.getAttribute("aria-selected")) !== "true";
 
       if (needsSwitching) await tab.click();
+      const putGroupBack = await this.openGroupHolding(control);
       await act();
+      await putGroupBack();
       if (needsSwitching) await this.tabNamed(leftOn).click();
     });
   }
@@ -62,6 +70,7 @@ export abstract class SettingsSheetComponent extends BaseComponent {
 
     const tab = await this.tabHolding(control);
     if ((await tab.getAttribute("aria-selected")) !== "true") await tab.click();
+    await this.openGroupHolding(control);
   }
 
   /**
@@ -85,6 +94,24 @@ export abstract class SettingsSheetComponent extends BaseComponent {
     return (await this.sheet.getAttribute("aria-modal")) === "true";
   }
 
+  protected async readGroupAppearance(name: string): Promise<GroupAppearance> {
+    return await this.groupNamed(name).evaluate(group => {
+      const style = getComputedStyle(group);
+      const contentId = group.querySelector("[aria-controls]")?.getAttribute("aria-controls");
+      const content = contentId && document.getElementById(contentId);
+
+      return {
+        border: style.borderTopColor,
+        background: style.backgroundColor,
+        dividerWidth: parseFloat((content && getComputedStyle(content).borderTopWidth) || "0"),
+      };
+    });
+  }
+
+  protected groupNamed(name: string): Locator {
+    return this.page.getByTestId("settings-group").and(this.page.locator(`[data-group="${name}"]`));
+  }
+
   protected tabNamed(name: string): Locator {
     return this.page.locator(`[data-testid='settings-tab'][data-tab='${name}']`);
   }
@@ -95,6 +122,59 @@ export abstract class SettingsSheetComponent extends BaseComponent {
     if (name === undefined) throw new Error("The settings pane names no tab");
 
     return this.tabNamed(name);
+  }
+
+  /**
+   * Opens the folded group a control sits in, where it is out of sight only because its group is folded, and hands back
+   * what puts the group that was open back. A control already on screen — a group's own line among them — is left
+   * alone, so that line is never pressed twice.
+   */
+  private async openGroupHolding(control: Locator): Promise<() => Promise<void>> {
+    const nothingToPutBack = async (): Promise<void> => {};
+    if (await control.isVisible()) return nothingToPutBack;
+
+    const group = this.page.getByTestId("settings-group").filter({has: control});
+    if ((await group.count()) === 0) return nothingToPutBack;
+
+    if ((await group.getAttribute("data-open")) === "true") return nothingToPutBack;
+
+    const name = (await group.getAttribute("data-group")) ?? undefined;
+    if (name === undefined) throw new Error("The settings group has no name");
+
+    const paneName = await this.page.getByTestId("settings-pane").filter({has: control}).getAttribute("data-pane");
+    const pane = this.page.getByTestId("settings-pane").and(this.page.locator(`[data-pane="${paneName}"]`));
+    const opened = this.groupNamed(name);
+    const openBefore = await this.openGroupName(pane);
+    await group.getByTestId("settings-group-toggle").click();
+
+    return async () => {
+      await this.putGroupBack(opened, openBefore, pane);
+    };
+  }
+
+  /** The group open on the tab showing, or nothing where every one is folded. */
+  private async openGroupName(pane: Locator): Promise<string | undefined> {
+    const open = pane.locator("[data-testid='settings-group'][data-open='true']");
+    if ((await open.count()) === 0) return undefined;
+
+    return (await open.getAttribute("data-group")) ?? undefined;
+  }
+
+  /**
+   * Folds `opened` back by opening the group that was open before it, or by folding it where none was. Left alone where
+   * what was done has already moved the groups on, as dealing a new game does.
+   */
+  private async putGroupBack(opened: Locator, openBefore: string | undefined, pane: Locator): Promise<void> {
+    if ((await opened.getAttribute("data-open")) !== "true") return;
+
+    if (openBefore === undefined) {
+      await opened.getByTestId("settings-group-toggle").click();
+    } else {
+      await pane
+        .locator(`[data-testid='settings-group'][data-group='${openBefore}']`)
+        .getByTestId("settings-group-toggle")
+        .click();
+    }
   }
 
   private async selectedTabName(): Promise<string> {

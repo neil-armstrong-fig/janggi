@@ -1,3 +1,4 @@
+import type {GroupAppearance} from "@src/dsl/janggi/components/settings/types/GroupAppearance";
 import {PlayPanePlaywright} from "@src/dsl/janggi/components/settings/tabs/play-pane/playwright/PlayPanePlaywright";
 import {DslError} from "@src/dsl/errors/DslError";
 import {ClockSettingDsl} from "@src/dsl/janggi/components/settings/tabs/play-pane/components/clock-setting/ClockSettingDsl";
@@ -12,6 +13,7 @@ import {ChoSetupSettingDsl} from "@src/dsl/janggi/components/settings/tabs/play-
 import type {Page} from "@playwright/test";
 import type {ElephantPairing} from "@janggi/shared/janggi/settings/ElephantPairing";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
+import type {PlayGroupName} from "@janggi/shared/janggi/settings/PlayGroupName";
 
 /**
  * The Play tab of the settings sheet, reached as `janggi.settings.play`: one member per setting the app draws in it
@@ -42,6 +44,66 @@ export class PlayPaneDsl {
     this.yourSide = new YourSideSettingDsl(page);
     this.hanSetup = new HanSetupSettingDsl(page);
     this.choSetup = new ChoSetupSettingDsl(page);
+  }
+
+  async isClockInOpponent(): Promise<boolean> {
+    try {
+      return await this.playPane.isClockInOpponent();
+    } catch (error) {
+      throw new DslError("Failed to locate the clock in Opponent", error);
+    }
+  }
+
+  async isClockVisible(): Promise<boolean> {
+    try {
+      return await this.playPane.isClockVisible();
+    } catch (error) {
+      throw new DslError("Failed to check clock visibility", error);
+    }
+  }
+
+  async getGroupAppearance(name: PlayGroupName): Promise<GroupAppearance> {
+    try {
+      return await this.playPane.getGroupAppearance(name);
+    } catch (error) {
+      throw new DslError(`Failed to read the ${name} group's appearance`, error);
+    }
+  }
+
+  /** Whether a group of the tab is unfolded, its settings in reach, rather than folded to its line. */
+  async isGroupOpen(name: PlayGroupName): Promise<boolean> {
+    try {
+      return await this.playPane.isGroupOpen(name);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the ${name} group is open`, error);
+    }
+  }
+
+  /** Whether a group is laid out at all — the clock's is only there for two people at one device. */
+  async isGroupOffered(name: PlayGroupName): Promise<boolean> {
+    try {
+      return await this.playPane.isGroupOffered(name);
+    } catch (error) {
+      throw new DslError(`Failed to check whether the ${name} group is offered`, error);
+    }
+  }
+
+  /** The line a group is folded to, saying what it is set to, as the player reads it. */
+  async getGroupSummary(name: PlayGroupName): Promise<string> {
+    try {
+      return await this.playPane.getGroupSummary(name);
+    } catch (error) {
+      throw new DslError(`Failed to read the ${name} group's line`, error);
+    }
+  }
+
+  /** Unfolds a group, which folds whichever was open before it. */
+  async openGroup(name: PlayGroupName): Promise<void> {
+    try {
+      await this.playPane.openGroup(name);
+    } catch (error) {
+      throw new DslError(`Failed to open the ${name} group`, error);
+    }
   }
 
   /** Both armies at once, for a spec that only cares that they match. */

@@ -1,3 +1,5 @@
+import type {GroupAppearance} from "@src/dsl/janggi/components/settings/types/GroupAppearance";
+import type {YouGroupName} from "@janggi/shared/janggi/settings/YouGroupName";
 import type {Locator, Page} from "@playwright/test";
 import {TUTORIAL_OFFERS} from "@janggi/shared/janggi/tutorial/TutorialOffer";
 import type {TutorialOffer} from "@janggi/shared/janggi/tutorial/TutorialOffer";
@@ -21,6 +23,46 @@ export class YouPanePlaywright extends SettingsSheetComponent {
     this.appVersion = page.getByTestId("app-version");
     this.tutorialStart = page.getByTestId("tutorial-start");
     this.tutorialStartOver = page.getByTestId("tutorial-start-over");
+  }
+
+  async getGroupAppearance(name: YouGroupName): Promise<GroupAppearance> {
+    return await this.readGroupAppearance(name);
+  }
+
+  async isPlayerOverviewVisible(): Promise<boolean> {
+    return (
+      (await this.page.getByTestId("app-help").isVisible()) &&
+      (await this.page.getByTestId("progress-xp").isVisible()) &&
+      (await this.page.getByTestId("language-picker").isVisible())
+    );
+  }
+
+  async isAccountSignInVisible(): Promise<boolean> {
+    return await this.page.getByTestId("account-sign-in").isVisible();
+  }
+
+  async isGroupOpen(name: YouGroupName): Promise<boolean> {
+    return (await this.groupNamed(name).getAttribute("data-open")) === "true";
+  }
+
+  async getGroupSummary(name: YouGroupName): Promise<string> {
+    return ((await this.groupNamed(name).getByTestId("settings-group-summary").textContent()) ?? "").trim();
+  }
+
+  async openGroup(name: YouGroupName): Promise<void> {
+    const toggle = this.groupNamed(name).getByTestId("settings-group-toggle");
+
+    await this.inSheet(toggle, async () => {
+      if (!(await this.isGroupOpen(name))) await toggle.click();
+    });
+  }
+
+  async closeGroup(name: YouGroupName): Promise<void> {
+    const toggle = this.groupNamed(name).getByTestId("settings-group-toggle");
+
+    await this.inSheet(toggle, async () => {
+      if (await this.isGroupOpen(name)) await toggle.click();
+    });
   }
 
   /** Starts the tutorial, or resumes it where the player has come part way, which puts the sheet away itself. */
