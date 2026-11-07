@@ -1,11 +1,11 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
 import type {RatingEvent} from "@src/react/pages/game/hooks/use-rated-game/types/RatingEvent";
 import type {UnknownAction} from "@reduxjs/toolkit";
-import {ratedGameAbandoned, ratedGameFinished, ratedGameStarted} from "@src/redux/ratings/RatingsSlice";
+import {ratedGameAbandoned, ratedGameFinished, ratedGameStarted} from "@src/redux/slices/ratings/RatingsSlice";
 import {ratingEventFor} from "@src/react/pages/game/hooks/use-rated-game/utils/RatingEventFor";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useRef} from "react";
-import {xpEarned} from "@src/redux/progress/ProgressSlice";
+import {xpEarned} from "@src/redux/slices/progress/ProgressSlice";
 
 /**
  * Keeps the player's rating in step with the game against the bot: starts a rated game on its first
@@ -19,6 +19,7 @@ import {xpEarned} from "@src/redux/progress/ProgressSlice";
  */
 export function useRatedGame(moment: GameMoment | undefined): void {
   const {played, opponent} = useAppSelector(state => state.game);
+  const practice = useAppSelector(state => state.tourPractice.parked !== undefined);
   const inProgress = useAppSelector(state => state.ratings.inProgress !== undefined);
   const dispatch = useAppDispatch();
   const answeredRef = useRef<number | undefined>(undefined);
@@ -26,6 +27,8 @@ export function useRatedGame(moment: GameMoment | undefined): void {
   useEffect(() => {
     if (!moment || answeredRef.current === moment.id) return;
     answeredRef.current = moment.id;
+
+    if (practice) return;
 
     const event = ratingEventFor({change: moment, played, opponent, inProgress});
     if (!event) return;
@@ -36,7 +39,7 @@ export function useRatedGame(moment: GameMoment | undefined): void {
       const {botElo, playerSide} = opponent;
       dispatch(xpEarned({format: played.present.format, botElo, playerSide, result: event.result}));
     }
-  }, [moment, played, opponent, inProgress, dispatch]);
+  }, [moment, played, opponent, inProgress, practice, dispatch]);
 }
 
 function actionFor(event: RatingEvent, now: string): UnknownAction {

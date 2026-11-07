@@ -1,7 +1,7 @@
 import type {Engine} from "@src/bot/engine/types/Engine";
 import {botAwaitsGoAhead} from "@src/react/pages/game/bot-duty/BotAwaitsGoAhead";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
-import {botEngineFailed} from "@src/redux/bot-engine/BotEngineSlice";
+import {botEngineFailed} from "@src/redux/slices/bot-engine/BotEngineSlice";
 import {failureReasonOf} from "@src/react/pages/game/hooks/bot-failure/FailureReasonOf";
 import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/BotReplyFor";
 import {drawAnswerFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/DrawAnswerFor";

@@ -1,5 +1,5 @@
 import type {GameState} from "@janggi/engine/types/GameState";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {RecordChange} from "@src/record/change/types/RecordChange";
 import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";

@@ -1,7 +1,7 @@
 import {Button} from "@src/react/pages/game/components/button/Button";
-import type {RenameResult} from "@src/redux/account/types/RenameResult";
+import type {RenameResult} from "@src/redux/slices/account/types/RenameResult";
 import {clsx} from "clsx";
-import {renameAccount} from "@src/redux/account/actions/RenameAccount";
+import {renameAccount} from "@src/redux/slices/account/actions/RenameAccount";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useState} from "react";

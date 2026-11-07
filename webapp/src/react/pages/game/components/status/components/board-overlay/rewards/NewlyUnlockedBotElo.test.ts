@@ -1,8 +1,8 @@
-import type {BeatenBySide, BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
+import type {BeatenBySide, BeatenLadders} from "@src/redux/slices/progress/types/ProgressSliceState";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import {expect, it} from "vitest";
-import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
+import {freshProgress} from "@src/redux/slices/progress/fresh-progress/FreshProgress";
 import {newlyUnlockedBotElo} from "@src/react/pages/game/components/status/components/board-overlay/rewards/NewlyUnlockedBotElo";
 
 const WON: GameStatus = {kind: "won", by: "cho"};

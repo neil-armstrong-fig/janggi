@@ -1,5 +1,5 @@
 import {expect, it} from "vitest";
-import {freshProgress} from "@src/redux/progress/fresh-progress/FreshProgress";
+import {freshProgress} from "@src/redux/slices/progress/fresh-progress/FreshProgress";
 import {strengthToFallBackTo} from "@src/react/pages/game/components/settings/tabs/play-pane/locks/StrengthToFallBackTo";
 
 const CHO_HAS_CLIMBED_IN_CASUAL = {...freshProgress().beaten, Casual: {cho: [800 as const, 1000 as const], han: []}};

@@ -1,4 +1,4 @@
-import {botStrengthChosen, sideChosen} from "@src/redux/game/GameSlice";
+import {botStrengthChosen, sideChosen} from "@src/redux/slices/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import {SIDE_CHOICE_OPTIONS} from "@src/react/pages/game/components/settings/tabs/play-pane/utils/OpponentOptions";

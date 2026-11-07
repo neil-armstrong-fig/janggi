@@ -1,6 +1,6 @@
 import {BIKJANG_HINTS} from "@src/react/pages/game/utils/BikjangHints";
 import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
-import {bikjangHintChosen} from "@src/redux/preferences/PreferencesSlice";
+import {bikjangHintChosen} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

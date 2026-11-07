@@ -1,7 +1,7 @@
-import type {PlayGroupName} from "@janggi/shared/janggi/settings/PlayGroupName";
-import {sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {usePlayGroup} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-play-group/UsePlayGroup";
+import {sheetClosed} from "@src/redux/slices/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
-import {inTheTutorial} from "@src/redux/tutorial/selecting/InTheTutorial";
+import {inTheTutorial} from "@src/redux/slices/tutorial/selecting/InTheTutorial";
 import {TutorialHoldsPlay} from "@src/react/pages/game/components/settings/tabs/play-pane/components/tutorial-holds-play/TutorialHoldsPlay";
 import {FormatGroup} from "@src/react/pages/game/components/settings/tabs/play-pane/components/format-group/FormatGroup";
 import {GamesSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/games-setting/GamesSetting";
@@ -10,8 +10,6 @@ import {OpponentGroup} from "@src/react/pages/game/components/settings/tabs/play
 import {RecordButton} from "@src/react/pages/game/components/settings/tabs/play-pane/components/record-button/RecordButton";
 import {SetupGroup} from "@src/react/pages/game/components/settings/tabs/play-pane/components/setup-group/SetupGroup";
 import {SettingsPane} from "@src/react/pages/game/components/settings/components/settings-pane/SettingsPane";
-import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
-import {useState} from "react";
 
 /**
  * The Play tab: what a player opens the sheet for before a game. Which game is on the board sits on top, always in
@@ -20,10 +18,8 @@ import {useState} from "react";
  * what it is set to, and opens in place to change it.
  *
  * **One group is open at a time**, so a phone's short sheet holds the whole game at a glance and the settings being
- * changed. Before the first move that is the setups, since choosing one is what the see-through sheet over the board is
- * for. Once play has begun none is: nothing in them can change, so the lines are the summary of the game being played,
- * and any still opens, its settings locked, so a format can still be explained. Dealing a new game opens the setups
- * again.
+ * changed. A new device starts with all groups collapsed. Each explicit open or close is remembered across refreshes
+ * and new games. During play a group still opens with its settings locked, so a format can still be explained.
  *
  * **New game and Your record sit in the pane's footer**, outside the scrolling settings, so they are
  * in the thumb's reach however far the settings above have been scrolled. New game deals from the
@@ -42,22 +38,7 @@ interface Props {
 export function PlayPane({selected}: Props): React.JSX.Element {
   const dispatch = useAppDispatch();
   const tutorial = useAppSelector(inTheTutorial);
-  const begun = useAppSelector(state => playHasBegun(state.game.played));
-  const [open, setOpen] = useState<PlayGroupName | undefined>(() => groupOpenWhen(begun));
-  const [followed, setFollowed] = useState(begun);
-
-  if (followed !== begun) {
-    setFollowed(begun);
-    setOpen(groupOpenWhen(begun));
-  }
-
-  const toggle = (name: PlayGroupName): void => {
-    if (open === name) {
-      setOpen(undefined);
-    } else {
-      setOpen(name);
-    }
-  };
+  const {open, toggle} = usePlayGroup();
 
   if (tutorial) {
     return (
@@ -91,11 +72,4 @@ export function PlayPane({selected}: Props): React.JSX.Element {
       </div>
     </SettingsPane>
   );
-}
-
-/** The group a fresh game opens on: the setups, until play has begun and nothing is left to choose. */
-function groupOpenWhen(begun: boolean): PlayGroupName | undefined {
-  if (begun) return undefined;
-
-  return "Setup";
 }

@@ -1,4 +1,4 @@
-import type {BeatenBySide, BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
+import type {BeatenBySide, BeatenLadders} from "@src/redux/slices/progress/types/ProgressSliceState";
 import {expect, it} from "vitest";
 import {lockBehindBot} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-group/components/bot-settings/components/bot-strength-setting/locks/LockBehindBot";
 

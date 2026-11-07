@@ -46,6 +46,30 @@ export class PlayPaneDsl {
     this.choSetup = new ChoSetupSettingDsl(page);
   }
 
+  async isGuidedGameOffered(): Promise<boolean> {
+    try {
+      return await this.playPane.isGuidedGameOffered();
+    } catch (error) {
+      throw new DslError("Failed to check the guided-game layout", error);
+    }
+  }
+
+  async startTheGuidedGame(): Promise<void> {
+    try {
+      await this.playPane.startTheGuidedGame();
+    } catch (error) {
+      throw new DslError("Failed to start the guided game", error);
+    }
+  }
+
+  async getGuidedGameLabel(): Promise<string> {
+    try {
+      return await this.playPane.getGuidedGameLabel();
+    } catch (error) {
+      throw new DslError("Failed to read the guided-game label", error);
+    }
+  }
+
   async isClockInOpponent(): Promise<boolean> {
     try {
       return await this.playPane.isClockInOpponent();
@@ -98,6 +122,14 @@ export class PlayPaneDsl {
   }
 
   /** Unfolds a group, which folds whichever was open before it. */
+  async closeGroup(name: PlayGroupName): Promise<void> {
+    try {
+      await this.playPane.closeGroup(name);
+    } catch (error) {
+      throw new DslError(`Failed to close the ${name} settings group`, error);
+    }
+  }
+
   async openGroup(name: PlayGroupName): Promise<void> {
     try {
       await this.playPane.openGroup(name);

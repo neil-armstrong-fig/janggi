@@ -1,4 +1,4 @@
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 

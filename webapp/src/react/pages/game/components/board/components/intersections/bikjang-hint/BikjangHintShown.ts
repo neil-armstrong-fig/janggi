@@ -1,6 +1,6 @@
 import type {BikjangHint} from "@src/react/pages/game/types/BikjangHint";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 
 /**
  * Whether the board labels the moves that could allow a bikjang, which is the player's preference

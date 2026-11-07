@@ -1,7 +1,7 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {CustomStyleRow} from "@src/react/pages/game/components/styles-sheet/components/custom-style-row/CustomStyleRow";
 import {SectionHeading} from "@src/react/pages/game/components/styles-sheet/components/section-heading/SectionHeading";
-import {boardStyleDeleted, pieceSetDeleted} from "@src/redux/custom-styles/CustomStylesSlice";
+import {boardStyleDeleted, pieceSetDeleted} from "@src/redux/slices/custom-styles/CustomStylesSlice";
 import {encodeKey} from "@janggi/shared/janggi/share-keys/EncodeKey";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 

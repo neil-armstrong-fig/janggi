@@ -2,7 +2,7 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
 import type {PasteResult} from "@src/react/pages/game/components/paste-key/types/PasteResult";
 import {PasteKey} from "@src/react/pages/game/components/paste-key/PasteKey";
 import {SectionHeading} from "@src/react/pages/game/components/styles-sheet/components/section-heading/SectionHeading";
-import {boardStyleImported, pieceSetImported} from "@src/redux/custom-styles/CustomStylesSlice";
+import {boardStyleImported, pieceSetImported} from "@src/redux/slices/custom-styles/CustomStylesSlice";
 import {styleImportFrom} from "@src/react/pages/game/components/styles-sheet/style-import/StyleImportFrom";
 import {useAppDispatch} from "@src/redux/Hooks";
 

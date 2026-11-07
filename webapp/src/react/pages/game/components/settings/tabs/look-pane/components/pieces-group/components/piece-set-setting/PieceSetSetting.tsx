@@ -3,9 +3,9 @@ import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piec
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {armyPieceSetChosen, pieceSetChosen, pieceSetSplit} from "@src/redux/preferences/PreferencesSlice";
+import {armyPieceSetChosen, pieceSetChosen, pieceSetSplit} from "@src/redux/slices/preferences/PreferencesSlice";
 import {lockBehindXp} from "@src/react/pages/game/components/settings/tabs/look-pane/locks/LockBehindXp";
-import {pieceSetPrice} from "@src/redux/progress/unlocks/PieceSetPrice";
+import {pieceSetPrice} from "@src/redux/slices/progress/unlocks/PieceSetPrice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useOwnPreferences} from "@src/react/pages/game/hooks/use-own-preferences/UseOwnPreferences";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

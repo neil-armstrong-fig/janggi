@@ -1,6 +1,6 @@
 import {Button} from "@src/react/pages/game/components/button/Button";
-import {leaveTheTutorial} from "@src/redux/tutorial/actions/LeaveTheTutorial";
-import {sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {leaveTheTutorial} from "@src/redux/slices/tutorial/actions/LeaveTheTutorial";
+import {sheetClosed} from "@src/redux/slices/settings/SettingsSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 

@@ -1,8 +1,8 @@
 import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
 import type {StyleOutcome} from "@src/react/pages/game/components/styles-sheet/types/StyleOutcome";
-import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
+import {boardStyleFrom} from "@src/redux/slices/custom-styles/untrusted/BoardStyleFrom";
 import {decodeKey} from "@janggi/shared/janggi/share-keys/DecodeKey";
-import {pieceSetStyleFrom} from "@src/redux/custom-styles/untrusted/PieceSetStyleFrom";
+import {pieceSetStyleFrom} from "@src/redux/slices/custom-styles/untrusted/PieceSetStyleFrom";
 
 /**
  * The style in a key a player has pasted — a board key or a pieces key, told apart by how it opens —

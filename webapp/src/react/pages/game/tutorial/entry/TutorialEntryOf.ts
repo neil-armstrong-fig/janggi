@@ -1,5 +1,5 @@
-import type {TutorialEntry} from "@src/redux/tutorial/types/TutorialEntry";
-import type {TutorialProgress} from "@src/redux/tutorial/types/TutorialProgress";
+import type {TutorialEntry} from "@src/redux/slices/tutorial/types/TutorialEntry";
+import type {TutorialProgress} from "@src/redux/slices/tutorial/types/TutorialProgress";
 import {TUTORIAL_SCENES} from "@src/react/pages/game/tutorial/TutorialScenes";
 
 /**

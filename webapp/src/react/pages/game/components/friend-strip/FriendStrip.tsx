@@ -1,14 +1,14 @@
 import type {FriendStripMessages} from "@src/language/friend/friend-messages/types/FriendStripMessages";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import type {FriendConnectionStatus} from "@janggi/shared/janggi/online/FriendConnectionStatus";
-import type {FriendSliceState} from "@src/redux/online/types/FriendSliceState";
-import {actInFriendRoom} from "@src/redux/online/actions/playing/ActInFriendRoom";
+import type {FriendSliceState} from "@src/redux/slices/online/types/FriendSliceState";
+import {actInFriendRoom} from "@src/redux/slices/online/actions/playing/ActInFriendRoom";
 import {clsx} from "clsx";
-import {friendGameOf} from "@src/redux/online/selecting/FriendGameOf";
-import {friendStateOf} from "@src/redux/online/selecting/FriendStateOf";
-import {switchGame} from "@src/redux/online/actions/SwitchGame";
-import {leaveFriendRoom} from "@src/redux/online/actions/LeaveFriendRoom";
-import {sheetOpened} from "@src/redux/settings/SettingsSlice";
+import {friendGameOf} from "@src/redux/slices/online/selecting/FriendGameOf";
+import {friendStateOf} from "@src/redux/slices/online/selecting/FriendStateOf";
+import {switchGame} from "@src/redux/slices/online/actions/SwitchGame";
+import {leaveFriendRoom} from "@src/redux/slices/online/actions/LeaveFriendRoom";
+import {sheetOpened} from "@src/redux/slices/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import type {FriendGameState} from "@janggi/shared/janggi/online/FriendGameState";
 

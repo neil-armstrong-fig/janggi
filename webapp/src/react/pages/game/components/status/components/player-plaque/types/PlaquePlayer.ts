@@ -1,5 +1,5 @@
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {UnlockStep} from "@src/redux/progress/unlocks/types/UnlockStep";
+import type {UnlockStep} from "@src/redux/slices/progress/unlocks/types/UnlockStep";
 
 /** The bot playing an army, at the strength it was chosen to play at. */
 interface Bot {

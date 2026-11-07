@@ -1,5 +1,5 @@
 import type {UnlockProgress} from "@src/react/pages/game/components/xp-bar/unlock-progress/types/UnlockProgress";
-import {unlockLadder} from "@src/redux/progress/unlocks/UnlockLadder";
+import {unlockLadder} from "@src/redux/slices/progress/unlocks/UnlockLadder";
 
 /**
  * How far `xp` has come from the unlock it last passed to the next one — or undefined once there is no next

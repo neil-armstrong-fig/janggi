@@ -12,7 +12,7 @@ import {
   movableHighlightChosen,
   musicVolumeChanged,
   soundEffectsVolumeChanged,
-} from "@src/redux/preferences/PreferencesSlice";
+} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

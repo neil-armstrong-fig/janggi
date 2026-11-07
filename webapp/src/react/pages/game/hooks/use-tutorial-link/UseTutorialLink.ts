@@ -1,5 +1,5 @@
 import {addressWithoutTutorial} from "@src/react/pages/game/hooks/use-tutorial-link/utils/AddressWithoutTutorial";
-import {startTheTutorial} from "@src/redux/tutorial/actions/StartTheTutorial";
+import {startTheTutorial} from "@src/redux/slices/tutorial/actions/StartTheTutorial";
 import {tutorialEntryOf} from "@src/react/pages/game/tutorial/entry/TutorialEntryOf";
 import {tutorialAskedFor} from "@src/react/pages/game/hooks/use-tutorial-link/utils/TutorialAskedFor";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";

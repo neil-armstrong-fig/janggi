@@ -3,8 +3,8 @@ import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-style
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {armyBoardStyleChosen, boardStyleChosen, boardStyleSplit} from "@src/redux/preferences/PreferencesSlice";
-import {boardStylePrice} from "@src/redux/progress/unlocks/BoardStylePrice";
+import {armyBoardStyleChosen, boardStyleChosen, boardStyleSplit} from "@src/redux/slices/preferences/PreferencesSlice";
+import {boardStylePrice} from "@src/redux/slices/progress/unlocks/BoardStylePrice";
 import {lockBehindXp} from "@src/react/pages/game/components/settings/tabs/look-pane/locks/LockBehindXp";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useOwnPreferences} from "@src/react/pages/game/hooks/use-own-preferences/UseOwnPreferences";

@@ -3,7 +3,7 @@ import {botAwaitsGoAhead} from "@src/react/pages/game/bot-duty/BotAwaitsGoAhead"
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
 import {gameStatusOf} from "@src/react/pages/game/components/status/utils/GameStatusOf";
-import {sideOutOfTime} from "@src/redux/clock/selecting/SideOutOfTime";
+import {sideOutOfTime} from "@src/redux/slices/clock/selecting/SideOutOfTime";
 import {useAppSelector} from "@src/redux/Hooks";
 
 /**

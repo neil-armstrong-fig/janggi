@@ -1,4 +1,4 @@
-import {toastDismissed} from "@src/redux/toast/ToastSlice";
+import {toastDismissed} from "@src/redux/slices/toast/ToastSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {useEffect} from "react";
 

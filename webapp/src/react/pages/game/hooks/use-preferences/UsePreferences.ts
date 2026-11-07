@@ -1,7 +1,7 @@
 import type {Preferences} from "@src/react/pages/game/hooks/use-preferences/types/Preferences";
 import {preferencesFrom} from "@src/react/pages/game/hooks/use-preferences/utils/PreferencesFrom";
 import {useAppSelector} from "@src/redux/Hooks";
-import {opponentLookInUse} from "@src/redux/online/selecting/OpponentLookInUse";
+import {opponentLookInUse} from "@src/redux/slices/online/selecting/OpponentLookInUse";
 import {useMemo} from "react";
 import {withOpponentLook} from "@src/react/pages/game/hooks/use-preferences/utils/WithOpponentLook";
 

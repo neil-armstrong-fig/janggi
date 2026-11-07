@@ -1,4 +1,4 @@
-import {keepLanguageForWorker} from "@src/redux/notifications/KeepLanguageForWorker";
+import {keepLanguageForWorker} from "@src/redux/shared/notifications/KeepLanguageForWorker";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useEffect} from "react";
 

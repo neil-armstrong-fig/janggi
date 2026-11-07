@@ -360,7 +360,7 @@ the last of them. Each item says what was decided where the sources conflict.
 What is left unimplemented is 묵장 and 자장 in §6.1, and they say for themselves
 why they are not rules of a position at all. §6.7's clock is not in the engine
 either, since a position cannot say how long anyone took: it lives in
-`webapp/src/redux/clock/`.
+`webapp/src/redux/slices/clock/`.
 
 ### 6.1 Check and checkmate
 
@@ -698,7 +698,7 @@ handled the same way, and both formats are answered:
   draw to agree to, and two players who want to stop it already have two rested
   turns in a row.
 - **Whether the other player agrees is not the engine's.** An offer is a
-  conversation held beside the record (`redux/game/types/DrawOffer.ts`); only a
+  conversation held beside the record (`redux/slices/game/types/DrawOffer.ts`); only a
   yes reaches it, as `agreeADrawIn`. Between two people the other taps Accept or
   Decline. The bot answers for itself (`bot/choice/would-accept-a-draw/`): it
   accepts only where each army is under thirty points, so a draw cannot be had
@@ -825,13 +825,13 @@ may be touched, and Pass and Bikjang stay disabled, until both have chosen. In a
 **casual** game none of that happens: the board is dealt on the common
 arrangement with both pickers live, exactly as before the rule existed.
 
-The store holds the engine's `SetupPhase` whole (`redux/game/types/GameSliceState.ts`)
+The store holds the engine's `SetupPhase` whole (`redux/slices/game/types/GameSliceState.ts`)
 rather than three loose fields, because the rule reads all three together. One
 seam is worth knowing: a board still being laid out has no game on it, and
-something has still to be drawn, so `redux/game/dealing/board-shown-for/BoardShownFor.ts` stands
+something has still to be drawn, so `redux/slices/game/dealing/board-shown-for/BoardShownFor.ts` stands
 `DEFAULT_SETUP` in for the army that has not chosen. **That is the only place a
 default touches this**, and it is a display decision — the rule's input is the
-phase, where an unchosen army stays `undefined`. `redux/game/dealing/FreshPhaseFor.ts`
+phase, where an unchosen army stays `undefined`. `redux/slices/game/dealing/FreshPhaseFor.ts`
 is the other half: it is what makes a casual game start already arranged and a
 scored one start empty.
 

@@ -3,9 +3,9 @@ import type {WrittenStyle} from "@src/react/pages/game/components/styles-sheet/c
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
 import type {StyleOutcome} from "@src/react/pages/game/components/styles-sheet/types/StyleOutcome";
-import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
+import {boardStyleFrom} from "@src/redux/slices/custom-styles/untrusted/BoardStyleFrom";
 import {objectFromText} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/ObjectFromText";
-import {pieceSetStyleFrom} from "@src/redux/custom-styles/untrusted/PieceSetStyleFrom";
+import {pieceSetStyleFrom} from "@src/redux/slices/custom-styles/untrusted/PieceSetStyleFrom";
 
 /**
  * The style a player has written in the editor — JSON for the style, and a name from the box above it —

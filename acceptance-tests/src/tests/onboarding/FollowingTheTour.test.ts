@@ -9,7 +9,7 @@ import {
 
 /**
  * What each step of the tour points at, and what a player does to move it on. The first two steps are
- * taught by doing — the player picks up a piece and moves it, for real, against the bot they were given —
+ * taught by doing — the player picks up a piece and moves it, on a separate practice board —
  * and the rest are read and continued. `TakingTheTour.test.ts` is the card that carries them.
  */
 given("a player who is on the tour's first step", () => {

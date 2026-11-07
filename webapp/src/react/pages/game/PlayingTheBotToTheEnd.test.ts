@@ -1,16 +1,22 @@
 import type {BotDuty} from "@src/react/pages/game/types/BotDuty";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {Engine} from "@src/bot/engine/types/Engine";
-import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
+import type {GameSliceState} from "@src/redux/slices/game/types/GameSliceState";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {SideChoiceName} from "@janggi/shared/janggi/settings/SideChoiceName";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
 import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/BotReplyFor";
-import {botStrengthChosen, formatChosen, gameReducer, opponentChosen, sideChosen} from "@src/redux/game/GameSlice";
+import {
+  botStrengthChosen,
+  formatChosen,
+  gameReducer,
+  opponentChosen,
+  sideChosen,
+} from "@src/redux/slices/game/GameSlice";
 import {createNodeFairyStockfish} from "@src/testing/CreateNodeFairyStockfish";
 import {expect, it} from "vitest";
-import {firstGame} from "@src/redux/game/first-game/FirstGame";
+import {firstGame} from "@src/redux/slices/game/first-game/FirstGame";
 import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {outcomeOf} from "@janggi/engine/OutcomeOf";
 

@@ -1,5 +1,5 @@
 import {Button} from "@src/react/pages/game/components/button/Button";
-import {sheetOpened} from "@src/redux/settings/SettingsSlice";
+import {sheetOpened} from "@src/redux/slices/settings/SettingsSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 

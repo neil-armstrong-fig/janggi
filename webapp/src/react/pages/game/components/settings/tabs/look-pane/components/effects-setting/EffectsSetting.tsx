@@ -1,6 +1,6 @@
 import {EFFECTS} from "@src/react/pages/game/utils/EffectsOptions";
 import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
-import {effectsChosen} from "@src/redux/preferences/PreferencesSlice";
+import {effectsChosen} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

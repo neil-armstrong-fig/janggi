@@ -6,7 +6,7 @@ import {FlipBoardSetting} from "@src/react/pages/game/components/settings/tabs/p
 import {OpponentSetting} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-group/components/opponent-setting/OpponentSetting";
 import {SettingsGroup} from "@src/react/pages/game/components/settings/components/settings-group/SettingsGroup";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import {useAppSelector} from "@src/redux/Hooks";
 
 /**

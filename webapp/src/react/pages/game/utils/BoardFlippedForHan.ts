@@ -1,4 +1,4 @@
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 
 /**

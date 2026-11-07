@@ -4,7 +4,7 @@ import type {AppWindows} from "@src/sw/notifying/types/AppWindows";
 import {keptLanguage} from "@src/sw/notifying/KeptLanguage";
 import {showTheApp} from "@src/sw/notifying/ShowTheApp";
 import type {TurnNotification} from "@src/sw/notifying/types/TurnNotification";
-import {serverOrigin} from "@src/redux/account/server/ServerOrigin";
+import {serverOrigin} from "@src/redux/slices/account/server/ServerOrigin";
 import {setDefaultHandler} from "workbox-routing";
 import {turnNotificationOf} from "@src/sw/notifying/TurnNotificationOf";
 

@@ -1,4 +1,4 @@
-import {botStrengthChosen, formatChosen} from "@src/redux/game/GameSlice";
+import {botStrengthChosen, formatChosen} from "@src/redux/slices/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {MATCH_FORMAT_OPTIONS} from "@src/react/pages/game/components/settings/tabs/play-pane/components/format-group/components/match-format-setting/utils/MatchFormats";
 import {MatchFormatExplanation} from "@src/react/pages/game/components/settings/tabs/play-pane/components/format-group/components/match-format-setting/components/match-format-explanation/MatchFormatExplanation";

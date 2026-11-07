@@ -1,6 +1,6 @@
 import {MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights";
 import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
-import {movableHighlightChosen} from "@src/redux/preferences/PreferencesSlice";
+import {movableHighlightChosen} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

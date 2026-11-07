@@ -2,11 +2,11 @@ import {isCheckmate} from "@janggi/engine/check/IsCheckmate";
 import {askedTargetOf} from "@src/react/pages/game/components/tutorial/asked-target/AskedTargetOf";
 import {TUTORIAL_SCENES} from "@src/react/pages/game/tutorial/TutorialScenes";
 import {edgeOf} from "@src/react/pages/game/components/tutorial/edge/EdgeOf";
-import {closeTheTutorial} from "@src/redux/tutorial/actions/CloseTheTutorial";
-import {startTheTutorialScene} from "@src/redux/tutorial/actions/StartTheTutorialScene";
+import {closeTheTutorial} from "@src/redux/slices/tutorial/actions/CloseTheTutorial";
+import {startTheTutorialScene} from "@src/redux/slices/tutorial/actions/StartTheTutorialScene";
 import {TourSpotlight} from "@src/react/pages/game/components/tour-spotlight/TourSpotlight";
 import {TutorialCard} from "@src/react/pages/game/components/tutorial/components/tutorial-card/TutorialCard";
-import {leaveTheTutorial} from "@src/redux/tutorial/actions/LeaveTheTutorial";
+import {leaveTheTutorial} from "@src/redux/slices/tutorial/actions/LeaveTheTutorial";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {lookAtOf} from "@src/react/pages/game/components/tutorial/look-at/LookAtOf";
 import {nextSceneNameOf} from "@src/react/pages/game/components/tutorial/card-words/NextSceneNameOf";
@@ -78,7 +78,7 @@ export function Tutorial(): React.JSX.Element {
 
   return (
     <>
-      {askingFor && rect && !sheetUp && <TourSpotlight target={askingFor} rect={rect} />}
+      {askingFor && rect && !sheetUp && <TourSpotlight target={askingFor} rect={rect} belowSheets />}
 
       <TutorialCard
         sceneName={sceneWords.name}

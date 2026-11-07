@@ -3,6 +3,15 @@
 Use `useAppSelector` / `useAppDispatch` from `@src/redux/Hooks`, never the untyped `react-redux`
 hooks. Add state as a slice via `createSlice`.
 
+## Layout
+
+The root holds `Store.ts` (and its test), `Hooks.ts`, `AppThunk.ts`, `slices/`,
+and `shared/`. Each folder under `slices/` owns a slice and the behavior beneath
+it. `shared/` holds infrastructure used across slices or by the store and page,
+grouped by subject (`device-storage/`, `debug/`, `saves/`, `untrusted/`, and so on).
+Keep slice-specific helpers beneath their slice. This local `shared/` folder is
+separate from the workspace's `@janggi/shared` package.
+
 ## Conventions
 
 - **A slice is wiring; what its actions mean lives beneath it.** A reducer says which rule an action
@@ -15,7 +24,7 @@ hooks. Add state as a slice via `createSlice`.
   the `settings` slice — the button under the board, the sheets and the tour all open, close and turn them —
   and it is not kept on the device, a page opening with none up.
 - **An action that is not one of a slice's own goes in an `actions/` folder.** A slice's own actions come
-  from `createSlice` and stay in the slice file. A `createAction` several slices answer (`saves/actions/SaveLoaded`,
+  from `createSlice` and stay in the slice file. A `createAction` several slices answer (`shared/saves/actions/SaveLoaded`,
   `account/actions/SyncMerged`) and a thunk (`account/actions/SyncNow`, `SignIn`, `RestoreSession`) each get a file
   there, beside the feature they belong to, so a reader looking for what can happen finds it in one place rather
   than among the reducers and selectors.
@@ -36,7 +45,7 @@ hooks. Add state as a slice via `createSlice`.
   not a default. A scored game sits in it until both have laid out, and while it does there is no game
   on the board: `isArranged` gates the board, Pass, Bikjang and Draw, and `canPlace` locks each picker. A
   casual game is dealt already arranged and never sits there, because the order is a regulation of
-  official play (`docs/rules.md` §6.6). `redux/game/dealing/board-shown-for/BoardShownFor.ts` is the
+  official play (`docs/rules.md` §6.6). `redux/slices/game/dealing/board-shown-for/BoardShownFor.ts` is the
   one seam worth knowing: a half-laid-out board still has to be drawn, so it stands `DEFAULT_SETUP` in
   for the army that has not chosen — a display decision that stays on this side of the line, since the
   engine refuses to know about a default.
@@ -97,7 +106,7 @@ hooks. Add state as a slice via `createSlice`.
 - **The rest of the store is kept on the device.** `Store.ts` loads every other slice from `localStorage`
   and writes each back when it changes, so a closed page reopens on the same game, preferences and record.
   **What is read back is untrusted**: each slice has a loader under its own `storage/` that checks
-  every field against the vocabulary it claims — `redux/untrusted/` — and falls back to a fresh start.
+  every field against the vocabulary it claims — `redux/shared/untrusted/` — and falls back to a fresh start.
   The game is refused whole if any position fails (a crash in `applyMove` is what a half-trusted board
   buys); the ratings keep what they can. A new field on a slice needs its loader taught about it, and a
   change to a slice's shape needs its storage key's version raised. A style key somebody shares is a
@@ -119,7 +128,7 @@ separate from the game. Reconnection is `FriendConnection`'s: it introduces the 
 because the room clears their absence and sends the `snapshot` only on `introduce`; a snapshot re-deals and replays from
 nothing, so it can arrive twice. Everything the room sends is read as untrusted (`ServerMessageFrom`, `OpponentLookFrom`).
 
-**One door is open, and only because it opens onto nothing new.** `redux/debug/` lets a posted message
+**One door is open, and only because it opens onto nothing new.** `redux/shared/debug/` lets a posted message
 set the player's progress — `{janggi: "debug", progress: {xp: 640}}` — and `VITE_DEBUG_XP` does the
 same at startup (`webapp/AGENTS.md` has the exact command form). A save key already does all of it,
 being plain, unsigned and pasteable by design, so this hands a player nothing they did not have; what

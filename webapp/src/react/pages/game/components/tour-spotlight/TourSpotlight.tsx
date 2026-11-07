@@ -1,9 +1,11 @@
+import {clsx} from "clsx";
 import type {TargetRect} from "@src/react/pages/game/hooks/use-target-rect/UseTargetRect";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 
 interface Props {
   readonly target: TourTargetName;
   readonly rect: TargetRect;
+  readonly belowSheets?: boolean;
 }
 
 /**
@@ -11,13 +13,17 @@ interface Props {
  * in a shadow rather than a layer laid over the page, and it takes no taps — so what it rings is still
  * there to be tapped, and so is everything else.
  */
-export function TourSpotlight({target, rect}: Props): React.JSX.Element {
+export function TourSpotlight({target, rect, belowSheets = false}: Props): React.JSX.Element {
   return (
     <div
       aria-hidden
       data-testid="tour-spotlight"
       data-target={target}
-      className="pointer-events-none fixed z-30 rounded-xl shadow-[0_0_0_100vmax_rgb(0_0_0/0.55)] ring-2 ring-gold"
+      className={clsx(
+        "pointer-events-none fixed rounded-xl shadow-[0_0_0_100vmax_rgb(0_0_0/0.55)] ring-2 ring-gold",
+        belowSheets && "z-10",
+        !belowSheets && "z-30",
+      )}
       style={{
         top: rect.top - AROUND,
         left: rect.left - AROUND,

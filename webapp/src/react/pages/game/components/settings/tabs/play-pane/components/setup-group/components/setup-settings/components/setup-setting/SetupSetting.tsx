@@ -1,4 +1,4 @@
-import {choSetupChosen, hanSetupChosen} from "@src/redux/game/GameSlice";
+import {choSetupChosen, hanSetupChosen} from "@src/redux/slices/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
 import {SETUPS} from "@janggi/engine/setups/Setups";

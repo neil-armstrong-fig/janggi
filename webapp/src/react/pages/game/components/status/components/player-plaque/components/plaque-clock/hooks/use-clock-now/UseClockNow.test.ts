@@ -5,10 +5,10 @@ import type {ReactNode} from "react";
 import {Provider} from "react-redux";
 import {act, renderHook} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
-import {clockStarted, timeControlChosen, timeRanOut} from "@src/redux/clock/ClockSlice";
+import {clockStarted, timeControlChosen, timeRanOut} from "@src/redux/slices/clock/ClockSlice";
 import {createElement} from "react";
 import {createStore} from "@src/redux/Store";
-import {opponentChosen} from "@src/redux/game/GameSlice";
+import {opponentChosen} from "@src/redux/slices/game/GameSlice";
 import {useClockNow} from "@src/react/pages/game/components/status/components/player-plaque/components/plaque-clock/hooks/use-clock-now/UseClockNow";
 
 /** What a rendered hook is wrapped in. */

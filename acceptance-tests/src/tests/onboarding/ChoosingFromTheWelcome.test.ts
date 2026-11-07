@@ -40,6 +40,8 @@ given("a player at the welcome, who has read what Janggi is", () => {
 
     when("they start the tour", () => {
       beforeEach(async ({janggi}) => {
+        // The translation notice covers the tour card on a phone until acknowledged.
+        await janggi.languageNotice.dismissIt();
         await janggi.onboarding.startTheTour();
         await janggi.onboarding.skipTheTour();
       });

@@ -1,12 +1,12 @@
 import {Sheet} from "@src/react/pages/game/components/sheet/Sheet";
-import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
+import {sheetClosed, sheetOpened} from "@src/redux/slices/settings/SettingsSlice";
 import {DEFAULT_MATCH_FORMAT} from "@janggi/shared/janggi/settings/MatchFormat";
 import {FormatTabs} from "@src/react/pages/game/components/record-sheet/components/format-tabs/FormatTabs";
 import {GameHistory} from "@src/react/pages/game/components/record-sheet/components/game-history/GameHistory";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import {RecordTable} from "@src/react/pages/game/components/record-sheet/components/record-table/RecordTable";
 import {ResetRecordButton} from "@src/react/pages/game/components/record-sheet/components/reset-record-button/ResetRecordButton";
-import {recordReset} from "@src/redux/ratings/RatingsSlice";
+import {recordReset} from "@src/redux/slices/ratings/RatingsSlice";
 import {recordsAgainstBots} from "@src/react/pages/game/components/record-sheet/records-against-bots/RecordsAgainstBots";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useState} from "react";

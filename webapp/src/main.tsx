@@ -1,9 +1,9 @@
 import "@src/index.css";
 import {App} from "@src/react/App";
-import {PROGRESS_STORAGE_KEY} from "@src/redux/progress/storage/ProgressStorageKey";
+import {PROGRESS_STORAGE_KEY} from "@src/redux/slices/progress/storage/ProgressStorageKey";
 import {ISOLATION_RELOAD_SPENT_KEY} from "@src/isolation/IsolationReloadSpentKey";
 import {reloadMayStillCome} from "@src/isolation/ReloadMayStillCome";
-import {listenForDebugMessages} from "@src/redux/debug/ListenForDebugMessages";
+import {listenForDebugMessages} from "@src/redux/shared/debug/ListenForDebugMessages";
 import {store} from "@src/redux/Store";
 import {StrictMode} from "react";
 import {createRoot} from "react-dom/client";

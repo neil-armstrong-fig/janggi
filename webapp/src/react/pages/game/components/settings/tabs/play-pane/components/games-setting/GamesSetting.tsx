@@ -1,9 +1,10 @@
-import {chooseGame} from "@src/redux/online/actions/ChooseGame";
+import {GuidedGameButton} from "@src/react/pages/game/components/guided-game-button/GuidedGameButton";
+import {chooseGame} from "@src/redux/slices/online/actions/ChooseGame";
 import {clsx} from "clsx";
-import {friendGameOf} from "@src/redux/online/selecting/FriendGameOf";
+import {friendGameOf} from "@src/redux/slices/online/selecting/FriendGameOf";
 import {GAMES_SHOWN} from "@janggi/shared/janggi/online/GameShown";
-import {inFriendRoom} from "@src/redux/online/selecting/InFriendRoom";
-import {mayActInFriendGame} from "@src/redux/online/selecting/MayActInFriendGame";
+import {inFriendRoom} from "@src/redux/slices/online/selecting/InFriendRoom";
+import {mayActInFriendGame} from "@src/redux/slices/online/selecting/MayActInFriendGame";
 import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarget";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
@@ -15,6 +16,7 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
  * says when it is waiting on the player.
  */
 export function GamesSetting(): React.JSX.Element {
+  const completed = useAppSelector(state => state.tutorial.progress.completed);
   const friend = useAppSelector(state => state.friend);
   const game = useAppSelector(state => state.game);
   const dispatch = useAppDispatch();
@@ -26,7 +28,7 @@ export function GamesSetting(): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-2" {...tourTarget("friend")}>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <span className="text-xs font-medium text-white/60">{play.games}</span>
 
         <div data-testid="games-picker" role="group" aria-label={play.gamesLabel} className="flex gap-1">
@@ -50,6 +52,12 @@ export function GamesSetting(): React.JSX.Element {
             </button>
           ))}
         </div>
+
+        {!completed && (
+          <div className="ml-auto">
+            <GuidedGameButton testId="play-guided-game" compact />
+          </div>
+        )}
       </div>
     </div>
   );

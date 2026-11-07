@@ -74,6 +74,10 @@ given("a player who has started the tour from the welcome", () => {
       }
     });
 
+    then("both learning actions use the same text styling and alignment", async ({janggi}) => {
+      expect(await janggi.onboarding.isGuidedGameTextConsistentWithGuide()).toBe(true);
+    });
+
     then("it offers to finish", async ({janggi}) => {
       expect(await janggi.onboarding.getTourStep()).toBe(STEPS_IN_THE_TOUR);
       expect(await janggi.onboarding.isFinishOffered()).toBe(true);

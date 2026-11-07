@@ -1,4 +1,4 @@
-import type {OpponentLook} from "@src/redux/online/types/OpponentLook";
+import type {OpponentLook} from "@src/redux/slices/online/types/OpponentLook";
 import type {Preferences} from "@src/react/pages/game/hooks/use-preferences/types/Preferences";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {combinedBoardStyle} from "@src/styles/board-halves/CombinedBoardStyle";

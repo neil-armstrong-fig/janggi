@@ -29,6 +29,27 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
     this.newGame = page.getByTestId("new-game");
   }
 
+  async isGuidedGameOffered(): Promise<boolean> {
+    return (await this.page.getByTestId("play-guided-game").count()) === 1;
+  }
+
+  async startTheGuidedGame(): Promise<void> {
+    const button = this.page.getByTestId("play-guided-game");
+    await this.openSheet(button);
+    await button.click();
+  }
+
+  async getGuidedGameLabel(): Promise<string> {
+    const button = this.page.getByTestId("play-guided-game");
+
+    let label = "";
+    await this.inSheet(button, async () => {
+      label = await button.innerText();
+    });
+
+    return label;
+  }
+
   async isClockInOpponent(): Promise<boolean> {
     return (await this.groups.Opponent.getByTestId("clock-setting").count()) === 1;
   }
@@ -57,6 +78,13 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
   }
 
   /** Unfolds a group, pressing its line only where it is folded, since a second press would fold it again. */
+  async closeGroup(name: PlayGroupName): Promise<void> {
+    const toggle = this.groups[name].getByTestId("settings-group-toggle");
+    await this.inSheet(toggle, async () => {
+      if (await this.isGroupOpen(name)) await toggle.click();
+    });
+  }
+
   async openGroup(name: PlayGroupName): Promise<void> {
     const toggle = this.groups[name].getByTestId("settings-group-toggle");
 

@@ -1,6 +1,6 @@
 import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
-import {restarted} from "@src/redux/game/GameSlice";
+import {restarted} from "@src/redux/slices/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 

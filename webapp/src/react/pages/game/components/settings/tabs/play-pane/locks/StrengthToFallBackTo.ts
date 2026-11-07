@@ -1,9 +1,9 @@
-import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
+import type {BeatenLadders} from "@src/redux/slices/progress/types/ProgressSliceState";
 import {DEFAULT_BOT_ELO} from "@janggi/shared/janggi/settings/BotElo";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {SideChoiceName} from "@janggi/shared/janggi/settings/SideChoiceName";
-import {openBotElos} from "@src/redux/progress/unlocks/OpenBotElos";
+import {openBotElos} from "@src/redux/slices/progress/unlocks/OpenBotElos";
 
 interface StrengthQuestion {
   readonly beaten: BeatenLadders;

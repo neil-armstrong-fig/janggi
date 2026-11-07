@@ -1,11 +1,11 @@
 import type {GameResult} from "@janggi/shared/janggi/results/GameResult";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {Reward} from "@src/react/pages/game/components/status/components/board-overlay/types/Reward";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {unlockLadder} from "@src/redux/progress/unlocks/UnlockLadder";
-import {xpFor} from "@src/redux/progress/xp/XpFor";
+import {unlockLadder} from "@src/redux/slices/progress/unlocks/UnlockLadder";
+import {xpFor} from "@src/redux/slices/progress/xp/XpFor";
 
 /**
  * What a decided game against the bot earned — its XP, and whatever that XP unlocked — or undefined for a

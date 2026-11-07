@@ -2,7 +2,7 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
 import {clsx} from "clsx";
 import {colourPartsOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/colour/ColourPartsOf";
 import {cssColourOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/fields/colour-field/colour/CssColourOf";
-import {isCssValue} from "@src/redux/untrusted/IsCssValue";
+import {isCssValue} from "@src/redux/shared/untrusted/IsCssValue";
 import {useState} from "react";
 
 /**

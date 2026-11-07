@@ -21,7 +21,30 @@ export class OnboardingDsl {
     this.onboarding = new OnboardingPlaywright(page);
   }
 
-  /** From the welcome's introduction to the choices it offers. */
+  async isGuidedGameTextConsistentWithGuide(): Promise<boolean> {
+    try {
+      return await this.onboarding.isGuidedGameTextConsistentWithGuide();
+    } catch (error) {
+      throw new DslError("Failed to compare the tour’s learning-action text styles", error);
+    }
+  }
+
+  async startTheGuidedGame(): Promise<void> {
+    try {
+      await this.onboarding.startTheGuidedGame();
+    } catch (error) {
+      throw new DslError("Failed to start the guided game", error);
+    }
+  }
+
+  async getGuidedGameLabel(): Promise<string> {
+    try {
+      return await this.onboarding.getGuidedGameLabel();
+    } catch (error) {
+      throw new DslError("Failed to read the guided-game label", error);
+    }
+  }
+
   async continueTheWelcome(): Promise<void> {
     try {
       await this.onboarding.continueTheWelcome();

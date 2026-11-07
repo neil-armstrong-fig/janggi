@@ -1,5 +1,5 @@
 import type {BotDuty} from "@src/react/pages/game/types/BotDuty";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 import {canPlace} from "@janggi/engine/setups/CanPlace";

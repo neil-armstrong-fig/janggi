@@ -65,8 +65,7 @@ interface Props {
  * It stands on the sheets' layer (`z-20`), over the board and under any sheet opened over it, by coming before the
  * sheets in the page, as the result banner does.
  * On a phone it is set a little tighter, so it fits over Han's side above the board when a control is ringed below it,
- * and a little see-through as well, so the pieces under it show faintly — kept on review, for what it costs in ease of
- * reading.
+ * with an opaque background above the spotlight so its instructions stay readable.
  */
 export function TutorialCard({
   sceneName,
@@ -118,7 +117,7 @@ export function TutorialCard({
       aria-live="polite"
       style={{"--controls-clearance": `${controlsClearance}px`} as CardStyle}
       className={clsx(
-        "fixed inset-x-3 z-20 mx-auto flex max-w-md flex-col rounded-2xl bg-ground-raised/90 p-3 shadow-2xl shadow-black ring-1 ring-gold/40 sm:right-4 sm:left-auto sm:mx-0 sm:w-80 sm:bg-ground-raised sm:p-4",
+        "fixed inset-x-3 z-20 mx-auto flex max-w-md flex-col rounded-2xl bg-ground-raised p-3 shadow-2xl shadow-black ring-1 ring-gold/40 sm:right-4 sm:left-auto sm:mx-0 sm:w-80 sm:p-4",
         !collapsed && "gap-2 sm:gap-3",
         collapsed && "gap-1 py-3",
         dock === "bottom" && "bottom-[calc(var(--controls-clearance)+0.75rem)]",

@@ -4,7 +4,7 @@ import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {SearchResult} from "@src/bot/engine/types/SearchResult";
 import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
 import {botReplyFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/BotReplyFor";
-import {choSetupChosen, hanSetupChosen, moved, passed} from "@src/redux/game/GameSlice";
+import {choSetupChosen, hanSetupChosen, moved, passed} from "@src/redux/slices/game/GameSlice";
 import {expect, it} from "vitest";
 import {newGame} from "@janggi/engine/NewGame";
 import {playMove} from "@src/record/moving/PlayMove";

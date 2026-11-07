@@ -1,7 +1,7 @@
 import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
-import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
-import type {Unchecked} from "@src/redux/untrusted/types/Unchecked";
-import {isObject} from "@src/redux/untrusted/IsObject";
+import type {Checked} from "@src/redux/slices/custom-styles/untrusted/types/Checked";
+import type {Unchecked} from "@src/redux/shared/untrusted/types/Unchecked";
+import {isObject} from "@src/redux/shared/untrusted/IsObject";
 
 /**
  * The one JSON object a player has written a style as, or what is wrong with the text — the first check

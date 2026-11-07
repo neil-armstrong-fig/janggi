@@ -1,5 +1,5 @@
 import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
-import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
+import type {Checked} from "@src/redux/slices/custom-styles/untrusted/types/Checked";
 import type {Size} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/pictograph-controls/svg-import/types/Size";
 import type {Placement} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/pictograph-controls/svg-import/svg-paths/types/Placement";
 import {shapePathOf} from "@src/react/pages/game/components/styles-sheet/components/style-editor/components/piece-set-editor/components/piece-controls/components/glyph-controls/components/pictograph-controls/svg-import/svg-paths/ShapePathOf";

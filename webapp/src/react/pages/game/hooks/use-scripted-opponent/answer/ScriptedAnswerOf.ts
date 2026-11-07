@@ -2,7 +2,7 @@ import type {GameState} from "@janggi/engine/types/GameState";
 import type {TutorialStep} from "@src/react/pages/game/tutorial/types/TutorialStep";
 import type {UnknownAction} from "@reduxjs/toolkit";
 import {canPass} from "@janggi/engine/passing/CanPass";
-import {drawAccepted, moved, passed} from "@src/redux/game/GameSlice";
+import {drawAccepted, moved, passed} from "@src/redux/slices/game/GameSlice";
 import {isPlayable} from "@src/react/pages/game/hooks/use-scripted-opponent/playable/IsPlayable";
 
 /**

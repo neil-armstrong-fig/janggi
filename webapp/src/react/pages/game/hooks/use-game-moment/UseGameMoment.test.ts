@@ -74,6 +74,23 @@ describe("a game that has not changed", () => {
   });
 });
 
+it("resets its comparison across practice boundaries without reusing move ids", () => {
+  const played = opening();
+  const hook = renderHook(({record, practice}) => useGameMoment(record, practice), {
+    initialProps: {record: played, practice: false},
+  });
+  hook.rerender({record: playMove(played, SOLDIER_STEP), practice: false});
+  const firstId = hook.result.current?.id;
+  hook.rerender({record: played, practice: true});
+  expect(hook.result.current).toBeUndefined();
+  hook.rerender({record: playMove(played, SOLDIER_STEP), practice: true});
+  expect(hook.result.current?.id).toBeGreaterThan(firstId ?? 0);
+  hook.rerender({record: played, practice: false});
+  expect(hook.result.current).toBeUndefined();
+  hook.rerender({record: playMove(played, SOLDIER_STEP), practice: false});
+  expect(hook.result.current?.id).toBe(3);
+});
+
 interface Rendered {
   readonly result: {readonly current: GameMoment | undefined};
   readonly played: PlayedGame;

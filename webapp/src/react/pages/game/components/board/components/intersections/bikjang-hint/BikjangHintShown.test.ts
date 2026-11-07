@@ -2,7 +2,7 @@ import type {BikjangHint} from "@src/react/pages/game/types/BikjangHint";
 import {BIKJANG_HINTS} from "@src/react/pages/game/utils/BikjangHints";
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {OpponentName} from "@janggi/shared/janggi/settings/OpponentName";
 import {bikjangHintShown} from "@src/react/pages/game/components/board/components/intersections/bikjang-hint/BikjangHintShown";
 import {expect, it} from "vitest";

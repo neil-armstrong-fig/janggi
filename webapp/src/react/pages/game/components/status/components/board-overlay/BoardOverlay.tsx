@@ -1,10 +1,10 @@
-import {actInGame} from "@src/redux/online/acting/ActInGame";
-import {isAskedToAnswerDraw} from "@src/redux/online/selecting/IsAskedToAnswerDraw";
-import {inTheTutorial} from "@src/redux/tutorial/selecting/InTheTutorial";
-import {startAnotherGame} from "@src/redux/online/acting/StartAnotherGame";
+import {actInGame} from "@src/redux/slices/online/acting/ActInGame";
+import {isAskedToAnswerDraw} from "@src/redux/slices/online/selecting/IsAskedToAnswerDraw";
+import {inTheTutorial} from "@src/redux/slices/tutorial/selecting/InTheTutorial";
+import {startAnotherGame} from "@src/redux/slices/online/acting/StartAnotherGame";
 import type {ArmyScores} from "@src/react/pages/game/components/status/components/board-overlay/types/ArmyScores";
-import {botEngineRetried} from "@src/redux/bot-engine/BotEngineSlice";
-import {botLetOpen, botStrengthChosen, drawAccepted, drawDeclined} from "@src/redux/game/GameSlice";
+import {botEngineRetried} from "@src/redux/slices/bot-engine/BotEngineSlice";
+import {botLetOpen, botStrengthChosen, drawAccepted, drawDeclined} from "@src/redux/slices/game/GameSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {BoardPeek} from "@src/react/pages/game/components/status/components/board-overlay/components/board-peek/BoardPeek";
 import {BotEngineNotice} from "@src/react/pages/game/components/status/components/board-overlay/components/bot-engine-notice/BotEngineNotice";

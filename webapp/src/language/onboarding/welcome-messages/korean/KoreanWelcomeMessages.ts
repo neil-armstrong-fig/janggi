@@ -1,3 +1,4 @@
+import {KOREAN_GUIDED_GAME_WORDS} from "@src/language/tutorial/entry-words/korean/KoreanGuidedGameWords";
 import type {WelcomeMessages} from "@src/language/onboarding/welcome-messages/WelcomeMessages";
 
 /** The welcome a first visit opens on, in Korean. */
@@ -14,6 +15,6 @@ export const KOREAN_WELCOME_MESSAGES: WelcomeMessages = {
   answers: {On: "켜기", Off: "끄기", Full: "전체", Reduced: "줄임", Shown: "표시", Hidden: "숨김"},
   changeAnyTime: "이 설정은 언제든 설정에서 바꿀 수 있습니다.",
   takeTheTour: "빠른 둘러보기",
-  startTheTutorial: "안내를 따라 두며 배우기",
+  startTheTutorial: KOREAN_GUIDED_GAME_WORDS.offers.start,
   skip: "건너뛰고 바로 시작",
 };

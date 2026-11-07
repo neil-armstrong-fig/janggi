@@ -1,6 +1,6 @@
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
-import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
+import {boardStyleFrom} from "@src/redux/slices/custom-styles/untrusted/BoardStyleFrom";
 import {expect, it} from "vitest";
 
 it("ships a board style for every name @janggi/shared publishes, in the same order", () => {

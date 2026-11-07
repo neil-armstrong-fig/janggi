@@ -1,4 +1,4 @@
-import {withAFriend} from "@src/redux/online/selecting/WithAFriend";
+import {withAFriend} from "@src/redux/slices/online/selecting/WithAFriend";
 import {useAppSelector} from "@src/redux/Hooks";
 
 /**

@@ -1,4 +1,4 @@
-import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
+import type {GameSliceState} from "@src/redux/slices/game/types/GameSliceState";
 import type {Move} from "@janggi/engine/types/Move";
 import {SETUPS} from "@janggi/engine/setups/Setups";
 import type {Setup} from "@janggi/engine/setups/types/Setup";
@@ -14,9 +14,9 @@ import {
   opponentChosen,
   restarted,
   sideChosen,
-} from "@src/redux/game/GameSlice";
+} from "@src/redux/slices/game/GameSlice";
 import {expect, it} from "vitest";
-import {firstGame} from "@src/redux/game/first-game/FirstGame";
+import {firstGame} from "@src/redux/slices/game/first-game/FirstGame";
 
 const CHO_OPENING: Move = {from: {file: 1, rank: 7}, to: {file: 1, rank: 6}};
 

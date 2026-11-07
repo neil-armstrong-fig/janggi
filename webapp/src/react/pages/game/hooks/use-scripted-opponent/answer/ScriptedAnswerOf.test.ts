@@ -1,6 +1,6 @@
 import {expect, it} from "vitest";
 import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
-import {drawAccepted, moved, passed} from "@src/redux/game/GameSlice";
+import {drawAccepted, moved, passed} from "@src/redux/slices/game/GameSlice";
 import {newGame} from "@janggi/engine/NewGame";
 import {pass} from "@janggi/engine/passing/Pass";
 import {scriptedAnswerOf} from "@src/react/pages/game/hooks/use-scripted-opponent/answer/ScriptedAnswerOf";

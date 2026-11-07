@@ -1,68 +1,73 @@
+import {deviceStorage} from "@src/redux/shared/device-storage/DeviceStorage";
+import type {TourPracticeState} from "@src/redux/slices/onboarding/practice/types/TourPracticeState";
+import {tourPracticeReducer, practiceStarted} from "@src/redux/slices/onboarding/practice/TourPracticeSlice";
+import {keepTourPractice} from "@src/redux/slices/onboarding/practice/KeepTourPractice";
+import {clockHeldAt} from "@src/redux/shared/parking/ClockHeldAt";
 import {configureStore} from "@reduxjs/toolkit";
-import {ACCOUNT_STORAGE_KEY} from "@src/redux/account/storage/AccountStorageKey";
-import type {AccountSliceState} from "@src/redux/account/types/AccountSliceState";
-import type {AppStartListening} from "@src/redux/account/listening/AppStartListening";
-import {accountReducer} from "@src/redux/account/AccountSlice";
-import {SYNC_LEDGER_STORAGE_KEY} from "@src/redux/account/ledger/storage/SyncLedgerStorageKey";
-import type {SyncLedgerSliceState} from "@src/redux/account/ledger/types/SyncLedgerSliceState";
-import {caughtUpLedger} from "@src/redux/account/stamping/CaughtUpLedger";
+import {ACCOUNT_STORAGE_KEY} from "@src/redux/slices/account/storage/AccountStorageKey";
+import type {AccountSliceState} from "@src/redux/slices/account/types/AccountSliceState";
+import type {AppStartListening} from "@src/redux/slices/account/listening/AppStartListening";
+import {accountReducer} from "@src/redux/slices/account/AccountSlice";
+import {SYNC_LEDGER_STORAGE_KEY} from "@src/redux/slices/account/ledger/storage/SyncLedgerStorageKey";
+import type {SyncLedgerSliceState} from "@src/redux/slices/account/ledger/types/SyncLedgerSliceState";
+import {caughtUpLedger} from "@src/redux/slices/account/stamping/CaughtUpLedger";
 import {createListenerMiddleware} from "@reduxjs/toolkit";
-import {keepInStep} from "@src/redux/account/syncing/KeepInStep";
-import {loadSyncLedger} from "@src/redux/account/ledger/storage/LoadSyncLedger";
-import {stampChanges} from "@src/redux/account/stamping/StampChanges";
-import {syncLedgerReducer} from "@src/redux/account/ledger/SyncLedgerSlice";
-import {loadAccount} from "@src/redux/account/storage/LoadAccount";
-import {restoreSession} from "@src/redux/account/actions/RestoreSession";
-import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSliceState";
-import {CUSTOM_STYLES_STORAGE_KEY} from "@src/redux/custom-styles/storage/CustomStylesStorageKey";
-import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
-import {GAME_STORAGE_KEY} from "@src/redux/game/storage/GameStorageKey";
+import {keepInStep} from "@src/redux/slices/account/syncing/KeepInStep";
+import {loadSyncLedger} from "@src/redux/slices/account/ledger/storage/LoadSyncLedger";
+import {stampChanges} from "@src/redux/slices/account/stamping/StampChanges";
+import {syncLedgerReducer} from "@src/redux/slices/account/ledger/SyncLedgerSlice";
+import {loadAccount} from "@src/redux/slices/account/storage/LoadAccount";
+import {restoreSession} from "@src/redux/slices/account/actions/RestoreSession";
+import type {BotEngineSliceState} from "@src/redux/slices/bot-engine/types/BotEngineSliceState";
+import {CUSTOM_STYLES_STORAGE_KEY} from "@src/redux/slices/custom-styles/storage/CustomStylesStorageKey";
+import type {CustomStylesSliceState} from "@src/redux/slices/custom-styles/types/CustomStylesSliceState";
+import {GAME_STORAGE_KEY} from "@src/redux/slices/game/storage/GameStorageKey";
 import {ONBOARDING_STORAGE_KEY} from "@janggi/shared/janggi/onboarding/OnboardingStorage";
-import {PROGRESS_STORAGE_KEY} from "@src/redux/progress/storage/ProgressStorageKey";
-import type {OnboardingSliceState} from "@src/redux/onboarding/types/OnboardingSliceState";
-import type {SettingsSliceState} from "@src/redux/settings/types/SettingsSliceState";
-import type {ProgressSliceState} from "@src/redux/progress/types/ProgressSliceState";
-import {toastReducer} from "@src/redux/toast/ToastSlice";
-import type {ToastSliceState} from "@src/redux/toast/types/ToastSliceState";
-import {CLOCK_STORAGE_KEY} from "@src/redux/clock/storage/ClockStorageKey";
-import {clockAsLeft} from "@src/redux/clock/storage/ClockAsLeft";
-import {clockReducer} from "@src/redux/clock/ClockSlice";
-import {loadClock} from "@src/redux/clock/storage/LoadClock";
-import type {ClockSliceState} from "@src/redux/clock/types/ClockSliceState";
-import {botEngineReducer} from "@src/redux/bot-engine/BotEngineSlice";
-import {botKeptWithinReach} from "@src/redux/game/GameSlice";
-import {customStylesReducer} from "@src/redux/custom-styles/CustomStylesSlice";
-import {loadCustomStyles} from "@src/redux/custom-styles/storage/LoadCustomStyles";
-import {loadProgress} from "@src/redux/progress/storage/LoadProgress";
-import {progressFromDebug} from "@src/redux/debug/ProgressFromDebug";
-import {progressReducer} from "@src/redux/progress/ProgressSlice";
-import type {GameSliceState} from "@src/redux/game/types/GameSliceState";
-import {PREFERENCES_STORAGE_KEY} from "@src/redux/preferences/storage/PreferencesStorageKey";
-import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
-import {RATINGS_STORAGE_KEY} from "@src/redux/ratings/storage/RatingsStorageKey";
-import type {RatingsSliceState} from "@src/redux/ratings/types/RatingsSliceState";
-import {gameReducer} from "@src/redux/game/GameSlice";
-import {loadGame} from "@src/redux/game/storage/LoadGame";
-import {loadOnboarding} from "@src/redux/onboarding/storage/LoadOnboarding";
-import {loadPreferences} from "@src/redux/preferences/storage/LoadPreferences";
-import {loadRatings} from "@src/redux/ratings/storage/LoadRatings";
-import {settingsReducer} from "@src/redux/settings/SettingsSlice";
-import {onboardingReducer} from "@src/redux/onboarding/OnboardingSlice";
-import {preferencesReducer} from "@src/redux/preferences/PreferencesSlice";
-import {ratingsReducer} from "@src/redux/ratings/RatingsSlice";
-import {friendReducer} from "@src/redux/online/FriendSlice";
-import type {FriendSliceState} from "@src/redux/online/types/FriendSliceState";
-import {FRIEND_STORAGE_KEY} from "@src/redux/online/storage/FriendStorageKey";
-import {loadFriend} from "@src/redux/online/storage/LoadFriend";
-import {restoredRatings} from "@src/redux/restored-ratings/RestoredRatings";
-import {saveJson} from "@src/redux/device-storage/SaveJson";
+import {PROGRESS_STORAGE_KEY} from "@src/redux/slices/progress/storage/ProgressStorageKey";
+import type {OnboardingSliceState} from "@src/redux/slices/onboarding/types/OnboardingSliceState";
+import type {SettingsSliceState} from "@src/redux/slices/settings/types/SettingsSliceState";
+import type {ProgressSliceState} from "@src/redux/slices/progress/types/ProgressSliceState";
+import {toastReducer} from "@src/redux/slices/toast/ToastSlice";
+import type {ToastSliceState} from "@src/redux/slices/toast/types/ToastSliceState";
+import {CLOCK_STORAGE_KEY} from "@src/redux/slices/clock/storage/ClockStorageKey";
+import {clockAsLeft} from "@src/redux/slices/clock/storage/ClockAsLeft";
+import {clockReducer} from "@src/redux/slices/clock/ClockSlice";
+import {loadClock} from "@src/redux/slices/clock/storage/LoadClock";
+import type {ClockSliceState} from "@src/redux/slices/clock/types/ClockSliceState";
+import {botEngineReducer} from "@src/redux/slices/bot-engine/BotEngineSlice";
+import {botKeptWithinReach} from "@src/redux/slices/game/GameSlice";
+import {customStylesReducer} from "@src/redux/slices/custom-styles/CustomStylesSlice";
+import {loadCustomStyles} from "@src/redux/slices/custom-styles/storage/LoadCustomStyles";
+import {loadProgress} from "@src/redux/slices/progress/storage/LoadProgress";
+import {progressFromDebug} from "@src/redux/shared/debug/ProgressFromDebug";
+import {progressReducer} from "@src/redux/slices/progress/ProgressSlice";
+import type {GameSliceState} from "@src/redux/slices/game/types/GameSliceState";
+import {PREFERENCES_STORAGE_KEY} from "@src/redux/slices/preferences/storage/PreferencesStorageKey";
+import type {PreferencesSliceState} from "@src/redux/slices/preferences/types/PreferencesSliceState";
+import {RATINGS_STORAGE_KEY} from "@src/redux/slices/ratings/storage/RatingsStorageKey";
+import type {RatingsSliceState} from "@src/redux/slices/ratings/types/RatingsSliceState";
+import {gameReducer} from "@src/redux/slices/game/GameSlice";
+import {loadGame} from "@src/redux/slices/game/storage/LoadGame";
+import {loadOnboarding} from "@src/redux/slices/onboarding/storage/LoadOnboarding";
+import {loadPreferences} from "@src/redux/slices/preferences/storage/LoadPreferences";
+import {loadRatings} from "@src/redux/slices/ratings/storage/LoadRatings";
+import {settingsReducer} from "@src/redux/slices/settings/SettingsSlice";
+import {onboardingReducer, onboardingSkipped} from "@src/redux/slices/onboarding/OnboardingSlice";
+import {preferencesReducer} from "@src/redux/slices/preferences/PreferencesSlice";
+import {ratingsReducer} from "@src/redux/slices/ratings/RatingsSlice";
+import {friendReducer} from "@src/redux/slices/online/FriendSlice";
+import type {FriendSliceState} from "@src/redux/slices/online/types/FriendSliceState";
+import {FRIEND_STORAGE_KEY} from "@src/redux/slices/online/storage/FriendStorageKey";
+import {loadFriend} from "@src/redux/slices/online/storage/LoadFriend";
+import {restoredRatings} from "@src/redux/shared/restored-ratings/RestoredRatings";
+import {saveJson} from "@src/redux/shared/device-storage/SaveJson";
 import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
-import type {TutorialSliceState} from "@src/redux/tutorial/types/TutorialSliceState";
-import {tutorialReducer} from "@src/redux/tutorial/TutorialSlice";
-import type {TutorialProgress} from "@src/redux/tutorial/types/TutorialProgress";
-import {TUTORIAL_STORAGE_KEY} from "@src/redux/tutorial/storage/TutorialStorageKey";
-import {loadTutorialProgress} from "@src/redux/tutorial/storage/LoadTutorialProgress";
-import {noTutorial} from "@src/redux/tutorial/no-tutorial/NoTutorial";
+import type {TutorialSliceState} from "@src/redux/slices/tutorial/types/TutorialSliceState";
+import {tutorialReducer} from "@src/redux/slices/tutorial/TutorialSlice";
+import type {TutorialProgress} from "@src/redux/slices/tutorial/types/TutorialProgress";
+import {TUTORIAL_STORAGE_KEY} from "@src/redux/slices/tutorial/storage/TutorialStorageKey";
+import {loadTutorialProgress} from "@src/redux/slices/tutorial/storage/LoadTutorialProgress";
+import {noTutorial} from "@src/redux/slices/tutorial/no-tutorial/NoTutorial";
 import {languageOfAddress} from "@src/language/address/LanguageOfAddress";
 
 export const store = createStore(deviceStorage());
@@ -89,14 +94,15 @@ export interface RootState {
   readonly toast: ToastSliceState;
   readonly clock: ClockSliceState;
   readonly tutorial: TutorialSliceState;
+  readonly tourPractice: TourPracticeState;
 }
 
 /**
  * The slices that are written to the device. The engine's is not, being what this page has started, and nor
- * are the sheets' or the toast's: a page opens with none up. Of the tutorial's only how far the player came is kept
+ * are the sheets' or the toast's. Tour practice is rebuilt on reload from the saved onboarding card. Of the tutorial's only how far the player came is kept
  * (`keptValue`): a page opens on the player's own game.
  */
-type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast">;
+type KeptSlice = Exclude<keyof RootState, "botEngine" | "settings" | "toast" | "tourPractice">;
 
 /** What is compared, to know a slice has changed, and then written: a slice itself, except where what is kept is less than the slice (`keptValue`). */
 type KeptValue = RootState[KeptSlice] | TutorialProgress | string | undefined;
@@ -147,6 +153,7 @@ export function createStore(storage?: Storage): AppStore {
       toast: toastReducer,
       clock: clockReducer,
       tutorial: tutorialReducer,
+      tourPractice: tourPracticeReducer,
     },
     preloadedState: {
       game,
@@ -162,6 +169,16 @@ export function createStore(storage?: Storage): AppStore {
       tutorial: noTutorial(loadTutorialProgress(storage)),
     },
   });
+
+  keepTourPractice(listening.startListening as AppStartListening);
+  const loaded = created.getState();
+  if (loaded.onboarding.stage === "tour") {
+    if (loaded.friend.code !== undefined) {
+      created.dispatch(onboardingSkipped());
+    } else {
+      created.dispatch(practiceStarted({game: loaded.game, clock: clockHeldAt(loaded.clock, Date.now())}));
+    }
+  }
 
   keptOnTheDevice(created, storage);
   stampChanges(listening.startListening as AppStartListening);
@@ -241,12 +258,12 @@ function keptOnTheDevice(kept: AppStore, storage: Storage | undefined): void {
 /**
  * What is kept of a slice. Nearly always the slice; but while a friend game is on the board, **the game kept is the one it
  * set aside**, so a reload brings back the player's own game rather than a friend's — which the room holds, and puts back
- * (`friend/FriendSlice.ts`). And of the friend slice only the room's code is kept. While the tutorial has the board, the game
+ * (`friend/FriendSlice.ts`). And of the friend slice only the room's code is kept. While either teaching mode has the board, the game
  * and the clock kept are the ones it parked, the clock holding its turn, so a reload finds the player's own game; and of
  * the tutorial's own slice, only how far the player came.
  */
 function keptValue(state: RootState, slice: KeptSlice): KeptValue {
-  const {parked} = state.tutorial;
+  const parked = state.tourPractice.parked ?? state.tutorial.parked;
   if (parked !== undefined && (slice === "game" || slice === "clock")) return parked[slice];
 
   if (slice === "game") {
@@ -269,18 +286,11 @@ function writtenOf(slice: KeptSlice, value: KeptValue): unknown {
 }
 
 function writtenOnLeaving(slice: KeptSlice, state: RootState, now: number): unknown {
-  if (slice === "clock" && state.tutorial.parked === undefined) return clockAsLeft(state.clock, now);
+  if (slice === "clock" && state.tutorial.parked === undefined && state.tourPractice.parked === undefined) {
+    return clockAsLeft(state.clock, now);
+  }
 
   return writtenOf(slice, keptValue(state, slice));
-}
-
-/** `localStorage`, where there is one to reach — reading the property itself throws where it is blocked. */
-function deviceStorage(): Storage | undefined {
-  try {
-    return globalThis.localStorage;
-  } catch {
-    return undefined;
-  }
 }
 
 /** The language the address of the page being opened names (`/ko/`), where it names one. */

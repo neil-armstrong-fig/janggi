@@ -1,7 +1,7 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Button} from "@src/react/pages/game/components/button/Button";
 import {SETUPS} from "@janggi/engine/setups/Setups";
-import {chooseFriendSetup} from "@src/redux/online/actions/playing/ChooseFriendSetup";
+import {chooseFriendSetup} from "@src/redux/slices/online/actions/playing/ChooseFriendSetup";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 
 /**

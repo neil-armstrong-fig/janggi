@@ -1,10 +1,10 @@
-import {enterFriendRoom} from "@src/redux/online/actions/entering/EnterFriendRoom";
+import {enterFriendRoom} from "@src/redux/slices/online/actions/entering/EnterFriendRoom";
 import {addressWithoutLink} from "@src/react/pages/game/hooks/use-friend-room/utils/AddressWithoutLink";
-import {friendRoom} from "@src/redux/online/FriendRoom";
+import {friendRoom} from "@src/redux/slices/online/FriendRoom";
 import {friendArrivalFor} from "@src/react/pages/game/hooks/use-friend-room/utils/FriendArrivalFor";
-import {leaveFriendRoom} from "@src/redux/online/actions/LeaveFriendRoom";
-import {shareLookWithFriendRoom} from "@src/redux/online/actions/playing/ShareLookWithFriendRoom";
-import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
+import {leaveFriendRoom} from "@src/redux/slices/online/actions/LeaveFriendRoom";
+import {shareLookWithFriendRoom} from "@src/redux/slices/online/actions/playing/ShareLookWithFriendRoom";
+import {sheetClosed, sheetOpened} from "@src/redux/slices/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useEffectEvent, useRef} from "react";
 import {useIntroduction} from "@src/react/pages/game/hooks/use-introduction/UseIntroduction";

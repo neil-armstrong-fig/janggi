@@ -1,5 +1,5 @@
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {isClockRunningFor} from "@src/redux/clock/selecting/IsClockRunningFor";
+import {isClockRunningFor} from "@src/redux/slices/clock/selecting/IsClockRunningFor";
 import {useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useState} from "react";
 

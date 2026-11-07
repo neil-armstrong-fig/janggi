@@ -1,6 +1,6 @@
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
-import type {Refused} from "@src/redux/custom-styles/untrusted/types/Checked";
+import type {Refused} from "@src/redux/slices/custom-styles/untrusted/types/Checked";
 
 /** A board style that checked out. */
 interface BoardOutcome {

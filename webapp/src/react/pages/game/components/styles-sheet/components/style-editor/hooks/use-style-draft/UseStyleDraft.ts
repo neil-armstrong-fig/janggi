@@ -1,5 +1,5 @@
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
-import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
+import type {Checked} from "@src/redux/slices/custom-styles/untrusted/types/Checked";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import type {StyleView} from "@janggi/shared/janggi/styles/StyleView";
 import {useState} from "react";

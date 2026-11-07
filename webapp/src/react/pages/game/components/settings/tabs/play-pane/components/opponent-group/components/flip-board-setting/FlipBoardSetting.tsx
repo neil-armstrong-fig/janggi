@@ -1,5 +1,5 @@
 import {ExplainedSwitch} from "@src/react/pages/game/components/settings/tabs/play-pane/components/explained-switch/ExplainedSwitch";
-import {flipBoardForHanChosen} from "@src/redux/preferences/PreferencesSlice";
+import {flipBoardForHanChosen} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

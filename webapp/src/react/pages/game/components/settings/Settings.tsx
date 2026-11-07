@@ -1,6 +1,6 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {LookPane} from "@src/react/pages/game/components/settings/tabs/look-pane/LookPane";
-import {settingsTabSelected, sheetClosed} from "@src/redux/settings/SettingsSlice";
+import {settingsTabSelected, sheetClosed} from "@src/redux/slices/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {SettingsTabs} from "@src/react/pages/game/components/settings/components/settings-tabs/SettingsTabs";
 import {PlayPane} from "@src/react/pages/game/components/settings/tabs/play-pane/PlayPane";

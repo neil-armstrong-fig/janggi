@@ -14,6 +14,14 @@ export class TutorialDsl {
     this.tutorial = new TutorialPlaywright(page);
   }
 
+  async isAboveTheDimmingLayer(): Promise<boolean> {
+    try {
+      return await this.tutorial.isAboveTheDimmingLayer();
+    } catch (error) {
+      throw new DslError("Failed to check guided-game card readability", error);
+    }
+  }
+
   async isShown(): Promise<boolean> {
     try {
       return await this.tutorial.isShown();

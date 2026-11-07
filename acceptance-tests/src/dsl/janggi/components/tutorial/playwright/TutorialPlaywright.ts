@@ -35,6 +35,12 @@ export class TutorialPlaywright extends BaseComponent {
     this.heldBackPoint = page.locator("[data-testid^='cell-'][data-held-back]");
   }
 
+  async isAboveTheDimmingLayer(): Promise<boolean> {
+    const cardLayer = await this.card.evaluate(element => Number(getComputedStyle(element).zIndex));
+    const spotlightLayer = await this.spotlight.evaluate(element => Number(getComputedStyle(element).zIndex));
+    return cardLayer > spotlightLayer;
+  }
+
   async isShown(): Promise<boolean> {
     return await this.card.isVisible();
   }

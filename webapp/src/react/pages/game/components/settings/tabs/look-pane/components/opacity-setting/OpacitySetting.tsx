@@ -1,5 +1,5 @@
 import {FULL_OPACITY, MINIMUM_OPACITY} from "@janggi/shared/janggi/settings/Opacity";
-import {sheetOpacityChanged} from "@src/redux/preferences/PreferencesSlice";
+import {sheetOpacityChanged} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch} from "@src/redux/Hooks";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

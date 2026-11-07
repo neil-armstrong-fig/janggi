@@ -1,8 +1,8 @@
 import {ResumeClock} from "@src/react/pages/game/components/resume-game/components/resume-clock/ResumeClock";
 import {boardFlippedForHan} from "@src/react/pages/game/utils/BoardFlippedForHan";
-import {clockResumed} from "@src/redux/clock/ClockSlice";
+import {clockResumed} from "@src/redux/slices/clock/ClockSlice";
 import {clsx} from "clsx";
-import {sideWaitingToResume} from "@src/redux/clock/selecting/SideWaitingToResume";
+import {sideWaitingToResume} from "@src/redux/slices/clock/selecting/SideWaitingToResume";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";

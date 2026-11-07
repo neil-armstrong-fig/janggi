@@ -41,8 +41,9 @@ interface TutorialClosingWords {
   readonly narration: TutorialNarrationWords;
 }
 
-/** The You tab's way into the tutorial: what it offers, and what it says under that. */
+/** The ways into the guided game: what it offers, and what it says under that. */
 interface TutorialOfferMessages {
+  readonly name: string;
   readonly offers: Record<TutorialOffer, string>;
   /** Under a start, or a start again. */
   readonly aGuidedGame: string;

@@ -1,10 +1,10 @@
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import {SETUPS} from "@janggi/engine/setups/Setups";
 import type {Setup} from "@janggi/engine/setups/types/Setup";
 import type {SetupPhase} from "@janggi/engine/setups/types/SetupPhase";
 import {botDutyFor} from "@src/react/pages/game/bot-duty/BotDutyFor";
-import {dealtGame} from "@src/redux/game/dealing/DealtGame";
+import {dealtGame} from "@src/redux/slices/game/dealing/DealtGame";
 import {expect, it} from "vitest";
 import {place} from "@janggi/engine/setups/Place";
 import {playMove} from "@src/record/moving/PlayMove";

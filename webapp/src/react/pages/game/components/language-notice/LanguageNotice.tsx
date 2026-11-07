@@ -1,4 +1,4 @@
-import {languageNoticeDismissed} from "@src/redux/preferences/PreferencesSlice";
+import {languageNoticeDismissed} from "@src/redux/slices/preferences/PreferencesSlice";
 import {messagesOf} from "@src/language/MessagesOf";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 

@@ -1,4 +1,4 @@
-import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSliceState";
+import type {BotEngineSliceState} from "@src/redux/slices/bot-engine/types/BotEngineSliceState";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 
 /** What the game is doing right now, as the frame around the board reads it. */

@@ -2,7 +2,7 @@ import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {OPPONENT_OPTIONS} from "@src/react/pages/game/components/settings/tabs/play-pane/utils/OpponentOptions";
 import {OpponentIcon} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-group/components/opponent-setting/components/opponent-icon/OpponentIcon";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
-import {opponentChosen} from "@src/redux/game/GameSlice";
+import {opponentChosen} from "@src/redux/slices/game/GameSlice";
 import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

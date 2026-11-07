@@ -1,0 +1,48 @@
+import type {PayloadAction} from "@reduxjs/toolkit";
+import type {ProgressSliceState} from "@src/redux/slices/progress/types/ProgressSliceState";
+import type {RewardedGame} from "@src/redux/slices/progress/types/RewardedGame";
+import {createSlice} from "@reduxjs/toolkit";
+import {freshProgress} from "@src/redux/slices/progress/fresh-progress/FreshProgress";
+import {saveLoaded} from "@src/redux/shared/saves/actions/SaveLoaded";
+import {syncMerged} from "@src/redux/slices/account/actions/SyncMerged";
+import {withBeaten} from "@src/redux/slices/progress/climbing/WithBeaten";
+import {xpFor} from "@src/redux/slices/progress/xp/XpFor";
+import {tutorialCompleted} from "@src/redux/slices/tutorial/actions/TutorialCompleted";
+import {withXpAdded} from "@src/redux/slices/progress/xp/WithXpAdded";
+
+/**
+ * The player's progress: XP earned by every decided game against the bot (and once, by the tutorial), and the strengths beaten on
+ * each of the four ladders — each army, in each format — which is what opens the rung above.
+ *
+ * A win is recorded on the ladder it was won on and nowhere else: the format it was played in, and the
+ * army that played it. `BeatenLadders` says why.
+ *
+ * Nothing here is taken away by starting the record again — see `ProgressSliceState` — and a save key
+ * loaded on the device replaces all of it.
+ */
+export const progressSlice = createSlice({
+  name: "progress",
+  initialState: freshProgress(),
+  reducers: {
+    xpEarned: (state, action: PayloadAction<RewardedGame>): ProgressSliceState => {
+      const {format, botElo, playerSide, result} = action.payload;
+
+      return {
+        xp: withXpAdded(state.xp, xpFor(format, result)),
+        beaten: result === "won" ? withBeaten(state.beaten, format, playerSide, botElo) : state.beaten,
+      };
+    },
+  },
+  extraReducers: builder => {
+    builder.addCase(saveLoaded, (_state, action): ProgressSliceState => action.payload.progress);
+    builder.addCase(syncMerged, (_state, action): ProgressSliceState => action.payload.progress);
+    builder.addCase(tutorialCompleted, (state, action): ProgressSliceState => ({
+      ...state,
+      xp: withXpAdded(state.xp, action.payload),
+    }));
+  },
+});
+
+export const {xpEarned} = progressSlice.actions;
+
+export const progressReducer = progressSlice.reducer;

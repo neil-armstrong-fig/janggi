@@ -1,4 +1,4 @@
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {Outcome} from "@janggi/engine/types/Outcome";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import type {RatingEvent} from "@src/react/pages/game/hooks/use-rated-game/types/RatingEvent";

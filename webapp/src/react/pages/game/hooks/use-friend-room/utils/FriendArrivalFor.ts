@@ -1,4 +1,4 @@
-import type {AccountStatus} from "@src/redux/account/types/AccountStatus";
+import type {AccountStatus} from "@src/redux/slices/account/types/AccountStatus";
 import type {FriendArrival} from "@src/react/pages/game/hooks/use-friend-room/types/FriendArrival";
 import {friendCodeInSearch} from "@janggi/shared/janggi/online/friend-code/JoinLink";
 

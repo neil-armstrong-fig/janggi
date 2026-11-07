@@ -1,6 +1,6 @@
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {GameRecord} from "@src/redux/ratings/types/GameRecord";
+import type {GameRecord} from "@src/redux/slices/ratings/types/GameRecord";
 import type {RecordAgainstBot} from "@src/react/pages/game/components/record-sheet/types/RecordAgainstBot";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {SideRecord} from "@src/react/pages/game/components/record-sheet/types/SideRecord";

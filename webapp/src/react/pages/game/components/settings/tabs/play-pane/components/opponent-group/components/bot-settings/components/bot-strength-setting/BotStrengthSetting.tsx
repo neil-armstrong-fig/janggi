@@ -1,7 +1,7 @@
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {BOT_STRENGTH_OPTIONS} from "@src/react/pages/game/components/settings/tabs/play-pane/utils/OpponentOptions";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
-import {botStrengthChosen} from "@src/redux/game/GameSlice";
+import {botStrengthChosen} from "@src/redux/slices/game/GameSlice";
 import {lockBehindBot} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-group/components/bot-settings/components/bot-strength-setting/locks/LockBehindBot";
 import {useWithAFriend} from "@src/react/pages/game/components/settings/tabs/play-pane/hooks/use-with-a-friend/UseWithAFriend";
 import {playHasBegun} from "@src/react/pages/game/utils/PlayHasBegun";

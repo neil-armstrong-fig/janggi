@@ -7,10 +7,10 @@ import type {ReactNode} from "react";
 import {Provider} from "react-redux";
 import {act, renderHook} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
-import {botEngineRetried} from "@src/redux/bot-engine/BotEngineSlice";
+import {botEngineRetried} from "@src/redux/slices/bot-engine/BotEngineSlice";
 import {createElement} from "react";
 import {createStore} from "@src/redux/Store";
-import {opponentChosen} from "@src/redux/game/GameSlice";
+import {opponentChosen} from "@src/redux/slices/game/GameSlice";
 import {useBotEngine} from "@src/react/pages/game/hooks/use-bot-engine/UseBotEngine";
 
 /**

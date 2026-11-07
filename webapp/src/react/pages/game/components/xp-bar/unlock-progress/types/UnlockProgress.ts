@@ -1,4 +1,4 @@
-import type {UnlockStep} from "@src/redux/progress/unlocks/types/UnlockStep";
+import type {UnlockStep} from "@src/redux/slices/progress/unlocks/types/UnlockStep";
 
 /** How far XP has come between the unlock last passed and the one it is working towards. */
 export interface UnlockProgress {

@@ -1,4 +1,4 @@
-import type {FigureLimit} from "@src/redux/clock/time-controls/types/FigureLimit";
+import type {FigureLimit} from "@src/redux/slices/clock/time-controls/types/FigureLimit";
 import {isTypedFigureWithin} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-group/components/clock-setting/components/custom-field/typed-figure/IsTypedFigureWithin";
 import {useState} from "react";
 

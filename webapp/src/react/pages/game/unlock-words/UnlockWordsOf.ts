@@ -1,4 +1,4 @@
-import type {UnlockItem} from "@src/redux/progress/unlocks/types/UnlockItem";
+import type {UnlockItem} from "@src/redux/slices/progress/unlocks/types/UnlockItem";
 import type {UnlockMessages} from "@src/language/settings/unlock-messages/UnlockMessages";
 
 /** What a player reads for the things an amount of XP opens, in the language being read. */

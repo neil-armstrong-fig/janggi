@@ -1,7 +1,7 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {addressWithoutLink} from "@src/react/pages/game/hooks/use-friend-room/utils/AddressWithoutLink";
 import {friendCodeInSearch} from "@janggi/shared/janggi/online/friend-code/JoinLink";
-import {signIn} from "@src/redux/account/actions/SignIn";
+import {signIn} from "@src/redux/slices/account/actions/SignIn";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEscapeKey} from "@src/react/pages/game/components/onboarding/hooks/use-escape-key/UseEscapeKey";
 import {useState} from "react";

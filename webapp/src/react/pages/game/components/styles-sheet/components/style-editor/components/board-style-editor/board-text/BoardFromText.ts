@@ -1,7 +1,7 @@
 import type {StyleRefusalMessages} from "@src/language/styles/style-messages/types/StyleRefusalMessages";
 import type {BoardStyle} from "@src/styles/types/BoardStyle";
-import type {Checked} from "@src/redux/custom-styles/untrusted/types/Checked";
-import {boardStyleFrom} from "@src/redux/custom-styles/untrusted/BoardStyleFrom";
+import type {Checked} from "@src/redux/slices/custom-styles/untrusted/types/Checked";
+import {boardStyleFrom} from "@src/redux/slices/custom-styles/untrusted/BoardStyleFrom";
 import {objectFromText} from "@src/react/pages/game/components/styles-sheet/components/style-editor/style-text/ObjectFromText";
 
 /**

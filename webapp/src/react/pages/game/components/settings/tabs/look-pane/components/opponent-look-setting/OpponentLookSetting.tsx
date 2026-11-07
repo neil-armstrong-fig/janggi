@@ -1,4 +1,4 @@
-import {inFriendRoom} from "@src/redux/online/selecting/InFriendRoom";
+import {inFriendRoom} from "@src/redux/slices/online/selecting/InFriendRoom";
 import {OpponentLookSwitch} from "@src/react/pages/game/components/settings/tabs/look-pane/components/opponent-look-setting/components/opponent-look-switch/OpponentLookSwitch";
 import {useAppSelector} from "@src/redux/Hooks";
 

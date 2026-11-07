@@ -1,4 +1,4 @@
-import type {GameRecord} from "@src/redux/ratings/types/GameRecord";
+import type {GameRecord} from "@src/redux/slices/ratings/types/GameRecord";
 import type {GameResult} from "@janggi/shared/janggi/results/GameResult";
 import {clsx} from "clsx";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

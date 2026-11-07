@@ -5,6 +5,8 @@ import {useState} from "react";
 
 /** The record last drawn, and the change that brought it. */
 interface Shown {
+  readonly practice: boolean;
+  readonly sequence: number;
   readonly played: PlayedGame;
   readonly moment: GameMoment | undefined;
 }
@@ -26,12 +28,17 @@ interface Shown {
  * between — so an effect keyed on it plays a sound or starts a flight once, however often React
  * renders or re-runs effects.
  */
-export function useGameMoment(played: PlayedGame): GameMoment | undefined {
-  const [shown, setShown] = useState<Shown>({played, moment: undefined});
+export function useGameMoment(played: PlayedGame, practice = false): GameMoment | undefined {
+  const [shown, setShown] = useState<Shown>({played, practice, sequence: 0, moment: undefined});
+
+  if (shown.practice !== practice) {
+    setShown({played, practice, sequence: shown.sequence, moment: undefined});
+    return undefined;
+  }
 
   if (shown.played !== played) {
-    const moment: GameMoment = {id: (shown.moment?.id ?? 0) + 1, ...changeBetween(shown.played, played)};
-    setShown({played, moment});
+    const moment: GameMoment = {id: shown.sequence + 1, ...changeBetween(shown.played, played)};
+    setShown({played, practice, sequence: moment.id, moment});
 
     return moment;
   }

@@ -22,7 +22,7 @@ given("a player who reads the game in Korean", () => {
     then("the card's own buttons are in Korean", async ({janggi}) => {
       const words = await janggi.tutorial.getWords();
 
-      expect(words).toContain("튜토리얼 나가기");
+      expect(words).toContain("안내 대국 나가기");
       expect(words).not.toContain("Leave the tutorial");
     });
   });

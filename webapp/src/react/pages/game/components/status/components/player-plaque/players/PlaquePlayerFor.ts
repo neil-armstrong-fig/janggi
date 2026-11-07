@@ -1,7 +1,7 @@
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {PlaquePlayer} from "@src/react/pages/game/components/status/components/player-plaque/types/PlaquePlayer";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {unlockLadder} from "@src/redux/progress/unlocks/UnlockLadder";
+import {unlockLadder} from "@src/redux/slices/progress/unlocks/UnlockLadder";
 
 /**
  * Who a plaque says is playing its army: against the bot, the bot at its strength, or the player at their

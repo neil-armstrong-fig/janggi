@@ -1,10 +1,10 @@
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
-import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
+import type {BeatenLadders} from "@src/redux/slices/progress/types/ProgressSliceState";
 import type {GameStatus} from "@src/react/pages/game/components/status/utils/GameStatusOf";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
-import type {Opponent} from "@src/redux/game/types/Opponent";
-import {openBotElos} from "@src/redux/progress/unlocks/OpenBotElos";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
+import {openBotElos} from "@src/redux/slices/progress/unlocks/OpenBotElos";
 
 interface Game {
   readonly status: GameStatus;

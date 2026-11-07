@@ -1,6 +1,6 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Switch} from "@src/react/pages/game/components/settings/components/switch/Switch";
-import {showOpponentLookChosen} from "@src/redux/preferences/PreferencesSlice";
+import {showOpponentLookChosen} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 
 /** The opponent-look preference, once there is an online friend game for it to affect. */

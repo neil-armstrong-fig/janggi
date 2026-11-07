@@ -1,6 +1,6 @@
 import {LANGUAGE_NAMES} from "@janggi/shared/janggi/settings/LanguageName";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
-import {languageChosen} from "@src/redux/preferences/PreferencesSlice";
+import {languageChosen} from "@src/redux/slices/preferences/PreferencesSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 

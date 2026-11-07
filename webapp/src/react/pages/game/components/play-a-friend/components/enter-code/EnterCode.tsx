@@ -1,6 +1,6 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Button} from "@src/react/pages/game/components/button/Button";
-import {joinFriendRoom} from "@src/redux/online/actions/entering/JoinFriendRoom";
+import {joinFriendRoom} from "@src/redux/slices/online/actions/entering/JoinFriendRoom";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useIntroduction} from "@src/react/pages/game/hooks/use-introduction/UseIntroduction";
 import {useState} from "react";

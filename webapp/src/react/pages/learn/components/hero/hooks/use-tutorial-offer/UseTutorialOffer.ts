@@ -1,6 +1,7 @@
+import {deviceStorage} from "@src/redux/shared/device-storage/DeviceStorage";
 import type {TutorialOffer} from "@janggi/shared/janggi/tutorial/TutorialOffer";
-import {loadTutorialProgress} from "@src/redux/tutorial/storage/LoadTutorialProgress";
-import {tutorialOfferOf} from "@src/redux/tutorial/progress/TutorialOfferOf";
+import {loadTutorialProgress} from "@src/redux/slices/tutorial/storage/LoadTutorialProgress";
+import {tutorialOfferOf} from "@src/redux/slices/tutorial/progress/TutorialOfferOf";
 import {useSyncExternalStore} from "react";
 
 /**
@@ -23,13 +24,4 @@ function inTheBrowser(): TutorialOffer {
 
 function aheadOfTime(): TutorialOffer {
   return "start";
-}
-
-/** `localStorage`, where there is one to reach — reading the property itself throws where it is blocked. */
-function deviceStorage(): Storage | undefined {
-  try {
-    return globalThis.localStorage;
-  } catch {
-    return undefined;
-  }
 }

@@ -1,3 +1,4 @@
+import {GuidedGameButton} from "@src/react/pages/game/components/guided-game-button/GuidedGameButton";
 import {clsx} from "clsx";
 import {CheckIcon} from "@src/react/pages/game/components/svg-icon/icons/check/CheckIcon";
 import {ChevronLeftIcon} from "@src/react/pages/game/components/svg-icon/icons/chevron-left/ChevronLeftIcon";
@@ -61,13 +62,15 @@ export function TourCard({step, words, number, count, dock, onBack, onNext, onSk
         {words.body}
       </p>
 
+      {last && <GuidedGameButton testId="tour-guided-game" primary />}
+
       {step.offersTheGuide && (
         <a
           data-testid="tour-open-guide"
           href={guideAddress}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-lg bg-gold px-4 py-3 text-center font-semibold text-ink"
+          className="rounded-lg border border-gold/60 px-4 py-3 text-center font-semibold text-wood"
         >
           {tour.openTheGuide}
         </a>

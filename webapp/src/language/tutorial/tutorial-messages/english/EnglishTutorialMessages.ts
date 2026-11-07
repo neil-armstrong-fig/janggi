@@ -1,3 +1,4 @@
+import {ENGLISH_GUIDED_GAME_WORDS} from "@src/language/tutorial/entry-words/english/EnglishGuidedGameWords";
 import type {TutorialMessages} from "@src/language/tutorial/tutorial-messages/TutorialMessages";
 import {ENGLISH_AN_AGREEMENT} from "@src/language/tutorial/tutorial-scene-words/english/EnglishAnAgreement";
 import {ENGLISH_A_BIKJANG} from "@src/language/tutorial/tutorial-scene-words/english/EnglishABikjang";
@@ -21,26 +22,26 @@ export const ENGLISH_TUTORIAL_MESSAGES: TutorialMessages = {
     name: "시간패 · Time",
     narration: {
       title: "시간패: out of time",
-      body: "One more ending, which the tutorial can only tell you about: on a clock, a player whose time runs out loses (시간패), whatever is on the board. The tutorial has no clock; you can turn one on in the Play tab. That's the tutorial. Finish it to go back to your own game.",
+      body: "One more ending, which the guided game can only tell you about: on a clock, a player whose time runs out loses (시간패), whatever is on the board. The tutorial has no clock; you can turn one on in the Play tab. That's the guided game. Finish it to go back to your own game.",
     },
   },
   card: {
-    label: "Tutorial",
+    label: "Guided game",
     stepOf: (sceneName, step) => `${sceneName} · step ${step}`,
     over: sceneName => `${sceneName} · over`,
     hide: "Hide",
     show: "Show",
-    leave: "Leave the tutorial",
+    leave: "Leave the guided game",
     finish: "Finish",
     answering: "Han is answering…",
     next: sceneName => `Next: ${sceneName}`,
   },
   you: {
-    offers: {start: "Learn by playing", resume: "Resume the tutorial", again: "Play the tutorial again"},
+    ...ENGLISH_GUIDED_GAME_WORDS,
     aGuidedGame: "A guided game",
     sceneOf: (scene, count) => `Scene ${scene} of ${count}`,
     afterYourGame: "After your rated or friend game",
-    startOver: "Start the tutorial over",
+    startOver: "Start the guided game over",
   },
   holdsPlay:
     "The tutorial has the board. Leave it to choose an opponent, a format or setups, or to start a game of your own.",

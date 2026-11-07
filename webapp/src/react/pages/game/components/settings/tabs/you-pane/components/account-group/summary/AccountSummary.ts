@@ -1,4 +1,4 @@
-import type {AccountSliceState} from "@src/redux/account/types/AccountSliceState";
+import type {AccountSliceState} from "@src/redux/slices/account/types/AccountSliceState";
 import type {YouMessages} from "@src/language/settings/you/you-messages/YouMessages";
 
 export function accountSummary(accountSliceState: AccountSliceState, you: YouMessages): string {

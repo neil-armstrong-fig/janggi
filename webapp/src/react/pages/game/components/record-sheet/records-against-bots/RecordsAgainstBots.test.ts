@@ -1,5 +1,5 @@
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
-import type {GameRecord} from "@src/redux/ratings/types/GameRecord";
+import type {GameRecord} from "@src/redux/slices/ratings/types/GameRecord";
 import {expect, it} from "vitest";
 import {recordsAgainstBots} from "@src/react/pages/game/components/record-sheet/records-against-bots/RecordsAgainstBots";
 

@@ -1,6 +1,6 @@
-import {turnNotificationsStateNow} from "@src/redux/notifications/TurnNotificationsStateNow";
-import {turnOffTurnNotifications} from "@src/redux/notifications/TurnOffTurnNotifications";
-import {turnOnTurnNotifications} from "@src/redux/notifications/TurnOnTurnNotifications";
+import {turnNotificationsStateNow} from "@src/redux/shared/notifications/TurnNotificationsStateNow";
+import {turnOffTurnNotifications} from "@src/redux/shared/notifications/TurnOffTurnNotifications";
+import {turnOnTurnNotifications} from "@src/redux/shared/notifications/TurnOnTurnNotifications";
 import type {TurnNotificationsState} from "@janggi/shared/janggi/online/TurnNotificationsState";
 import {useEffect, useState} from "react";
 

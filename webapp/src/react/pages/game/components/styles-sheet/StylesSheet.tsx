@@ -1,6 +1,6 @@
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {Sheet} from "@src/react/pages/game/components/sheet/Sheet";
-import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
+import {sheetClosed, sheetOpened} from "@src/redux/slices/settings/SettingsSlice";
 import {BUILT_IN_PIECE_STYLES} from "@src/react/pages/game/components/board/piece-styles/builtin/BuiltInPieceStyles";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
 import type {EditingStyle} from "@src/react/pages/game/components/styles-sheet/types/EditingStyle";
@@ -8,12 +8,12 @@ import {OwnStyles} from "@src/react/pages/game/components/styles-sheet/component
 import {StyleEditor} from "@src/react/pages/game/components/styles-sheet/components/style-editor/StyleEditor";
 import {StyleImporter} from "@src/react/pages/game/components/styles-sheet/components/style-importer/StyleImporter";
 import {StyleStarter} from "@src/react/pages/game/components/styles-sheet/components/style-starter/StyleStarter";
-import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
-import {boardStylePrice} from "@src/redux/progress/unlocks/BoardStylePrice";
-import {boardStyleChosen, pieceSetChosen} from "@src/redux/preferences/PreferencesSlice";
-import {boardStyleSaved, pieceSetSaved} from "@src/redux/custom-styles/CustomStylesSlice";
+import {UNLOCK_PRICES} from "@src/redux/slices/progress/unlocks/UnlockPrices";
+import {boardStylePrice} from "@src/redux/slices/progress/unlocks/BoardStylePrice";
+import {boardStyleChosen, pieceSetChosen} from "@src/redux/slices/preferences/PreferencesSlice";
+import {boardStyleSaved, pieceSetSaved} from "@src/redux/slices/custom-styles/CustomStylesSlice";
 import {clsx} from "clsx";
-import {pieceSetPrice} from "@src/redux/progress/unlocks/PieceSetPrice";
+import {pieceSetPrice} from "@src/redux/slices/progress/unlocks/PieceSetPrice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useState} from "react";
 

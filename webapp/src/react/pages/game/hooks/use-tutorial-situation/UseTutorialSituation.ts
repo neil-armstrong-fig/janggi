@@ -1,5 +1,5 @@
 import type {TutorialSituation} from "@src/react/pages/game/tutorial/types/TutorialSituation";
-import {inTheTutorial} from "@src/redux/tutorial/selecting/InTheTutorial";
+import {inTheTutorial} from "@src/redux/slices/tutorial/selecting/InTheTutorial";
 import {tutorialStepAt} from "@src/react/pages/game/tutorial/step-at/TutorialStepAt";
 import {useAppSelector} from "@src/redux/Hooks";
 

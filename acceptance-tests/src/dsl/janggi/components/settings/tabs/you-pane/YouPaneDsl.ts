@@ -30,6 +30,14 @@ export class YouPaneDsl {
     this.account = new AccountSettingDsl(page);
   }
 
+  async isHelpGrouped(): Promise<boolean> {
+    try {
+      return await this.youPane.isHelpGrouped();
+    } catch (error) {
+      throw new DslError("Failed to check the guided-game layout", error);
+    }
+  }
+
   async getGroupAppearance(name: YouGroupName): Promise<GroupAppearance> {
     try {
       return await this.youPane.getGroupAppearance(name);

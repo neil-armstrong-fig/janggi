@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
 import {expect, it, vi} from "vitest";
-import {CLOCK_STORAGE_KEY} from "@src/redux/clock/storage/ClockStorageKey";
-import {clockStarted, timeControlChosen} from "@src/redux/clock/ClockSlice";
+import {CLOCK_STORAGE_KEY} from "@src/redux/slices/clock/storage/ClockStorageKey";
+import {clockStarted, timeControlChosen} from "@src/redux/slices/clock/ClockSlice";
 import {createStore} from "@src/redux/Store";
 
 it("writes every kept slice again when the page is hidden, for a browser that delays its own flush", () => {

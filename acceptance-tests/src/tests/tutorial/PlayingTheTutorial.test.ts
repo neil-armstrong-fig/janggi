@@ -271,6 +271,7 @@ given("a player in the tutorial", () => {
 
                     then("the You tab offers to play it again", async ({janggi}) => {
                       expect(await janggi.settings.you.getTutorialOffer()).toBe("again");
+                      expect(await janggi.settings.play.isGuidedGameOffered()).toBe(false);
                     });
                   });
                 });

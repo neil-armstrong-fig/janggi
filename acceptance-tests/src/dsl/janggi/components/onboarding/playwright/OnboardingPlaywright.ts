@@ -24,6 +24,7 @@ export class OnboardingPlaywright extends BaseComponent {
   private readonly tourSkip: Locator;
   private readonly tourText: Locator;
   private readonly tourGuide: Locator;
+  private readonly tourGuidedGame: Locator;
   private readonly spotlight: Locator;
   private readonly spotlightedPoint: Locator;
   private readonly music: Record<SoundChoiceName, Locator>;
@@ -49,6 +50,7 @@ export class OnboardingPlaywright extends BaseComponent {
     this.tourSkip = page.getByTestId("tour-skip");
     this.tourText = page.getByTestId("tour-body");
     this.tourGuide = page.getByTestId("tour-open-guide");
+    this.tourGuidedGame = page.getByTestId("tour-guided-game");
     this.spotlight = page.getByTestId("tour-spotlight");
     this.spotlightedPoint = page.locator("[data-testid^='cell-'][data-tour-target='point']");
     this.music = {On: page.getByTestId("welcome-music-on"), Off: page.getByTestId("welcome-music-off")};
@@ -65,6 +67,28 @@ export class OnboardingPlaywright extends BaseComponent {
       Shown: page.getByTestId("welcome-movable-highlight-shown"),
       Hidden: page.getByTestId("welcome-movable-highlight-hidden"),
     };
+  }
+
+  async isGuidedGameTextConsistentWithGuide(): Promise<boolean> {
+    const guidedGame = await this.readActionTextStyle(this.tourGuidedGame);
+    const guide = await this.readActionTextStyle(this.tourGuide);
+
+    return guidedGame.every((value, index) => value === guide[index]);
+  }
+
+  private async readActionTextStyle(locator: Locator): Promise<string[]> {
+    return await locator.evaluate(element => {
+      const style = getComputedStyle(element);
+      return [style.fontSize, style.fontWeight, style.lineHeight, style.letterSpacing, style.textAlign];
+    });
+  }
+
+  async startTheGuidedGame(): Promise<void> {
+    await this.tourGuidedGame.click();
+  }
+
+  async getGuidedGameLabel(): Promise<string> {
+    return await this.tourGuidedGame.innerText();
   }
 
   async continueTheWelcome(): Promise<void> {

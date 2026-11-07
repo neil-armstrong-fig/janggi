@@ -7,15 +7,15 @@ import {combinedBoardStyle} from "@src/styles/board-halves/CombinedBoardStyle";
 import {combinedPieceSet} from "@src/styles/piece-sets/CombinedPieceSet";
 import type {PieceSetStyle} from "@src/styles/types/PieceSetStyle";
 import {BUILT_IN_STYLES} from "@src/react/pages/game/components/board/cell-styles/builtin/BuiltInStyles";
-import type {CustomStylesSliceState} from "@src/redux/custom-styles/types/CustomStylesSliceState";
+import type {CustomStylesSliceState} from "@src/redux/slices/custom-styles/types/CustomStylesSliceState";
 import {EFFECTS} from "@src/react/pages/game/utils/EffectsOptions";
 import {MOVABLE_HIGHLIGHTS} from "@src/react/pages/game/utils/MovableHighlights";
 import type {Preferences} from "@src/react/pages/game/hooks/use-preferences/types/Preferences";
-import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
+import type {PreferencesSliceState} from "@src/redux/slices/preferences/types/PreferencesSliceState";
 import type {WithName} from "@src/react/pages/game/types/WithName";
-import {boardStylePrice} from "@src/redux/progress/unlocks/BoardStylePrice";
-import {defaultPreferences} from "@src/redux/preferences/default-preferences/DefaultPreferences";
-import {pieceSetPrice} from "@src/redux/progress/unlocks/PieceSetPrice";
+import {boardStylePrice} from "@src/redux/slices/progress/unlocks/BoardStylePrice";
+import {defaultPreferences} from "@src/redux/slices/preferences/default-preferences/DefaultPreferences";
+import {pieceSetPrice} from "@src/redux/slices/progress/unlocks/PieceSetPrice";
 
 /**
  * The styles and options the store's preferences name, and the two volumes and the sheet's opacity as

@@ -94,7 +94,7 @@ English can play a game from the first screen to the result.
    below: `language/address/LanguageOfAddress.ts`, applied by `loadPreferences`.
 2. A language the player chose is kept and wins.
 3. Otherwise the first of `navigator.languages` the game has, by primary subtag
-   (`ko-KR` is Korean): `redux/preferences/language/LanguageOfBrowser.ts`,
+   (`ko-KR` is Korean): `redux/slices/preferences/language/LanguageOfBrowser.ts`,
    applied by `loadPreferences`.
 4. Otherwise English.
 

@@ -1,5 +1,5 @@
 import type {Engine} from "@src/bot/engine/types/Engine";
-import {botEngineFailed, botEngineLoading, botEngineReady} from "@src/redux/bot-engine/BotEngineSlice";
+import {botEngineFailed, botEngineLoading, botEngineReady} from "@src/redux/slices/bot-engine/BotEngineSlice";
 import {failureReasonOf} from "@src/react/pages/game/hooks/bot-failure/FailureReasonOf";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useState} from "react";

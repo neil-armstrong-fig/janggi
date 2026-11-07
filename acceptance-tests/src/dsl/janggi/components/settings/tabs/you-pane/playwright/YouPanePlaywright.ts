@@ -16,6 +16,9 @@ export class YouPanePlaywright extends SettingsSheetComponent {
   private readonly appVersion: Locator;
   private readonly tutorialStart: Locator;
   private readonly tutorialStartOver: Locator;
+  private readonly helpSections: Locator;
+  private readonly guidedGameInLearningSection: Locator;
+  private readonly sourceCodeInReferenceSection: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -23,6 +26,33 @@ export class YouPanePlaywright extends SettingsSheetComponent {
     this.appVersion = page.getByTestId("app-version");
     this.tutorialStart = page.getByTestId("tutorial-start");
     this.tutorialStartOver = page.getByTestId("tutorial-start-over");
+    this.helpSections = page.getByTestId("app-help").getByTestId("settings-section");
+    this.guidedGameInLearningSection = this.helpSections
+      .filter({has: page.getByTestId("guide-open")})
+      .getByTestId("tutorial-start");
+    this.sourceCodeInReferenceSection = this.helpSections
+      .filter({has: page.getByTestId("references-open")})
+      .getByTestId("repository-open");
+  }
+
+  async isHelpGrouped(): Promise<boolean> {
+    return (
+      (await this.areLearningLinksGrouped()) &&
+      (await this.areReferenceLinksGrouped()) &&
+      (await this.hasTwoHelpSections())
+    );
+  }
+
+  private async areLearningLinksGrouped(): Promise<boolean> {
+    return (await this.guidedGameInLearningSection.count()) === 1;
+  }
+
+  private async areReferenceLinksGrouped(): Promise<boolean> {
+    return (await this.sourceCodeInReferenceSection.count()) === 1;
+  }
+
+  private async hasTwoHelpSections(): Promise<boolean> {
+    return (await this.helpSections.count()) === 2;
   }
 
   async getGroupAppearance(name: YouGroupName): Promise<GroupAppearance> {

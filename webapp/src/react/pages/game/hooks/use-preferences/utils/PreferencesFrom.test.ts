@@ -3,14 +3,14 @@ import {EFFECTS_NAMES} from "@janggi/shared/janggi/settings/EffectsName";
 import {BIKJANG_HINT_NAMES} from "@janggi/shared/janggi/settings/BikjangHintName";
 import {MOVABLE_HIGHLIGHT_NAMES} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
-import type {PreferencesSliceState} from "@src/redux/preferences/types/PreferencesSliceState";
-import {UNLOCK_PRICES} from "@src/redux/progress/unlocks/UnlockPrices";
+import type {PreferencesSliceState} from "@src/redux/slices/preferences/types/PreferencesSliceState";
+import {UNLOCK_PRICES} from "@src/redux/slices/progress/unlocks/UnlockPrices";
 import {classicStyle} from "@src/react/pages/game/components/board/cell-styles/builtin/ClassicStyle";
 import {expect, it} from "vitest";
 import {hangulPieces} from "@src/react/pages/game/components/board/piece-styles/builtin/hangul/HangulPieces";
-import {noCustomStyles} from "@src/redux/custom-styles/no-custom-styles/NoCustomStyles";
+import {noCustomStyles} from "@src/redux/slices/custom-styles/no-custom-styles/NoCustomStyles";
 import {preferencesFrom} from "@src/react/pages/game/hooks/use-preferences/utils/PreferencesFrom";
-import {preferencesReducer} from "@src/redux/preferences/PreferencesSlice";
+import {preferencesReducer} from "@src/redux/slices/preferences/PreferencesSlice";
 
 const EVERYTHING_UNLOCKED = Number.MAX_SAFE_INTEGER;
 

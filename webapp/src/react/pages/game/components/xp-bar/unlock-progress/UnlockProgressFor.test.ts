@@ -1,5 +1,5 @@
 import {expect, it} from "vitest";
-import {unlockLadder} from "@src/redux/progress/unlocks/UnlockLadder";
+import {unlockLadder} from "@src/redux/slices/progress/unlocks/UnlockLadder";
 import {unlockProgressFor} from "@src/react/pages/game/components/xp-bar/unlock-progress/UnlockProgressFor";
 
 it("starts from nothing towards the first unlock", () => {

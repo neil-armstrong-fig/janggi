@@ -3,7 +3,7 @@ import {Button} from "@src/react/pages/game/components/button/Button";
 import {DEFAULT_ROOM_AWAY_DAYS} from "@janggi/shared/janggi/online/RoomAway";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clsx} from "clsx";
-import {createFriendRoom} from "@src/redux/online/actions/entering/CreateFriendRoom";
+import {createFriendRoom} from "@src/redux/slices/online/actions/entering/CreateFriendRoom";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useIntroduction} from "@src/react/pages/game/hooks/use-introduction/UseIntroduction";
 import {useState} from "react";

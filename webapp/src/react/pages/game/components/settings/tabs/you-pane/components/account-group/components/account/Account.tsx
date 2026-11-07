@@ -3,12 +3,12 @@ import {tourTarget} from "@src/react/pages/game/components/tour-target/TourTarge
 import {LegalLinks} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account-group/components/account/components/legal-links/LegalLinks";
 import {NameForm} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account-group/components/account/components/name-form/NameForm";
 import {TurnNotifications} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account-group/components/account/components/turn-notifications/TurnNotifications";
-import type {SyncState} from "@src/redux/account/types/SyncState";
+import type {SyncState} from "@src/redux/slices/account/types/SyncState";
 import type {YouSyncMessages} from "@src/language/settings/you/you-messages/types/YouSyncMessages";
 import {clsx} from "clsx";
-import {deleteAccount} from "@src/redux/account/actions/DeleteAccount";
-import {signIn} from "@src/redux/account/actions/SignIn";
-import {signOut} from "@src/redux/account/actions/SignOut";
+import {deleteAccount} from "@src/redux/slices/account/actions/DeleteAccount";
+import {signIn} from "@src/redux/slices/account/actions/SignIn";
+import {signOut} from "@src/redux/slices/account/actions/SignOut";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {useState} from "react";

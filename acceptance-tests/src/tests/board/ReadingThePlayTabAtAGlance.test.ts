@@ -3,13 +3,12 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 
 /**
  * The Play tab had grown to two or three screens of pickers on a phone, most of them locked once play began. It is
- * folded into groups: each is one line saying what it is set to, and opens in place to change it, one at a time. Before
- * the first move the setups are open, since choosing one is what the board behind the sheet is for.
+ * folded into groups: each is one line saying what it is set to, and opens in place to change it, one at a time. The player’s last open group is remembered on this device.
  */
 given("a player opens the Play tab before the first move", () => {
   when("nothing has been chosen yet", () => {
-    then("the setups are the group open", async ({janggi}) => {
-      expect(await janggi.settings.play.isGroupOpen("Setup")).toBe(true);
+    then("every group starts collapsed", async ({janggi}) => {
+      expect(await janggi.settings.play.isGroupOpen("Setup")).toBe(false);
       expect(await janggi.settings.play.isGroupOpen("Opponent")).toBe(false);
       expect(await janggi.settings.play.isGroupOpen("Format")).toBe(false);
     });
@@ -97,8 +96,8 @@ given("a game is under way", () => {
       await janggi.settings.play.startNewGame();
     });
 
-    then("the setups are open again, ready to be chosen", async ({janggi}) => {
-      expect(await janggi.settings.play.isGroupOpen("Setup")).toBe(true);
+    then("the groups retain their collapsed state", async ({janggi}) => {
+      expect(await janggi.settings.play.isGroupOpen("Setup")).toBe(false);
     });
   });
 });
@@ -137,3 +136,36 @@ function foldedGroupFor(name: PlayGroupName): PlayGroupName {
 
   return "Setup";
 }
+
+given("the player chooses a Play group", () => {
+  when.each(
+    ["Opponent", "Format", "Setup"] as const,
+    name => `they open ${name} and refresh`,
+    name => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.play.openGroup(name);
+        await janggi.reload();
+      });
+
+      then("that group is still open", async ({janggi}) => {
+        expect(await janggi.settings.play.isGroupOpen(name)).toBe(true);
+      });
+    },
+  );
+});
+
+given("the player has closed the last open Play group", () => {
+  beforeEach(async ({janggi}) => {
+    await janggi.settings.play.openGroup("Setup");
+    await janggi.settings.play.closeGroup("Setup");
+    await janggi.reload();
+  });
+
+  when("they return to Play", () => {
+    then("every group stays collapsed", async ({janggi}) => {
+      expect(await janggi.settings.play.isGroupOpen("Setup")).toBe(false);
+      expect(await janggi.settings.play.isGroupOpen("Opponent")).toBe(false);
+      expect(await janggi.settings.play.isGroupOpen("Format")).toBe(false);
+    });
+  });
+});

@@ -20,8 +20,8 @@ import {useGameAudio} from "@src/react/pages/game/hooks/use-game-audio/UseGameAu
 import {useGameMoment} from "@src/react/pages/game/hooks/use-game-moment/UseGameMoment";
 import {useHaptics} from "@src/react/pages/game/hooks/use-haptics/UseHaptics";
 import {useFlagFall} from "@src/react/pages/game/hooks/use-flag-fall/UseFlagFall";
-import {sideOutOfTime} from "@src/redux/clock/selecting/SideOutOfTime";
-import {flagDueAt} from "@src/redux/clock/selecting/FlagDueAt";
+import {sideOutOfTime} from "@src/redux/slices/clock/selecting/SideOutOfTime";
+import {flagDueAt} from "@src/redux/slices/clock/selecting/FlagDueAt";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useClockKeeper} from "@src/react/pages/game/hooks/use-clock-keeper/UseClockKeeper";
 import {useRatedGame} from "@src/react/pages/game/hooks/use-rated-game/UseRatedGame";
@@ -79,7 +79,8 @@ export function GamePage(): React.JSX.Element {
   const {effects, soundEffectsVolume, musicVolume, countdown} = usePreferences();
   const language = useAppSelector(state => state.preferences.language);
   const messages = useMessages();
-  const moment = useGameMoment(played);
+  const practice = useAppSelector(state => state.tourPractice.parked !== undefined);
+  const moment = useGameMoment(played, practice);
   const outOfTime = useAppSelector(sideOutOfTime);
   const flagFall = useFlagFall(outOfTime);
   const flagDue = useAppSelector(flagDueAt);

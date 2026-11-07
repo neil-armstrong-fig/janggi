@@ -1,8 +1,8 @@
-import type {BotEngineStatus} from "@src/redux/bot-engine/types/BotEngineStatus";
-import type {Opponent} from "@src/redux/game/types/Opponent";
+import type {BotEngineStatus} from "@src/redux/slices/bot-engine/types/BotEngineStatus";
+import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import type {PlayedGame} from "@src/record/types/PlayedGame";
 import {botEngineHoldsPlay} from "@src/react/pages/game/bot-duty/BotEngineHoldsPlay";
-import {dealtGame} from "@src/redux/game/dealing/DealtGame";
+import {dealtGame} from "@src/redux/slices/game/dealing/DealtGame";
 import {expect, it} from "vitest";
 import {place} from "@janggi/engine/setups/Place";
 import {restTurn} from "@src/record/resting/RestTurn";

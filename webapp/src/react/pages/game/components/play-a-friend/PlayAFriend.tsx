@@ -4,8 +4,8 @@ import {ChooseSetup} from "@src/react/pages/game/components/play-a-friend/compon
 import {CodeGiven} from "@src/react/pages/game/components/play-a-friend/components/code-given/CodeGiven";
 import {EnterCode} from "@src/react/pages/game/components/play-a-friend/components/enter-code/EnterCode";
 import {MakeCode} from "@src/react/pages/game/components/play-a-friend/components/make-code/MakeCode";
-import {leaveFriendRoom} from "@src/redux/online/actions/LeaveFriendRoom";
-import {sheetClosed, sheetOpened} from "@src/redux/settings/SettingsSlice";
+import {leaveFriendRoom} from "@src/redux/slices/online/actions/LeaveFriendRoom";
+import {sheetClosed, sheetOpened} from "@src/redux/slices/settings/SettingsSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 
 /**

@@ -1,8 +1,8 @@
 import type {GameMoment} from "@src/react/pages/game/types/GameMoment";
-import {clockActionFor} from "@src/redux/clock/turns/ClockActionFor";
-import {clockInUse} from "@src/redux/clock/selecting/ClockInUse";
-import {flagDueAt} from "@src/redux/clock/selecting/FlagDueAt";
-import {timeRanOut} from "@src/redux/clock/ClockSlice";
+import {clockActionFor} from "@src/redux/slices/clock/turns/ClockActionFor";
+import {clockInUse} from "@src/redux/slices/clock/selecting/ClockInUse";
+import {flagDueAt} from "@src/redux/slices/clock/selecting/FlagDueAt";
+import {timeRanOut} from "@src/redux/slices/clock/ClockSlice";
 import {useAppDispatch, useAppSelector} from "@src/redux/Hooks";
 import {useEffect, useRef} from "react";
 
@@ -15,6 +15,7 @@ import {useEffect, useRef} from "react";
  * from when the turn began. All that would otherwise go unnoticed is time running out, so one timer waits for that.
  */
 export function useClockKeeper(moment: GameMoment | undefined): void {
+  const practice = useAppSelector(state => state.tourPractice.parked !== undefined);
   const played = useAppSelector(state => state.game.played);
   const inUse = useAppSelector(state => clockInUse(state) !== undefined);
   const running = useAppSelector(state => state.clock.turnStartedAt !== undefined);
@@ -28,9 +29,11 @@ export function useClockKeeper(moment: GameMoment | undefined): void {
 
     answeredRef.current = moment.id;
 
+    if (practice) return;
+
     const action = clockActionFor({change: moment, played, inUse, running}, Date.now());
     if (action) dispatch(action);
-  }, [moment, played, inUse, running, dispatch]);
+  }, [moment, played, inUse, running, practice, dispatch]);
 
   useEffect(() => {
     if (flagDue === undefined) return undefined;

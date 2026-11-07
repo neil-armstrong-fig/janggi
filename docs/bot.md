@@ -85,7 +85,7 @@ Strength is `UCI_LimitStrength` with `UCI_Elo` (500–2850), which Fairy-Stockfi
 maps to a skill level through a fit **calibrated on chess** — CCRL, 60+0.6, anchored
 at Goldfish 1.13 = 2000 (`src/search.cpp`). Nobody has calibrated it for janggi.
 "Bot 1400" is a rung on a ladder that climbs, and the player's own rating
-(`redux/ratings/elo/EloAfter.ts`, standard Elo, K 40 then 20 after thirty games)
+(`redux/slices/ratings/elo/EloAfter.ts`, standard Elo, K 40 then 20 after thirty games)
 is a place on that same ladder. The record page says so.
 
 ## 4. Cross-origin isolation, on a host that sends no headers

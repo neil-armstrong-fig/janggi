@@ -1,10 +1,10 @@
 import type {BotLock} from "@src/language/settings/play-messages/types/BotLock";
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
-import type {BeatenLadders} from "@src/redux/progress/types/ProgressSliceState";
+import type {BeatenLadders} from "@src/redux/slices/progress/types/ProgressSliceState";
 import type {BotElo} from "@janggi/shared/janggi/settings/BotElo";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {SideChoiceName} from "@janggi/shared/janggi/settings/SideChoiceName";
-import {openBotElos} from "@src/redux/progress/unlocks/OpenBotElos";
+import {openBotElos} from "@src/redux/slices/progress/unlocks/OpenBotElos";
 
 /**
  * Why a strength of bot may not be played yet, or undefined where it may — said as the rung directly

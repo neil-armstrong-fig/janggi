@@ -1,6 +1,6 @@
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {clockFaceOf} from "@src/react/pages/game/clock-face/ClockFaceOf";
-import {clockReadingFor} from "@src/redux/clock/selecting/ClockReadingFor";
+import {clockReadingFor} from "@src/redux/slices/clock/selecting/ClockReadingFor";
 import {clsx} from "clsx";
 import {shallowEqual} from "react-redux";
 import {useAppSelector} from "@src/redux/Hooks";

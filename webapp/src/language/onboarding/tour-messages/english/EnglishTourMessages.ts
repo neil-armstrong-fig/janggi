@@ -34,7 +34,7 @@ export const ENGLISH_TOUR_MESSAGES: TourMessages = {
     },
     guide: {
       title: "New to Janggi?",
-      body: "The guide teaches every piece and the rules in about five minutes. Read it before your first real game.",
+      body: "Try a guided game to learn by playing, or read the guide for every piece and the rules. The moves you made on this tour were practice; your own board is waiting for you.",
     },
   }),
   card: "Quick tour",

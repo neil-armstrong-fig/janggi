@@ -1,4 +1,4 @@
-import type {UnlockItem} from "@src/redux/progress/unlocks/types/UnlockItem";
+import type {UnlockItem} from "@src/redux/slices/progress/unlocks/types/UnlockItem";
 
 /** What a decided game against the bot earned, as its announcement says so. */
 export interface Reward {

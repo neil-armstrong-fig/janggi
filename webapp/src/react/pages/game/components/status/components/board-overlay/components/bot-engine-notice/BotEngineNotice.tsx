@@ -1,4 +1,4 @@
-import type {BotEngineSliceState} from "@src/redux/bot-engine/types/BotEngineSliceState";
+import type {BotEngineSliceState} from "@src/redux/slices/bot-engine/types/BotEngineSliceState";
 import {clsx} from "clsx";
 import {RefreshIcon} from "@src/react/pages/game/components/svg-icon/icons/refresh/RefreshIcon";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";

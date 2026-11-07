@@ -3,14 +3,14 @@ import "@src/testing/SetupDomTest";
 import {act, renderHook, waitFor} from "@testing-library/react";
 import {beforeEach, expect, it, vi} from "vitest";
 import type {TurnNotificationsState} from "@janggi/shared/janggi/online/TurnNotificationsState";
-import {turnNotificationsStateNow} from "@src/redux/notifications/TurnNotificationsStateNow";
-import {turnOffTurnNotifications} from "@src/redux/notifications/TurnOffTurnNotifications";
-import {turnOnTurnNotifications} from "@src/redux/notifications/TurnOnTurnNotifications";
+import {turnNotificationsStateNow} from "@src/redux/shared/notifications/TurnNotificationsStateNow";
+import {turnOffTurnNotifications} from "@src/redux/shared/notifications/TurnOffTurnNotifications";
+import {turnOnTurnNotifications} from "@src/redux/shared/notifications/TurnOnTurnNotifications";
 import {useTurnNotifications} from "@src/react/pages/game/components/settings/tabs/you-pane/components/account-group/components/account/components/turn-notifications/hooks/use-turn-notifications/UseTurnNotifications";
 
-vi.mock("@src/redux/notifications/TurnNotificationsStateNow");
-vi.mock("@src/redux/notifications/TurnOnTurnNotifications");
-vi.mock("@src/redux/notifications/TurnOffTurnNotifications");
+vi.mock("@src/redux/shared/notifications/TurnNotificationsStateNow");
+vi.mock("@src/redux/shared/notifications/TurnOnTurnNotifications");
+vi.mock("@src/redux/shared/notifications/TurnOffTurnNotifications");
 
 function standingAt(state: TurnNotificationsState): void {
   vi.mocked(turnNotificationsStateNow).mockResolvedValue(state);

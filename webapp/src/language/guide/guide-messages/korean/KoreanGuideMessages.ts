@@ -1,3 +1,4 @@
+import {KOREAN_GUIDED_GAME_WORDS} from "@src/language/tutorial/entry-words/korean/KoreanGuidedGameWords";
 import type {GuideMessages} from "@src/language/guide/guide-messages/GuideMessages";
 import {KOREAN_GUIDE_PIECES_MESSAGES} from "@src/language/guide/guide-pieces-messages/korean/KoreanGuidePiecesMessages";
 import {KOREAN_GUIDE_QUESTIONS_MESSAGES} from "@src/language/guide/guide-questions-messages/korean/KoreanGuideQuestionsMessages";
@@ -37,7 +38,7 @@ export const KOREAN_GUIDE_MESSAGES: GuideMessages = {
     play: "무료로 장기 두기",
     install: "이 기기에 설치",
     startWithRules: "규칙부터 시작",
-    tutorial: {start: "안내를 따라 두며 배우기", resume: "안내 대국 이어 하기", again: "안내 대국 다시 하기"},
+    tutorial: KOREAN_GUIDED_GAME_WORDS.offers,
     accountNote:
       "친구와 온라인으로 두려면 Google 로그인이 필요합니다. AI 대국과 오프라인 플레이는 계정이 필요 없습니다.",
     factsLabel: "장기 한눈에 보기",

@@ -1,3 +1,4 @@
+import {ENGLISH_GUIDED_GAME_WORDS} from "@src/language/tutorial/entry-words/english/EnglishGuidedGameWords";
 import type {WelcomeMessages} from "@src/language/onboarding/welcome-messages/WelcomeMessages";
 
 /** The welcome a first visit opens on, in English. */
@@ -16,6 +17,6 @@ export const ENGLISH_WELCOME_MESSAGES: WelcomeMessages = {
   answers: {On: "On", Off: "Off", Full: "Full", Reduced: "Reduced", Shown: "Shown", Hidden: "Hidden"},
   changeAnyTime: "You can change all of these any time in Settings.",
   takeTheTour: "Take the quick tour",
-  startTheTutorial: "Learn by playing a guided game",
+  startTheTutorial: ENGLISH_GUIDED_GAME_WORDS.offers.start,
   skip: "Skip, just play",
 };

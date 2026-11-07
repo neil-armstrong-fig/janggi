@@ -1,3 +1,4 @@
+import {ENGLISH_GUIDED_GAME_WORDS} from "@src/language/tutorial/entry-words/english/EnglishGuidedGameWords";
 import type {GuideMessages} from "@src/language/guide/guide-messages/GuideMessages";
 import {ENGLISH_GUIDE_PIECES_MESSAGES} from "@src/language/guide/guide-pieces-messages/english/EnglishGuidePiecesMessages";
 import {ENGLISH_GUIDE_QUESTIONS_MESSAGES} from "@src/language/guide/guide-questions-messages/english/EnglishGuideQuestionsMessages";
@@ -27,11 +28,7 @@ export const ENGLISH_GUIDE_MESSAGES: GuideMessages = {
     play: "Play Janggi for free",
     install: "Save to this device",
     startWithRules: "Start with the rules",
-    tutorial: {
-      start: "Learn by playing a guided game",
-      resume: "Resume the guided game",
-      again: "Play the guided game again",
-    },
+    tutorial: ENGLISH_GUIDED_GAME_WORDS.offers,
     accountNote: "Play a friend online with a Google sign-in. The AI and offline play need no account.",
     factsLabel: "Janggi quick facts",
     facts: [

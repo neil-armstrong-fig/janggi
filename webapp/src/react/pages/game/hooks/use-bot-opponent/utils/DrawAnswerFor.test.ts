@@ -1,6 +1,6 @@
 import type {GameState} from "@janggi/engine/types/GameState";
 import {DEFAULT_SETUP} from "@janggi/engine/setups/Setups";
-import {drawAccepted, drawDeclined} from "@src/redux/game/GameSlice";
+import {drawAccepted, drawDeclined} from "@src/redux/slices/game/GameSlice";
 import {drawAnswerFor} from "@src/react/pages/game/hooks/use-bot-opponent/utils/DrawAnswerFor";
 import {expect, it} from "vitest";
 import {newGame} from "@janggi/engine/NewGame";

@@ -16,9 +16,9 @@ was being kept. See `AGENTS.md` in this folder for how the DSL locates by these.
   `data-dock`), `tutorial-title`,
   `tutorial-narration`, `tutorial-collapse`, `tutorial-expand`, `tutorial-next`,
   `tutorial-leave`, `tutorial-finish` (the closing card's), `tutorial-holds-play` (the Play
-  tab while it has the board), and its three ways in, `tutorial-start` (the You tab, with
+  tab while it has the board), and its ways in, `tutorial-start` (the You tab, with
   `tutorial-start-over` beside it once part way),
-  `welcome-start-tutorial` and `guide-tutorial`; the You tab's and the guide's carry `data-offer`, one of
+  `welcome-start-tutorial`, `guide-tutorial`, `play-guided-game` and `tour-guided-game`; the You tab's and the guide's carry `data-offer`, one of
   `TUTORIAL_OFFERS` in `@janggi/shared`. The point it rings wears `data-tour-target="point"`, as the
   tour's does, and the controls it rings `data-tour-target="pass"`, `"bikjang"` and `"draw"`. A point the step tells of a
   move to it being held back wears `data-held-back` on its `cell-f<file>r<rank>`.

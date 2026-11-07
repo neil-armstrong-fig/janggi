@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import "@src/testing/SetupDomTest";
 import {afterEach, expect, it} from "vitest";
-import {TUTORIAL_STORAGE_KEY} from "@src/redux/tutorial/storage/TutorialStorageKey";
+import {TUTORIAL_STORAGE_KEY} from "@src/redux/slices/tutorial/storage/TutorialStorageKey";
 import {renderHook} from "@testing-library/react";
 import {useTutorialOffer} from "@src/react/pages/learn/components/hero/hooks/use-tutorial-offer/UseTutorialOffer";
 

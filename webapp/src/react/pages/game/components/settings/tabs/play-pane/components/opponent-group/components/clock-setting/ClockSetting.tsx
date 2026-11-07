@@ -1,6 +1,6 @@
-import {TIME_CONTROL_LIMITS} from "@src/redux/clock/time-controls/TimeControlLimits";
+import {TIME_CONTROL_LIMITS} from "@src/redux/slices/clock/time-controls/TimeControlLimits";
 import {TIME_CONTROL_FORMATS} from "@janggi/shared/janggi/settings/TimeControlName";
-import {customTimeControlWritten, timeControlChosen} from "@src/redux/clock/ClockSlice";
+import {customTimeControlWritten, timeControlChosen} from "@src/redux/slices/clock/ClockSlice";
 import {ClockExplanation} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-group/components/clock-setting/components/clock-explanation/ClockExplanation";
 import {CustomField} from "@src/react/pages/game/components/settings/tabs/play-pane/components/opponent-group/components/clock-setting/components/custom-field/CustomField";
 import {OptionPicker} from "@src/react/pages/game/components/settings/components/option-picker/OptionPicker";
