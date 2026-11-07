@@ -1,3 +1,6 @@
+import {appearsWithin} from "@src/dsl/playwright/visibility/AppearsWithin";
+import {pollUntil} from "@src/dsl/playwright/polling/PollUntil";
+import {cellAt} from "@src/dsl/playwright/board/CellAt";
 import type {Locator, Page} from "@playwright/test";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {motionSettled} from "@src/dsl/janggi/components/board/playwright/motion-settled/MotionSettled";
@@ -11,8 +14,6 @@ const SETTLES_WITHIN_MS = 4_000;
 /** A shake starts as the capturing piece lands, which is within a flight's length of the tap. */
 const SHAKE_STARTS_WITHIN_MS = 1_500;
 
-const POLL_MS = 50;
-
 /**
  * How long, once every animation has finished, the page is given to catch up with it — long enough for
  * a flight that has just touched down to unhide its piece, and no longer.
@@ -24,12 +25,17 @@ const SETTLED_GRACE_MS = 500;
  * landing or settling, and the board shaking.
  */
 export class MotionPlaywright extends BaseComponent {
-  readonly container: Locator;
+  private readonly container: Locator;
+  private readonly moveFlight: Locator;
+  private readonly impact: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.container = page.getByTestId("board");
+
+    this.moveFlight = this.container.getByTestId("move-flight");
+    this.impact = this.container.getByTestId("impact");
   }
 
   /**
@@ -42,7 +48,6 @@ export class MotionPlaywright extends BaseComponent {
 
     const scale = await this.pieceLocator(file, rank).evaluate(piece => {
       const lifter = piece.parentElement;
-
       if (lifter) {
         return getComputedStyle(lifter).scale;
       }
@@ -86,28 +91,23 @@ export class MotionPlaywright extends BaseComponent {
    * because a flight is brief — and so a board that never shows one answers only after that wait.
    */
   async isShowingAPieceInFlight(): Promise<boolean> {
-    return await this.appears(this.container.getByTestId("move-flight"));
+    return await this.appears(this.moveFlight);
   }
 
   /** Whether a capture is shown landing on the board, waiting for it to appear as a flight is waited for. */
   async isShowingAnImpact(): Promise<boolean> {
-    return await this.appears(this.container.getByTestId("impact"));
+    return await this.appears(this.impact);
   }
 
   private async appears(locator: Locator): Promise<boolean> {
-    try {
-      await locator.waitFor({state: "attached", timeout: APPEARS_WITHIN_MS});
-      return true;
-    } catch {
-      return false;
-    }
+    return await appearsWithin(locator, {state: "attached", timeout: APPEARS_WITHIN_MS});
   }
 
   /** Whether nothing is left drawn over the board — no piece in flight, no capture landing — once motion settles. */
   async isClearOfMotion(): Promise<boolean> {
     return await this.eventually(async () => {
-      const flights = await this.container.getByTestId("move-flight").count();
-      const impacts = await this.container.getByTestId("impact").count();
+      const flights = await this.moveFlight.count();
+      const impacts = await this.impact.count();
 
       return flights + impacts === 0;
     });
@@ -131,14 +131,7 @@ export class MotionPlaywright extends BaseComponent {
 
   /** Asks until the answer is yes, or gives the last answer once motion has had long enough to settle. */
   private async eventually(ask: () => Promise<boolean>, within = SETTLES_WITHIN_MS): Promise<boolean> {
-    const deadline = Date.now() + within;
-
-    for (;;) {
-      if (await ask()) return true;
-      if (Date.now() > deadline) return false;
-
-      await this.page.waitForTimeout(POLL_MS);
-    }
+    return await pollUntil(ask, within);
   }
 
   private async isUnmoved(): Promise<boolean> {
@@ -152,6 +145,6 @@ export class MotionPlaywright extends BaseComponent {
   }
 
   private cellLocator(file: number, rank: number): Locator {
-    return this.container.getByTestId(`cell-f${file}r${rank}`);
+    return cellAt(this.container, file, rank);
   }
 }

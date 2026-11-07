@@ -15,13 +15,11 @@ export interface GamesAgainst {
  * The player's record against the bot — a sheet that slides up over the game, reached from the
  * settings sheet, with a tab for each match format because the two are rated apart.
  *
- * Every read opens the sheet, picks the format's tab, reads, and closes it again, so a spec asks for a
- * figure the way it asks for a score and never has to say where it is standing. That is the settings
- * sheet's `inSheet` again. Like that sheet it is always in the page and only `inert` while closed,
- * which is what closing waits for.
+ * Specs open Settings and the record before reading it. Queries select only a format inside the
+ * already-open record; they do not navigate to another sheet or close it behind the spec.
  */
 export class RecordSheetPlaywright extends BaseComponent {
-  private readonly settingsOpener: Locator;
+  private readonly rows: Record<BotElo, Locator>;
   private readonly opener: Locator;
   private readonly closer: Locator;
   private readonly back: Locator;
@@ -34,8 +32,17 @@ export class RecordSheetPlaywright extends BaseComponent {
 
   constructor(page: Page) {
     super(page);
+    this.rows = {
+      800: page.getByTestId("record-row-800"),
+      1000: page.getByTestId("record-row-1000"),
+      1200: page.getByTestId("record-row-1200"),
+      1400: page.getByTestId("record-row-1400"),
+      1600: page.getByTestId("record-row-1600"),
+      1900: page.getByTestId("record-row-1900"),
+      2200: page.getByTestId("record-row-2200"),
+      2850: page.getByTestId("record-row-2850"),
+    };
 
-    this.settingsOpener = page.getByTestId("settings-open");
     this.opener = page.getByTestId("record-open");
     this.closer = page.getByTestId("record-close");
     this.back = page.getByTestId("record-back");
@@ -61,9 +68,13 @@ export class RecordSheetPlaywright extends BaseComponent {
   }
 
   async openRecord(): Promise<void> {
-    await this.settingsOpener.click();
     await this.opener.click();
     await this.elo.waitFor({state: "visible"});
+  }
+
+  async closeRecord(): Promise<void> {
+    await this.closer.click();
+    await this.closed.waitFor({state: "attached"});
   }
 
   async goBackToSettings(): Promise<void> {
@@ -92,7 +103,7 @@ export class RecordSheetPlaywright extends BaseComponent {
 
   async getGamesAgainst(format: MatchFormat, elo: BotElo): Promise<GamesAgainst> {
     return await this.onTab(format, async () => {
-      const row = this.page.getByTestId(`record-row-${elo}`);
+      const row = this.rows[elo];
 
       return {
         played: Number(await row.getAttribute("data-played")),
@@ -103,17 +114,12 @@ export class RecordSheetPlaywright extends BaseComponent {
     });
   }
 
-  /** Opens the record on one format's tab, reads it, and closes it again. */
+  /** Reads the chosen format within the already-open record. */
   private async onTab<Read>(format: MatchFormat, read: () => Promise<Read>): Promise<Read> {
-    await this.settingsOpener.click();
-    await this.opener.click();
     await this.tabs[format].click();
     await this.elo.waitFor({state: "visible"});
 
     const answer = await read();
-
-    await this.closer.click();
-    await this.closed.waitFor({state: "attached"});
 
     return answer;
   }

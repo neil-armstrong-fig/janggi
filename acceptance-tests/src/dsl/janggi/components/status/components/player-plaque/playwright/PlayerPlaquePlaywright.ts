@@ -1,3 +1,4 @@
+import {pollUntil} from "@src/dsl/playwright/polling/PollUntil";
 import type {Locator, Page} from "@playwright/test";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
@@ -8,17 +9,27 @@ const SETTLES_WITHIN_MS = 3_000;
 /** Longer than a score's whole roll, so words unchanged for this long have truly come to rest. */
 const AT_REST_FOR_MS = 700;
 
-const POLL_MS = 50;
-
 /**
  * The locators behind `PlayerPlaqueDsl` — each army's plaque: its name, its score, and who plays it — the bot, the player, their rating and XP. Every method names the army it asks about.
  */
 export class PlayerPlaquePlaywright extends BaseComponent {
+  private readonly plaques: Record<Side, Locator>;
+  private readonly nextUnlocks: Record<Side, Locator>;
+  private readonly xp: Record<Side, Locator>;
   private readonly scores: Record<Side, Locator>;
   private readonly players: Record<Side, Locator>;
 
   constructor(page: Page) {
     super(page);
+    this.plaques = {
+      cho: page.getByTestId("plaque-cho"),
+      han: page.getByTestId("plaque-han"),
+    };
+    this.nextUnlocks = {
+      cho: page.getByTestId("plaque-next-unlock-cho"),
+      han: page.getByTestId("plaque-next-unlock-han"),
+    };
+    this.xp = {cho: page.getByTestId("plaque-xp-cho"), han: page.getByTestId("plaque-xp-han")};
 
     this.scores = {cho: page.getByTestId("score-cho"), han: page.getByTestId("score-han")};
     this.players = {cho: page.getByTestId("plaque-player-cho"), han: page.getByTestId("plaque-player-han")};
@@ -59,7 +70,7 @@ export class PlayerPlaquePlaywright extends BaseComponent {
    * are shortened.
    */
   async getShownXp(side: Side): Promise<number | undefined> {
-    const xp = this.page.getByTestId(`plaque-xp-${side}`);
+    const xp = this.xp[side];
     if (!(await xp.isVisible())) return undefined;
 
     return Number(await xp.getAttribute("data-xp"));
@@ -67,7 +78,7 @@ export class PlayerPlaquePlaywright extends BaseComponent {
 
   /** Whether the amount and its XP unit occupy one line rather than breaking apart. */
   async isXpOnOneLine(side: Side): Promise<boolean> {
-    const xp = this.page.getByTestId(`plaque-xp-${side}`);
+    const xp = this.xp[side];
     if ((await xp.count()) === 0) return false;
 
     return await xp.evaluate(element => {
@@ -80,7 +91,7 @@ export class PlayerPlaquePlaywright extends BaseComponent {
 
   /** The next unlock shown beside an army's XP, or undefined where there is no next unlock. */
   async getNextUnlock(side: Side): Promise<string | undefined> {
-    const nextUnlock = this.page.getByTestId(`plaque-next-unlock-${side}`);
+    const nextUnlock = this.nextUnlocks[side];
     if (!(await nextUnlock.isVisible())) return undefined;
 
     return (await nextUnlock.textContent()) ?? undefined;
@@ -99,26 +110,23 @@ export class PlayerPlaquePlaywright extends BaseComponent {
     const score = this.scores[side];
     await score.waitFor({state: "visible"});
 
-    const deadline = Date.now() + SETTLES_WITHIN_MS;
     let shown = await score.textContent();
     let unchangedSince = Date.now();
-
-    while (Date.now() - unchangedSince < AT_REST_FOR_MS && Date.now() < deadline) {
-      await this.page.waitForTimeout(POLL_MS);
-
+    await pollUntil(async () => {
       const now = await score.textContent();
       if (now !== shown) {
         shown = now;
         unchangedSince = Date.now();
       }
-    }
+      return Date.now() - unchangedSince >= AT_REST_FOR_MS;
+    }, SETTLES_WITHIN_MS);
 
     return Number(shown);
   }
 
   /** What an army is called on its plaque. */
   async getArmyName(side: Side): Promise<string> {
-    return (await this.page.getByTestId(`plaque-${side}`).getAttribute("aria-label")) ?? "";
+    return (await this.plaques[side].getAttribute("aria-label")) ?? "";
   }
 
   async getScore(side: Side): Promise<number> {

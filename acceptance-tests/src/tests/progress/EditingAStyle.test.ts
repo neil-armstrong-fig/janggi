@@ -17,7 +17,11 @@ given("a player with the XP to make a style", () => {
 
   when("they start a board from the classic one", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleStarter.start("Board", "Classic");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("the preview draws the lines as classic does", async ({janggi}) => {
@@ -34,7 +38,11 @@ given("a player with the XP to make a style", () => {
 
     when("they pick another colour for the lines", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.controls.setColour("line-colour", "#ff0000");
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("the preview draws its lines in it, at once", async ({janggi}) => {
@@ -47,7 +55,11 @@ given("a player with the XP to make a style", () => {
 
       when("they save it", () => {
         beforeEach(async ({janggi}) => {
+          await janggi.settings.openTheSettings();
+          await janggi.settings.selectTab("Look");
+          await janggi.stylesSheet.openStyles();
           await janggi.stylesSheet.styleEditor.save("Red lines");
+          await janggi.stylesSheet.closeStyles();
         });
 
         then("it is saved", async ({janggi}) => {
@@ -63,7 +75,11 @@ given("a player with the XP to make a style", () => {
 
     when("they save it without giving it a name", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.save("");
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("they are asked for one, and nothing is saved", async ({janggi}) => {
@@ -74,7 +90,11 @@ given("a player with the XP to make a style", () => {
 
     when("they type a line thicker than a line can be drawn", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.controls.setNumber("line-width", 99);
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("it stops at the thickest there is", async ({janggi}) => {
@@ -85,8 +105,12 @@ given("a player with the XP to make a style", () => {
 
     when("they pick a colour for the bikjang line", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.controls.setColour("bikjang-colour", "#ff00ff");
         await janggi.stylesSheet.styleEditor.save("Pink bikjang");
+        await janggi.stylesSheet.closeStyles();
       });
 
       when("the generals come to face each other and cho calls the bikjang", () => {
@@ -106,7 +130,11 @@ given("a player with the XP to make a style", () => {
 
     when("they look at the style as raw JSON", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.showRaw();
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("it is the same style, written out", async ({janggi}) => {
@@ -129,8 +157,12 @@ given("a player with the XP to make a style", () => {
 
       when("they change the colour of the lines there", () => {
         beforeEach(async ({janggi}) => {
+          await janggi.settings.openTheSettings();
+          await janggi.settings.selectTab("Look");
+          await janggi.stylesSheet.openStyles();
           const raw = await janggi.stylesSheet.styleEditor.getRaw();
           await janggi.stylesSheet.styleEditor.setRaw(raw.replace("#4a3116", "#0000ff"));
+          await janggi.stylesSheet.closeStyles();
         });
 
         then("the preview follows", async ({janggi}) => {
@@ -139,7 +171,11 @@ given("a player with the XP to make a style", () => {
 
         when("they go back to the controls", () => {
           beforeEach(async ({janggi}) => {
+            await janggi.settings.openTheSettings();
+            await janggi.settings.selectTab("Look");
+            await janggi.stylesSheet.openStyles();
             await janggi.stylesSheet.styleEditor.showControls();
+            await janggi.stylesSheet.closeStyles();
           });
 
           then("the control shows it too", async ({janggi}) => {
@@ -150,7 +186,11 @@ given("a player with the XP to make a style", () => {
 
       when("they type JSON that will not do", () => {
         beforeEach(async ({janggi}) => {
+          await janggi.settings.openTheSettings();
+          await janggi.settings.selectTab("Look");
+          await janggi.stylesSheet.openStyles();
           await janggi.stylesSheet.styleEditor.setRaw("{");
+          await janggi.stylesSheet.closeStyles();
         });
 
         then("they are told what is wrong", async ({janggi}) => {
@@ -166,7 +206,11 @@ given("a player with the XP to make a style", () => {
 
   when("they start a piece set from the hangul one", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleStarter.start("Pieces", "Hangul");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("the preview shows every piece on the board", async ({janggi}) => {
@@ -182,10 +226,14 @@ given("a player with the XP to make a style", () => {
       let hanBefore: number | undefined;
 
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         choBefore = await janggi.stylesSheet.styleEditor.preview.getPieceWidthAt(1, 10);
         hanBefore = await janggi.stylesSheet.styleEditor.preview.getPieceWidthAt(1, 1);
 
         await janggi.stylesSheet.styleEditor.controls.setNumber("piece-size", 0.5);
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("cho's pieces shrink on the preview", async ({janggi}) => {
@@ -202,11 +250,15 @@ given("a player with the XP to make a style", () => {
       let chariotBefore: number | undefined;
 
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         generalBefore = await janggi.stylesSheet.styleEditor.preview.getPieceWidthAt(5, 9);
         chariotBefore = await janggi.stylesSheet.styleEditor.preview.getPieceWidthAt(1, 10);
 
         await janggi.stylesSheet.styleEditor.preview.tap(5, 9);
         await janggi.stylesSheet.styleEditor.controls.setNumber("piece-size", 0.5);
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("the controls say which piece they are changing", async ({janggi}) => {
@@ -223,7 +275,11 @@ given("a player with the XP to make a style", () => {
 
       when("they take that back", () => {
         beforeEach(async ({janggi}) => {
+          await janggi.settings.openTheSettings();
+          await janggi.settings.selectTab("Look");
+          await janggi.stylesSheet.openStyles();
           await janggi.stylesSheet.styleEditor.preview.resetTarget();
+          await janggi.stylesSheet.closeStyles();
         });
 
         then("the piece is as big as the rest of its army again", async ({janggi}) => {
@@ -235,7 +291,11 @@ given("a player with the XP to make a style", () => {
 
     when("they make cho's pieces smaller", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.controls.setNumber("piece-size", 0.5);
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("the general, which the set draws a size of its own, shrinks with the rest", async ({janggi}) => {
@@ -247,8 +307,12 @@ given("a player with the XP to make a style", () => {
 
     when("they save the set they changed", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.controls.setNumber("piece-size", 0.5);
         await janggi.stylesSheet.styleEditor.save("Small pieces");
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("the game's pieces are wearing it", async ({janggi}) => {
@@ -261,7 +325,11 @@ given("a player with the XP to make a style", () => {
 given("a player with the XP to make a style, and the hanja set to start from", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleStarter.start("Pieces", "Hanja");
+    await janggi.stylesSheet.closeStyles();
   });
 
   then("cho's pieces are written in hanja, the general too", async ({janggi}) => {
@@ -271,7 +339,11 @@ given("a player with the XP to make a style, and the hanja set to start from", (
 
   when("they change cho's writing to hangul", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.controls.chooseOption("writing-Hangul");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("every piece of cho's is in hangul, the general included", async ({janggi}) => {
@@ -286,7 +358,11 @@ given("a player with the XP to make a style, and the hanja set to start from", (
 
   when("they change cho's mark to drawings", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.controls.chooseOption("glyph-kind-pictograph");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("no piece of cho's is left carrying a character, the general included", async ({janggi}) => {
@@ -297,7 +373,11 @@ given("a player with the XP to make a style, and the hanja set to start from", (
 
   when("they show the pieces on another board", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.preview.showWith("Neon");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("the preview draws that board's lines", async ({janggi}) => {
@@ -313,12 +393,20 @@ given("a player with the XP to make a style, and the hanja set to start from", (
 given("a player with the XP to make a style, and a board to start from", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleStarter.start("Board", "Classic");
+    await janggi.stylesSheet.closeStyles();
   });
 
   when("they show the board with another piece set", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.preview.showWith("Hangul");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("the preview's pieces are that set's", async ({janggi}) => {
@@ -334,8 +422,12 @@ given("a player with the XP to make a style, and a board to start from", () => {
 given("a player who has made a board of their own", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.makeStyle("Board", "Classic", "Mine");
     await janggi.stylesSheet.styleStarter.start("Board", "Mine");
+    await janggi.stylesSheet.closeStyles();
   });
 
   then("starting from it puts its name in the box", async ({janggi}) => {
@@ -344,8 +436,12 @@ given("a player who has made a board of their own", () => {
 
   when("they change it and save it under the name it has", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.controls.setColour("line-colour", "#ff0000");
       await janggi.stylesSheet.styleEditor.save();
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is changed, not made a second time", async ({janggi}) => {
@@ -361,7 +457,11 @@ given("a player who dresses han in hanja and cho in hangul, making a board", () 
     await janggi.settings.look.pieceSet.setTo("Hangul");
     await janggi.settings.look.pieceSet.toggleChoosingApart();
     await janggi.settings.look.pieceSet.chooseForArmy("han", "Hanja");
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleStarter.start("Board", "Classic");
+    await janggi.stylesSheet.closeStyles();
   });
 
   then("the preview shows the pieces as they are worn, each army in its own set", async ({janggi}) => {

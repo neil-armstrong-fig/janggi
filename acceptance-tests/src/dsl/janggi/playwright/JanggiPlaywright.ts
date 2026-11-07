@@ -1,4 +1,4 @@
-import type {BrowserContextOptions, CDPSession, Page} from "@playwright/test";
+import type {Locator, BrowserContextOptions, CDPSession, Page} from "@playwright/test";
 import {ONBOARDING_DONE_JSON, ONBOARDING_STORAGE_KEY} from "@janggi/shared/janggi/onboarding/OnboardingStorage";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 import type {InstallationAppearance, InstallationIcon} from "@src/dsl/janggi/types/InstallationAppearance";
@@ -38,9 +38,18 @@ export class JanggiPlaywright extends BasePage {
    * one pairing requires by nature.
    */
   private cdpSession: CDPSession | undefined;
+  private readonly documentRoot: Locator;
+  private readonly manifestLink: Locator;
+  private readonly appleTouchIconLink: Locator;
+  private readonly heading: Locator;
 
   constructor(page: Page) {
     super(page);
+
+    this.documentRoot = this.page.locator("html");
+    this.manifestLink = this.page.locator("link[rel='manifest']");
+    this.appleTouchIconLink = this.page.locator("link[rel='apple-touch-icon']");
+    this.heading = this.page.locator("h1");
   }
 
   /**
@@ -199,7 +208,7 @@ export class JanggiPlaywright extends BasePage {
   }
 
   async wasInstallationPrompted(): Promise<boolean> {
-    return (await this.page.locator("html").getAttribute("data-install-prompted")) === "true";
+    return (await this.documentRoot.getAttribute("data-install-prompted")) === "true";
   }
 
   /** The language the page declares itself to be written in, read off `<html lang>`. */
@@ -208,7 +217,7 @@ export class JanggiPlaywright extends BasePage {
   }
 
   async getInstallationAppearance(): Promise<InstallationAppearance> {
-    const manifestPath = await this.page.locator("link[rel='manifest']").getAttribute("href");
+    const manifestPath = await this.manifestLink.getAttribute("href");
     if (!manifestPath) throw new Error("The page has no web app manifest");
 
     const manifestAddress = new URL(manifestPath, this.page.url()).href;
@@ -220,7 +229,7 @@ export class JanggiPlaywright extends BasePage {
       })),
     );
 
-    const appleTouchIconPath = await this.page.locator("link[rel='apple-touch-icon']").getAttribute("href");
+    const appleTouchIconPath = await this.appleTouchIconLink.getAttribute("href");
     if (!appleTouchIconPath) throw new Error("The page has no Apple touch icon");
 
     return {
@@ -259,7 +268,7 @@ export class JanggiPlaywright extends BasePage {
   }
 
   async getMainHeading(): Promise<string> {
-    return await this.page.locator("h1").innerText();
+    return await this.heading.innerText();
   }
 
   /**

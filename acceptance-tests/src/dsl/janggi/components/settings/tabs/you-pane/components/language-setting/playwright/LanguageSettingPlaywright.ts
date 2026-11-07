@@ -1,3 +1,4 @@
+import {OptionPicker} from "@src/dsl/janggi/components/settings/playwright/components/option-picker/OptionPicker";
 import type {Locator, Page} from "@playwright/test";
 import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import {LANGUAGE_NAMES} from "@janggi/shared/janggi/settings/LanguageName";
@@ -7,6 +8,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 export class LanguageSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<LanguageName, Locator>;
+  private readonly optionPicker: OptionPicker<LanguageName>;
 
   constructor(page: Page) {
     super(page);
@@ -16,6 +18,8 @@ export class LanguageSettingPlaywright extends SettingsSheetComponent {
       en: page.getByTestId("language-option-en"),
       ko: page.getByTestId("language-option-ko"),
     };
+
+    this.optionPicker = new OptionPicker(this.picker, LANGUAGE_NAMES);
   }
 
   async choose(name: LanguageName): Promise<void> {
@@ -24,11 +28,6 @@ export class LanguageSettingPlaywright extends SettingsSheetComponent {
 
   /** The language on whichever button is pressed, or undefined before anything has rendered. */
   async getSelected(): Promise<LanguageName | undefined> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    if ((await pressed.count()) === 0) return undefined;
-
-    const name = await pressed.getAttribute("data-option");
-
-    return LANGUAGE_NAMES.find(candidate => candidate === name);
+    return await this.optionPicker.getSelected();
   }
 }

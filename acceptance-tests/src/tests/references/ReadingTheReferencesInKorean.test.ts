@@ -245,6 +245,8 @@ given("a player who reads the game in Korean", () => {
 
   when("they open the references from the settings", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("You");
       await janggi.references.openReferences();
     });
 

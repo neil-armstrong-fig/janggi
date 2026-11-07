@@ -1,3 +1,4 @@
+import {errors} from "@playwright/test";
 import type {Locator, Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 
@@ -8,12 +9,22 @@ const SCROLLS_WITHIN_MS = 2_000;
 export class LegalPlaywright extends BasePage {
   private readonly privacyLink: Locator;
   private readonly termsLink: Locator;
+  private readonly canonical: Locator;
+  private readonly headings: Locator;
+  private readonly content: Locator;
+  private readonly legalNavigation: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.privacyLink = page.getByTestId("privacy-open");
     this.termsLink = page.getByTestId("terms-open");
+
+    this.canonical = this.page.locator("link[rel='canonical']");
+    this.headings = this.page.getByTestId("legal").locator("h2");
+    this.content = this.page.getByTestId("legal");
+
+    this.legalNavigation = this.page.getByRole("navigation", {name: "Legal navigation"});
   }
 
   async visitPrivacyPolicy(): Promise<void> {
@@ -30,65 +41,18 @@ export class LegalPlaywright extends BasePage {
   }
 
   async isEachPolicyLinkedFromSignIn(): Promise<boolean> {
-    return await this.withPolicyLinks(async () => {
-      const privacy = await this.privacyLink.getAttribute("href");
-      const terms = await this.termsLink.getAttribute("href");
-
-      return privacy?.endsWith("/privacy.html") === true && terms?.endsWith("/terms.html") === true;
-    });
+    const privacy = await this.privacyLink.getAttribute("href");
+    const terms = await this.termsLink.getAttribute("href");
+    return privacy?.endsWith("/privacy.html") === true && terms?.endsWith("/terms.html") === true;
   }
 
   async canPoliciesOpenSeparatelyFromTheGame(): Promise<boolean> {
-    return await this.withPolicyLinks(async () => {
-      const links = [this.privacyLink, this.termsLink];
-      const targets = await Promise.all(links.map(async link => await link.getAttribute("target")));
-      const relations = await Promise.all(links.map(async link => await link.getAttribute("rel")));
-
-      return (
-        targets.every(target => target === "_blank") && relations.every(relation => relation === "noopener noreferrer")
-      );
-    });
-  }
-
-  private async withPolicyLinks<Answer>(question: () => Promise<Answer>): Promise<Answer> {
-    await this.page.getByTestId("settings-open").click();
-
-    const leftOn = await this.page
-      .locator("[data-testid='settings-tab'][aria-selected='true']")
-      .getAttribute("data-tab");
-    await this.page.locator("[data-testid='settings-tab'][data-tab='You']").click();
-    const pane = this.page.getByTestId("settings-pane").and(this.page.locator('[data-pane="You"]'));
-    const previousName = await this.openGroupName(pane);
-    const account = pane.getByTestId("settings-group").and(this.page.locator('[data-group="Account"]'));
-    const needsOpening = (await account.getAttribute("data-open")) !== "true";
-    if (needsOpening) await account.getByTestId("settings-group-toggle").click();
-    await this.privacyLink.waitFor({state: "visible"});
-
-    const answer = await question();
-
-    if (needsOpening) {
-      if (previousName === undefined) {
-        await account.getByTestId("settings-group-toggle").click();
-      } else {
-        await pane
-          .getByTestId("settings-group")
-          .and(this.page.locator(`[data-group="${previousName}"]`))
-          .getByTestId("settings-group-toggle")
-          .click();
-      }
-    }
-
-    await this.page.locator(`[data-testid='settings-tab'][data-tab='${leftOn}']`).click();
-    await this.page.getByTestId("settings-close").click();
-
-    return answer;
-  }
-
-  private async openGroupName(pane: Locator): Promise<string | undefined> {
-    const open = pane.locator('[data-testid="settings-group"][data-open="true"]');
-    if ((await open.count()) === 0) return undefined;
-
-    return (await open.getAttribute("data-group")) ?? undefined;
+    const links = [this.privacyLink, this.termsLink];
+    const targets = await Promise.all(links.map(async link => await link.getAttribute("target")));
+    const relations = await Promise.all(links.map(async link => await link.getAttribute("rel")));
+    return (
+      targets.every(target => target === "_blank") && relations.every(relation => relation === "noopener noreferrer")
+    );
   }
 
   async getPageTitle(): Promise<string> {
@@ -96,15 +60,15 @@ export class LegalPlaywright extends BasePage {
   }
 
   async getCanonicalAddress(): Promise<string> {
-    return (await this.page.locator("link[rel='canonical']").getAttribute("href")) ?? "";
+    return (await this.canonical.getAttribute("href")) ?? "";
   }
 
   async getHeadings(): Promise<string[]> {
-    return await this.page.getByTestId("legal").locator("h2").allTextContents();
+    return await this.headings.allTextContents();
   }
 
   async getContent(): Promise<string> {
-    return await this.page.getByTestId("legal").innerText();
+    return await this.content.innerText();
   }
 
   async isFullyOnScreen(): Promise<boolean> {
@@ -116,7 +80,7 @@ export class LegalPlaywright extends BasePage {
     await this.page.mouse.move(195, 250);
     await this.page.mouse.wheel(0, 100_000);
 
-    const footerLinks = this.page.getByRole("navigation", {name: "Legal navigation"});
+    const footerLinks = this.legalNavigation;
     await footerLinks.waitFor({state: "visible"});
 
     // A wheel is handed to the page and applied a frame or so later, so the end is waited for rather than sampled.
@@ -132,8 +96,9 @@ export class LegalPlaywright extends BasePage {
       );
 
       return true;
-    } catch {
-      return false;
+    } catch (error) {
+      if (error instanceof errors.TimeoutError) return false;
+      throw error;
     }
   }
 }

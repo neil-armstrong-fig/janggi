@@ -1,4 +1,4 @@
-import type {Page} from "@playwright/test";
+import type {Locator, Page} from "@playwright/test";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 import type {LanguageAlternates} from "@src/dsl/janggi/components/discovery/types/LanguageAlternates";
 import type {SearchData} from "@src/dsl/janggi/components/discovery/playwright/types/SearchData";
@@ -8,8 +8,18 @@ import type {SearchData} from "@src/dsl/janggi/components/discovery/playwright/t
  * page as first served before any script runs, its structured data, and the sitemap.
  */
 export class DiscoveryPlaywright extends BasePage {
+  private readonly description: Locator;
+  private readonly canonical: Locator;
+  private readonly socialImage: Locator;
+  private readonly structuredData: Locator;
+
   constructor(page: Page) {
     super(page);
+
+    this.description = this.page.locator("meta[name='description']");
+    this.canonical = this.page.locator("link[rel='canonical']");
+    this.socialImage = this.page.locator("meta[property='og:image']");
+    this.structuredData = this.page.locator("script[type='application/ld+json']");
   }
 
   async getPageTitle(): Promise<string> {
@@ -17,11 +27,11 @@ export class DiscoveryPlaywright extends BasePage {
   }
 
   async getPageDescription(): Promise<string> {
-    return (await this.page.locator("meta[name='description']").getAttribute("content")) ?? "";
+    return (await this.description.getAttribute("content")) ?? "";
   }
 
   async getCanonicalAddress(): Promise<string> {
-    return (await this.page.locator("link[rel='canonical']").getAttribute("href")) ?? "";
+    return (await this.canonical.getAttribute("href")) ?? "";
   }
 
   /** The twins the page names in its head, by `hreflang`. */
@@ -51,29 +61,24 @@ export class DiscoveryPlaywright extends BasePage {
   }
 
   private async getSitemapLanguageAlternatesOfTheEntryEndingWith(ending: string): Promise<LanguageAlternates> {
-    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
-
+    const sitemap = await this.sitemapText();
     return await this.page.evaluate(
-      async ([address, suffix]) => {
-        const response = await fetch(address ?? "");
-        if (!response.ok) return {};
-
-        const sitemap = new DOMParser().parseFromString(await response.text(), "application/xml");
-        const entry = Array.from(sitemap.getElementsByTagNameNS("*", "url")).find(candidate =>
-          candidate.getElementsByTagNameNS("*", "loc")[0]?.textContent?.endsWith(suffix ?? ""),
-        );
+      ([source, suffix]) => {
+        const document = new DOMParser().parseFromString(source ?? "", "application/xml");
+        const entry = Array.from(document.getElementsByTagNameNS("*", "url")).find(candidate => {
+          return candidate.getElementsByTagNameNS("*", "loc")[0]?.textContent?.endsWith(suffix ?? "");
+        });
         const links = Array.from(entry?.getElementsByTagNameNS("*", "link") ?? []);
-
         return Object.fromEntries(
           links.map(link => [link.getAttribute("hreflang") ?? "", link.getAttribute("href") ?? ""]),
         );
       },
-      [sitemapAddress, ending],
+      [sitemap, ending],
     );
   }
 
   async getSocialImageAddress(): Promise<string> {
-    return (await this.page.locator("meta[property='og:image']").getAttribute("content")) ?? "";
+    return (await this.socialImage.getAttribute("content")) ?? "";
   }
 
   /** The page as a crawler that runs no scripts receives it — inside `#root`, before React replaces it. */
@@ -133,7 +138,7 @@ export class DiscoveryPlaywright extends BasePage {
   }
 
   async isIdentifiedAsAFreeWebGame(): Promise<boolean> {
-    const content = (await this.page.locator("script[type='application/ld+json']").textContent()) ?? undefined;
+    const content = (await this.structuredData.textContent()) ?? undefined;
     if (content === undefined) return false;
 
     const searchData = JSON.parse(content) as SearchData;
@@ -161,7 +166,7 @@ export class DiscoveryPlaywright extends BasePage {
   }
 
   private async getSearchData(): Promise<SearchData> {
-    const content = await this.page.locator("script[type='application/ld+json']").textContent();
+    const content = await this.structuredData.textContent();
 
     return JSON.parse(content ?? "{}") as SearchData;
   }
@@ -180,14 +185,7 @@ export class DiscoveryPlaywright extends BasePage {
   }
 
   async isListedInSitemap(): Promise<boolean> {
-    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
-    const sitemap = await this.page.evaluate(async address => {
-      const response = await fetch(address);
-      if (!response.ok) return "";
-
-      return await response.text();
-    }, sitemapAddress);
-
+    const sitemap = await this.sitemapText();
     return (
       sitemap.includes("https://janggi.neilarmstrong.dev/") &&
       sitemap.includes("https://janggi.neilarmstrong.dev/learn.html")
@@ -195,14 +193,7 @@ export class DiscoveryPlaywright extends BasePage {
   }
 
   async isEachPolicyListedInSitemap(): Promise<boolean> {
-    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
-    const sitemap = await this.page.evaluate(async address => {
-      const response = await fetch(address);
-      if (!response.ok) return "";
-
-      return await response.text();
-    }, sitemapAddress);
-
+    const sitemap = await this.sitemapText();
     return (
       sitemap.includes("https://janggi.neilarmstrong.dev/privacy.html") &&
       sitemap.includes("https://janggi.neilarmstrong.dev/terms.html")
@@ -211,21 +202,26 @@ export class DiscoveryPlaywright extends BasePage {
 
   /** Every `url` in the sitemap carries a `lastmod` that is a date, and there is at least one. */
   async isEverySitemapEntryDated(): Promise<boolean> {
-    const sitemapAddress = new URL("sitemap.xml", this.page.url()).href;
-
-    return await this.page.evaluate(async address => {
-      const response = await fetch(address);
-      if (!response.ok) return false;
-
-      const sitemap = new DOMParser().parseFromString(await response.text(), "application/xml");
-      const entries = Array.from(sitemap.getElementsByTagNameNS("*", "url"));
-
+    const sitemap = await this.sitemapText();
+    return await this.page.evaluate(source => {
+      const document = new DOMParser().parseFromString(source, "application/xml");
+      const entries = Array.from(document.getElementsByTagNameNS("*", "url"));
       return (
         entries.length > 0 &&
         entries.every(entry => {
           return /^\d{4}-\d{2}-\d{2}$/.test(entry.getElementsByTagNameNS("*", "lastmod")[0]?.textContent ?? "");
         })
       );
-    }, sitemapAddress);
+    }, sitemap);
+  }
+  private async sitemapText(): Promise<string> {
+    const address = new URL("sitemap.xml", this.page.url()).href;
+
+    return await this.page.evaluate(async url => {
+      const response = await fetch(url);
+      if (!response.ok) return "";
+
+      return await response.text();
+    }, address);
   }
 }

@@ -2,9 +2,9 @@ import {TURN_NOTIFICATIONS_STATES} from "@janggi/shared/janggi/online/TurnNotifi
 import type {TurnNotificationsState} from "@janggi/shared/janggi/online/TurnNotificationsState";
 import type {Locator, Page} from "@playwright/test";
 import {API_ORIGIN} from "@janggi/shared/janggi/account/ApiOrigin";
-import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
+import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/types/RoomAsked";
 import {FakeApi} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/FakeApi";
-import type {GooglePlayer} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/GooglePlayer";
+import type {GooglePlayer} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/types/GooglePlayer";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
@@ -17,7 +17,6 @@ import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
  */
 export class AccountSettingPlaywright extends SettingsSheetComponent {
   private api = new FakeApi();
-
   private readonly accountCard: Locator;
   private readonly signIn: Locator;
   private readonly signInFromPrompt: Locator;
@@ -32,6 +31,14 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   private readonly syncState: Locator;
   private readonly replay: Locator;
   private readonly turnNotifications: Locator;
+  private readonly notificationSwitch: Locator;
+  private readonly onMarker: Locator;
+  private readonly offMarker: Locator;
+  private readonly checkedMarker: Locator;
+  private readonly signInInSheet: Locator;
+  private readonly notificationsOn: Locator;
+  private readonly notificationsOff: Locator;
+  private readonly notificationsChecked: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -50,6 +57,17 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
     this.syncState = page.getByTestId("account-sync-state");
     this.replay = page.getByTestId("tour-replay");
     this.turnNotifications = page.getByTestId("account-turn-notifications");
+
+    this.notificationSwitch = this.turnNotifications.getByRole("switch");
+    this.onMarker = this.page.locator('[data-state="on"]');
+    this.offMarker = this.page.locator('[data-state="off"]');
+    this.checkedMarker = this.page.locator(':not([data-state="checking"])');
+
+    this.signInInSheet = this.sheet.getByTestId("account-sign-in");
+
+    this.notificationsOn = this.turnNotifications.and(this.onMarker);
+    this.notificationsOff = this.turnNotifications.and(this.offMarker);
+    this.notificationsChecked = this.turnNotifications.and(this.checkedMarker);
   }
 
   /**
@@ -95,33 +113,28 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   /** Taps the switch in the account card that says the player is to be told when it is their turn, and waits for it to be on. */
   async turnOnTurnNotifications(): Promise<void> {
     await this.inSheet(this.turnNotifications, async () => {
-      await this.turnNotifications.getByRole("switch").click();
-      await this.turnNotifications.and(this.page.locator('[data-state="on"]')).waitFor({state: "attached"});
+      await this.notificationSwitch.click();
+      await this.notificationsOn.waitFor({state: "attached"});
     });
   }
 
   async turnOffTurnNotifications(): Promise<void> {
     await this.inSheet(this.turnNotifications, async () => {
-      await this.turnNotifications.getByRole("switch").click();
-      await this.turnNotifications.and(this.page.locator('[data-state="off"]')).waitFor({state: "attached"});
+      await this.notificationSwitch.click();
+      await this.notificationsOff.waitFor({state: "attached"});
     });
   }
 
   /** Where this device stands on being told of the player's turns, once the page has found out; "unavailable" where the account card is not showing it (signed out). */
   async getTurnNotifications(): Promise<TurnNotificationsState> {
-    let state: TurnNotificationsState = "unavailable";
+    return await this.inSheet(this.accountCard, async () => {
+      if ((await this.turnNotifications.count()) === 0) return "unavailable";
 
-    await this.withSheetOpen(async () => {
-      await this.tabNamed("You").click();
-      if ((await this.turnNotifications.count()) === 0) return;
-
-      await this.turnNotifications.and(this.page.locator(':not([data-state="checking"])')).waitFor({state: "attached"});
+      await this.notificationsChecked.waitFor({state: "attached"});
       const found = await this.turnNotifications.getAttribute("data-state");
 
-      state = TURN_NOTIFICATIONS_STATES.find(known => known === found) ?? "checking";
+      return TURN_NOTIFICATIONS_STATES.find(known => known === found) ?? "checking";
     });
-
-    return state;
   }
 
   async signInWithGoogle(player?: GooglePlayer): Promise<void> {
@@ -206,19 +219,13 @@ export class AccountSettingPlaywright extends SettingsSheetComponent {
   }
 
   async isSignInOffered(): Promise<boolean> {
-    let offered = false;
-
-    await this.inSheet(this.signIn, async () => {
-      offered = await this.signIn.isVisible();
-    });
-
-    return offered;
+    return await this.inSheet(this.signIn, () => this.signIn.isVisible());
   }
 
   /** Whether any sign-in control is drawn outside the settings sheet, where no player asked to see one. */
   async isSignInOfferedOutsideTheSettings(): Promise<boolean> {
-    const everywhere = await this.page.getByTestId("account-sign-in").count();
-    const inTheSheet = await this.sheet.getByTestId("account-sign-in").count();
+    const everywhere = await this.signIn.count();
+    const inTheSheet = await this.signInInSheet.count();
 
     return everywhere > inTheSheet;
   }

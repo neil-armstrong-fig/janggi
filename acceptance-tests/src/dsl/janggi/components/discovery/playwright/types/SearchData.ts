@@ -8,7 +8,7 @@ export interface SearchData {
   readonly "@graph"?: readonly SearchData[];
 }
 
-export interface OfferData {
+interface OfferData {
   readonly price?: unknown;
   readonly priceCurrency?: unknown;
 }

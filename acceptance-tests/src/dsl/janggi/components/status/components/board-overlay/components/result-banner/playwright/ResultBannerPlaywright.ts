@@ -2,7 +2,7 @@ import type {Locator, Page} from "@playwright/test";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
-import {isUnderTheSettings} from "@src/dsl/janggi/components/under-the-settings/playwright/IsUnderTheSettings";
+import {SettingsOverlap} from "@src/dsl/playwright/components/settings-overlap/SettingsOverlap";
 
 /**
  * The locators behind `ResultBannerDsl` — the announcement of a game's result over the board: what it says, and the next game it offers.
@@ -14,6 +14,7 @@ export class ResultBannerPlaywright extends BaseComponent {
   private readonly resultXpBar: Locator;
   private readonly newGame: Locator;
   private readonly newGameAtNextStrength: Locator;
+  private readonly settingsOverlap: SettingsOverlap;
 
   constructor(page: Page) {
     super(page);
@@ -24,6 +25,7 @@ export class ResultBannerPlaywright extends BaseComponent {
     this.resultXpBar = page.getByTestId("result-xp-bar");
     this.newGame = page.getByTestId("result-new-game");
     this.newGameAtNextStrength = page.getByTestId("result-new-game-harder");
+    this.settingsOverlap = new SettingsOverlap(page, this.showBoardButton);
   }
 
   /**
@@ -78,7 +80,7 @@ export class ResultBannerPlaywright extends BaseComponent {
 
   /** Whether the open settings sheet stands over the announcement's Show board button. */
   async isUnderTheSettings(): Promise<boolean> {
-    return await isUnderTheSettings(this.page, this.showBoardButton);
+    return await this.settingsOverlap.isUnderTheSettings();
   }
 
   /** Whether the announcement, once it is up, offers New game at all. */

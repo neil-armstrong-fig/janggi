@@ -1,8 +1,8 @@
 import type {Locator, Page} from "@playwright/test";
-import {StylesSheetComponent} from "@src/dsl/janggi/components/styles-sheet/playwright/StylesSheetComponent";
+import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 
 /** The frame every style being made is drawn in: its name, Save, and the Controls/Raw JSON toggle. */
-export class StyleEditorPlaywright extends StylesSheetComponent {
+export class StyleEditorPlaywright extends BaseComponent {
   private readonly name: Locator;
   private readonly saveButton: Locator;
   private readonly message: Locator;
@@ -25,12 +25,9 @@ export class StyleEditorPlaywright extends StylesSheetComponent {
 
   /** Saves the style being made, under `name` where one is given, and waits to be told how it went. */
   async save(name: string | undefined): Promise<void> {
-    await this.inStyles(async () => {
-      if (name !== undefined) await this.name.fill(name);
-
-      await this.saveButton.click();
-      await this.message.waitFor({state: "attached"});
-    });
+    if (name !== undefined) await this.name.fill(name);
+    await this.saveButton.click();
+    await this.message.waitFor({state: "attached"});
   }
 
   async getMessage(): Promise<string> {
@@ -51,15 +48,11 @@ export class StyleEditorPlaywright extends StylesSheetComponent {
   }
 
   async showRaw(): Promise<void> {
-    await this.inStyles(async () => {
-      await this.rawToggle.click();
-    });
+    await this.rawToggle.click();
   }
 
   async showControls(): Promise<void> {
-    await this.inStyles(async () => {
-      await this.controlsToggle.click();
-    });
+    await this.controlsToggle.click();
   }
 
   async getRaw(): Promise<string> {
@@ -76,9 +69,7 @@ export class StyleEditorPlaywright extends StylesSheetComponent {
   }
 
   async setRaw(json: string): Promise<void> {
-    await this.inStyles(async () => {
-      await this.json.fill(json);
-    });
+    await this.json.fill(json);
   }
 
   /** Whether the raw view is telling the player what is wrong with what they typed. */

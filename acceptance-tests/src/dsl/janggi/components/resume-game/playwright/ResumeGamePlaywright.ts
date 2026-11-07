@@ -1,3 +1,4 @@
+import {clockReadingOf} from "@src/dsl/playwright/clock/ClockReadingOf";
 import type {ClockReading} from "@src/dsl/janggi/components/types/ClockReading";
 import type {Locator, Page} from "@playwright/test";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
@@ -37,13 +38,7 @@ export class ResumeGamePlaywright extends BaseComponent {
   }
 
   async getClock(side: Side): Promise<ClockReading> {
-    const clock = this.clocks[side];
-    await clock.waitFor({state: "visible"});
-
-    return {
-      seconds: Number(await clock.getAttribute("data-seconds")),
-      periods: Number(await clock.getAttribute("data-periods")),
-    };
+    return await clockReadingOf(this.clocks[side]);
   }
 
   async isTextSelectable(): Promise<boolean> {

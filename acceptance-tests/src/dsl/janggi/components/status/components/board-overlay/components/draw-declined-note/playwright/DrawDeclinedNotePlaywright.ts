@@ -1,3 +1,4 @@
+import {appearsWithin} from "@src/dsl/playwright/visibility/AppearsWithin";
 import type {Locator, Page} from "@playwright/test";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
@@ -22,10 +23,7 @@ export class DrawDeclinedNotePlaywright extends BaseComponent {
    * a moment after the offer, so this waits for it. Undefined where no refusal is reported by then.
    */
   async getDrawDeclinedBy(): Promise<Side | undefined> {
-    const reported = await this.drawDeclined.waitFor({state: "visible", timeout: BOT_REPLIES_WITHIN_MS}).then(
-      () => true,
-      () => false,
-    );
+    const reported = await appearsWithin(this.drawDeclined, {timeout: BOT_REPLIES_WITHIN_MS});
     if (!reported) return undefined;
 
     const declinedBy = await this.drawDeclined.getAttribute("data-declined-by");

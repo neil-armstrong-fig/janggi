@@ -1,3 +1,4 @@
+import type {AppHelpLink} from "@src/dsl/janggi/components/settings/tabs/you-pane/playwright/types/AppHelpLink";
 import type {GroupAppearance} from "@src/dsl/janggi/components/settings/types/GroupAppearance";
 import type {YouGroupName} from "@janggi/shared/janggi/settings/YouGroupName";
 import type {Locator, Page} from "@playwright/test";
@@ -13,15 +14,29 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  * `YouPaneDsl` and nothing else's parent.
  */
 export class YouPanePlaywright extends SettingsSheetComponent {
+  private readonly helpLinks: Record<AppHelpLink, Locator>;
   private readonly appVersion: Locator;
   private readonly tutorialStart: Locator;
   private readonly tutorialStartOver: Locator;
   private readonly helpSections: Locator;
   private readonly guidedGameInLearningSection: Locator;
   private readonly sourceCodeInReferenceSection: Locator;
+  private readonly appHelp: Locator;
+  private readonly progressXp: Locator;
+  private readonly languagePicker: Locator;
+  private readonly accountSignIn: Locator;
+  private readonly guideOpen: Locator;
+  private readonly referencesOpen: Locator;
+  private readonly versionLine: Locator;
+  private readonly developerWebsiteOpen: Locator;
+  private readonly repositoryOpen: Locator;
 
   constructor(page: Page) {
     super(page);
+    this.helpLinks = {
+      "developer-website-open": page.getByTestId("developer-website-open"),
+      "repository-open": page.getByTestId("repository-open"),
+    };
 
     this.appVersion = page.getByTestId("app-version");
     this.tutorialStart = page.getByTestId("tutorial-start");
@@ -33,6 +48,16 @@ export class YouPanePlaywright extends SettingsSheetComponent {
     this.sourceCodeInReferenceSection = this.helpSections
       .filter({has: page.getByTestId("references-open")})
       .getByTestId("repository-open");
+
+    this.appHelp = this.page.getByTestId("app-help");
+    this.progressXp = this.page.getByTestId("progress-xp");
+    this.languagePicker = this.page.getByTestId("language-picker");
+    this.accountSignIn = this.page.getByTestId("account-sign-in");
+    this.guideOpen = this.page.getByTestId("guide-open");
+    this.referencesOpen = this.page.getByTestId("references-open");
+    this.versionLine = this.appVersion.locator("xpath=..");
+    this.developerWebsiteOpen = this.page.getByTestId("developer-website-open");
+    this.repositoryOpen = this.page.getByTestId("repository-open");
   }
 
   async isHelpGrouped(): Promise<boolean> {
@@ -61,38 +86,28 @@ export class YouPanePlaywright extends SettingsSheetComponent {
 
   async isPlayerOverviewVisible(): Promise<boolean> {
     return (
-      (await this.page.getByTestId("app-help").isVisible()) &&
-      (await this.page.getByTestId("progress-xp").isVisible()) &&
-      (await this.page.getByTestId("language-picker").isVisible())
+      (await this.appHelp.isVisible()) && (await this.progressXp.isVisible()) && (await this.languagePicker.isVisible())
     );
   }
 
   async isAccountSignInVisible(): Promise<boolean> {
-    return await this.page.getByTestId("account-sign-in").isVisible();
+    return await this.accountSignIn.isVisible();
   }
 
   async isGroupOpen(name: YouGroupName): Promise<boolean> {
-    return (await this.groupNamed(name).getAttribute("data-open")) === "true";
+    return await this.settingsGroupNamed(name).isOpen();
   }
 
   async getGroupSummary(name: YouGroupName): Promise<string> {
-    return ((await this.groupNamed(name).getByTestId("settings-group-summary").textContent()) ?? "").trim();
+    return await this.settingsGroupNamed(name).getSummary(false);
   }
 
   async openGroup(name: YouGroupName): Promise<void> {
-    const toggle = this.groupNamed(name).getByTestId("settings-group-toggle");
-
-    await this.inSheet(toggle, async () => {
-      if (!(await this.isGroupOpen(name))) await toggle.click();
-    });
+    await this.setGroupOpen(name, true);
   }
 
   async closeGroup(name: YouGroupName): Promise<void> {
-    const toggle = this.groupNamed(name).getByTestId("settings-group-toggle");
-
-    await this.inSheet(toggle, async () => {
-      if (await this.isGroupOpen(name)) await toggle.click();
-    });
+    await this.setGroupOpen(name, false);
   }
 
   /** Starts the tutorial, or resumes it where the player has come part way, which puts the sheet away itself. */
@@ -109,9 +124,8 @@ export class YouPanePlaywright extends SettingsSheetComponent {
 
   /** What the tutorial's button offers, read off its `data-offer`. */
   async getTutorialOffer(): Promise<TutorialOffer> {
-    let offer: string | undefined;
-    await this.inSheet(this.tutorialStart, async () => {
-      offer = (await this.tutorialStart.getAttribute("data-offer")) ?? undefined;
+    const offer = await this.inSheet(this.tutorialStart, async () => {
+      return (await this.tutorialStart.getAttribute("data-offer")) ?? undefined;
     });
 
     const found = TUTORIAL_OFFERS.find(candidate => candidate === offer);
@@ -121,37 +135,27 @@ export class YouPanePlaywright extends SettingsSheetComponent {
   }
 
   async canStartTheTutorial(): Promise<boolean> {
-    let startable = false;
-    await this.inSheet(this.tutorialStart, async () => {
-      startable = await this.tutorialStart.isEnabled();
-    });
-
-    return startable;
+    return await this.inSheet(this.tutorialStart, () => this.tutorialStart.isEnabled());
   }
 
   async isTutorialStartOverOffered(): Promise<boolean> {
-    let offered = false;
-    await this.inSheet(this.tutorialStart, async () => {
-      offered = await this.tutorialStartOver.isVisible();
-    });
-
-    return offered;
+    return await this.inSheet(this.tutorialStart, () => this.tutorialStartOver.isVisible());
   }
 
   async isGuideLinkedFromGame(): Promise<boolean> {
-    const href = (await this.page.getByTestId("guide-open").getAttribute("href")) ?? undefined;
+    const href = (await this.guideOpen.getAttribute("href")) ?? undefined;
 
     return href !== undefined && new URL(href, this.page.url()).href === new URL("learn.html", this.page.url()).href;
   }
 
   /** Where the link to the guide in the game goes, as written in the page. */
   async getGuideAddressInGame(): Promise<string> {
-    return (await this.page.getByTestId("guide-open").getAttribute("href")) ?? "";
+    return (await this.guideOpen.getAttribute("href")) ?? "";
   }
 
   /** Where the link to the references in the game goes, as written in the page. */
   async getReferencesAddressInGame(): Promise<string> {
-    return (await this.page.getByTestId("references-open").getAttribute("href")) ?? "";
+    return (await this.referencesOpen.getAttribute("href")) ?? "";
   }
 
   async getDeveloperWebsiteDestination(): Promise<string> {
@@ -162,8 +166,8 @@ export class YouPanePlaywright extends SettingsSheetComponent {
     return await this.appHelpDestination("repository-open");
   }
 
-  private async appHelpDestination(testId: string): Promise<string> {
-    const href = (await this.page.getByTestId(testId).getAttribute("href")) ?? undefined;
+  private async appHelpDestination(testId: AppHelpLink): Promise<string> {
+    const href = (await this.helpLinks[testId].getAttribute("href")) ?? undefined;
     if (href === undefined) throw new Error(`The ${testId} link has no destination`);
 
     return href;
@@ -176,17 +180,17 @@ export class YouPanePlaywright extends SettingsSheetComponent {
 
   /** The line that names the build, with the word for a version in front of it. */
   async getVersionWords(): Promise<string> {
-    return ((await this.appVersion.locator("xpath=..").textContent()) ?? "").trim();
+    return ((await this.versionLine.textContent()) ?? "").trim();
   }
 
   /** What the app and help links in the You tab say, as the player reads them. */
   async getAppHelpWords(): Promise<string> {
-    return ((await this.page.getByTestId("app-help").textContent()) ?? "").trim();
+    return ((await this.appHelp.textContent()) ?? "").trim();
   }
 
   async doExternalAppHelpLinksOpenSeparately(): Promise<boolean> {
-    const developerWebsite = this.page.getByTestId("developer-website-open");
-    const repository = this.page.getByTestId("repository-open");
+    const developerWebsite = this.developerWebsiteOpen;
+    const repository = this.repositoryOpen;
 
     return (
       (await developerWebsite.getAttribute("target")) === "_blank" &&

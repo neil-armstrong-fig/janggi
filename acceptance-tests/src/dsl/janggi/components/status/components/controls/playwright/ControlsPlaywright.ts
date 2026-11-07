@@ -12,6 +12,8 @@ export class ControlsPlaywright extends BaseComponent {
   private readonly bikjang: Locator;
   private readonly draw: Locator;
   private readonly controls: Record<ControlName, Locator>;
+  private readonly board: Locator;
+  private readonly takeBackGroup: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -29,6 +31,9 @@ export class ControlsPlaywright extends BaseComponent {
       redo: this.playAgain,
       settings: page.getByTestId("settings-open"),
     };
+
+    this.board = this.page.getByTestId("board");
+    this.takeBackGroup = this.takeBack.locator("..");
   }
 
   /**
@@ -88,7 +93,7 @@ export class ControlsPlaywright extends BaseComponent {
     await this.takeBack.waitFor({state: "visible"});
 
     const controls = await this.takeBack.boundingBox();
-    const board = await this.page.getByTestId("board").boundingBox();
+    const board = await this.board.boundingBox();
     if (!controls || !board) throw new Error("Expected the controls and the board to be on screen");
 
     return controls.y < board.y;
@@ -112,7 +117,7 @@ export class ControlsPlaywright extends BaseComponent {
   async areControlsUpsideDown(): Promise<boolean> {
     await this.takeBack.waitFor({state: "visible"});
 
-    return (await this.takeBack.locator("..").evaluate(row => getComputedStyle(row).rotate)) === "180deg";
+    return (await this.takeBackGroup.evaluate(row => getComputedStyle(row).rotate)) === "180deg";
   }
 
   async redo(): Promise<void> {

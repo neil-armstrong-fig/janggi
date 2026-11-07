@@ -1,3 +1,4 @@
+import {appearsWithin} from "@src/dsl/playwright/visibility/AppearsWithin";
 import type {Locator, Page} from "@playwright/test";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 
@@ -60,12 +61,7 @@ export class ReleaseUpdatePlaywright extends BaseComponent {
   }
 
   async isOffered(): Promise<boolean> {
-    try {
-      await this.notice.waitFor({state: "visible"});
-      return true;
-    } catch {
-      return false;
-    }
+    return await appearsWithin(this.notice);
   }
 
   async isDismissed(): Promise<boolean> {

@@ -35,7 +35,11 @@ given("a player with no XP is handed styles somebody else made", () => {
 
   when("they import a board", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is taken", async ({janggi}) => {
@@ -49,7 +53,11 @@ given("a player with no XP is handed styles somebody else made", () => {
 
   when("they import a board and wear it", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
+      await janggi.stylesSheet.closeStyles();
       await janggi.settings.look.board.setOwnStyleTo("Midnight");
     });
 
@@ -60,7 +68,11 @@ given("a player with no XP is handed styles somebody else made", () => {
 
   when("they import a piece set and wear it", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", SHARED_PIECES));
+      await janggi.stylesSheet.closeStyles();
       await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
     });
 
@@ -76,7 +88,11 @@ given("a player with no XP is handed styles somebody else made", () => {
   when("they import a board that would load a picture from somewhere else", () => {
     beforeEach(async ({janggi}) => {
       const fetching = {...SHARED_BOARD, surface: "url(https://example.com/picture.png)"};
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", fetching));
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is refused", async ({janggi}) => {
@@ -94,7 +110,11 @@ given("a player with no XP is handed styles somebody else made", () => {
 
   when("they paste a save key where a style key goes", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleImporter.importStyle(saveKeyWith({xp: 0}));
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is refused", async ({janggi}) => {
@@ -105,14 +125,22 @@ given("a player with no XP is handed styles somebody else made", () => {
 
 given("a player who has imported a board", () => {
   beforeEach(async ({janggi}) => {
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
+    await janggi.stylesSheet.closeStyles();
   });
 
   when("they copy its key, delete it, and import the key they copied", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       const key = await janggi.stylesSheet.ownStyles.getKey("Board", "Midnight");
       await janggi.stylesSheet.ownStyles.delete("Board", "Midnight");
       await janggi.stylesSheet.styleImporter.importStyle(key);
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is back among their own boards", async ({janggi}) => {
@@ -122,7 +150,11 @@ given("a player who has imported a board", () => {
 
   when("they delete it", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.ownStyles.delete("Board", "Midnight");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is gone", async ({janggi}) => {
@@ -132,7 +164,11 @@ given("a player who has imported a board", () => {
 
   when("they import it a second time", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", SHARED_BOARD));
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("both are kept, the second under a name of its own", async ({janggi}) => {

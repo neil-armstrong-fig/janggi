@@ -1,11 +1,11 @@
 import type {Locator, Page} from "@playwright/test";
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
-import {StylesSheetComponent} from "@src/dsl/janggi/components/styles-sheet/playwright/StylesSheetComponent";
+import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import type {StyleControlName} from "@src/dsl/janggi/components/styles-sheet/components/style-editor/components/style-controls/types/StyleControlName";
 import type {StyleOptionName} from "@src/dsl/janggi/components/styles-sheet/components/style-editor/components/style-controls/types/StyleOptionName";
 
 /** Every setting of the style being made — the colours, sliders and choices, and the SVG a drawing may be replaced with. */
-export class StyleControlsPlaywright extends StylesSheetComponent {
+export class StyleControlsPlaywright extends BaseComponent {
   private readonly controls: Record<StyleControlName, Locator>;
   private readonly options: Record<StyleOptionName, Locator>;
   private readonly drawings: Record<PieceType, Locator>;
@@ -53,15 +53,11 @@ export class StyleControlsPlaywright extends StylesSheetComponent {
   }
 
   async setColour(styleControlName: StyleControlName, colour: string): Promise<void> {
-    await this.inStyles(async () => {
-      await this.controls[styleControlName].fill(colour);
-    });
+    await this.controls[styleControlName].fill(colour);
   }
 
   async setNumber(styleControlName: StyleControlName, value: number): Promise<void> {
-    await this.inStyles(async () => {
-      await this.controls[styleControlName].fill(String(value));
-    });
+    await this.controls[styleControlName].fill(String(value));
   }
 
   async getColour(styleControlName: StyleControlName): Promise<string> {
@@ -73,19 +69,15 @@ export class StyleControlsPlaywright extends StylesSheetComponent {
   }
 
   async chooseOption(styleOptionName: StyleOptionName): Promise<void> {
-    await this.inStyles(async () => {
-      await this.options[styleOptionName].click();
-    });
+    await this.options[styleOptionName].click();
   }
 
   /** Chooses an SVG file, with this text in it, as the drawing of a kind of piece. */
   async importDrawing(pieceType: PieceType, svg: string): Promise<void> {
-    await this.inStyles(async () => {
-      await this.drawings[pieceType].setInputFiles({
-        name: `${pieceType}.svg`,
-        mimeType: "image/svg+xml",
-        buffer: Buffer.from(svg),
-      });
+    await this.drawings[pieceType].setInputFiles({
+      name: `${pieceType}.svg`,
+      mimeType: "image/svg+xml",
+      buffer: Buffer.from(svg),
     });
   }
 

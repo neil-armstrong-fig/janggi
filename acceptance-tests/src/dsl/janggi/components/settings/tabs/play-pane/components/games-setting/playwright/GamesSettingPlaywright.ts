@@ -1,3 +1,4 @@
+import {OptionPicker} from "@src/dsl/janggi/components/settings/playwright/components/option-picker/OptionPicker";
 import type {Locator, Page} from "@playwright/test";
 import {GAMES_SHOWN} from "@janggi/shared/janggi/online/GameShown";
 import type {GameShown} from "@janggi/shared/janggi/online/GameShown";
@@ -7,6 +8,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 export class GamesSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<GameShown, Locator>;
+  private readonly optionPicker: OptionPicker<GameShown>;
 
   constructor(page: Page) {
     super(page);
@@ -16,6 +18,8 @@ export class GamesSettingPlaywright extends SettingsSheetComponent {
       local: page.getByTestId("games-option-local"),
       friend: page.getByTestId("games-option-friend"),
     };
+
+    this.optionPicker = new OptionPicker(this.picker, GAMES_SHOWN, "data-game");
   }
 
   async switchTo(game: GameShown): Promise<void> {
@@ -30,10 +34,7 @@ export class GamesSettingPlaywright extends SettingsSheetComponent {
 
   /** The game on the board. */
   async getShown(): Promise<GameShown> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    const shown = await pressed.getAttribute("data-game");
-
-    return GAMES_SHOWN.find(known => known === shown) ?? "local";
+    return (await this.optionPicker.waitForSelected()) ?? "local";
   }
 
   /** Whether the game with the friend is waiting on this player's move, which its button says. */

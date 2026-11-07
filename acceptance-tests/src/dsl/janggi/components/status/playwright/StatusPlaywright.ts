@@ -10,12 +10,19 @@ const BOT_REPLIES_WITHIN_MS = 20_000;
 
 /** Where the game says what it is doing, rather than what is standing on it. */
 export class StatusPlaywright extends BaseComponent {
-  readonly container: Locator;
+  private readonly container: Locator;
+  private readonly loadingTurn: Locator;
+  private readonly unavailableTurn: Locator;
+  private readonly botTurn: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.container = page.getByTestId("turn");
+
+    this.loadingTurn = this.page.locator("[data-testid='turn'][data-bot-loading]");
+    this.unavailableTurn = this.page.locator("[data-testid='turn'][data-bot-unavailable]");
+    this.botTurn = this.page.locator("[data-testid='turn'][data-bot-to-move]");
   }
 
   /**
@@ -23,17 +30,17 @@ export class StatusPlaywright extends BaseComponent {
    * derived from the store in the same render that chooses the bot, so its absence is the answer.
    */
   async isWaitingForTheBotToLoad(): Promise<boolean> {
-    return (await this.page.locator("[data-testid='turn'][data-bot-loading]").count()) > 0;
+    return (await this.loadingTurn.count()) > 0;
   }
 
   /** Whether the turn line says the bot's engine could not be started. */
   async isTheBotUnavailable(): Promise<boolean> {
-    return (await this.page.locator("[data-testid='turn'][data-bot-unavailable]").count()) > 0;
+    return (await this.unavailableTurn.count()) > 0;
   }
 
   /** Waits for the bot's engine to finish loading, which the turn line marks with `data-bot-loading`. */
   async waitForTheBotToLoad(): Promise<void> {
-    await botEngineLoaded(this.page);
+    await botEngineLoaded(this.container, this.loadingTurn);
   }
 
   /**
@@ -45,9 +52,7 @@ export class StatusPlaywright extends BaseComponent {
    */
   async waitForTheBot(): Promise<void> {
     await this.container.waitFor({state: "visible"});
-    await this.page
-      .locator("[data-testid='turn'][data-bot-to-move]")
-      .waitFor({state: "detached", timeout: BOT_REPLIES_WITHIN_MS});
+    await this.botTurn.waitFor({state: "detached", timeout: BOT_REPLIES_WITHIN_MS});
   }
 
   /**

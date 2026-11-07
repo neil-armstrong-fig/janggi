@@ -25,7 +25,11 @@ given("a player with the XP to make a style", () => {
 
   when("they make a board from the classic one, under a name of their own", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.makeStyle("Board", "Classic", "My board");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is saved", async ({janggi}) => {
@@ -43,7 +47,11 @@ given("a player with the XP to make a style", () => {
 
   when("they make a piece set from the hangul one", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.makeStyle("Pieces", "Hangul", "My pieces");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("the pieces are wearing it", async ({janggi}) => {
@@ -57,7 +65,11 @@ given("a player with the XP to make a style", () => {
 
   when("they try to give their board a built-in's name", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.makeStyle("Board", "Classic", "Neon");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is refused", async ({janggi}) => {
@@ -71,7 +83,11 @@ given("a player with the XP to make a style", () => {
 
   when("they save JSON that will not parse", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.makeStyle("Board", "Classic", "Broken", "{");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is refused", async ({janggi}) => {

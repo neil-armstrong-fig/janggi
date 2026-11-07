@@ -1,3 +1,4 @@
+import {pointFromTestId} from "@src/dsl/playwright/board/PointFromTestId";
 import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {TourButtonName} from "@src/dsl/janggi/components/onboarding/types/TourButtonName";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
@@ -5,7 +6,7 @@ import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import type {Locator, Page} from "@playwright/test";
 import {expect} from "@playwright/test";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
-import type {SpotlightedPoint} from "@src/dsl/janggi/components/types/SpotlightedPoint";
+import type {Point} from "@src/dsl/janggi/components/types/Point";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 import type {SoundChoiceName} from "@janggi/shared/janggi/onboarding/SoundChoiceName";
 
@@ -29,8 +30,8 @@ export class OnboardingPlaywright extends BaseComponent {
   private readonly spotlightedPoint: Locator;
   private readonly music: Record<SoundChoiceName, Locator>;
   private readonly soundEffects: Record<SoundChoiceName, Locator>;
-  private readonly animations: Record<EffectsName, Locator>;
   private readonly languages: Record<LanguageName, Locator>;
+  private readonly animations: Record<EffectsName, Locator>;
   private readonly movableHighlight: Record<MovableHighlightName, Locator>;
 
   constructor(page: Page) {
@@ -187,13 +188,11 @@ export class OnboardingPlaywright extends BaseComponent {
   }
 
   /** The point on the board the spotlight is round, read back from its cell's `cell-f<file>r<rank>` test id. */
-  async getSpotlightedPoint(): Promise<SpotlightedPoint> {
+  async getSpotlightedPoint(): Promise<Point> {
     await this.spotlightedPoint.waitFor({state: "attached"});
 
     const testId = await this.spotlightedPoint.getAttribute("data-testid");
-    const [, file, rank] = /^cell-f(\d+)r(\d+)$/.exec(testId ?? "") ?? [];
-
-    return {file: Number(file), rank: Number(rank)};
+    return pointFromTestId(testId ?? undefined);
   }
 
   async getTourText(): Promise<string> {

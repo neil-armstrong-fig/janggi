@@ -42,6 +42,14 @@ export class RecordSheetDsl {
     }
   }
 
+  async closeRecord(): Promise<void> {
+    try {
+      await this.record.closeRecord();
+    } catch (error) {
+      throw new DslError("Failed to close the record", error);
+    }
+  }
+
   async goBackToSettings(): Promise<void> {
     try {
       await this.record.goBackToSettings();

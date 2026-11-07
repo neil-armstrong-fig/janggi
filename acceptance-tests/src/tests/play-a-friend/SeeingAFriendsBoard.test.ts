@@ -107,11 +107,17 @@ given("a player, and a friend who wears a board and a set of pieces of their own
 
 /** The first player makes a code to play Han, the second types it in, and each chooses an arrangement. */
 async function playTogether(host: Janggi, friend: Janggi): Promise<void> {
+  await host.settings.openTheSettings();
+  await host.settings.selectTab("Play");
   await host.playAFriend.openPlayAFriend();
   await host.playAFriend.createACode("han");
   await expect.poll(() => host.playAFriend.getCode()).toBeDefined();
   const code = await host.playAFriend.getCode();
   if (code === undefined) throw new Error("The sheet showed no code");
+
+  await friend.settings.openTheSettings();
+
+  await friend.settings.selectTab("Play");
 
   await friend.playAFriend.openPlayAFriend();
   await friend.playAFriend.joinWithCode(code);

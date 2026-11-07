@@ -1,3 +1,5 @@
+import {OnOffSwitch} from "@src/dsl/janggi/components/settings/playwright/components/on-off-switch/OnOffSwitch";
+import {OptionPicker} from "@src/dsl/janggi/components/settings/playwright/components/option-picker/OptionPicker";
 import type {Locator, Page} from "@playwright/test";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 import {TIME_CONTROL_NAMES} from "@janggi/shared/janggi/settings/TimeControlName";
@@ -14,6 +16,8 @@ export class ClockSettingPlaywright extends SettingsSheetComponent {
   private readonly explain: Locator;
   private readonly explanation: Locator;
   private readonly figures: Record<TimeControlFigure, Locator>;
+  private readonly optionPicker: OptionPicker<TimeControlName>;
+  private readonly onOffSwitch: OnOffSwitch;
 
   constructor(page: Page) {
     super(page);
@@ -34,26 +38,30 @@ export class ClockSettingPlaywright extends SettingsSheetComponent {
       periodSeconds: page.getByTestId("clock-custom-period-seconds"),
       periods: page.getByTestId("clock-custom-periods"),
     };
+
+    this.optionPicker = new OptionPicker(this.picker, TIME_CONTROL_NAMES);
+
+    this.onOffSwitch = new OnOffSwitch(this.toggle);
   }
 
   async turnOn(): Promise<void> {
-    await this.inSheet(this.toggle, () => this.pressToggleIf(false));
+    await this.inSheet(this.toggle, () => this.onOffSwitch.choose(true));
   }
 
   async turnOff(): Promise<void> {
-    await this.inSheet(this.toggle, () => this.pressToggleIf(true));
+    await this.inSheet(this.toggle, () => this.onOffSwitch.choose(false));
   }
 
   async choose(format: TimeControlFormat): Promise<void> {
     await this.inSheet(this.toggle, async () => {
-      await this.pressToggleIf(false);
+      await this.onOffSwitch.choose(true);
       await this.options[format].click();
     });
   }
 
   async writeOut({minutes, periodSeconds, periods}: TimeControl): Promise<void> {
     await this.inSheet(this.toggle, async () => {
-      await this.pressToggleIf(false);
+      await this.onOffSwitch.choose(true);
       await this.options.Custom.click();
       await this.figures.minutes.fill(String(minutes));
       await this.figures.periodSeconds.fill(String(periodSeconds));
@@ -62,14 +70,7 @@ export class ClockSettingPlaywright extends SettingsSheetComponent {
     });
   }
 
-  private async pressToggleIf(on: boolean): Promise<void> {
-    if ((await this.isOn()) === on) await this.toggle.click();
-  }
-
-  private async isOn(): Promise<boolean> {
-    return (await this.toggle.getAttribute("aria-pressed")) === "true";
-  }
-
+  /** Read off the field's value, which is there whether or not the sheet is open. */
   async typeFigure(figure: TimeControlFigure, typed: string): Promise<void> {
     await this.inSheet(this.picker, async () => {
       const field = this.figures[figure];
@@ -80,7 +81,6 @@ export class ClockSettingPlaywright extends SettingsSheetComponent {
     });
   }
 
-  /** Read off the field's value, which is there whether or not the sheet is open. */
   async getFigure(figure: TimeControlFigure): Promise<string> {
     return await this.figures[figure].inputValue();
   }
@@ -97,12 +97,7 @@ export class ClockSettingPlaywright extends SettingsSheetComponent {
   }
 
   async getExplanationWords(): Promise<string> {
-    let words = "";
-    await this.inSheet(this.explain, async () => {
-      words = await this.explanation.innerText();
-    });
-
-    return words;
+    return await this.inSheet(this.explain, () => this.explanation.innerText());
   }
 
   /** Whether the formats are there to choose from, which they only are with the clock on. */
@@ -114,11 +109,12 @@ export class ClockSettingPlaywright extends SettingsSheetComponent {
 
   /** Off where the switch is, and otherwise the option on whichever button is pressed, read off `data-option`. */
   async getSelected(): Promise<TimeControlName | undefined> {
-    if (!(await this.isOn())) return "Off";
+    const on = await this.onOffSwitch.getSelected();
+    if (on === undefined) return undefined;
 
-    const name = await this.picker.locator("[aria-pressed='true']").getAttribute("data-option");
+    if (!on) return "Off";
 
-    return TIME_CONTROL_NAMES.find(candidate => candidate === name);
+    return await this.optionPicker.waitForSelected();
   }
 
   async canChange(): Promise<boolean> {

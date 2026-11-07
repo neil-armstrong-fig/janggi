@@ -13,6 +13,8 @@ given("a player who reads the game in Korean on a narrow phone", () => {
 
   when("they read their styles", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
       await janggi.stylesSheet.openStyles();
     });
 

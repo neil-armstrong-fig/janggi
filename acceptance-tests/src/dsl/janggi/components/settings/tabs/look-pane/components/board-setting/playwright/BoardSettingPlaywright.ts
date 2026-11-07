@@ -1,3 +1,4 @@
+import {StylePicker} from "@src/dsl/janggi/components/settings/tabs/look-pane/playwright/components/style-picker/StylePicker";
 import {BOARD_STYLE_NAMES} from "@janggi/shared/janggi/settings/BoardStyleName";
 import type {BoardStyleName} from "@janggi/shared/janggi/settings/BoardStyleName";
 import type {Locator, Page} from "@playwright/test";
@@ -23,6 +24,7 @@ export class BoardSettingPlaywright extends SettingsSheetComponent {
   private readonly split: Locator;
   private readonly armySelects: Record<Side, Locator>;
   private readonly options: Record<BoardStyleName, Locator>;
+  private readonly stylePicker: StylePicker<BoardStyleName>;
 
   constructor(page: Page) {
     super(page);
@@ -42,54 +44,49 @@ export class BoardSettingPlaywright extends SettingsSheetComponent {
       Dancheong: page.getByTestId("board-style-option-dancheong"),
       Hacker: page.getByTestId("board-style-option-hacker"),
     };
+
+    this.stylePicker = new StylePicker(
+      {select: this.select, split: this.split, armySelects: this.armySelects, options: this.options},
+      BOARD_STYLE_NAMES,
+    );
   }
 
   async choose(name: BoardStyleName): Promise<void> {
-    const value = (await this.options[name].getAttribute("value")) ?? undefined;
-    if (value === undefined) throw new Error(`The "${name}" option carries no value to select`);
-
+    const value = await this.stylePicker.getOptionValue(name);
     await this.chooseNamed(value);
   }
 
   async chooseNamed(name: string): Promise<void> {
-    await this.inSheet(this.select, async () => {
-      await this.select.selectOption(name);
-    });
+    await this.inSheet(this.select, () => this.stylePicker.chooseNamed(name));
   }
 
   /** Whether Han's and Cho's boards are chosen apart. */
   async isChosenApart(): Promise<boolean> {
-    return (await this.split.getAttribute("aria-pressed")) === "true";
+    return await this.stylePicker.isChosenApart();
   }
 
   /** Turns choosing the armies' boards apart on, or off — which puts both back in Cho's. */
   async toggleChoosingApart(): Promise<void> {
-    await this.inSheet(this.split, async () => {
-      await this.split.click();
-    });
+    await this.inSheet(this.split, () => this.stylePicker.toggleChoosingApart());
   }
 
   async chooseForArmy(side: Side, name: string): Promise<void> {
-    await this.inSheet(this.armySelects[side], async () => {
-      await this.armySelects[side].selectOption(name);
-    });
+    await this.inSheet(this.armySelects[side], () => this.stylePicker.chooseForArmy(side, name));
   }
 
   async getSelectedNameForArmy(side: Side): Promise<string> {
-    return await this.armySelects[side].inputValue();
+    return await this.stylePicker.getSelectedNameForArmy(side);
   }
 
   async getSelected(): Promise<BoardStyleName | undefined> {
-    const name = await this.select.inputValue();
-
-    return BOARD_STYLE_NAMES.find(candidate => candidate === name);
+    return await this.stylePicker.getSelected();
   }
 
   async getSelectedName(): Promise<string> {
-    return await this.select.inputValue();
+    return await this.stylePicker.getSelectedName();
   }
 
   async isLocked(name: BoardStyleName): Promise<boolean> {
-    return ((await this.options[name].getAttribute("data-locked")) ?? undefined) !== undefined;
+    return await this.stylePicker.isLocked(name);
   }
 }

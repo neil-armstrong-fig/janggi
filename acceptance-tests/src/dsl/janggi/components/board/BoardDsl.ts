@@ -1,4 +1,4 @@
-import type {MarkedMove} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
+import type {MarkedMove} from "@src/dsl/janggi/components/board/types/MarkedMove";
 import type {Page} from "@playwright/test";
 import {BoardPlaywright} from "@src/dsl/janggi/components/board/playwright/BoardPlaywright";
 import {DslError} from "@src/dsl/errors/DslError";

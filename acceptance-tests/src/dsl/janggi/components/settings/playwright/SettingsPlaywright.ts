@@ -1,3 +1,4 @@
+import {cellAt} from "@src/dsl/playwright/board/CellAt";
 import type {Locator, Page} from "@playwright/test";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
@@ -6,13 +7,24 @@ import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabNa
  * The settings sheet itself — opening it, and the tabs it is divided into. What is in a tab is each tab's own
  * (`tabs/<tab>-pane/`).
  *
- * It holds no other component, and sets up no locators of its own: the sheet's are `SettingsSheetComponent`'s, so its
- * constructor only hands the page up. Each tab is built by its own `*Dsl` from the page, so this is the counterpart of
- * `SettingsDsl` and nothing else's parent.
+ * It owns its sheet queries; the shared access helper handles opening and restoring navigation.
  */
 export class SettingsPlaywright extends SettingsSheetComponent {
+  private readonly panes: Record<SettingsTabName, Locator>;
+  private readonly settingsTab: Locator;
+  private readonly board: Locator;
+
   constructor(page: Page) {
     super(page);
+    this.panes = {
+      Play: page.locator("[data-testid='settings-pane'][data-pane='Play']"),
+      Look: page.locator("[data-testid='settings-pane'][data-pane='Look']"),
+      Sound: page.locator("[data-testid='settings-pane'][data-pane='Sound']"),
+      You: page.locator("[data-testid='settings-pane'][data-pane='You']"),
+    };
+
+    this.settingsTab = this.sheet.getByTestId("settings-tab");
+    this.board = this.page.getByTestId("board");
   }
 
   /** Opens the sheet and leaves it open, so the board can be watched behind it. */
@@ -30,7 +42,7 @@ export class SettingsPlaywright extends SettingsSheetComponent {
    * answer no, the tab's mark hiding the fault.
    */
   async isTabShowing(name: SettingsTabName): Promise<boolean> {
-    return await this.page.locator(`[data-testid='settings-pane'][data-pane='${name}']`).isVisible();
+    return await this.panes[name].isVisible();
   }
 
   /** Whether a tab is marked as the one chosen, read off its `aria-selected`. */
@@ -45,7 +57,11 @@ export class SettingsPlaywright extends SettingsSheetComponent {
 
   /** Whether a tab draws a picture beside its name, so it can be told apart without reading it. */
   async isTabIconShown(name: SettingsTabName): Promise<boolean> {
-    return await this.tabNamed(name).getByTestId("settings-tab-icon").isVisible();
+    return await this.settingsTabIconAt(name).isVisible();
+  }
+
+  private settingsTabIconAt(name: SettingsTabName): Locator {
+    return this.tabNamed(name).getByTestId("settings-tab-icon");
   }
 
   /** The selected layer has exactly the tab button's bounds, so no inset or stale column width remains. */
@@ -67,7 +83,7 @@ export class SettingsPlaywright extends SettingsSheetComponent {
 
   /** Every label is visible in one row, within the viewport, with a fingertip-sized target. */
   async canTabsFitInOneRow(): Promise<boolean> {
-    return await this.sheet.getByTestId("settings-tab").evaluateAll(tabs => {
+    return await this.settingsTab.evaluateAll(tabs => {
       const bounds = tabs.map(tab => tab.getBoundingClientRect());
       const first = bounds[0];
 
@@ -109,7 +125,7 @@ export class SettingsPlaywright extends SettingsSheetComponent {
   }
 
   private scrollOf(name: SettingsTabName): Locator {
-    return this.page.locator(`[data-testid='settings-pane'][data-pane='${name}']`).getByTestId("settings-scroll");
+    return this.panes[name].getByTestId("settings-scroll");
   }
 
   async selectTab(name: SettingsTabName): Promise<void> {
@@ -126,7 +142,7 @@ export class SettingsPlaywright extends SettingsSheetComponent {
    * reaches up over. A closed sheet is below the screen and covers nothing.
    */
   async isCoveringTheBoardAt(file: number, rank: number): Promise<boolean> {
-    const cell = (await this.page.getByTestId("board").getByTestId(`cell-f${file}r${rank}`).boundingBox()) ?? undefined;
+    const cell = (await cellAt(this.board, file, rank).boundingBox()) ?? undefined;
     if (cell === undefined) throw new Error("Expected the intersection to be drawn");
 
     const sheet = (await this.sheet.boundingBox()) ?? undefined;

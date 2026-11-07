@@ -5,7 +5,7 @@ import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import type {Page} from "@playwright/test";
 import type {TourButtonName} from "@src/dsl/janggi/components/onboarding/types/TourButtonName";
-import type {SpotlightedPoint} from "@src/dsl/janggi/components/types/SpotlightedPoint";
+import type {Point} from "@src/dsl/janggi/components/types/Point";
 import type {TourTargetName} from "@janggi/shared/janggi/onboarding/TourTargetName";
 import type {SoundChoiceName} from "@janggi/shared/janggi/onboarding/SoundChoiceName";
 
@@ -222,7 +222,7 @@ export class OnboardingDsl {
   }
 
   /** The point on the board the tour is pointing at. */
-  async getSpotlightedPoint(): Promise<SpotlightedPoint> {
+  async getSpotlightedPoint(): Promise<Point> {
     try {
       return await this.onboarding.getSpotlightedPoint();
     } catch (error) {

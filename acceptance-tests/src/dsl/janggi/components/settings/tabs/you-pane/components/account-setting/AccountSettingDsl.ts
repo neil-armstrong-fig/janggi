@@ -1,6 +1,6 @@
 import type {Page} from "@playwright/test";
 import {AccountSettingPlaywright} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/AccountSettingPlaywright";
-import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
+import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/types/RoomAsked";
 import type {TurnNotificationsState} from "@janggi/shared/janggi/online/TurnNotificationsState";
 import {DslError} from "@src/dsl/errors/DslError";
 

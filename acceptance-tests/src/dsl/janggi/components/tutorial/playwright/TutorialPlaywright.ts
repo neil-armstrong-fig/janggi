@@ -1,7 +1,8 @@
+import {pointFromTestId} from "@src/dsl/playwright/board/PointFromTestId";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
-import {isUnderTheSettings} from "@src/dsl/janggi/components/under-the-settings/playwright/IsUnderTheSettings";
+import {SettingsOverlap} from "@src/dsl/playwright/components/settings-overlap/SettingsOverlap";
 import type {Locator, Page} from "@playwright/test";
-import type {SpotlightedPoint} from "@src/dsl/janggi/components/types/SpotlightedPoint";
+import type {Point} from "@src/dsl/janggi/components/types/Point";
 
 /** More turns than any scene of the tutorial, so a tutorial that never stops asking fails rather than hangs. */
 const MOST_TURNS = 200;
@@ -18,6 +19,11 @@ export class TutorialPlaywright extends BaseComponent {
   private readonly spotlightedPoint: Locator;
   private readonly spotlight: Locator;
   private readonly heldBackPoint: Locator;
+  private readonly notReplying: Locator;
+  private readonly closingMarker: Locator;
+  private readonly idleCard: Locator;
+  private readonly closingCard: Locator;
+  private readonly settingsOverlap: SettingsOverlap;
 
   constructor(page: Page) {
     super(page);
@@ -33,6 +39,13 @@ export class TutorialPlaywright extends BaseComponent {
     this.spotlightedPoint = page.locator("[data-testid^='cell-'][data-tour-target='point']");
     this.spotlight = page.getByTestId("tour-spotlight");
     this.heldBackPoint = page.locator("[data-testid^='cell-'][data-held-back]");
+
+    this.notReplying = this.page.locator("[data-replying='false']");
+    this.closingMarker = this.page.locator("[data-closing='true']");
+
+    this.idleCard = this.card.and(this.notReplying);
+    this.closingCard = this.card.and(this.closingMarker);
+    this.settingsOverlap = new SettingsOverlap(page, this.card);
   }
 
   async isAboveTheDimmingLayer(): Promise<boolean> {
@@ -52,19 +65,16 @@ export class TutorialPlaywright extends BaseComponent {
     return Number(await this.card.getAttribute("data-step"));
   }
 
-  async getSpotlightedPoint(): Promise<SpotlightedPoint> {
+  async getSpotlightedPoint(): Promise<Point> {
     const [, file, rank] = /^cell-f(\d+)r(\d+)$/.exec(await this.spotlightedTestId()) ?? [];
 
     return {file: Number(file), rank: Number(rank)};
   }
 
   /** The point the board marks as one the piece the step asks for may not go to, the move being held back. */
-  async getHeldBackPoint(): Promise<SpotlightedPoint> {
+  async getHeldBackPoint(): Promise<Point> {
     await this.heldBackPoint.waitFor({state: "attached"});
-    const [, file, rank] =
-      /^cell-f(\d+)r(\d+)$/.exec((await this.heldBackPoint.getAttribute("data-testid")) ?? "") ?? [];
-
-    return {file: Number(file), rank: Number(rank)};
+    return pointFromTestId((await this.heldBackPoint.getAttribute("data-testid")) ?? undefined);
   }
 
   async isSpotlightShown(): Promise<boolean> {
@@ -73,7 +83,7 @@ export class TutorialPlaywright extends BaseComponent {
 
   /** Waits until the other army has made its scripted answer, read off the card saying it is no longer waiting on it. */
   async waitForTheReply(): Promise<void> {
-    await this.card.and(this.page.locator("[data-replying='false']")).waitFor({state: "visible"});
+    await this.idleCard.waitFor({state: "visible"});
   }
 
   /**
@@ -100,7 +110,7 @@ export class TutorialPlaywright extends BaseComponent {
   /** Goes on from the last scene's ending to the card that closes the tutorial, from the card's Next. */
   async goOnToTheClosingCard(): Promise<void> {
     await this.nextButton.click();
-    await this.card.and(this.page.locator("[data-closing='true']")).waitFor({state: "visible"});
+    await this.closingCard.waitFor({state: "visible"});
   }
 
   /** Whether the card is the one that closes the tutorial, after its last scene. */
@@ -164,7 +174,7 @@ export class TutorialPlaywright extends BaseComponent {
   async isUnderTheSettings(): Promise<boolean> {
     await this.card.waitFor({state: "visible"});
 
-    return await isUnderTheSettings(this.page, this.card);
+    return await this.settingsOverlap.isUnderTheSettings();
   }
 
   /** Finishes the tutorial from its closing card, which puts the player's own game back as leaving does. */

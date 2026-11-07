@@ -1,3 +1,4 @@
+import {StylePicker} from "@src/dsl/janggi/components/settings/tabs/look-pane/playwright/components/style-picker/StylePicker";
 import type {Locator, Page} from "@playwright/test";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {PIECE_SET_NAMES} from "@janggi/shared/janggi/settings/PieceSetName";
@@ -14,6 +15,7 @@ export class PieceSetSettingPlaywright extends SettingsSheetComponent {
   private readonly split: Locator;
   private readonly armySelects: Record<Side, Locator>;
   private readonly options: Record<PieceSetName, Locator>;
+  private readonly stylePicker: StylePicker<PieceSetName>;
 
   constructor(page: Page) {
     super(page);
@@ -35,69 +37,53 @@ export class PieceSetSettingPlaywright extends SettingsSheetComponent {
       Dancheong: page.getByTestId("piece-style-option-dancheong"),
       Hacker: page.getByTestId("piece-style-option-hacker"),
     };
+
+    this.stylePicker = new StylePicker(
+      {select: this.select, split: this.split, armySelects: this.armySelects, options: this.options},
+      PIECE_SET_NAMES,
+    );
   }
 
   async choose(name: PieceSetName): Promise<void> {
-    const value = (await this.options[name].getAttribute("value")) ?? undefined;
-    if (value === undefined) throw new Error(`The "${name}" option carries no value to select`);
-
+    const value = await this.stylePicker.getOptionValue(name);
     await this.chooseNamed(value);
   }
 
   async chooseNamed(name: string): Promise<void> {
-    await this.inSheet(this.select, async () => {
-      await this.select.selectOption(name);
-    });
+    await this.inSheet(this.select, () => this.stylePicker.chooseNamed(name));
   }
 
   /** Whether Han's and Cho's pieces are chosen apart. */
   async isChosenApart(): Promise<boolean> {
-    return (await this.split.getAttribute("aria-pressed")) === "true";
+    return await this.stylePicker.isChosenApart();
   }
 
   /** Turns choosing the armies' pieces apart on, or off — which puts both back in Cho's. */
   async toggleChoosingApart(): Promise<void> {
-    await this.inSheet(this.split, async () => {
-      await this.split.click();
-    });
+    await this.inSheet(this.split, () => this.stylePicker.toggleChoosingApart());
   }
 
   async chooseForArmy(side: Side, name: string): Promise<void> {
-    await this.inSheet(this.armySelects[side], async () => {
-      await this.armySelects[side].selectOption(name);
-    });
+    await this.inSheet(this.armySelects[side], () => this.stylePicker.chooseForArmy(side, name));
   }
 
   async getSelectedNameForArmy(side: Side): Promise<string> {
-    return await this.armySelects[side].inputValue();
+    return await this.stylePicker.getSelectedNameForArmy(side);
   }
 
   async getSelected(): Promise<PieceSetName | undefined> {
-    const name = await this.select.inputValue();
-
-    return PIECE_SET_NAMES.find(candidate => candidate === name);
+    return await this.stylePicker.getSelected();
   }
 
   async getSelectedName(): Promise<string> {
-    return await this.select.inputValue();
+    return await this.stylePicker.getSelectedName();
   }
 
   async getBuiltInOrder(): Promise<PieceSetName[]> {
-    const names = await this.select
-      .locator("option")
-      .evaluateAll(options => options.map(option => option.getAttribute("value")));
-
-    return names.flatMap(name => {
-      const builtIn = PIECE_SET_NAMES.find(candidate => candidate === name);
-      if (builtIn) {
-        return [builtIn];
-      }
-
-      return [];
-    });
+    return await this.stylePicker.getBuiltInOrder();
   }
 
   async isLocked(name: PieceSetName): Promise<boolean> {
-    return ((await this.options[name].getAttribute("data-locked")) ?? undefined) !== undefined;
+    return await this.stylePicker.isLocked(name);
   }
 }

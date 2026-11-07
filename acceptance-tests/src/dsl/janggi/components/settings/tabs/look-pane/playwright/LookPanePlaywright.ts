@@ -15,26 +15,18 @@ export class LookPanePlaywright extends SettingsSheetComponent {
   }
 
   async isGroupOpen(name: LookGroupName): Promise<boolean> {
-    return (await this.groupNamed(name).getAttribute("data-open")) === "true";
+    return await this.settingsGroupNamed(name).isOpen();
   }
 
   async getGroupSummary(name: LookGroupName): Promise<string> {
-    return ((await this.groupNamed(name).getByTestId("settings-group-summary").textContent()) ?? "").trim();
+    return await this.settingsGroupNamed(name).getSummary(false);
   }
 
   async openGroup(name: LookGroupName): Promise<void> {
-    const toggle = this.groupNamed(name).getByTestId("settings-group-toggle");
-
-    await this.inSheet(toggle, async () => {
-      if (!(await this.isGroupOpen(name))) await toggle.click();
-    });
+    await this.setGroupOpen(name, true);
   }
 
   async closeGroup(name: LookGroupName): Promise<void> {
-    const toggle = this.groupNamed(name).getByTestId("settings-group-toggle");
-
-    await this.inSheet(toggle, async () => {
-      if (await this.isGroupOpen(name)) await toggle.click();
-    });
+    await this.setGroupOpen(name, false);
   }
 }

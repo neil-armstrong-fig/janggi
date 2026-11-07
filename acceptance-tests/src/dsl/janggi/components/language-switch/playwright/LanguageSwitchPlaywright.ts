@@ -1,4 +1,4 @@
-import {BasePage} from "@src/dsl/playwright/BasePage";
+import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import type {LanguageName} from "@janggi/shared/janggi/settings/LanguageName";
 import type {Locator, Page} from "@playwright/test";
 
@@ -6,7 +6,7 @@ import type {Locator, Page} from "@playwright/test";
  * The switch at the head of a reading page (the guide, the references) that toggles between the page's languages. Each
  * language is named in itself, the one the page is in is marked, and pressing either name leads to the other language.
  */
-export class LanguageSwitchPlaywright extends BasePage {
+export class LanguageSwitchPlaywright extends BaseComponent {
   private readonly choices: Record<LanguageName, Locator>;
 
   constructor(page: Page) {
@@ -41,7 +41,6 @@ export class LanguageSwitchPlaywright extends BasePage {
   }
 
   async switchTo(language: LanguageName): Promise<void> {
-    await this.choices[language].click();
-    await this.page.waitForLoadState("load");
+    await this.press(language);
   }
 }

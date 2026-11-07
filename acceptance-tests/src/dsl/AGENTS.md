@@ -117,10 +117,20 @@ of the screen that happen to hang off this one, public because a spec reaches th
 with no children — every picker — is the same rule with nothing after the blank line; one with nothing of
 its own to ask — `LookPaneDsl`, `SoundPaneDsl` — has no counterpart, only children.
 
-**`*Playwright` constructors take the page and set up locators; some take it and do nothing else.**
-`BasePage` and `BaseComponent` both declare a `protected` constructor, so a subclass with no locators
-of its own still has to write `constructor(page) { super(page) }` to be constructible at all —
-`JanggiPlaywright` is that case today, and says so in a comment, or it reads as deletable boilerplate.
+**Fixed locators belong to the constructor**, as `private readonly` fields reused by methods.
+Keep consecutive private fields together without blank lines, including locator maps and helpers.
+Name locators for the UI part or state they represent (`versionLine`, `selectedOption`), never for
+selector syntax (`xpath`, `ariaPressed`, `linkRel`).
+Locators are lazy: their targets need not be attached or visible during construction. Locator fields
+are private by default: public exposure needs a concrete caller and a documented reason, and a public
+DSL never exposes one. A shared base may expose a protected locator when subclasses need it; document
+that use at the field. Constructors with no locators still call the protected base constructor.
+
+**Finite choices use typed locator maps**, with explicit test ids and the existing DSL vocabulary.
+Parameter-dependent selectors belong in named factories beneath constructor-owned roots, shared
+where the contract is the same. A runtime-selected page (such as References opened in a popup) is
+resolved from the browser on each call; a short-lived helper initializes that page's fixed locators
+in its constructor. Never cache the popup or its observed state.
 
 **A `*Playwright` file puts its constants above the class and keeps class-owned detail inside the
 class.** Implementation used only by that adapter is a private method, immediately below its caller
@@ -129,10 +139,30 @@ not a loose interface either: a type used by one other file goes in a `types/` f
 what it is. This holds for every class here, the fakes under `fake-api/` included. A function the page runs
 (`evaluate`, `addInitScript`) is an inline arrow at the call, because a method does not serialise. A class
 used by only one other (`FakeRooms`, by `FakeApi`) lives in a subfolder of its user, with its own `types/`.
-What more than one adapter needs, such as `ISOLATION_TIMEOUT_MS`, is one file in `src/dsl/playwright/`. If the
-detail gets complex enough to obscure the adapter, move it beneath the `playwright/` folder in a
-subject-named subfolder; use `utils/` only as the last resort, following the webapp's own locality
-rule.
+
+**Spec-facing `components/` is for UI areas with the DSL/Playwright pairing, not standalone utilities.** Helpers
+shared across component areas belong in subject folders under `src/dsl/playwright/`: `board/CellAt`,
+`polling/PollUntil`. Shared browser control components such as settings overlap live under
+`src/dsl/playwright/components/settings-overlap/`. Shared constants such as `ISOLATION_TIMEOUT_MS`
+can stay at that support folder's root. Helpers confined to one UI area stay under that area's
+`playwright/` folder; a helper with one caller goes in a subject folder beneath that caller. Keep
+these support folders named for their subject; use `utils/` only as the last resort. Internal browser
+control components that own locators belong under their owner's `playwright/components/`, such as
+`settings/playwright/components/option-picker/OptionPicker`; these do not add a spec-facing DSL area.
+Use the React control's name and subject folder where the responsibilities match (`OptionPicker`,
+`Switch`, `SettingsGroup`, `VolumeSlider`); keep DSL-specific compositions named for their own job.
+Give repeated configurations a named specialization when it is logically that control (`OnOffSwitch`
+extends `Switch`); keep a single caller's configuration local.
+
+**Inheritance describes where an adapter belongs, not which method it wants to reuse.** Reading
+pages extend `BasePage`; ordinary screen parts extend `BaseComponent`. `SettingsSheetComponent`
+is for controls in the settings sheet. Styles controls extend `BaseComponent` and share an
+`EditorHeader` control component only where they need to return from the retained editor to the list.
+Cross-area navigation belongs in a spec's arrangement, using the normal Settings DSL to open the
+sheet, choose its tab and unfold a group when needed. Legal, References, Styles and friend adapters
+act on entry points only after that setup; they do not open or restore Settings themselves. Setting
+pickers retain the existing convenience for their own sheet; this does not give another area a
+reason to borrow its navigation. Support helpers are not screens and do not extend screen bases.
 
 **A `*Playwright` keeps no state between calls.** Its members are locators and helpers; every other
 method is a pure act on, or question of, the page, and what it needs to know comes from the webapp —

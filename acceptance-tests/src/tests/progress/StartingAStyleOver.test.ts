@@ -34,13 +34,21 @@ const LETTERS = {name: "Letters", sides: {han: PIECE, cho: PIECE}};
 given("a player making a board from the classic one", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleStarter.start("Board", "Classic");
+    await janggi.stylesSheet.closeStyles();
   });
 
   when("they change the colour of its lines and reset it", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.controls.setColour("line-colour", "#ff0000");
       await janggi.stylesSheet.styleEditor.tools.reset();
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("the lines are classic's again, on the preview and in the control", async ({janggi}) => {
@@ -51,7 +59,11 @@ given("a player making a board from the classic one", () => {
 
   when("they load neon, which they have", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.tools.loadFrom("Neon", "both");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("the preview wears it", async ({janggi}) => {
@@ -64,7 +76,11 @@ given("a player making a board from the classic one", () => {
 
     when("they reset it", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.tools.reset();
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("it is the classic board they began with, not neon", async ({janggi}) => {
@@ -75,7 +91,11 @@ given("a player making a board from the classic one", () => {
 
   when("they load a board key somebody shared", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.tools.loadKey(encodeKey("board", MIDNIGHT));
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is taken, and the preview wears it", async ({janggi}) => {
@@ -86,7 +106,11 @@ given("a player making a board from the classic one", () => {
 
   when("they load a piece set key into it", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.tools.loadKey(encodeKey("pieces", LETTERS));
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("it is refused, and the board is as it was", async ({janggi}) => {
@@ -103,12 +127,20 @@ given("a player making a board from the classic one", () => {
 given("a player making a piece set from the hangul one", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleStarter.start("Pieces", "Hangul");
+    await janggi.stylesSheet.closeStyles();
   });
 
   when("they load han's pieces from the hanja set", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.tools.loadFrom("Hanja", "han");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("han's pieces are in hanja, the general too", async ({janggi}) => {
@@ -122,7 +154,11 @@ given("a player making a piece set from the hangul one", () => {
 
     when("they reset it", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.tools.reset();
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("han's pieces are in hangul again", async ({janggi}) => {
@@ -133,7 +169,11 @@ given("a player making a piece set from the hangul one", () => {
 
   when("they load the whole hanja set", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.tools.loadFrom("Hanja", "both");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("both armies are in hanja", async ({janggi}) => {

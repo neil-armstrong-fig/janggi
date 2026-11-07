@@ -20,7 +20,11 @@ given("two players, each signed in with Google as themselves", () => {
 
     await janggi.settings.you.account.signInWithGoogle();
     await friend.settings.you.account.signInWithGoogleAsAnotherPlayer();
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Play");
     await janggi.playAFriend.openPlayAFriend();
+    await friend.settings.openTheSettings();
+    await friend.settings.selectTab("Play");
     await friend.playAFriend.openPlayAFriend();
   });
 
@@ -197,6 +201,8 @@ given("two players, each signed in with Google as themselves", () => {
 
               when("the first makes another code", () => {
                 beforeEach(async ({janggi}) => {
+                  await janggi.settings.openTheSettings();
+                  await janggi.settings.selectTab("Play");
                   await janggi.playAFriend.openPlayAFriend();
                   await janggi.playAFriend.createACode("han");
                 });

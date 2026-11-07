@@ -1,3 +1,4 @@
+import {OptionPicker} from "@src/dsl/janggi/components/settings/playwright/components/option-picker/OptionPicker";
 import type {Locator, Page} from "@playwright/test";
 import {OPPONENT_NAMES} from "@janggi/shared/janggi/settings/OpponentName";
 import type {OpponentName} from "@janggi/shared/janggi/settings/OpponentName";
@@ -10,6 +11,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 export class OpponentSettingPlaywright extends SettingsSheetComponent {
   private readonly picker: Locator;
   private readonly options: Record<OpponentName, Locator>;
+  private readonly optionPicker: OptionPicker<OpponentName>;
 
   constructor(page: Page) {
     super(page);
@@ -19,6 +21,8 @@ export class OpponentSettingPlaywright extends SettingsSheetComponent {
       Human: page.getByTestId("opponent-option-human"),
       Bot: page.getByTestId("opponent-option-bot"),
     };
+
+    this.optionPicker = new OptionPicker(this.picker, OPPONENT_NAMES);
   }
 
   async choose(name: OpponentName): Promise<void> {
@@ -27,12 +31,7 @@ export class OpponentSettingPlaywright extends SettingsSheetComponent {
 
   /** The option on whichever button is pressed — read off `data-option`, not its words — or undefined before anything has rendered. */
   async getSelected(): Promise<OpponentName | undefined> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    if ((await pressed.count()) === 0) return undefined;
-
-    const name = await pressed.getAttribute("data-option");
-
-    return OPPONENT_NAMES.find(candidate => candidate === name);
+    return await this.optionPicker.getSelected();
   }
 
   /** The words on one of the buttons, as written rather than as the stylesheet draws them. */

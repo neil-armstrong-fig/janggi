@@ -1,11 +1,12 @@
+import type {RoomCreation} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/RoomCreation";
+import type {RoomSetups} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/RoomSetups";
 import type {ClientMessage} from "@janggi/shared/janggi/online/messages/ClientMessage";
 import type {FriendCode} from "@janggi/shared/janggi/online/friend-code/FriendCode";
 import type {Room} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/Room";
 import type {RoomOpened} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/RoomOpened";
-import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
+import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/types/RoomAsked";
 import type {Seat} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/Seat";
 import type {ServerMessage} from "@janggi/shared/janggi/online/messages/ServerMessage";
-import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 import {ROOM_GONE_CLOSE_CODE} from "@janggi/shared/janggi/online/RoomGone";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import type {WebSocketRoute} from "@playwright/test";
@@ -25,15 +26,18 @@ export class FakeRooms {
   private readonly cutOff = new Set<object>();
   private created = 0;
   /** Every room a host has asked for, in order — what the app sent, for a spec to read. */
-  readonly asked: RoomAsked[] = [];
+  private readonly asked: RoomAsked[] = [];
+
+  getRoomsAsked(): readonly RoomAsked[] {
+    return this.asked;
+  }
 
   /**
    * A room for a host to sit down at, and the code to give a friend. Like the real server, a host has one open at a time
    * and is given that one back until it is finished.
    */
-  create({asked, host}: {asked: RoomAsked; host: object}): RoomOpened {
+  create({asked, host}: RoomCreation): RoomOpened {
     const open = [...this.rooms.values()].find(room => room.host === host && !room.finished);
-
     if (open !== undefined) {
       return {kind: "already-open", code: open.code};
     }
@@ -97,12 +101,15 @@ export class FakeRooms {
   }
 
   private sitDown(room: Room, device: object): Seat {
-    const side: Side = room.seats.length === 0 ? room.hostSide : this.opposite(room.hostSide);
+    const side = this.sideFor(room);
     const seat: Seat = {device, side, socket: undefined, introduction: undefined, setup: undefined};
-
     room.seats.push(seat);
-
     return seat;
+  }
+
+  private sideFor(room: Room): Side {
+    if (room.seats.length === 0) return room.hostSide;
+    return this.opposite(room.hostSide);
   }
 
   private seatOf(room: Room, device: object): Seat | undefined {
@@ -151,10 +158,9 @@ export class FakeRooms {
   }
 
   private started(seat: Seat, other: Seat): ServerMessage {
-    const han = seat.side === "han" ? seat : other;
-    const cho = seat.side === "han" ? other : seat;
-
-    return {kind: "started", hanSetup: han.setup as SetupName, choSetup: cho.setup as SetupName};
+    const roomSetups = this.setupsOf(seat, other);
+    if (roomSetups === undefined) throw new Error("Both armies must choose a setup before the room starts");
+    return {kind: "started", ...roomSetups};
   }
 
   private leave(room: Room, seat: Seat, socket: WebSocketRoute): void {
@@ -177,18 +183,26 @@ export class FakeRooms {
       this.tell(seat, {kind: "waiting"});
       return;
     }
-
-    const han = seat.side === "han" ? seat : other;
-    const cho = seat.side === "han" ? other : seat;
-
     this.tell(seat, {
       kind: "snapshot",
       side: seat.side,
       opponent: other.introduction,
-      ...(han.setup !== undefined && cho.setup !== undefined ? {hanSetup: han.setup, choSetup: cho.setup} : {}),
+      ...this.setupsOf(seat, other),
       history: room.history,
     });
     this.tell(other, {kind: "opponent-back"});
+  }
+
+  private setupsOf(seat: Seat, other: Seat): RoomSetups | undefined {
+    const han = this.seatFor("han", seat, other);
+    const cho = this.seatFor("cho", seat, other);
+    if (han.setup === undefined || cho.setup === undefined) return undefined;
+    return {hanSetup: han.setup, choSetup: cho.setup};
+  }
+
+  private seatFor(side: Side, seat: Seat, other: Seat): Seat {
+    if (seat.side === side) return seat;
+    return other;
   }
 
   private tell(seat: Seat, message: ServerMessage): void {

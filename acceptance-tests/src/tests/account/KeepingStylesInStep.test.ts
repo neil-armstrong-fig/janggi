@@ -14,17 +14,29 @@ given("a player with a board of their own, signed in with Google on two devices"
     secondDevice = await janggi.openSeparateDevice();
 
     await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.makeStyle("Board", "Classic", "My board");
+    await janggi.stylesSheet.closeStyles();
     await janggi.settings.you.account.signInWithGoogle();
     await expect.poll(() => janggi.settings.you.account.getSyncState()).toBe("synced");
 
     await secondDevice.settings.you.account.signInWithGoogle();
+    await secondDevice.settings.openTheSettings();
+    await secondDevice.settings.selectTab("Look");
+    await secondDevice.stylesSheet.openStyles();
     await expect.poll(() => secondDevice.stylesSheet.ownStyles.getNames("Board")).toEqual(["My board"]);
+    await secondDevice.stylesSheet.closeStyles();
   });
 
   when("they delete it on the second device, and the first catches up", () => {
     beforeEach(async ({janggi}) => {
+      await secondDevice.settings.openTheSettings();
+      await secondDevice.settings.selectTab("Look");
+      await secondDevice.stylesSheet.openStyles();
       await secondDevice.stylesSheet.ownStyles.delete("Board", "My board");
+      await secondDevice.stylesSheet.closeStyles();
       await expect.poll(() => secondDevice.settings.you.account.getSyncState()).toBe("synced");
 
       await janggi.reload();

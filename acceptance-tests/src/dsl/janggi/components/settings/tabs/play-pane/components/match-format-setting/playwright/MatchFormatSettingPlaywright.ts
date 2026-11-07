@@ -1,3 +1,4 @@
+import {OptionPicker} from "@src/dsl/janggi/components/settings/playwright/components/option-picker/OptionPicker";
 import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
 import type {Locator, Page} from "@playwright/test";
 import type {MatchFormat} from "@janggi/shared/janggi/settings/MatchFormat";
@@ -17,6 +18,7 @@ export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
   private readonly options: Record<MatchFormat, Locator>;
   private readonly explain: Locator;
   private readonly explanation: Locator;
+  private readonly optionPicker: OptionPicker<MatchFormat>;
 
   constructor(page: Page) {
     super(page);
@@ -28,16 +30,13 @@ export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
     };
     this.explain = page.getByTestId("match-format-explain");
     this.explanation = page.getByTestId("match-format-explanation");
+
+    this.optionPicker = new OptionPicker(this.picker, MATCH_FORMATS);
   }
 
   /** What the unfolded explanation says, read with the sheet open. */
   async getExplanationWords(): Promise<string> {
-    let words = "";
-    await this.inSheet(this.explain, async () => {
-      words = await this.explanation.innerText();
-    });
-
-    return words;
+    return await this.inSheet(this.explain, () => this.explanation.innerText());
   }
 
   /** Presses the (?) beside the picker, which unfolds the explanation or folds it away again. */
@@ -61,12 +60,7 @@ export class MatchFormatSettingPlaywright extends SettingsSheetComponent {
 
   /** The option on whichever button is pressed — read off `data-option`, not its words — or undefined before anything has rendered. */
   async getSelected(): Promise<MatchFormat | undefined> {
-    const pressed = this.picker.locator("[aria-pressed='true']");
-    if ((await pressed.count()) === 0) return undefined;
-
-    const name = await pressed.getAttribute("data-option");
-
-    return MATCH_FORMATS.find(candidate => candidate === name);
+    return await this.optionPicker.getSelected();
   }
 
   /** The words on one of the buttons, as written rather than as the stylesheet draws them. */

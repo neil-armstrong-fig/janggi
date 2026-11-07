@@ -1,3 +1,4 @@
+import {OnOffSwitch} from "@src/dsl/janggi/components/settings/playwright/components/on-off-switch/OnOffSwitch";
 import type {Locator, Page} from "@playwright/test";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
@@ -5,16 +6,19 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 export class OpponentLookSettingPlaywright extends SettingsSheetComponent {
   private readonly toggle: Locator;
   private readonly explanation: Locator;
+  private readonly onOffSwitch: OnOffSwitch;
 
   constructor(page: Page) {
     super(page);
 
     this.toggle = page.getByTestId("opponent-look-toggle");
     this.explanation = page.getByTestId("opponent-look-explanation");
+
+    this.onOffSwitch = new OnOffSwitch(this.toggle);
   }
 
   async isOn(): Promise<boolean> {
-    return (await this.toggle.getAttribute("aria-pressed")) === "true";
+    return (await this.onOffSwitch.getSelected()) === true;
   }
 
   async isShown(): Promise<boolean> {
@@ -28,8 +32,6 @@ export class OpponentLookSettingPlaywright extends SettingsSheetComponent {
   async setTo(on: boolean): Promise<void> {
     if ((await this.isOn()) === on) return;
 
-    await this.inSheet(this.toggle, async () => {
-      await this.toggle.click();
-    });
+    await this.inSheet(this.toggle, () => this.onOffSwitch.press());
   }
 }

@@ -27,6 +27,19 @@ given("a signed-in player whose browser can be sent notifications", () => {
     expect(await janggi.settings.you.account.getDevicesToBeToldItsTheirTurn()).toBe(0);
   });
 
+  when("they read the notification setting while Play is open", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Play");
+      await janggi.settings.you.account.getTurnNotifications();
+    });
+
+    then("the read restores their tab and leaves Account folded", async ({janggi}) => {
+      expect(await janggi.settings.isTabSelected("Play")).toBe(true);
+      expect(await janggi.settings.you.isGroupOpen("Account")).toBe(false);
+    });
+  });
+
   when("they turn notifications on", () => {
     beforeEach(async ({janggi}) => {
       await janggi.settings.you.account.turnOnTurnNotifications();

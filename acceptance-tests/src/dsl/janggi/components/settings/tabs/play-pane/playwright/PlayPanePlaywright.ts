@@ -16,6 +16,9 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
   private readonly groups: Record<PlayGroupName, Locator>;
   private readonly elephantPairing: Locator;
   private readonly newGame: Locator;
+  private readonly playGuidedGame: Locator;
+  private readonly clockInOpponent: Locator;
+  private readonly clockSetting: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -27,20 +30,24 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
     };
     this.elephantPairing = page.getByTestId("elephant-pairing");
     this.newGame = page.getByTestId("new-game");
+
+    this.playGuidedGame = this.page.getByTestId("play-guided-game");
+    this.clockInOpponent = this.groups.Opponent.getByTestId("clock-setting");
+    this.clockSetting = this.page.getByTestId("clock-setting");
   }
 
   async isGuidedGameOffered(): Promise<boolean> {
-    return (await this.page.getByTestId("play-guided-game").count()) === 1;
+    return (await this.playGuidedGame.count()) === 1;
   }
 
   async startTheGuidedGame(): Promise<void> {
-    const button = this.page.getByTestId("play-guided-game");
+    const button = this.playGuidedGame;
     await this.openSheet(button);
     await button.click();
   }
 
   async getGuidedGameLabel(): Promise<string> {
-    const button = this.page.getByTestId("play-guided-game");
+    const button = this.playGuidedGame;
 
     let label = "";
     await this.inSheet(button, async () => {
@@ -51,11 +58,11 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
   }
 
   async isClockInOpponent(): Promise<boolean> {
-    return (await this.groups.Opponent.getByTestId("clock-setting").count()) === 1;
+    return (await this.clockInOpponent.count()) === 1;
   }
 
   async isClockVisible(): Promise<boolean> {
-    return await this.page.getByTestId("clock-setting").isVisible();
+    return await this.clockSetting.isVisible();
   }
 
   async getGroupAppearance(name: PlayGroupName): Promise<GroupAppearance> {
@@ -64,7 +71,7 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
 
   /** Whether a group is unfolded, read off `data-open` so it answers with the sheet shut. */
   async isGroupOpen(name: PlayGroupName): Promise<boolean> {
-    return (await this.groups[name].getAttribute("data-open")) === "true";
+    return await this.settingsGroupNamed(name).isOpen();
   }
 
   /** Read off `hidden`, since the sheet is out of sight whether or not the group is laid out. */
@@ -74,23 +81,16 @@ export class PlayPanePlaywright extends SettingsSheetComponent {
 
   /** The line a group is folded to, as it reads: a part drawn on a line of its own, as each setup is, starts a new line. */
   async getGroupSummary(name: PlayGroupName): Promise<string> {
-    return (await this.groups[name].getByTestId("settings-group-summary").innerText()).trim();
+    return await this.settingsGroupNamed(name).getSummary(true);
   }
 
   /** Unfolds a group, pressing its line only where it is folded, since a second press would fold it again. */
   async closeGroup(name: PlayGroupName): Promise<void> {
-    const toggle = this.groups[name].getByTestId("settings-group-toggle");
-    await this.inSheet(toggle, async () => {
-      if (await this.isGroupOpen(name)) await toggle.click();
-    });
+    await this.setGroupOpen(name, false);
   }
 
   async openGroup(name: PlayGroupName): Promise<void> {
-    const toggle = this.groups[name].getByTestId("settings-group-toggle");
-
-    await this.inSheet(toggle, async () => {
-      if (!(await this.isGroupOpen(name))) await toggle.click();
-    });
+    await this.setGroupOpen(name, true);
   }
 
   /**

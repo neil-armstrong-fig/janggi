@@ -1,5 +1,5 @@
+import {SetupSetting} from "@src/dsl/janggi/components/settings/tabs/play-pane/playwright/components/setup-setting/SetupSetting";
 import type {Locator, Page} from "@playwright/test";
-import {SETUP_NAMES} from "@janggi/shared/janggi/settings/SetupName";
 import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
@@ -15,6 +15,7 @@ export class HanSetupSettingPlaywright extends SettingsSheetComponent {
   private readonly army: Locator;
   private readonly grid: Locator;
   private readonly options: Record<SetupName, Locator>;
+  private readonly setupSetting: SetupSetting;
 
   constructor(page: Page) {
     super(page);
@@ -28,12 +29,12 @@ export class HanSetupSettingPlaywright extends SettingsSheetComponent {
       "Right Elephant": page.getByTestId("han-setup-option-right-elephant"),
       "Central Chariot": page.getByTestId("han-setup-option-central-chariot"),
     };
+
+    this.setupSetting = new SetupSetting({army: this.army, grid: this.grid, options: this.options});
   }
 
   async show(): Promise<void> {
-    await this.inSheet(this.army, async () => {
-      if ((await this.army.getAttribute("aria-pressed")) !== "true") await this.army.click();
-    });
+    await this.inSheet(this.army, () => this.setupSetting.show());
   }
 
   /**
@@ -41,28 +42,20 @@ export class HanSetupSettingPlaywright extends SettingsSheetComponent {
    * it answers the same with the sheet shut or the setups folded away.
    */
   async isShown(): Promise<boolean> {
-    return (await this.grid.getAttribute("hidden")) === null;
+    return await this.setupSetting.isShown();
   }
 
   /** Whether the picker is still live — the pickers lock once a move has been played, all options at once. */
   async isChoosable(): Promise<boolean> {
-    return await this.options["Inner Elephant"].isEnabled();
+    return await this.setupSetting.isChoosable();
   }
 
   async choose(name: SetupName): Promise<void> {
-    await this.inSheet(this.options[name], async () => {
-      if ((await this.army.getAttribute("aria-pressed")) !== "true") await this.army.click();
-
-      await this.options[name].click();
-    });
+    await this.inSheet(this.options[name], () => this.setupSetting.choose(name));
   }
 
   /** The name of the pressed option, or undefined while none is — a scored game's setups open empty. */
   async getSelected(): Promise<SetupName | undefined> {
-    for (const name of SETUP_NAMES) {
-      if ((await this.options[name].getAttribute("aria-pressed")) === "true") return name;
-    }
-
-    return undefined;
+    return await this.setupSetting.getSelected();
   }
 }

@@ -15,6 +15,8 @@ given("a player who reads the game in Korean", () => {
   when("they have not yet earned the style editor", () => {
     beforeEach(async ({janggi}) => {
       await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 0}));
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
       await janggi.stylesSheet.openStyles();
     });
 
@@ -28,6 +30,8 @@ given("a player who reads the game in Korean", () => {
 
   when("they open their styles", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
       await janggi.stylesSheet.openStyles();
     });
 
@@ -44,7 +48,11 @@ given("a player who reads the game in Korean", () => {
 
   when("they paste something that is not a key", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleImporter.importStyle("not a key");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("they are told so in Korean", async ({janggi}) => {
@@ -54,7 +62,11 @@ given("a player who reads the game in Korean", () => {
 
   when("they start making a board", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleStarter.start("Board", "Classic");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("its controls and the ways to show it are in Korean", async ({janggi}) => {
@@ -75,7 +87,11 @@ given("a player who reads the game in Korean", () => {
 
     when("they tap one point of it", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.preview.tap(5, 5);
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("that point is named in Korean", async ({janggi}) => {
@@ -85,7 +101,11 @@ given("a player who reads the game in Korean", () => {
 
     when("they save it with no name", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.save();
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("they are asked for one in Korean", async ({janggi}) => {
@@ -95,7 +115,11 @@ given("a player who reads the game in Korean", () => {
 
     when("they save it under a name", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.save("내 판");
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("they are told in Korean that it is saved and worn", async ({janggi}) => {
@@ -108,8 +132,12 @@ given("a player who reads the game in Korean", () => {
 
     when("they write something in the JSON that will not parse", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.showRaw();
         await janggi.stylesSheet.styleEditor.setRaw("{");
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("they are told so in Korean", async ({janggi}) => {
@@ -120,7 +148,11 @@ given("a player who reads the game in Korean", () => {
 
   when("they start making a set of pieces", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleStarter.start("Pieces", "Hangul");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("its controls are in Korean, with each piece by its own name", async ({janggi}) => {
@@ -141,7 +173,11 @@ given("a player who reads the game in Korean", () => {
 
     when("they load one army's pieces from another set", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.tools.loadFrom("Modern", "cho");
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("they are told in Korean what was loaded, with the set under its own name", async ({janggi}) => {
@@ -154,8 +190,12 @@ given("a player who reads the game in Korean", () => {
 
     when("they draw with a file that is not an SVG", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.settings.selectTab("Look");
+        await janggi.stylesSheet.openStyles();
         await janggi.stylesSheet.styleEditor.controls.chooseOption("glyph-kind-pictograph");
         await janggi.stylesSheet.styleEditor.controls.importDrawing("chariot", "not a drawing");
+        await janggi.stylesSheet.closeStyles();
       });
 
       then("they are told so in Korean, beside the piece it was for", async ({janggi}) => {

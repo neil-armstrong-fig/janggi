@@ -1,9 +1,11 @@
+import {SettingsGroup} from "@src/dsl/janggi/components/settings/playwright/components/settings-group/SettingsGroup";
+import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
+import type {SettingsTabName} from "@janggi/shared/janggi/settings/SettingsTabName";
 import type {GroupAppearance} from "@src/dsl/janggi/components/settings/types/GroupAppearance";
 import type {Locator, Page} from "@playwright/test";
-import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 
 /**
- * A part of the screen that lives in the settings sheet, which stays closed until it is asked for.
+ * Base for controls that live in the settings sheet, including its navigation and folded groups.
  *
  * Reading one needs nothing: the sheet is always in the page, only moved out of sight, so a pressed
  * option, a disabled picker or the pairing line reads the same with the sheet open or shut.
@@ -21,43 +23,61 @@ import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
  * turns the effects down before every spec, and a sheet left on another tab would be a spec's starting
  * state that no player ever saw.
  *
- * The Play tab is folded into groups, one open at a time, and a folded group's controls are out of reach
+ * Some tabs are folded into groups, one open at a time, and a folded group's controls are out of reach
  * too. So `inSheet` opens the group holding the control as well, and **puts back the group that was open**
  * afterwards, for the same reason as the tab: the fixture chooses the opponent before every spec, and a
  * tab left on the opponent's group would be a starting state no player opens the app to.
  *
- * A base class rather than a component another `*Playwright` holds, so each picker still owns only
- * its own locators and nothing becomes anybody's parent. Here rather than in `src/dsl/playwright/`
- * because only what sits under `settings/` needs it.
+ * Shared by settings adapters and reading-page launchers; it stores locators, never observed UI state.
  */
 export abstract class SettingsSheetComponent extends BaseComponent {
+  private readonly tabs: Record<SettingsTabName, Locator>;
   private readonly opener: Locator;
   private readonly closer: Locator;
+
+  /** Subclasses query sheet bounds, backdrop styling and sheet-scoped controls. */
   protected readonly sheet: Locator;
+  private readonly settingsGroup: Locator;
+  private readonly settingsPane: Locator;
+  private readonly selectedTab: Locator;
 
   protected constructor(page: Page) {
     super(page);
+    this.tabs = {
+      Play: page.locator("[data-testid='settings-tab'][data-tab='Play']"),
+      Look: page.locator("[data-testid='settings-tab'][data-tab='Look']"),
+      Sound: page.locator("[data-testid='settings-tab'][data-tab='Sound']"),
+      You: page.locator("[data-testid='settings-tab'][data-tab='You']"),
+    };
 
     this.opener = page.getByTestId("settings-open");
     this.closer = page.getByTestId("settings-close");
     this.sheet = page.getByTestId("settings");
+
+    this.settingsGroup = this.page.getByTestId("settings-group");
+    this.settingsPane = this.page.getByTestId("settings-pane");
+    this.selectedTab = this.page.locator("[data-testid='settings-tab'][aria-selected='true']");
   }
 
   /**
    * Opens the sheet, chooses the tab holding `control` if it is not showing, does something in it,
    * puts the tab back, and closes the sheet if it was the one that opened it.
    */
-  protected async inSheet(control: Locator, act: () => Promise<void>): Promise<void> {
-    await this.withSheetOpen(async () => {
+  protected async inSheet<Answer>(control: Locator, act: () => Promise<Answer>): Promise<Answer> {
+    return await this.withSheetOpen(async () => {
       const tab = await this.tabHolding(control);
       const leftOn = await this.selectedTabName();
-      const needsSwitching = (await tab.getAttribute("aria-selected")) !== "true";
 
+      const needsSwitching = (await tab.getAttribute("aria-selected")) !== "true";
       if (needsSwitching) await tab.click();
+
       const putGroupBack = await this.openGroupHolding(control);
-      await act();
+      const answer = await act();
       await putGroupBack();
+
       if (needsSwitching) await this.tabNamed(leftOn).click();
+
+      return answer;
     });
   }
 
@@ -77,12 +97,14 @@ export abstract class SettingsSheetComponent extends BaseComponent {
    * Opens the sheet, does something in it, and closes it again — for a press on the sheet's own parts.
    * A sheet that was already open is left open, since it is not this call's to close.
    */
-  protected async withSheetOpen(act: () => Promise<void>): Promise<void> {
+  protected async withSheetOpen<Answer>(act: () => Promise<Answer>): Promise<Answer> {
     const wasOpen = await this.isSheetOpen();
-
     if (!wasOpen) await this.opener.click();
-    await act();
+
+    const answer = await act();
     if (!wasOpen) await this.closer.click();
+
+    return answer;
   }
 
   protected async openIfClosed(): Promise<void> {
@@ -109,15 +131,16 @@ export abstract class SettingsSheetComponent extends BaseComponent {
   }
 
   protected groupNamed(name: string): Locator {
-    return this.page.getByTestId("settings-group").and(this.page.locator(`[data-group="${name}"]`));
+    return this.settingsGroup.and(this.page.locator(`[data-group="${name}"]`));
   }
 
   protected tabNamed(name: string): Locator {
-    return this.page.locator(`[data-testid='settings-tab'][data-tab='${name}']`);
+    if (name === "Play" || name === "Look" || name === "Sound" || name === "You") return this.tabs[name];
+    throw new Error(`Unknown settings tab: ${name}`);
   }
 
   private async tabHolding(control: Locator): Promise<Locator> {
-    const pane = this.page.getByTestId("settings-pane").filter({has: control});
+    const pane = this.settingsPane.filter({has: control});
     const name = (await pane.getAttribute("data-pane")) ?? undefined;
     if (name === undefined) throw new Error("The settings pane names no tab");
 
@@ -133,7 +156,7 @@ export abstract class SettingsSheetComponent extends BaseComponent {
     const nothingToPutBack = async (): Promise<void> => {};
     if (await control.isVisible()) return nothingToPutBack;
 
-    const group = this.page.getByTestId("settings-group").filter({has: control});
+    const group = this.settingsGroup.filter({has: control});
     if ((await group.count()) === 0) return nothingToPutBack;
 
     if ((await group.getAttribute("data-open")) === "true") return nothingToPutBack;
@@ -141,8 +164,8 @@ export abstract class SettingsSheetComponent extends BaseComponent {
     const name = (await group.getAttribute("data-group")) ?? undefined;
     if (name === undefined) throw new Error("The settings group has no name");
 
-    const paneName = await this.page.getByTestId("settings-pane").filter({has: control}).getAttribute("data-pane");
-    const pane = this.page.getByTestId("settings-pane").and(this.page.locator(`[data-pane="${paneName}"]`));
+    const paneName = await this.settingsPane.filter({has: control}).getAttribute("data-pane");
+    const pane = this.settingsPane.and(this.page.locator(`[data-pane="${paneName}"]`));
     const opened = this.groupNamed(name);
     const openBefore = await this.openGroupName(pane);
     await group.getByTestId("settings-group-toggle").click();
@@ -178,11 +201,18 @@ export abstract class SettingsSheetComponent extends BaseComponent {
   }
 
   private async selectedTabName(): Promise<string> {
-    const name =
-      (await this.page.locator("[data-testid='settings-tab'][aria-selected='true']").getAttribute("data-tab")) ??
-      undefined;
+    const name = (await this.selectedTab.getAttribute("data-tab")) ?? undefined;
     if (name === undefined) throw new Error("The selected settings tab has no name");
 
     return name;
+  }
+  protected async setGroupOpen(name: string, open: boolean): Promise<void> {
+    await this.inSheet(this.groupNamed(name), async () => {
+      await this.settingsGroupNamed(name).setOpen(open);
+    });
+  }
+
+  protected settingsGroupNamed(name: string): SettingsGroup {
+    return new SettingsGroup(this.groupNamed(name));
   }
 }

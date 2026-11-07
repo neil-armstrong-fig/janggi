@@ -16,6 +16,8 @@ given("a player who made a code, and a friend who is not signed in", () => {
     friend = await janggi.openSeparateDevice();
 
     await janggi.settings.you.account.signInWithGoogle();
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Play");
     await janggi.playAFriend.openPlayAFriend();
     await janggi.playAFriend.createACode("han");
   });

@@ -1,3 +1,4 @@
+import type {PushWorkerScope} from "@src/dsl/janggi/components/play-a-friend/playwright/server-push/types/PushWorkerScope";
 import type {Page, Worker} from "@playwright/test";
 
 /**
@@ -27,10 +28,7 @@ export class ServerPush {
     const worker = await this.appsWorker();
 
     await worker.evaluate(async data => {
-      const scope = globalThis as unknown as {
-        dispatchEvent: (event: Event) => boolean;
-        PushEvent: new (type: string, init: {data: string}) => Event;
-      };
+      const scope = globalThis as unknown as PushWorkerScope;
       const handling: Promise<unknown>[] = [];
       const event = new scope.PushEvent("push", {data});
 

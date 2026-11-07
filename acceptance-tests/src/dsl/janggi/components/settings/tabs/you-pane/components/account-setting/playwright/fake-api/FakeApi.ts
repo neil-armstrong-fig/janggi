@@ -1,16 +1,20 @@
+import type {RoomAwayDays} from "@janggi/shared/janggi/online/RoomAway";
+import type {SaveDataBody} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/SaveDataBody";
+import type {RenameBody} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/RenameBody";
+import type {RoomRequestBody} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/RoomRequestBody";
+import type {PushSubscriptionBody} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/PushSubscriptionBody";
 import type {ApiRequest} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/ApiRequest";
-import type {GooglePlayer} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/GooglePlayer";
+import type {GooglePlayer} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/types/GooglePlayer";
 import type {PushSubscriptionRequest} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/PushSubscriptionRequest";
 import type {RoomRequest} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/RoomRequest";
 import type {SignedInRequest} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/SignedInRequest";
 import type {StoredAccount} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/types/StoredAccount";
 import {DEFAULT_ROOM_AWAY_DAYS, ROOM_AWAY_DAYS} from "@janggi/shared/janggi/online/RoomAway";
-import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/types/RoomAsked";
+import type {RoomAsked} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/types/RoomAsked";
 import {FakeRooms} from "@src/dsl/janggi/components/settings/tabs/you-pane/components/account-setting/playwright/fake-api/fake-rooms/FakeRooms";
 import type {Route, WebSocketRoute} from "@playwright/test";
 import {parseFriendCode} from "@janggi/shared/janggi/online/friend-code/ParseFriendCode";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {cleanedDisplayName} from "@janggi/shared/janggi/account/CleanedDisplayName";
 
 /** The name a new account is given, as the real server gives one of its own making. */
@@ -85,7 +89,7 @@ export class FakeApi {
 
   /** Every room a host has asked for. */
   getRoomsAsked(): readonly RoomAsked[] {
-    return this.rooms.asked;
+    return this.rooms.getRoomsAsked();
   }
 
   /** How many devices the account a device last signed in as has asked to be told of its turns on. */
@@ -140,7 +144,6 @@ export class FakeApi {
     }
 
     const player = this.sessions.get(device);
-
     if (player === undefined) {
       await route.fulfill({status: 401, headers: cors});
       return;
@@ -174,7 +177,6 @@ export class FakeApi {
   private async answerSignedIn({route, path, headers, device, account}: SignedInRequest): Promise<void> {
     const request = route.request();
     const method = request.method();
-
     if (method === "GET" && path === "/api/me") {
       await route.fulfill({status: 200, headers, json: {displayName: account.displayName}});
     } else if (method === "PATCH" && path === "/api/me") {
@@ -207,7 +209,7 @@ export class FakeApi {
 
   private async keepPushSubscription({route, headers, account}: PushSubscriptionRequest): Promise<void> {
     const request = route.request();
-    const {endpoint} = request.postDataJSON() as {endpoint: string};
+    const {endpoint} = request.postDataJSON() as PushSubscriptionBody;
 
     if (request.method() === "PUT") {
       account.pushEndpoints.add(endpoint);
@@ -219,30 +221,29 @@ export class FakeApi {
   }
 
   private async createRoom({route, headers, host}: RoomRequest): Promise<void> {
-    const body = route.request().postDataJSON() as {side: Side; awayDays?: unknown};
-    const side = body.side;
-    const awayDays =
-      body.awayDays === undefined ? DEFAULT_ROOM_AWAY_DAYS : ROOM_AWAY_DAYS.find(each => each === body.awayDays);
-
-    if (!SIDES.includes(side) || awayDays === undefined) {
+    const body = route.request().postDataJSON() as RoomRequestBody;
+    const side = SIDES.find(each => each === body.side);
+    const awayDays = this.roomAwayDays(body.awayDays);
+    if (side === undefined || awayDays === undefined) {
       await route.fulfill({status: 400, headers, json: {}});
       return;
     }
-
     const opened = this.rooms.create({asked: {side, awayDays}, host});
-
     if (opened.kind === "already-open") {
       await route.fulfill({status: 409, headers, json: {code: opened.code}});
       return;
     }
-
     await route.fulfill({status: 201, headers, json: {code: opened.code}});
   }
 
-  private async rename(route: Route, headers: Record<string, string>, account: StoredAccount): Promise<void> {
-    const {displayName} = route.request().postDataJSON() as {displayName: string};
-    const cleaned = cleanedDisplayName(displayName);
+  private roomAwayDays(value: unknown): RoomAwayDays | undefined {
+    if (value === undefined) return DEFAULT_ROOM_AWAY_DAYS;
+    return ROOM_AWAY_DAYS.find(each => each === value);
+  }
 
+  private async rename(route: Route, headers: Record<string, string>, account: StoredAccount): Promise<void> {
+    const {displayName} = route.request().postDataJSON() as RenameBody;
+    const cleaned = cleanedDisplayName(displayName);
     if (cleaned === undefined) {
       await route.fulfill({status: 400, headers, json: {}});
       return;
@@ -261,7 +262,7 @@ export class FakeApi {
       return;
     }
 
-    const {blob} = request.postDataJSON() as {blob: string};
+    const {blob} = request.postDataJSON() as SaveDataBody;
 
     account.data = {version: held + 1, blob};
     await route.fulfill({status: 200, headers, json: {version: held + 1}});

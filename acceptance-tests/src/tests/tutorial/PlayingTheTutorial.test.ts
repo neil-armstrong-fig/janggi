@@ -395,6 +395,8 @@ given("a player who left the tutorial on its third scene, and came back later", 
 given("a player waiting in a friend room they made", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.you.account.signInWithGoogle();
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Play");
     await janggi.playAFriend.openPlayAFriend();
     await janggi.playAFriend.createACode("han");
     await janggi.playAFriend.closeTheSheet();

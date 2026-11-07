@@ -1,3 +1,8 @@
+import type {LineStyleProperty} from "@src/dsl/janggi/components/board/playwright/types/LineStyleProperty";
+import {appearsWithin} from "@src/dsl/playwright/visibility/AppearsWithin";
+import {pointFromTestId} from "@src/dsl/playwright/board/PointFromTestId";
+import type {MarkedMove} from "@src/dsl/janggi/components/board/types/MarkedMove";
+import {cellAt} from "@src/dsl/playwright/board/CellAt";
 import type {Locator, Page} from "@playwright/test";
 import type {Piece} from "@janggi/shared/janggi/pieces/Piece";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
@@ -7,26 +12,23 @@ import {parsePieceKey} from "@janggi/shared/janggi/pieces/ParsePieceKey";
 /** Ranks 1-5 are Han's half of the board, 6-10 Cho's — the boundary `getSurfaceAt` splits on. */
 const HALF_RANK_COUNT = 5;
 
-/** An intersection, as a spec taps it. */
-export interface Point {
-  readonly file: number;
-  readonly rank: number;
-}
-
-/** The two intersections the board marks a move on. */
-export interface MarkedMove {
-  readonly from: Point;
-  readonly to: Point;
-}
-
 /** The board's locators, and the only place that knows how a piece is found in the DOM. */
 export class BoardPlaywright extends BaseComponent {
-  readonly container: Locator;
+  private readonly container: Locator;
+  private readonly pieces: Locator;
+  private readonly lastMoveFrom: Locator;
+  private readonly lastMoveTo: Locator;
+  private readonly boardBottomSurface: Locator;
 
   constructor(page: Page) {
     super(page);
 
     this.container = page.getByTestId("board");
+
+    this.pieces = this.container.getByTestId("piece");
+    this.lastMoveFrom = this.container.locator("[data-last-move='from']");
+    this.lastMoveTo = this.container.locator("[data-last-move='to']");
+    this.boardBottomSurface = this.page.getByTestId("board-bottom-surface");
   }
 
   /**
@@ -34,12 +36,7 @@ export class BoardPlaywright extends BaseComponent {
    * an immediate `isVisible()` would race the first render.
    */
   async isVisible(): Promise<boolean> {
-    try {
-      await this.container.waitFor({state: "visible"});
-      return true;
-    } catch {
-      return false;
-    }
+    return await appearsWithin(this.container);
   }
 
   /**
@@ -72,7 +69,7 @@ export class BoardPlaywright extends BaseComponent {
   async getPieceCount(): Promise<number> {
     await this.container.waitFor({state: "visible"});
 
-    return await this.container.getByTestId("piece").count();
+    return await this.pieces.count();
   }
 
   /**
@@ -84,7 +81,7 @@ export class BoardPlaywright extends BaseComponent {
    * being worn, and says nothing dependable about which piece it is.
    */
   async getPieceLabelAt(file: number, rank: number): Promise<string | undefined> {
-    return (await this.cellLocator(file, rank).getByTestId("piece").getAttribute("aria-label")) ?? undefined;
+    return (await this.pieceLocator(file, rank).getAttribute("aria-label")) ?? undefined;
   }
 
   async getPieceAt(file: number, rank: number): Promise<Piece | undefined> {
@@ -95,7 +92,6 @@ export class BoardPlaywright extends BaseComponent {
     if ((await piece.count()) === 0) return undefined;
 
     const key = await piece.getAttribute("data-piece");
-
     if (key) {
       return parsePieceKey(key);
     }
@@ -109,10 +105,14 @@ export class BoardPlaywright extends BaseComponent {
    * outside which of them is being worn.
    */
   async getCharacterAt(file: number, rank: number): Promise<string | undefined> {
-    const character = this.pieceLocator(file, rank).locator("text");
+    const character = this.textAt(file, rank);
     if ((await character.count()) === 0) return undefined;
 
     return (await character.textContent()) ?? undefined;
+  }
+
+  private textAt(file: number, rank: number): Locator {
+    return this.pieceLocator(file, rank).locator("text");
   }
 
   /**
@@ -173,23 +173,17 @@ export class BoardPlaywright extends BaseComponent {
   async getLastMove(): Promise<MarkedMove | undefined> {
     await this.container.waitFor({state: "visible"});
 
-    const from = this.container.locator("[data-last-move='from']");
-    const to = this.container.locator("[data-last-move='to']");
+    const from = this.lastMoveFrom;
+    const to = this.lastMoveTo;
     if ((await from.count()) === 0 || (await to.count()) === 0) return undefined;
 
     return {
-      from: this.pointOf((await from.getAttribute("data-testid")) ?? undefined),
-      to: this.pointOf((await to.getAttribute("data-testid")) ?? undefined),
+      from: pointFromTestId((await from.getAttribute("data-testid")) ?? undefined),
+      to: pointFromTestId((await to.getAttribute("data-testid")) ?? undefined),
     };
   }
 
   /** Reads a cell's `cell-f<file>r<rank>` test id back into the intersection it names. */
-  private pointOf(testId: string | undefined): Point {
-    const [, file, rank] = /^cell-f(\d+)r(\d+)$/.exec(testId ?? "") ?? [];
-    if (file === undefined || rank === undefined) throw new Error(`Expected a cell's test id, got ${testId}`);
-
-    return {file: Number(file), rank: Number(rank)};
-  }
 
   /** Whether the intersection is marked as a general under attack. */
   async isMarkedAsUnderAttack(file: number, rank: number): Promise<boolean> {
@@ -223,20 +217,17 @@ export class BoardPlaywright extends BaseComponent {
    * (`${testId}-bottom-surface`); where they do not, both halves resolve to the one surface.
    */
   async getSurfaceAt(rank: number): Promise<string> {
-    const bottomHalf = this.page.getByTestId("board-bottom-surface");
-    const inBottomHalf = rank > HALF_RANK_COUNT && (await bottomHalf.count()) > 0;
-    const element = inBottomHalf ? bottomHalf : this.container;
-
+    const element = await this.surfaceAt(rank);
     return await element.evaluate(surface => {
-      // The shorthand carries layout defaults along with the colour; a gradient shows up as the
-      // image and leaves the colour transparent, so read whichever of the two is actually painting.
       const style = getComputedStyle(surface);
-      if (style.backgroundImage === "none") {
-        return style.backgroundColor;
-      }
-
+      if (style.backgroundImage === "none") return style.backgroundColor;
       return style.backgroundImage;
     });
+  }
+
+  private async surfaceAt(rank: number): Promise<Locator> {
+    if (rank > HALF_RANK_COUNT && (await this.boardBottomSurface.count()) > 0) return this.boardBottomSurface;
+    return this.container;
   }
 
   /** The colour the line down the open file is drawn in, as the browser resolves it — `rgb(…)` — or undefined with no bikjang called. */
@@ -247,7 +238,6 @@ export class BoardPlaywright extends BaseComponent {
   /** How thick, in pixels, the line down the open file is drawn, or undefined with no bikjang called. */
   async getBikjangLineWidth(): Promise<number | undefined> {
     const width = await this.lineStyle("bikjang-line", "strokeWidth");
-
     if (width === undefined) {
       return undefined;
     }
@@ -260,7 +250,7 @@ export class BoardPlaywright extends BaseComponent {
     return await this.lineStyle("check-lines", "stroke");
   }
 
-  private async lineStyle(testId: string, property: "stroke" | "strokeWidth"): Promise<string | undefined> {
+  private async lineStyle(testId: string, property: LineStyleProperty): Promise<string | undefined> {
     const line = this.page.getByTestId(testId).locator("line").first();
     if ((await line.count()) === 0) return undefined;
 
@@ -295,7 +285,6 @@ export class BoardPlaywright extends BaseComponent {
 
     return await this.pieceLocator(file, rank).evaluate(piece => {
       const lifter = piece.parentElement;
-
       if (lifter) {
         return getComputedStyle(lifter).filter;
       }
@@ -309,6 +298,6 @@ export class BoardPlaywright extends BaseComponent {
   }
 
   private cellLocator(file: number, rank: number): Locator {
-    return this.container.getByTestId(`cell-f${file}r${rank}`);
+    return cellAt(this.container, file, rank);
   }
 }

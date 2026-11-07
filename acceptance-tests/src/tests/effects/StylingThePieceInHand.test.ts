@@ -24,7 +24,11 @@ given("motion is left on, and a player is wearing a piece set with a red shadow 
   beforeEach(async ({janggi}) => {
     const styled = {...LETTERS, handling: {shadow: "rgba(255, 0, 0, 0.9)", hoverOutline: 2}};
 
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", styled));
+    await janggi.stylesSheet.closeStyles();
     await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 
@@ -41,7 +45,11 @@ given("motion is left on, and a player is wearing a piece set with a red shadow 
 
 given("motion is left on, and a player is wearing a piece set written before sets chose their shadows", () => {
   beforeEach(async ({janggi}) => {
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", LETTERS));
+    await janggi.stylesSheet.closeStyles();
     await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 

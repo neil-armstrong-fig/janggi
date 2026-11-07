@@ -1,3 +1,4 @@
+import {OptionPicker} from "@src/dsl/janggi/components/settings/playwright/components/option-picker/OptionPicker";
 import type {Locator, Page} from "@playwright/test";
 import {SIDE_CHOICE_NAMES} from "@janggi/shared/janggi/settings/SideChoiceName";
 import type {SideChoiceName} from "@janggi/shared/janggi/settings/SideChoiceName";
@@ -10,6 +11,7 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
 export class YourSideSettingPlaywright extends SettingsSheetComponent {
   private readonly botSettings: Locator;
   private readonly options: Record<SideChoiceName, Locator>;
+  private readonly optionPicker: OptionPicker<SideChoiceName>;
 
   constructor(page: Page) {
     super(page);
@@ -20,6 +22,7 @@ export class YourSideSettingPlaywright extends SettingsSheetComponent {
       Han: page.getByTestId("your-side-option-han"),
       Random: page.getByTestId("your-side-option-random"),
     };
+    this.optionPicker = new OptionPicker(page.getByTestId("your-side-picker"), SIDE_CHOICE_NAMES);
   }
 
   /**
@@ -41,10 +44,7 @@ export class YourSideSettingPlaywright extends SettingsSheetComponent {
   }
 
   async getSelected(): Promise<SideChoiceName | undefined> {
-    for (const name of SIDE_CHOICE_NAMES) {
-      if ((await this.options[name].getAttribute("aria-pressed")) === "true") return name;
-    }
-
-    return undefined;
+    await this.options.Cho.waitFor({state: "attached"});
+    return await this.optionPicker.getSelected();
   }
 }

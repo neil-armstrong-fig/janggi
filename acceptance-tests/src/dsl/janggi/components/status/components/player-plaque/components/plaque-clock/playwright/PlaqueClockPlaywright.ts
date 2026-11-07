@@ -1,3 +1,4 @@
+import {clockReadingOf} from "@src/dsl/playwright/clock/ClockReadingOf";
 import type {ClockReading} from "@src/dsl/janggi/components/types/ClockReading";
 import type {Locator, Page} from "@playwright/test";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
@@ -18,18 +19,11 @@ export class PlaqueClockPlaywright extends BaseComponent {
   }
 
   /**
-   * What one army is worth, read off the `data-score` of that army's own figure rather than off the
-   * words, so the plaque can be reworded without breaking a spec. A missing attribute is a NaN, which
-   * no assertion will match.
+   * The clock's seconds and remaining periods, read from figures rather than translated text.
+   * Missing figures become NaN, so they cannot pass an assertion for a clock at zero.
    */
   async getClock(side: Side): Promise<ClockReading> {
-    const clock = this.clocks[side];
-    await clock.waitFor({state: "visible"});
-
-    return {
-      seconds: Number(await clock.getAttribute("data-seconds")),
-      periods: Number(await clock.getAttribute("data-periods")),
-    };
+    return await clockReadingOf(this.clocks[side]);
   }
 
   /** Asked once the plaque's score is up, so a clock not yet drawn is not taken for one that will not be. */

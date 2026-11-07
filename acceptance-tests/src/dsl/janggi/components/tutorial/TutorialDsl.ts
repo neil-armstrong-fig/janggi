@@ -1,7 +1,7 @@
 import {DslError} from "@src/dsl/errors/DslError";
 import {TutorialPlaywright} from "@src/dsl/janggi/components/tutorial/playwright/TutorialPlaywright";
 import type {Page} from "@playwright/test";
-import type {SpotlightedPoint} from "@src/dsl/janggi/components/types/SpotlightedPoint";
+import type {Point} from "@src/dsl/janggi/components/types/Point";
 
 /**
  * The guided tutorial over the game: a fixed game whose moves the player is told to make, the card telling them, and the
@@ -38,7 +38,7 @@ export class TutorialDsl {
     }
   }
 
-  async getSpotlightedPoint(): Promise<SpotlightedPoint> {
+  async getSpotlightedPoint(): Promise<Point> {
     try {
       return await this.tutorial.getSpotlightedPoint();
     } catch (error) {
@@ -46,7 +46,7 @@ export class TutorialDsl {
     }
   }
 
-  async getHeldBackPoint(): Promise<SpotlightedPoint> {
+  async getHeldBackPoint(): Promise<Point> {
     try {
       return await this.tutorial.getHeldBackPoint();
     } catch (error) {

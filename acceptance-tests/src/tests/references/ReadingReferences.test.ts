@@ -8,6 +8,8 @@ given("a player has moved a soldier", () => {
 
   when("they open References & credits from Settings", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("You");
       await janggi.references.openReferences();
     });
 

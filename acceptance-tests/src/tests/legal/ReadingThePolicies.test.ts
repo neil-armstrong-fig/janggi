@@ -2,6 +2,12 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 
 given("a player deciding whether to sign in with Google", () => {
   when("they read the account section in Settings", () => {
+    beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("You");
+      await janggi.settings.you.openGroup("Account");
+    });
+
     then("the privacy policy and terms are linked beside sign-in", async ({janggi}) => {
       expect(await janggi.legal.isEachPolicyLinkedFromSignIn()).toBe(true);
       expect(await janggi.legal.canPoliciesOpenSeparatelyFromTheGame()).toBe(true);

@@ -12,12 +12,20 @@ const SQUARE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><pat
 given("a player with the XP to make a style, and the drawn set to start from", () => {
   beforeEach(async ({janggi}) => {
     await janggi.settings.you.progress.loadSave(saveKeyWith({xp: 300}));
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleStarter.start("Pieces", "Modern");
+    await janggi.stylesSheet.closeStyles();
   });
 
   when("they choose an SVG for the horse", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.controls.importDrawing("horse", SQUARE);
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("every one of cho's horses is drawn with it, fitted to the piece", async ({janggi}) => {
@@ -40,7 +48,11 @@ given("a player with the XP to make a style, and the drawn set to start from", (
 
   when("they choose an SVG for the general, which the set draws a style of its own", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.controls.importDrawing("general", SQUARE);
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("cho's general is drawn with it", async ({janggi}) => {
@@ -50,7 +62,11 @@ given("a player with the XP to make a style, and the drawn set to start from", (
 
   when("they choose a file that is not an SVG", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
+      await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.styleEditor.controls.importDrawing("chariot", "not a drawing");
+      await janggi.stylesSheet.closeStyles();
     });
 
     then("they are told, beside the piece it was for", async ({janggi}) => {

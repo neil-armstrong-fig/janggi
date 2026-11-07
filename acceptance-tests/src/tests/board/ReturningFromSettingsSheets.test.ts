@@ -3,6 +3,8 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
 given("a player follows a settings link into another sheet", () => {
   when("they go back from their styles", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Look");
       await janggi.stylesSheet.openStyles();
       await janggi.stylesSheet.goBackToSettings();
     });
@@ -16,6 +18,8 @@ given("a player follows a settings link into another sheet", () => {
   when("they go back from playing a friend", () => {
     beforeEach(async ({janggi}) => {
       await janggi.settings.you.account.signInWithGoogle();
+      await janggi.settings.openTheSettings();
+      await janggi.settings.selectTab("Play");
       await janggi.playAFriend.openPlayAFriend();
       await janggi.playAFriend.goBackToSettings();
     });
@@ -28,6 +32,7 @@ given("a player follows a settings link into another sheet", () => {
 
   when("they go back from their record", () => {
     beforeEach(async ({janggi}) => {
+      await janggi.settings.openTheSettings();
       await janggi.recordSheet.openRecord();
       await janggi.recordSheet.goBackToSettings();
     });

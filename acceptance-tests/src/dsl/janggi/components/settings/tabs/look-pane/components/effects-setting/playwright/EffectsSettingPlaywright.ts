@@ -1,3 +1,4 @@
+import {Switch} from "@src/dsl/janggi/components/settings/playwright/components/switch/Switch";
 import type {Locator, Page} from "@playwright/test";
 import type {EffectsName} from "@janggi/shared/janggi/settings/EffectsName";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
@@ -10,26 +11,24 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  */
 export class EffectsSettingPlaywright extends SettingsSheetComponent {
   private readonly toggle: Locator;
+  private readonly settingSwitch: Switch<EffectsName>;
 
   constructor(page: Page) {
     super(page);
 
     this.toggle = page.getByTestId("effects-toggle");
+
+    this.settingSwitch = new Switch(this.toggle, "Full", "Reduced");
   }
 
   async choose(name: EffectsName): Promise<void> {
     if ((await this.getSelected()) === name) return;
 
-    await this.inSheet(this.toggle, () => this.toggle.click());
+    await this.inSheet(this.toggle, () => this.settingSwitch.press());
   }
 
   /** The name the switch stands for, or undefined before anything has rendered. */
   async getSelected(): Promise<EffectsName | undefined> {
-    const pressed = (await this.toggle.getAttribute("aria-pressed")) ?? undefined;
-    if (pressed === undefined) return undefined;
-
-    if (pressed === "true") return "Full";
-
-    return "Reduced";
+    return await this.settingSwitch.getSelected();
   }
 }

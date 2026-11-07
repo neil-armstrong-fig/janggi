@@ -1,17 +1,19 @@
 import type {Locator, Page} from "@playwright/test";
 import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
-import {isUnderTheSettings} from "@src/dsl/janggi/components/under-the-settings/playwright/IsUnderTheSettings";
+import {SettingsOverlap} from "@src/dsl/playwright/components/settings-overlap/SettingsOverlap";
 
 /**
  * The locators behind `BoardPeekDsl` — the board looked at with the result put aside.
  */
 export class BoardPeekPlaywright extends BaseComponent {
   private readonly boardPeek: Locator;
+  private readonly settingsOverlap: SettingsOverlap;
 
   constructor(page: Page) {
     super(page);
 
     this.boardPeek = page.getByTestId("result-peek");
+    this.settingsOverlap = new SettingsOverlap(page, this.boardPeek);
   }
 
   /** Taps the board while the result is put aside, which brings the announcement back. */
@@ -21,7 +23,7 @@ export class BoardPeekPlaywright extends BaseComponent {
 
   /** Whether the open settings sheet stands over the board-sized tap that brings the result back. */
   async isUnderTheSettings(): Promise<boolean> {
-    return await isUnderTheSettings(this.page, this.boardPeek);
+    return await this.settingsOverlap.isUnderTheSettings();
   }
 
   /** Whether the board is being looked at with the result put aside, which the note over it says. */

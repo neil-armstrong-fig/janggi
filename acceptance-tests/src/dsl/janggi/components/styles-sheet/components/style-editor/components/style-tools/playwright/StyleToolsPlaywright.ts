@@ -1,9 +1,9 @@
 import type {Locator, Page} from "@playwright/test";
-import type {Side} from "@janggi/shared/janggi/pieces/Side";
-import {StylesSheetComponent} from "@src/dsl/janggi/components/styles-sheet/playwright/StylesSheetComponent";
+import type {CopyScope} from "@janggi/shared/janggi/styles/CopyScope";
+import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 
 /** The ways to start a style being made over, folded under "Load or reset": put it back, load another, or paste a key. */
-export class StyleToolsPlaywright extends StylesSheetComponent {
+export class StyleToolsPlaywright extends BaseComponent {
   private readonly tools: Locator;
   private readonly toolsToggle: Locator;
   private readonly resetButton: Locator;
@@ -30,30 +30,24 @@ export class StyleToolsPlaywright extends StylesSheetComponent {
 
   /** Puts back the style being made as it was started, discarding every change since. */
   async reset(): Promise<void> {
-    await this.inStyles(async () => {
-      await this.openTools();
-      await this.resetButton.click();
-    });
+    await this.openTools();
+    await this.resetButton.click();
   }
 
   /** Loads a style the player has into the one being made — a whole set, or one army's pieces of it. */
-  async loadFrom(name: string, scope: Side | "both"): Promise<void> {
-    await this.inStyles(async () => {
-      await this.openTools();
-      await this.copyFrom.selectOption(name);
-      if ((await this.copyScope.count()) > 0) await this.copyScope.selectOption(scope);
-      await this.copy.click();
-    });
+  async loadFrom(name: string, scope: CopyScope): Promise<void> {
+    await this.openTools();
+    await this.copyFrom.selectOption(name);
+    if ((await this.copyScope.count()) > 0) await this.copyScope.selectOption(scope);
+    await this.copy.click();
   }
 
   /** Pastes a key into the editor, to load the style in it in place of the one being made. */
   async loadKey(key: string): Promise<void> {
-    await this.inStyles(async () => {
-      await this.openTools();
-      await this.loadKeyInput.fill(key);
-      await this.loadKeySubmit.click();
-      await this.loadKeyMessage.waitFor({state: "attached"});
-    });
+    await this.openTools();
+    await this.loadKeyInput.fill(key);
+    await this.loadKeySubmit.click();
+    await this.loadKeyMessage.waitFor({state: "attached"});
   }
 
   async isLoadRefused(): Promise<boolean> {

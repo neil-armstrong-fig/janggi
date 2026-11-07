@@ -1,3 +1,4 @@
+import {VisibilitySwitch} from "@src/dsl/janggi/components/settings/tabs/look-pane/playwright/components/visibility-switch/VisibilitySwitch";
 import type {Locator, Page} from "@playwright/test";
 import type {MovableHighlightName} from "@janggi/shared/janggi/settings/MovableHighlightName";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
@@ -10,17 +11,20 @@ import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwr
  */
 export class MovableHighlightSettingPlaywright extends SettingsSheetComponent {
   private readonly toggle: Locator;
+  private readonly visibilitySwitch: VisibilitySwitch;
 
   constructor(page: Page) {
     super(page);
 
     this.toggle = page.getByTestId("movable-highlight-toggle");
+
+    this.visibilitySwitch = new VisibilitySwitch(this.toggle);
   }
 
   async choose(name: MovableHighlightName): Promise<void> {
     if ((await this.getSelected()) === name) return;
 
-    await this.inSheet(this.toggle, () => this.toggle.click());
+    await this.inSheet(this.toggle, () => this.visibilitySwitch.press());
   }
 
   /** The words beside the switch. */
@@ -30,11 +34,6 @@ export class MovableHighlightSettingPlaywright extends SettingsSheetComponent {
 
   /** The name the switch stands for, or undefined before anything has rendered. */
   async getSelected(): Promise<MovableHighlightName | undefined> {
-    const pressed = (await this.toggle.getAttribute("aria-pressed")) ?? undefined;
-    if (pressed === undefined) return undefined;
-
-    if (pressed === "true") return "Shown";
-
-    return "Hidden";
+    return await this.visibilitySwitch.getSelected();
   }
 }

@@ -1,3 +1,4 @@
+import {OnOffSwitch} from "@src/dsl/janggi/components/settings/playwright/components/on-off-switch/OnOffSwitch";
 import type {Locator, Page} from "@playwright/test";
 import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
 
@@ -6,6 +7,7 @@ export class FlipBoardSettingPlaywright extends SettingsSheetComponent {
   private readonly toggle: Locator;
   private readonly explain: Locator;
   private readonly explanation: Locator;
+  private readonly onOffSwitch: OnOffSwitch;
 
   constructor(page: Page) {
     super(page);
@@ -13,18 +15,18 @@ export class FlipBoardSettingPlaywright extends SettingsSheetComponent {
     this.toggle = page.getByTestId("flip-board-toggle");
     this.explain = page.getByTestId("flip-board-explain");
     this.explanation = page.getByTestId("flip-board-explanation");
+
+    this.onOffSwitch = new OnOffSwitch(this.toggle);
   }
 
   async isOn(): Promise<boolean> {
-    return (await this.toggle.getAttribute("aria-pressed")) === "true";
+    return (await this.onOffSwitch.getSelected()) === true;
   }
 
   async setTo(on: boolean): Promise<void> {
     if ((await this.isOn()) === on) return;
 
-    await this.inSheet(this.toggle, async () => {
-      await this.toggle.click();
-    });
+    await this.inSheet(this.toggle, () => this.onOffSwitch.press());
   }
 
   async toggleExplanation(): Promise<void> {
@@ -39,11 +41,6 @@ export class FlipBoardSettingPlaywright extends SettingsSheetComponent {
   }
 
   async getExplanationWords(): Promise<string> {
-    let words = "";
-    await this.inSheet(this.explain, async () => {
-      words = await this.explanation.innerText();
-    });
-
-    return words;
+    return await this.inSheet(this.explain, () => this.explanation.innerText());
   }
 }

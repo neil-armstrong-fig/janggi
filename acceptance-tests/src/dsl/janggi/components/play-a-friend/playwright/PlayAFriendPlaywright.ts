@@ -11,7 +11,7 @@ import type {SetupName} from "@janggi/shared/janggi/settings/SetupName";
 import {SIDES} from "@janggi/shared/janggi/pieces/Side";
 import type {Side} from "@janggi/shared/janggi/pieces/Side";
 import {ServerPush} from "@src/dsl/janggi/components/play-a-friend/playwright/server-push/ServerPush";
-import {SettingsSheetComponent} from "@src/dsl/janggi/components/settings/playwright/SettingsSheetComponent";
+import {BaseComponent} from "@src/dsl/playwright/BaseComponent";
 import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 
 /**
@@ -21,7 +21,8 @@ import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
  * The strip is in the page whenever a room is, even while the sheet covers it, so what it says is read the way a
  * closed settings sheet's is. The sheet and the strip are the app's; the room behind them is `FakeApi`'s.
  */
-export class PlayAFriendPlaywright extends SettingsSheetComponent {
+export class PlayAFriendPlaywright extends BaseComponent {
+  private readonly plaques: Record<Side, Locator>;
   private readonly open: Locator;
   private readonly friendSheet: Locator;
   private readonly back: Locator;
@@ -43,9 +44,12 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
   private readonly leaveButton: Locator;
   private readonly closeButton: Locator;
   private readonly serverPush: ServerPush;
+  private readonly settings: Locator;
 
   constructor(page: Page) {
     super(page);
+
+    this.plaques = {cho: page.getByTestId("plaque-cho"), han: page.getByTestId("plaque-han")};
 
     this.open = page.getByTestId("games-option-friend");
     this.friendSheet = page.getByTestId("play-a-friend");
@@ -74,19 +78,20 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
     this.leaveButton = page.getByTestId("friend-leave-game");
     this.closeButton = page.getByTestId("friend-close");
     this.serverPush = new ServerPush(page);
+
+    this.settings = this.page.getByTestId("settings").getByTestId("games-option-friend");
   }
 
   /** Whether an entry to it is drawn anywhere but in the settings. */
   async isOfferedOutsideTheSettings(): Promise<boolean> {
-    const everywhere = await this.page.getByTestId("games-option-friend").count();
-    const inTheSettings = await this.page.getByTestId("settings").getByTestId("games-option-friend").count();
+    const everywhere = await this.open.count();
+    const inTheSettings = await this.settings.count();
 
     return everywhere > inTheSettings;
   }
 
   /** Opens the sheet by choosing Online in the Play tab, which closes the settings behind it. */
   async openTheSheet(): Promise<void> {
-    await this.openSheet(this.open);
     await this.open.click();
     await this.friendSheet.waitFor({state: "visible"});
   }
@@ -175,7 +180,7 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
 
   /** Whether the army's plaque wears the mark that says it is the one this player has. */
   async isMarkedAsYours(side: Side): Promise<boolean> {
-    return ((await this.page.getByTestId(`plaque-${side}`).getAttribute("data-own")) ?? undefined) !== undefined;
+    return ((await this.plaques[side].getAttribute("data-own")) ?? undefined) !== undefined;
   }
 
   /** Whether the strip tells this player it is their turn. False while it is the friend's, and where no game is being played. */
@@ -270,8 +275,9 @@ export class PlayAFriendPlaywright extends SettingsSheetComponent {
           return Promise.resolve(subscription());
         },
       };
-      navigator.serviceWorker.getRegistration = () =>
-        Promise.resolve({pushManager} as unknown as ServiceWorkerRegistration);
+      navigator.serviceWorker.getRegistration = () => {
+        return Promise.resolve({pushManager} as unknown as ServiceWorkerRegistration);
+      };
     };
 
     await this.page.addInitScript(install, notifications);

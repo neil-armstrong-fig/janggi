@@ -1,3 +1,4 @@
+import type {Bounds} from "@src/dsl/janggi/components/guide/playwright/types/Bounds";
 import {BasePage} from "@src/dsl/playwright/BasePage";
 import {ISOLATION_TIMEOUT_MS} from "@src/dsl/playwright/IsolationTimeout";
 import type {Locator, Page} from "@playwright/test";
@@ -5,8 +6,6 @@ import type {GuidePieceStyleName} from "@src/dsl/janggi/components/guide/types/G
 import type {PieceType} from "@janggi/shared/janggi/pieces/PieceType";
 import {TUTORIAL_OFFERS} from "@janggi/shared/janggi/tutorial/TutorialOffer";
 import type {TutorialOffer} from "@janggi/shared/janggi/tutorial/TutorialOffer";
-
-type Bounds = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
 
 export class GuidePlaywright extends BasePage {
   private readonly install: Locator;
@@ -16,6 +15,19 @@ export class GuidePlaywright extends BasePage {
   private readonly tutorialLink: Locator;
   private readonly pieces: Record<PieceType, Locator>;
   private readonly pieceStyles: Record<GuidePieceStyleName, Locator>;
+  private readonly guide: Locator;
+  private readonly readyMarker: Locator;
+  private readonly guideReferences: Locator;
+  private readonly canonical: Locator;
+  private readonly heading: Locator;
+  private readonly sectionHeadings: Locator;
+  private readonly guideHeaderTitle: Locator;
+  private readonly languageSwitch: Locator;
+  private readonly guideHeader: Locator;
+  private readonly guideHeaderPlay: Locator;
+  private readonly guideRulesSource: Locator;
+  private readonly guideFairyStockfishSource: Locator;
+  private readonly readyGuide: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -39,6 +51,22 @@ export class GuidePlaywright extends BasePage {
       Hangul: page.getByTestId("guide-piece-style-hangul"),
       Modern: page.getByTestId("guide-piece-style-modern"),
     };
+
+    this.guide = this.page.getByTestId("guide");
+    this.readyMarker = this.page.locator("[data-guide-ready='true']");
+    this.guideReferences = this.page.getByTestId("guide-references");
+    this.canonical = this.page.locator("link[rel='canonical']");
+    this.heading = this.page.getByTestId("guide").locator("h1");
+    this.sectionHeadings = this.page.getByTestId("guide-section").locator("h2");
+
+    this.guideHeaderTitle = this.page.getByTestId("guide-header-title");
+    this.languageSwitch = this.page.getByTestId("page-language-en").locator("..");
+    this.guideHeader = this.page.getByTestId("guide-header");
+    this.guideHeaderPlay = this.page.getByTestId("guide-header-play");
+    this.guideRulesSource = this.page.getByTestId("guide-rules-source");
+    this.guideFairyStockfishSource = this.page.getByTestId("guide-fairy-stockfish-source");
+
+    this.readyGuide = this.guide.and(this.readyMarker);
   }
 
   async visitGuide(): Promise<void> {
@@ -50,6 +78,10 @@ export class GuidePlaywright extends BasePage {
   async visitKoreanGuide(): Promise<void> {
     await this.page.goto(new URL("ko/learn.html", this.page.url()).href);
     await this.waitUntilReady();
+  }
+
+  private async waitUntilReady(): Promise<void> {
+    await this.readyGuide.waitFor({state: "visible"});
   }
 
   /** Follows the guide's link to the tutorial, and waits for the game as `JanggiPlaywright.open` does. */
@@ -70,13 +102,6 @@ export class GuidePlaywright extends BasePage {
     return found;
   }
 
-  private async waitUntilReady(): Promise<void> {
-    await this.page
-      .getByTestId("guide")
-      .and(this.page.locator("[data-guide-ready='true']"))
-      .waitFor({state: "visible"});
-  }
-
   /** What the page says of being machine translated, or an empty string where it says nothing. */
   async getTranslationNotice(): Promise<string> {
     if ((await this.translationNotice.count()) === 0) return "";
@@ -91,7 +116,7 @@ export class GuidePlaywright extends BasePage {
 
   /** Where the footer's link to the references goes, as written in the page. */
   async getReferencesAddress(): Promise<string> {
-    return (await this.page.getByTestId("guide-references").getAttribute("href")) ?? "";
+    return (await this.guideReferences.getAttribute("href")) ?? "";
   }
 
   /** Where the link into the game goes, as written in the page. */
@@ -100,7 +125,11 @@ export class GuidePlaywright extends BasePage {
   }
 
   async getPieceName(type: PieceType): Promise<string> {
-    return ((await this.pieces[type].getByTestId("guide-piece-name").textContent()) ?? "").trim();
+    return ((await this.guidePieceNameAt(type).textContent()) ?? "").trim();
+  }
+
+  private guidePieceNameAt(type: PieceType): Locator {
+    return this.pieces[type].getByTestId("guide-piece-name");
   }
 
   async chooseInstall(): Promise<void> {
@@ -108,11 +137,11 @@ export class GuidePlaywright extends BasePage {
   }
 
   async openPiece(type: PieceType): Promise<void> {
-    await this.pieces[type].locator("summary").click();
+    await this.summaryAt(type).click();
   }
 
   async closePiece(type: PieceType): Promise<void> {
-    await this.pieces[type].locator("summary").click();
+    await this.summaryAt(type).click();
   }
 
   async setPieceStyleTo(name: GuidePieceStyleName): Promise<void> {
@@ -124,32 +153,32 @@ export class GuidePlaywright extends BasePage {
   }
 
   async getCanonicalAddress(): Promise<string> {
-    return (await this.page.locator("link[rel='canonical']").getAttribute("href")) ?? "";
+    return (await this.canonical.getAttribute("href")) ?? "";
   }
 
   async getMainHeading(): Promise<string> {
-    return await this.page.getByTestId("guide").locator("h1").innerText();
+    return await this.heading.innerText();
   }
 
   async getSectionHeadings(): Promise<string[]> {
-    return await this.page.getByTestId("guide-section").locator("h2").allTextContents();
+    return await this.sectionHeadings.allTextContents();
   }
 
   async getContent(): Promise<string> {
-    return (await this.page.getByTestId("guide").textContent()) ?? "";
+    return (await this.guide.textContent()) ?? "";
   }
 
   async isPlayLinkForTheGame(): Promise<boolean> {
-    const href = (await this.page.getByTestId("guide-play").getAttribute("href")) ?? undefined;
+    const href = (await this.play.getAttribute("href")) ?? undefined;
 
     return href !== undefined && new URL(href, this.page.url()).href === new URL("./", this.page.url()).href;
   }
 
   /** On the title's row, and reaching the header's right edge. */
   async isLanguageSwitchBesideTheTitle(): Promise<boolean> {
-    const title = await this.boundsOf(this.page.getByTestId("guide-header-title"));
-    const languageSwitch = await this.boundsOf(this.page.getByTestId("page-language-en").locator(".."));
-    const header = await this.boundsOf(this.page.getByTestId("guide-header"));
+    const title = await this.boundsOf(this.guideHeaderTitle);
+    const languageSwitch = await this.boundsOf(this.languageSwitch);
+    const header = await this.boundsOf(this.guideHeader);
 
     return (
       this.shareARow(title, languageSwitch) &&
@@ -160,16 +189,16 @@ export class GuidePlaywright extends BasePage {
 
   /** Under the title, and as wide as the header. */
   async isPlayButtonFullWidthBelowTheTitle(): Promise<boolean> {
-    const title = await this.boundsOf(this.page.getByTestId("guide-header-title"));
-    const play = await this.boundsOf(this.page.getByTestId("guide-header-play"));
-    const header = await this.boundsOf(this.page.getByTestId("guide-header"));
+    const title = await this.boundsOf(this.guideHeaderTitle);
+    const play = await this.boundsOf(this.guideHeaderPlay);
+    const header = await this.boundsOf(this.guideHeader);
 
     return play.y >= title.y + title.height && Math.abs(play.width - header.width) <= 1;
   }
 
   async isPlayButtonBesideTheLanguageSwitch(): Promise<boolean> {
-    const play = await this.boundsOf(this.page.getByTestId("guide-header-play"));
-    const languageSwitch = await this.boundsOf(this.page.getByTestId("page-language-en").locator(".."));
+    const play = await this.boundsOf(this.guideHeaderPlay);
+    const languageSwitch = await this.boundsOf(this.languageSwitch);
 
     return this.shareARow(play, languageSwitch) && play.x >= languageSwitch.x + languageSwitch.width;
   }
@@ -196,23 +225,35 @@ export class GuidePlaywright extends BasePage {
   /** Closed and drawn no taller than its summary, rather than stretched to the height of an open card beside it. */
   async isPieceFolded(type: PieceType): Promise<boolean> {
     const card = await this.pieces[type].boundingBox();
-    const summary = await this.pieces[type].locator("summary").boundingBox();
+    const summary = await this.summaryAt(type).boundingBox();
     if (!card || !summary) return false;
 
     // The card's own border, top and bottom, is all it may add to its summary.
     return !(await this.isPieceOpen(type)) && card.height - summary.height <= 3;
   }
 
+  private summaryAt(type: PieceType): Locator {
+    return this.pieces[type].locator("summary");
+  }
+
   async getMovementDestinationCount(type: PieceType): Promise<number> {
-    return await this.pieces[type].getByTestId("guide-movement-destination").count();
+    return await this.guideMovementDestinationAt(type).count();
+  }
+
+  private guideMovementDestinationAt(type: PieceType): Locator {
+    return this.pieces[type].getByTestId("guide-movement-destination");
   }
 
   async getMovementBlockerCount(type: PieceType): Promise<number> {
-    return await this.countDrawn(this.pieces[type].getByTestId("guide-movement-blocker"));
+    return await this.countDrawn(this.guideMovementBlockerAt(type));
+  }
+
+  private guideMovementBlockerAt(type: PieceType): Locator {
+    return this.pieces[type].getByTestId("guide-movement-blocker");
   }
 
   async getCutOffDestinationCount(type: PieceType): Promise<number> {
-    return await this.countDrawn(this.pieces[type].getByTestId("guide-movement-cut-off"));
+    return await this.countDrawn(this.guideMovementCutOffAt(type));
   }
 
   /**
@@ -225,8 +266,12 @@ export class GuidePlaywright extends BasePage {
     });
   }
 
+  private guideMovementCutOffAt(type: PieceType): Locator {
+    return this.pieces[type].getByTestId("guide-movement-cut-off");
+  }
+
   async getPieceMark(type: PieceType): Promise<string> {
-    const piece = this.pieces[type].getByTestId("guide-movement-piece").getByTestId("piece");
+    const piece = this.guideMovementPieceAt(type).getByTestId("piece");
     const character = piece.locator("text");
     if ((await character.count()) > 0) return (await character.textContent()) ?? "";
 
@@ -237,9 +282,13 @@ export class GuidePlaywright extends BasePage {
     return "";
   }
 
+  private guideMovementPieceAt(type: PieceType): Locator {
+    return this.pieces[type].getByTestId("guide-movement-piece");
+  }
+
   async areGuideSourcesLinked(): Promise<boolean> {
-    const rules = await this.page.getByTestId("guide-rules-source").getAttribute("href");
-    const opponent = await this.page.getByTestId("guide-fairy-stockfish-source").getAttribute("href");
+    const rules = await this.guideRulesSource.getAttribute("href");
+    const opponent = await this.guideFairyStockfishSource.getAttribute("href");
 
     return (
       rules === "https://github.com/neil-armstrong-fig/janggi/blob/main/docs/rules.md" &&

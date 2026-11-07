@@ -20,7 +20,11 @@ given("a player wearing a board that picks its own colours for the lines", () =>
   beforeEach(async ({janggi}) => {
     const styled = {...MIDNIGHT, bikjang: {colour: "#ff00ff", width: 6}, check: {colour: "#00ffff"}};
 
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", styled));
+    await janggi.stylesSheet.closeStyles();
     await janggi.settings.look.board.setOwnStyleTo("Midnight");
   });
 
@@ -60,7 +64,11 @@ given("a player wearing a board that picks its own colours for the lines", () =>
 
 given("a player wearing a board written before boards carried those colours", () => {
   beforeEach(async ({janggi}) => {
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("board", MIDNIGHT));
+    await janggi.stylesSheet.closeStyles();
     await janggi.settings.look.board.setOwnStyleTo("Midnight");
   });
 

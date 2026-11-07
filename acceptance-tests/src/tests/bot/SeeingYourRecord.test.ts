@@ -13,16 +13,22 @@ import {beforeEach, expect, given, then, when} from "@src/acceptance-criteria-ma
  */
 given("a player who has never played the bot", () => {
   when("they look at their record", () => {
-    then("they stand at 1200 in casual play", async ({janggi}) => {
-      expect(await janggi.recordSheet.getElo("Casual")).toBe(1200);
-    });
+    when("they open their record", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.recordSheet.openRecord();
+      });
+      then("they stand at 1200 in casual play", async ({janggi}) => {
+        expect(await janggi.recordSheet.getElo("Casual")).toBe(1200);
+      });
 
-    then("they stand at 1200 in scored play", async ({janggi}) => {
-      expect(await janggi.recordSheet.getElo("Scored")).toBe(1200);
-    });
+      then("they stand at 1200 in scored play", async ({janggi}) => {
+        expect(await janggi.recordSheet.getElo("Scored")).toBe(1200);
+      });
 
-    then("the game stays where it is beneath the record, rather than being left", async ({janggi}) => {
-      expect(await janggi.recordSheet.isGameStillBeneath()).toBe(true);
+      then("the game stays where it is beneath the record, rather than being left", async ({janggi}) => {
+        expect(await janggi.recordSheet.isGameStillBeneath()).toBe(true);
+      });
     });
   });
 
@@ -37,33 +43,53 @@ given("a player who has never played the bot", () => {
       await janggi.settings.play.startNewGame();
     });
 
-    then("the game is recorded as a loss against that bot", async ({janggi}) => {
-      expect(await janggi.recordSheet.getGamesAgainst("Casual", 1200)).toEqual({played: 1, won: 0, drawn: 0, lost: 1});
-    });
+    when("they open their record", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.recordSheet.openRecord();
+      });
+      then("the game is recorded as a loss against that bot", async ({janggi}) => {
+        expect(await janggi.recordSheet.getGamesAgainst("Casual", 1200)).toEqual({
+          played: 1,
+          won: 0,
+          drawn: 0,
+          lost: 1,
+        });
+      });
 
-    then("their casual rating has fallen", async ({janggi}) => {
-      expect(await janggi.recordSheet.getElo("Casual")).toBeLessThan(1200);
-    });
+      then("their casual rating has fallen", async ({janggi}) => {
+        expect(await janggi.recordSheet.getElo("Casual")).toBeLessThan(1200);
+      });
 
-    then("their scored rating is untouched, the two formats being rated apart", async ({janggi}) => {
-      expect(await janggi.recordSheet.getElo("Scored")).toBe(1200);
+      then("their scored rating is untouched, the two formats being rated apart", async ({janggi}) => {
+        expect(await janggi.recordSheet.getElo("Scored")).toBe(1200);
+      });
     });
 
     when("they reset their record", () => {
       beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.recordSheet.openRecord();
         await janggi.recordSheet.resetRecord();
+        await janggi.recordSheet.closeRecord();
       });
 
-      then("their casual rating is back at 1200", async ({janggi}) => {
-        expect(await janggi.recordSheet.getElo("Casual")).toBe(1200);
-      });
+      when("they open their record", () => {
+        beforeEach(async ({janggi}) => {
+          await janggi.settings.openTheSettings();
+          await janggi.recordSheet.openRecord();
+        });
+        then("their casual rating is back at 1200", async ({janggi}) => {
+          expect(await janggi.recordSheet.getElo("Casual")).toBe(1200);
+        });
 
-      then("the loss is gone from their record", async ({janggi}) => {
-        expect(await janggi.recordSheet.getGamesAgainst("Casual", 1200)).toEqual({
-          played: 0,
-          won: 0,
-          drawn: 0,
-          lost: 0,
+        then("the loss is gone from their record", async ({janggi}) => {
+          expect(await janggi.recordSheet.getGamesAgainst("Casual", 1200)).toEqual({
+            played: 0,
+            won: 0,
+            drawn: 0,
+            lost: 0,
+          });
         });
       });
 
@@ -72,8 +98,14 @@ given("a player who has never played the bot", () => {
           await janggi.reload();
         });
 
-        then("the record is still clear, the reset having been kept", async ({janggi}) => {
-          expect(await janggi.recordSheet.getElo("Casual")).toBe(1200);
+        when("they open their record", () => {
+          beforeEach(async ({janggi}) => {
+            await janggi.settings.openTheSettings();
+            await janggi.recordSheet.openRecord();
+          });
+          then("the record is still clear, the reset having been kept", async ({janggi}) => {
+            expect(await janggi.recordSheet.getElo("Casual")).toBe(1200);
+          });
         });
       });
     });
@@ -83,12 +115,18 @@ given("a player who has never played the bot", () => {
         await janggi.reload();
       });
 
-      then("the loss is still on their record", async ({janggi}) => {
-        expect(await janggi.recordSheet.getGamesAgainst("Casual", 1200)).toEqual({
-          played: 1,
-          won: 0,
-          drawn: 0,
-          lost: 1,
+      when("they open their record", () => {
+        beforeEach(async ({janggi}) => {
+          await janggi.settings.openTheSettings();
+          await janggi.recordSheet.openRecord();
+        });
+        then("the loss is still on their record", async ({janggi}) => {
+          expect(await janggi.recordSheet.getGamesAgainst("Casual", 1200)).toEqual({
+            played: 1,
+            won: 0,
+            drawn: 0,
+            lost: 1,
+          });
         });
       });
     });
@@ -109,8 +147,14 @@ given("a player who has never played the bot", () => {
       expect(await janggi.board.getPieceAt(1, 6)).toEqual({side: "cho", type: "soldier"});
     });
 
-    then("nothing is on their record yet, the game being still under way", async ({janggi}) => {
-      expect(await janggi.recordSheet.getGamesAgainst("Casual", 800)).toEqual({played: 0, won: 0, drawn: 0, lost: 0});
+    when("they open their record", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.recordSheet.openRecord();
+      });
+      then("nothing is on their record yet, the game being still under way", async ({janggi}) => {
+        expect(await janggi.recordSheet.getGamesAgainst("Casual", 800)).toEqual({played: 0, won: 0, drawn: 0, lost: 0});
+      });
     });
 
     when("they then start a new game over it", () => {
@@ -118,12 +162,18 @@ given("a player who has never played the bot", () => {
         await janggi.settings.play.startNewGame();
       });
 
-      then("the game they abandoned is recorded as a loss", async ({janggi}) => {
-        expect(await janggi.recordSheet.getGamesAgainst("Casual", 800)).toEqual({
-          played: 1,
-          won: 0,
-          drawn: 0,
-          lost: 1,
+      when("they open their record", () => {
+        beforeEach(async ({janggi}) => {
+          await janggi.settings.openTheSettings();
+          await janggi.recordSheet.openRecord();
+        });
+        then("the game they abandoned is recorded as a loss", async ({janggi}) => {
+          expect(await janggi.recordSheet.getGamesAgainst("Casual", 800)).toEqual({
+            played: 1,
+            won: 0,
+            drawn: 0,
+            lost: 1,
+          });
         });
       });
     });

@@ -32,9 +32,15 @@ given("a player takes on the bot", () => {
       expect(await janggi.status.plaque.getShownRating("han")).toBe(800);
     });
 
-    then("cho is marked as the player's army, with their own rating", async ({janggi}) => {
-      expect(await janggi.status.plaque.isMarkedAsThePlayer("cho")).toBe(true);
-      expect(await janggi.status.plaque.getShownRating("cho")).toBe(await janggi.recordSheet.getElo("Casual"));
+    when("they open their record", () => {
+      beforeEach(async ({janggi}) => {
+        await janggi.settings.openTheSettings();
+        await janggi.recordSheet.openRecord();
+      });
+      then("cho is marked as the player's army, with their own rating", async ({janggi}) => {
+        expect(await janggi.status.plaque.isMarkedAsThePlayer("cho")).toBe(true);
+        expect(await janggi.status.plaque.getShownRating("cho")).toBe(await janggi.recordSheet.getElo("Casual"));
+      });
     });
 
     then("the bot's army may be arranged too, a casual game having no laying out", async ({janggi}) => {

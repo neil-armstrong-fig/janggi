@@ -24,7 +24,11 @@ given("a player wearing a piece set that thickens its outlines threefold under t
   beforeEach(async ({janggi}) => {
     const styled = {...LETTERS, handling: {shadow: "rgba(0, 0, 0, 0.45)", hoverOutline: 3}};
 
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", styled));
+    await janggi.stylesSheet.closeStyles();
     await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 
@@ -49,7 +53,11 @@ given("a player wearing a piece set that thickens its outlines threefold under t
 
 given("a player wearing a piece set written before sets could say how they are handled", () => {
   beforeEach(async ({janggi}) => {
+    await janggi.settings.openTheSettings();
+    await janggi.settings.selectTab("Look");
+    await janggi.stylesSheet.openStyles();
     await janggi.stylesSheet.styleImporter.importStyle(encodeKey("pieces", LETTERS));
+    await janggi.stylesSheet.closeStyles();
     await janggi.settings.look.pieceSet.setOwnStyleTo("Letters");
   });
 

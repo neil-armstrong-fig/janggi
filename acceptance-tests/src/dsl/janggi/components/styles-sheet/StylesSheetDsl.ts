@@ -9,15 +9,15 @@ import {StylesSheetPlaywright} from "@src/dsl/janggi/components/styles-sheet/pla
 
 /**
  * The player's own styles, reached as `janggi.stylesSheet` — a sheet that slides up over the game,
- * opened from the Progress section of the settings sheet, which it replaces on screen.
+ * opened from the Look tab of the settings sheet, which it replaces on screen.
  *
  * One member per part of the sheet, so a spec says which one it means before it says what to do with
  * it: `ownStyles` lists what the player has, `styleImporter` adds one from a shared key, `styleStarter`
  * opens the editor on a style, and `styleEditor` is what changes it — itself divided the same way its
  * `tools`, `preview` and `controls` are.
  *
- * Opening and returning to Settings belong to the sheet itself. Opening and closing around a control
- * remains common to every child in `StylesSheetComponent`.
+ * Specs open Settings and choose Look before opening this sheet; they close it explicitly when
+ * returning to the game. Child controls act only on the styles sheet that is already open.
  */
 export class StylesSheetDsl {
   private readonly styles: StylesSheetPlaywright;
@@ -41,6 +41,14 @@ export class StylesSheetDsl {
       await this.styles.openStyles();
     } catch (error) {
       throw new DslError("Failed to open the player's styles", error);
+    }
+  }
+
+  async closeStyles(): Promise<void> {
+    try {
+      await this.styles.closeStyles();
+    } catch (error) {
+      throw new DslError("Failed to close the player's styles", error);
     }
   }
 
