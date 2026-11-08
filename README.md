@@ -1,197 +1,171 @@
 <p align="center">
-  <img src="webapp/public/icon.svg" width="140" height="140" alt="장기, Janggi">
+  <img src="webapp/public/icon.svg" width="100" height="100" alt="장기, Janggi">
 </p>
 
 <h1 align="center">Janggi · 장기</h1>
 
+<p align="center"><strong>Also known as "Korean Chess". A new (old) game to get obsessed with if you love chess already.</strong></p>
+
+I wanted to learn janggi, but the versions I found made it hard to get into.
+So I built the version I wanted to exist: something super easy to jump into when waiting in line for something, on a bus, or just a bit bored and wanting something engaging to play. Hopefully you find it fun too!
+
 <p align="center">
-  <strong>Korean chess, on your phone.</strong> Play a friend across the table or take on the bot.
-  Install it and it works offline.
+  <a href="https://janggi.neilarmstrong.dev/"><strong>Play Janggi</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://janggi.neilarmstrong.dev/?tutorial=true"><strong>Learn through a guided game</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://janggi.neilarmstrong.dev/"><strong>▶ Play now</strong></a>
-  ·
-  <a href="https://janggi.neilarmstrong.dev/learn.html"><strong>Learn how to play</strong></a>
+  <a href="https://janggi.neilarmstrong.dev/">
+    <img src="readme/PlayingJanggi.png" width="720" alt="A game of janggi in progress, with traditional pieces on a wooden board">
+  </a>
 </p>
 
----
+## Familiar if you have played chess, but a very different game
 
-## Why janggi?
+The goal is still to checkmate the general. However, how you get there is where janggi finds its own character.
 
-If you know chess or xiangqi, janggi feels familiar for about three moves. Then it doesn't.
+The Cannon need another piece to jump over to move or capture. Chariots race along the open lines like a rook but can also cut through palace diagonals. Elephants are like horses in chess but move much further in one jump.
 
-- There is no river. The whole board is open from the first move, and the elephant, a slow
-  defender in xiangqi, becomes a long-range raider that can cross to the far side.
-- The cannon has to jump to move at all. It needs exactly one piece to vault over, and it can never
-  jump or take another cannon. In the opening neither side has a single legal cannon move.
-- Each palace is marked with an X. Generals, guards, chariots, cannons and even soldiers can run
-  along those diagonals.
-- You can pass. There is no stalemate, so a player with nothing good to do can rest a turn.
-- When the generals face each other down an open file, that is *bikjang* (빅장), and it can end the game.
-- You choose your own opening. Before play, each player arranges their horses and elephants. There are
-  four tournament arrangements and a fifth casual one, so the game starts differently depending on what
-  you both pick.
+Before the first move, you choose the layout of your pieces, not just the same mirrored layout every game.
 
-## What's in the app
+## Easy to get to grips with if you haven't played before
 
-### Learn before you play
+I created a simple [Guided game](https://janggi.neilarmstrong.dev/?tutorial=true) that takes you through the difference pieces in a real simulated game. It explains the different moves, but also the special rules that make Janggi different from chess.
 
-The illustrated [guide to playing janggi](https://janggi.neilarmstrong.dev/learn.html) covers the board,
-every piece, the unusual rules and both match formats. The sources and credits are on the
-[references page](https://janggi.neilarmstrong.dev/references.html).
+<p align="center">
+  <a href="https://janggi.neilarmstrong.dev/?tutorial=true">
+    <img src="readme/LearningJanggi.png" width="300" alt="The guided game on a phone, explaining a cannon jump and highlighting the next move">
+  </a>
+</p>
 
-### Two ways to play
+Prefer to look around first? The
+[illustrated guide](https://janggi.neilarmstrong.dev/learn.html) gives a quickstart guide for each
+each piece and its moves. The game and guide are available in English and
+Korean; the Korean translation is still being refined, it is mostly machine translated at the moment so forgive any inaccuracies!.
 
-- **Casual** is the friendly game that most online janggi sites play. Call a bikjang and it's a draw.
-- **Scored** is the tournament game of the Korea Janggi Association. Han lays out first, Cho answers,
-  and Han gets 1.5 points of compensation (덤) for moving second. Bikjang can only be called once both
-  sides are down to under 30 points, and it's decided on material instead of being drawn.
+## Play vs bots or humans
 
-The app enforces check, mate, passing, repetition and bikjang in both forms. Where sources disagree on a
-rule, I wrote up the decision and its sources in [`docs/rules.md`](docs/rules.md).
+There is always a bot ready for another game. Eight strengths give you a ladder
+to climb: beat one difficulty to unlock the next difficulty level, with separate progress for each army and
+match format so when you are comfortable with one setup, you can learn the next. Bot games build your personal rating and record.
 
-### A bot to beat
+Or play a friend. Share a phone / tablet across a table, with an optional clock if you want a more intense match and
+the unique Korean overtime rules (초읽기), or sign in with Google and send a private link to play
+online. Local games offer Casual and Scored rules; online invitations are for
+Casual games with friends.
 
-- Eight strengths, from 800 up to 2850, powered by
-  [Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish) running in your browser.
-- Play either army, or let the app pick at random. Beating a bot opens the next strength on that
-  army's casual or scored ladder.
-- Every game against the bot is rated. Your Elo is tracked separately for casual and scored play, with a
-  record against each strength (win rate overall and with each army) and your full game history.
-  Take-backs are off, and abandoning a game to start a new one counts as a loss. That keeps the number honest.
-- Finishing games earns XP for new boards and piece sets. A copyable save key carries your XP,
-  unlocked bots and custom styles to another device.
+## A board that feels like yours
 
-### Looks and sound
+Finish bot games to earn new boards and piece sets, then unlock the editor to
+make and share your own. Pieces land with sound and movement.
 
-- Nine built-in piece sets and seven boards, from traditional characters and classic wood to
-  matched themes. You can also create, import and share your own styles.
-- The soundtrack is synthesised from Korean instruments: gayageum, daegeum, janggu and gong, in
-  traditional modes and rhythms. It changes with the game. Tension builds as pieces come off the
-  board, a theme cuts in when a general is in check, and the ending gets its own cue.
-- Pieces fly, captures land, the board shakes, and on a phone you'll feel it buzz. All of it can be
-  turned down.
+<p align="center">
+  <a href="https://janggi.neilarmstrong.dev/">
+    <img src="readme/EditingAStyle.png" width="720" alt="The desktop style editor, with a live board preview alongside colour and line controls">
+  </a>
+</p>
 
-### Built for your phone
+## Realtime music and sound
 
-- Install it from the browser and it opens full screen, like an app.
-- It works offline, bot included.
-- Close it mid-game and come back later. The game, your settings, progress and record are where you left them.
+The soundtrack is synthesised in real time, drawing on traditional Korean
+sanjo (산조): a gayageum solo over janggu drums, starting unhurriedly and
+gathering pace. Here, three rhythmic stages follow the tension on the board:
+jungmori (중모리) for the opening, jungjungmori (중중모리) as the fight develops,
+and the faster jajinmori (자진모리) at its height. A separate, darker theme rises
+when a general is in check.
 
-## The pieces at a glance
+## Play it wherever you want
 
-| Piece | Moves | Worth |
-| --- | --- | --- |
-| General 궁 | One step along any line, never leaving its palace | — |
-| Guard 사 | Same as the general | 3 |
-| Chariot 차 | Any distance straight, and along palace diagonals | 13 |
-| Cannon 포 | Like a chariot, but must jump exactly one non-cannon piece | 7 |
-| Horse 마 | One step straight, then one diagonal. Blocked if the first point is taken | 5 |
-| Elephant 상 | One step straight, then two diagonal. Blocked at either point on the way | 3 |
-| Soldier 졸/병 | One step forward or sideways. Diagonally forward inside the enemy palace | 2 |
+Open it in your browser, or install it on your phone. Once loaded and cached,
+local play works offline, including the bot. Your game stays where you left
+it. Optional sign-in carries your progress, bot record and styles between
+devices; the unfinished local board stays on its device. A save key can also
+carry XP, beaten bots and custom styles by hand.
 
-Cho (blue) moves first. Checkmate the enemy general to win.
+[**Come and play →**](https://janggi.neilarmstrong.dev/)
 
----
+## Behind the board
 
-## Also a showcase of engineering
+Built with React, TypeScript and a janggi rules engine shared by local and
+online play. I use acceptance tests (in playwright) first, then deliberately break the code to
+check that the tests notice. The [case study](https://neilarmstrong.dev/software/janggi/)
+tells the story behind the project; [research notes](docs/) and
+[sources and credits](https://janggi.neilarmstrong.dev/references.html) record
+what went into the game.
 
-I built this to play, and just as much to show how I build software. Everything below is in this
-repository, and where I could, tooling enforces it instead of good intentions. The
-[case study](https://neilarmstrong.dev/software/janggi/) covers the thinking behind it.
+<details>
+<summary><strong>Run locally and contribute</strong></summary>
 
-### Acceptance Test Driven Development
+A pnpm workspace with six packages:
 
-- Every feature starts as a Playwright acceptance spec in plain `given` / `when` / `then` language:
-  *"given a player takes on the bot, when they play han, then the bot opens as cho"*. I watch it fail for
-  the right reason before writing any code.
-- A domain-specific language sits between the specs and the browser. Specs talk to `janggi.board`,
-  `janggi.settings` and `janggi.status`, and only the DSL's Playwright layer touches locators. Lint
-  rules keep it that way: a spec can't import Playwright, and a `then` can't perform an action.
-- The same suite runs on desktop and on a phone viewport, with motion both reduced and in full. That's
-  hundreds of checks, run against the dev server locally and against the deployed site in CI.
-
-### Tests I've seen fail
-
-- Over 1,200 unit tests with Vitest cover the rules engine, the store, hooks and every plain
-  function. They're named as sentences, with one file per export.
-- Property-based tests play thousands of random legal games with fast-check and assert what must
-  hold after every move.
-- A test I've never seen fail isn't one I trust. So I break the code on purpose to check the test
-  notices, which has more than once exposed a test that asserted nothing.
-
-### The web stack
-
-- React 19, Redux Toolkit, Tailwind CSS v4 and Vite, installable as a PWA that works offline.
-- TypeScript at its strictest: `strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, explicit
-  return types, and literal unions. An off-board point or a misspelled setting won't compile.
-- ESLint with zero warnings allowed and Prettier on everything, in one `pnpm checks` gate.
-- Lint enforces the architecture. The rules engine can't import React or Redux, the store can't import
-  components, and the sound and bot layers are walled off too. Crossing one of those lines fails the
-  build instead of waiting for a code review.
-- A WebAssembly chess engine runs in the browser, cross-origin isolated on GitHub Pages through the
-  app's own service worker. The app's rules engine referees every move it plays.
-- GitHub Actions runs the checks, then the acceptance tests against a production build, then deploys,
-  then runs the acceptance tests again against the live site. Dependencies are exact-pinned and checked
-  against a supply-chain policy.
-
-### Working with AI agents
-
-- I build this with AI coding agents, and they follow the same test-first loop a person would.
-- An `AGENTS.md` at the root and in every package records the architecture, the rules, the gotchas and
-  the reasoning behind decisions. An agent or a new developer starts from the same understanding.
-- Where sources disagree on the rules of janggi, I wrote up the decision and its sources in
-  [`docs/`](docs/) and linked it from the code that implements it.
-
-### Code and folder structure
-
-- A file lives beside the one thing that uses it, and rises only as far as its nearest shared caller.
-  So a file's depth tells you how much breaks if you change it.
-- One export per file, named for it. Functions read top-down, every type is named, and folders are
-  named for their subject (`bikjang/`, `check/`, `scoring/`) instead of their shape.
-- The app mirrors the test DSL. The game screen's sections and the DSL's components share names, so a
-  spec and the code it covers describe the screen in one vocabulary.
-- The rules of janggi are plain TypeScript with no React, no store and no DOM. A state goes in and a
-  state comes out, which makes them cheap to test exhaustively.
-
----
-
-## For developers
-
-React, installable as a PWA, built with Acceptance Test Driven Development.
-
-### What's here
-
-pnpm workspace with three packages:
-
-- `webapp/` is the game, learning guide and references pages. Vite, React, Redux Toolkit, Tailwind, PWA.
-- `acceptance-tests/` is the acceptance-test DSL and the specs, run by Playwright.
-- `shared/` is code shared by both, plus the base tool config in `shared/config/`.
+| Package             | Purpose                                                                           |
+| ------------------- | --------------------------------------------------------------------------------- |
+| `webapp/`           | React 19, Redux Toolkit, Tailwind CSS v4 and Vite PWA; game, guide and references |
+| `engine/`           | Janggi rules shared by the app and API                                            |
+| `shared/`           | Shared vocabulary, contracts and base tool configuration                          |
+| `acceptance-tests/` | Playwright acceptance specs and their domain-specific language                    |
+| `api/`              | Cloudflare Worker for opt-in sign-in, sync and online friend games                |
+| `infra/`            | Cloudflare infrastructure declared with Alchemy                                   |
 
 ### Getting started
 
+Use Node from `.nvmrc` (24.13.1) and pnpm from `package.json` (12.3.4).
+With nvm and Corepack installed:
+
 ```bash
-corepack enable && nvm use
-pnpm install
-pnpm install-browsers    # one-time Playwright chromium download
+nvm install
+nvm use
+corepack enable
+pnpm install --frozen-lockfile
 pnpm start               # http://localhost:3000
 ```
 
+The frontend can run without local API setup. To develop sign-in, sync or online
+play against a local Worker, follow the
+[manual setup steps](MANUAL-SETUP-STEPS.md#8-local-development-against-the-real-api-optional)
+and [API instructions](api/AGENTS.md).
+
+### Checks and browser tests
+
 ```bash
-pnpm checks              # lint, format, types and unit tests across every package
-pnpm acceptance-tests    # with the app running in another terminal
+pnpm checks              # lint, format, types and unit tests in every package
+pnpm install-browsers    # one-time Chromium download for Playwright
+pnpm start:preview       # build, then serve on http://localhost:3000
 ```
 
-### Working on it
+With preview running in another terminal:
 
-`AGENTS.md` at the root, and one per package, carry the conventions and the gotchas. They're written
-for coding agents but people can read them too. Start there.
+```bash
+pnpm acceptance-tests
+pnpm acceptance-tests:pwa
+```
+
+Stop the dev server before starting preview on the same port. The main
+acceptance suite also works with `pnpm start`; PWA tests require preview.
+Use `WEBAPP_URL` to point browser tests at a different server.
+
+Additional suites run separately from `pnpm checks`:
+
+```bash
+pnpm test:properties             # random legal games and invariants
+pnpm test:bot-games              # whole games with the real bot under Node
+pnpm acceptance-tests:bot-games  # whole bot games in the browser; needs a server
+pnpm acceptance-tests:unreleased # gated work; needs a server
+```
+
+Work in progress can be enabled with `?IN_DEVELOPMENT=true`; it is on by default
+on the dev server. This controls visibility only. Read [AGENTS.md](AGENTS.md)
+and the instructions in each package before contributing.
 
 ### The bot's engine
 
-The bot is [Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish), run in the browser
-from the `fairy-stockfish-nnue.wasm` package. It is free software under the GPL-3.0: the app ships its
-files unmodified, with its licence, at `engine/`, and talks to it over UCI. Its janggi differs from this
-app's rules in places, so this app's engine decides every move the bot may play.
-[`docs/bot.md`](docs/bot.md) says where and why, and why its Elo numbers are nominal.
+The bot uses [Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish)
+through `fairy-stockfish-nnue.wasm`. Its files ship unmodified, with their
+[GPL-3.0 licence](https://github.com/fairy-stockfish/Fairy-Stockfish/blob/master/Copying.txt)
+and attribution, under `engine/` in the served site. That asset directory is
+separate from this workspace's `engine/` rules package, which decides which
+moves the bot may play. [Bot notes](docs/bot.md) explain the integration, rule
+differences and nominal Elo strengths.
+
+</details>
