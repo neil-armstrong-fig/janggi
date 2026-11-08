@@ -10,13 +10,13 @@ I wanted to learn janggi, but the versions I found made it hard to get into.
 So I built the version I wanted to exist: something super easy to jump into when waiting in line for something, on a bus, or just a bit bored and wanting something engaging to play. Hopefully you find it fun too!
 
 <p align="center">
-  <a href="https://janggi.neilarmstrong.dev/"><strong>Play Janggi</strong></a>
+  <a href="https://janggi.neilarmstrong.dev/" target="_blank" rel="noopener noreferrer"><strong>Play Janggi</strong></a>
   &nbsp;·&nbsp;
-  <a href="https://janggi.neilarmstrong.dev/?tutorial=true"><strong>Learn through a guided game</strong></a>
+  <a href="https://janggi.neilarmstrong.dev/?tutorial=true" target="_blank" rel="noopener noreferrer"><strong>Learn through a guided game</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://janggi.neilarmstrong.dev/">
+  <a href="https://janggi.neilarmstrong.dev/" target="_blank" rel="noopener noreferrer">
     <img src="readme/PlayingJanggi.png" width="720" alt="A game of janggi in progress, with traditional pieces on a wooden board">
   </a>
 </p>
@@ -31,16 +31,16 @@ Before the first move, you choose the layout of your pieces, not just the same m
 
 ## Easy to get to grips with if you haven't played before
 
-I created a simple [Guided game](https://janggi.neilarmstrong.dev/?tutorial=true) that takes you through the difference pieces in a real simulated game. It explains the different moves, but also the special rules that make Janggi different from chess.
+I created a simple <a href="https://janggi.neilarmstrong.dev/?tutorial=true" target="_blank" rel="noopener noreferrer">Guided game</a> that takes you through the difference pieces in a real simulated game. It explains the different moves, but also the special rules that make Janggi different from chess.
 
 <p align="center">
-  <a href="https://janggi.neilarmstrong.dev/?tutorial=true">
+  <a href="https://janggi.neilarmstrong.dev/?tutorial=true" target="_blank" rel="noopener noreferrer">
     <img src="readme/LearningJanggi.png" width="300" alt="The guided game on a phone, explaining a cannon jump and highlighting the next move">
   </a>
 </p>
 
 Prefer to look around first? The
-[illustrated guide](https://janggi.neilarmstrong.dev/learn.html) gives a quickstart guide for each
+<a href="https://janggi.neilarmstrong.dev/learn.html" target="_blank" rel="noopener noreferrer">illustrated guide</a> gives a quickstart guide for each
 each piece and its moves. The game and guide are available in English and
 Korean; the Korean translation is still being refined, it is mostly machine translated at the moment so forgive any inaccuracies!.
 
@@ -58,10 +58,10 @@ Casual games with friends.
 ## A board that feels like yours
 
 Finish bot games to earn new boards and piece sets, then unlock the editor to
-make and share your own. Pieces land with sound and movement.
+make and share your own if you like.
 
 <p align="center">
-  <a href="https://janggi.neilarmstrong.dev/">
+  <a href="https://janggi.neilarmstrong.dev/" target="_blank" rel="noopener noreferrer">
     <img src="readme/EditingAStyle.png" width="720" alt="The desktop style editor, with a live board preview alongside colour and line controls">
   </a>
 </p>
@@ -83,15 +83,15 @@ it. Optional sign-in carries your progress, bot record and styles between
 devices; the unfinished local board stays on its device. A save key can also
 carry XP, beaten bots and custom styles by hand.
 
-[**Come and play →**](https://janggi.neilarmstrong.dev/)
+<a href="https://janggi.neilarmstrong.dev/" target="_blank" rel="noopener noreferrer"><strong>Come and play →</strong></a>
 
 ## Behind the board
 
 Built with React, TypeScript and a janggi rules engine shared by local and
 online play. I use acceptance tests (in playwright) first, then deliberately break the code to
-check that the tests notice. The [case study](https://neilarmstrong.dev/software/janggi/)
-tells the story behind the project; [research notes](docs/) and
-[sources and credits](https://janggi.neilarmstrong.dev/references.html) record
+check that the tests notice. The <a href="https://neilarmstrong.dev/software/janggi/" target="_blank" rel="noopener noreferrer">case study</a>
+tells the story behind the project; <a href="docs/" target="_blank" rel="noopener noreferrer">research notes</a> and
+<a href="https://janggi.neilarmstrong.dev/references.html" target="_blank" rel="noopener noreferrer">sources and credits</a> record
 what went into the game.
 
 <details>
@@ -123,8 +123,8 @@ pnpm start               # http://localhost:3000
 
 The frontend can run without local API setup. To develop sign-in, sync or online
 play against a local Worker, follow the
-[manual setup steps](MANUAL-SETUP-STEPS.md#8-local-development-against-the-real-api-optional)
-and [API instructions](api/AGENTS.md).
+<a href="MANUAL-SETUP-STEPS.md#8-local-development-against-the-real-api-optional" target="_blank" rel="noopener noreferrer">manual setup steps</a>
+and <a href="api/AGENTS.md" target="_blank" rel="noopener noreferrer">API instructions</a>.
 
 ### Checks and browser tests
 
@@ -155,17 +155,17 @@ pnpm acceptance-tests:unreleased # gated work; needs a server
 ```
 
 Work in progress can be enabled with `?IN_DEVELOPMENT=true`; it is on by default
-on the dev server. This controls visibility only. Read [AGENTS.md](AGENTS.md)
+on the dev server. This controls visibility only. Read <a href="AGENTS.md" target="_blank" rel="noopener noreferrer">AGENTS.md</a>
 and the instructions in each package before contributing.
 
 ### The bot's engine
 
-The bot uses [Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish)
+The bot uses <a href="https://github.com/fairy-stockfish/Fairy-Stockfish" target="_blank" rel="noopener noreferrer">Fairy-Stockfish</a>
 through `fairy-stockfish-nnue.wasm`. Its files ship unmodified, with their
-[GPL-3.0 licence](https://github.com/fairy-stockfish/Fairy-Stockfish/blob/master/Copying.txt)
+<a href="https://github.com/fairy-stockfish/Fairy-Stockfish/blob/master/Copying.txt" target="_blank" rel="noopener noreferrer">GPL-3.0 licence</a>
 and attribution, under `engine/` in the served site. That asset directory is
 separate from this workspace's `engine/` rules package, which decides which
-moves the bot may play. [Bot notes](docs/bot.md) explain the integration, rule
+moves the bot may play. <a href="docs/bot.md" target="_blank" rel="noopener noreferrer">Bot notes</a> explain the integration, rule
 differences and nominal Elo strengths.
 
 </details>
