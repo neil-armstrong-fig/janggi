@@ -59,6 +59,16 @@ interface Props {
 
 export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
+  const ratedAt = useAppSelector(state => state.game.ratedAt);
+  const ratingRecord = useAppSelector(state =>
+    state.ratings.byFormat[phase.format].games.find(
+      game =>
+        game.finishedAt === ratedAt &&
+        game.botElo === opponent.botElo &&
+        game.playerSide === opponent.playerSide &&
+        game.result !== "lost" ? game : game.finishedAt === ratedAt && game.botElo === opponent.botElo && game.playerSide === opponent.playerSide ? game : undefined,
+    ),
+  );
   const {xp, beaten} = useAppSelector(state => state.progress);
   const friend = useAppSelector(state => state.friend);
   const tutorial = useAppSelector(inTheTutorial);
@@ -152,6 +162,7 @@ export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
           xp={xp}
           animated={effects.full}
           nextBotElo={nextBotElo}
+          ratingRecord={ratingRecord}
           onShowBoard={() => setGamePutAside(game)}
           onStartNewGame={tutorial ? undefined : pressedStartAnotherGame}
           onStartNewGameAtBotElo={elo => pressed(botStrengthChosen(elo))}

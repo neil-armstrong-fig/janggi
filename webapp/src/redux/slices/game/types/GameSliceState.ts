@@ -42,6 +42,8 @@ export interface GameSliceState {
    * next change of mind as a loss. `botAwaitsGoAhead` is the question this answers.
    */
   readonly botMayOpen: boolean;
+  /** The rated game this finished position was recorded as, by its finish timestamp. */
+  readonly ratedAt: string | undefined;
   /**
    * The draw on offer, if one is — a question waiting for an answer, or a refusal the page says so of
    * until the game moves on. Dealt undefined with every game and never kept on the device: an offer

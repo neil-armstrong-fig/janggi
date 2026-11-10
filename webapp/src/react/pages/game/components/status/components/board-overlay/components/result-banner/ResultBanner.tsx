@@ -10,6 +10,7 @@ import {opponentOf} from "@janggi/engine/utils/OpponentOf";
 import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages";
 import {XpBar} from "@src/react/pages/game/components/xp-bar/XpBar";
 import type {Wording} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/types/Wording";
+import type {GameRecord} from "@src/redux/slices/ratings/types/GameRecord";
 
 /**
  * The end of a game, announced over the board: the result's name in Korean — 외통, 점수승, 빅장 — and
@@ -58,6 +59,7 @@ interface Props {
   readonly animated: boolean;
   /** The strength of bot this win has just opened, or undefined where it opened none. */
   readonly nextBotElo: BotElo | undefined;
+  readonly ratingRecord: GameRecord | undefined;
   /** Puts the announcement aside to look at the board beneath it. */
   readonly onShowBoard: () => void;
   /** Deals the next game, or undefined where there is none to deal: the tutorial's game is left by its own card. */
@@ -75,6 +77,7 @@ export function ResultBanner({
   xp,
   animated,
   nextBotElo,
+  ratingRecord,
   onShowBoard,
   onStartNewGame,
   onStartNewGameAtBotElo,
@@ -132,6 +135,12 @@ export function ResultBanner({
           </p>
         )}
 
+        {ratingRecord && (
+          <p data-testid="result-elo" className="mt-1 text-xs text-white/70 tabular-nums">
+            Your Elo: {ratingRecord.eloBefore} → {ratingRecord.eloAfter} ({signedChange(ratingRecord.eloAfter - ratingRecord.eloBefore)})
+          </p>
+        )}
+
         {reward && <XpBar testId="result-xp-bar" xp={xp} className="mt-2" />}
 
         {reward && reward.unlocked.length > 0 && (
@@ -179,6 +188,12 @@ export function ResultBanner({
       </div>
     </div>
   );
+}
+
+function signedChange(change: number): string {
+  if (change > 0) return `+${change}`;
+  if (change < 0) return `−${Math.abs(change)}`;
+  return "0";
 }
 
 function wordingOf(status: GameStatus, {result}: Messages): Wording | undefined {

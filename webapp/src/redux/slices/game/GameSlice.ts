@@ -39,6 +39,7 @@ import {syncMerged} from "@src/redux/slices/account/actions/SyncMerged";
 import {friendPhaseFor} from "@src/redux/slices/online/dealing/FriendPhaseFor";
 import {settledSide} from "@src/redux/slices/game/sides/SettledSide";
 import {withinReach} from "@src/redux/slices/game/within-reach/WithinReach";
+import {ratedGameFinished} from "@src/redux/slices/ratings/RatingsSlice";
 
 /**
  * Every reducer returns a new state rather than mutating the draft Immer hands it. The engine
@@ -177,6 +178,7 @@ export const gameSlice = createSlice({
     builder.addCase(tutorialSceneStarted, (_state, action): GameSliceState => action.payload.lesson);
     builder.addCase(tutorialLeft, (_state, action): GameSliceState => action.payload.game);
     builder.addCase(syncMerged, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
+    builder.addCase(ratedGameFinished, (state, action): GameSliceState => ({...state, ratedAt: action.payload.finishedAt}));
   },
 });
 

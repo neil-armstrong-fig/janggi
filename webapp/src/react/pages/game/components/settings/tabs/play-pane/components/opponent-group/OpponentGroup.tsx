@@ -10,9 +10,7 @@ import type {Opponent} from "@src/redux/slices/game/types/Opponent";
 import {useAppSelector} from "@src/redux/Hooks";
 
 /**
- * Who the other army is: a person at the same device, with whether the board turns for them, or the bot, with how
- * strongly it plays and which army the player takes. Its line names the opponent, and against the bot its strength and
- * the player's army too, since those are what a player checks before a game.
+ * Who the other army is: a person at the same device, with whether the board turns for them, or the bot and its strength.
  */
 interface Props {
   readonly open: boolean;
@@ -54,5 +52,5 @@ export function OpponentGroup({open, onToggle}: Props): React.JSX.Element {
 function summaryOf(opponent: Opponent, play: PlayMessages): string {
   if (opponent.name === "Human") return play.opponentNames.Human;
 
-  return [play.opponentNames.Bot, String(opponent.botElo), play.sideChoiceNames[opponent.sideChoice]].join(" · ");
+  return [play.opponentNames.Bot, String(opponent.botElo)].join(" · ");
 }

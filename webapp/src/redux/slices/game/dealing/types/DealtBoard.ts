@@ -9,5 +9,6 @@ export interface DealtBoard {
   readonly played: PlayedGame;
   readonly phase: SetupPhase;
   readonly botMayOpen: boolean;
+  readonly ratedAt: undefined;
   readonly drawOffer: undefined;
 }

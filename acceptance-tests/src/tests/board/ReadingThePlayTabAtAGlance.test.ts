@@ -24,7 +24,7 @@ given("a game against the bot, its setups chosen", () => {
 
   when("nothing else has been asked for", () => {
     then("each group says in a line what it is set to", async ({janggi}) => {
-      expect(await janggi.settings.play.getGroupSummary("Opponent")).toBe("Bot · 800 · Cho");
+      expect(await janggi.settings.play.getGroupSummary("Opponent")).toBe("Bot · 800");
       expect(await janggi.settings.play.getGroupSummary("Format")).toBe("Casual");
       expect(await janggi.settings.play.getGroupSummary("Setup")).toBe("Inner Elephant\nOuter Elephant");
     });

@@ -1,6 +1,6 @@
 import {BOT_ELOS} from "@janggi/shared/janggi/settings/BotElo";
 import {FILES, RANKS} from "@janggi/engine/board/BoardDimensions";
-import {GAME_STORAGE_KEY} from "@src/redux/slices/game/storage/GameStorageKey";
+import {GAME_STORAGE_KEY, PREVIOUS_GAME_STORAGE_KEY} from "@src/redux/slices/game/storage/GameStorageKey";
 import type {GameSliceState} from "@src/redux/slices/game/types/GameSliceState";
 import type {GameState} from "@janggi/engine/types/GameState";
 import {MATCH_FORMATS} from "@janggi/shared/janggi/settings/MatchFormat";
@@ -46,7 +46,7 @@ interface SetupRead {
  * its own player can edit.
  */
 export function loadGame(storage: Pick<Storage, "getItem"> | undefined): GameSliceState {
-  return gameFrom(readJson(storage, GAME_STORAGE_KEY)) ?? firstGame();
+  return gameFrom(readJson(storage, GAME_STORAGE_KEY) ?? readJson(storage, PREVIOUS_GAME_STORAGE_KEY)) ?? firstGame();
 }
 
 function gameFrom(value: unknown): GameSliceState | undefined {
@@ -62,7 +62,14 @@ function gameFrom(value: unknown): GameSliceState | undefined {
 
   // A go-ahead missing — a game kept before the bot waited for one — is read as not given. It only ever
   // holds the bot's first move, and a kept game past its opening has had that already.
-  return {played, phase, opponent, botMayOpen: value["botMayOpen"] === true, drawOffer: undefined};
+  return {
+    played,
+    phase,
+    opponent,
+    botMayOpen: value["botMayOpen"] === true,
+    ratedAt: typeof value["ratedAt"] === "string" ? value["ratedAt"] : undefined,
+    drawOffer: undefined,
+  };
 }
 
 function recordFrom(value: unknown): PlayedGame | undefined {
