@@ -178,7 +178,10 @@ export const gameSlice = createSlice({
     builder.addCase(tutorialSceneStarted, (_state, action): GameSliceState => action.payload.lesson);
     builder.addCase(tutorialLeft, (_state, action): GameSliceState => action.payload.game);
     builder.addCase(syncMerged, (state, action): GameSliceState => withinReach(state, action.payload.progress.beaten));
-    builder.addCase(ratedGameFinished, (state, action): GameSliceState => ({...state, ratedAt: action.payload.finishedAt}));
+    builder.addCase(ratedGameFinished, (state, action): GameSliceState => ({
+      ...state,
+      ratedAt: action.payload.finishedAt,
+    }));
   },
 });
 

@@ -23,5 +23,11 @@ import {playedGameFrom} from "@src/record/PlayedGameFrom";
  * was given.
  */
 export function dealtGame(phase: SetupPhase): DealtBoard {
-  return {played: playedGameFrom(boardShownFor(phase)), phase, botMayOpen: false, ratedAt: undefined, drawOffer: undefined};
+  return {
+    played: playedGameFrom(boardShownFor(phase)),
+    phase,
+    botMayOpen: false,
+    ratedAt: undefined,
+    drawOffer: undefined,
+  };
 }

@@ -24,6 +24,7 @@ import {scoreFor} from "@janggi/engine/scoring/ScoreFor";
 import {useGameStatus} from "@src/react/pages/game/components/status/hooks/use-game-status/UseGameStatus";
 import {usePreferences} from "@src/react/pages/game/hooks/use-preferences/UsePreferences";
 import {useState} from "react";
+import {useRatingRecord} from "@src/react/pages/game/components/status/components/board-overlay/hooks/use-rating-record/UseRatingRecord";
 
 /**
  * What is said over the board rather than around it. Everything here is laid absolutely over the box
@@ -59,16 +60,7 @@ interface Props {
 
 export function BoardOverlay({onControlPressed}: Props): React.JSX.Element {
   const {played, phase, opponent, drawOffer} = useAppSelector(state => state.game);
-  const ratedAt = useAppSelector(state => state.game.ratedAt);
-  const ratingRecord = useAppSelector(state =>
-    state.ratings.byFormat[phase.format].games.find(
-      game =>
-        game.finishedAt === ratedAt &&
-        game.botElo === opponent.botElo &&
-        game.playerSide === opponent.playerSide &&
-        game.result !== "lost" ? game : game.finishedAt === ratedAt && game.botElo === opponent.botElo && game.playerSide === opponent.playerSide ? game : undefined,
-    ),
-  );
+  const ratingRecord = useRatingRecord();
   const {xp, beaten} = useAppSelector(state => state.progress);
   const friend = useAppSelector(state => state.friend);
   const tutorial = useAppSelector(inTheTutorial);

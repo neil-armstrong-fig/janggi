@@ -11,6 +11,7 @@ import {useMessages} from "@src/react/pages/game/hooks/use-messages/UseMessages"
 import {XpBar} from "@src/react/pages/game/components/xp-bar/XpBar";
 import type {Wording} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/types/Wording";
 import type {GameRecord} from "@src/redux/slices/ratings/types/GameRecord";
+import {eloChange} from "@src/react/pages/game/components/status/components/board-overlay/components/result-banner/elo-change/EloChange";
 
 /**
  * The end of a game, announced over the board: the result's name in Korean — 외통, 점수승, 빅장 — and
@@ -137,7 +138,8 @@ export function ResultBanner({
 
         {ratingRecord && (
           <p data-testid="result-elo" className="mt-1 text-xs text-white/70 tabular-nums">
-            Your Elo: {ratingRecord.eloBefore} → {ratingRecord.eloAfter} ({signedChange(ratingRecord.eloAfter - ratingRecord.eloBefore)})
+            Your Elo: {ratingRecord.eloBefore} → {ratingRecord.eloAfter} (
+            {eloChange(ratingRecord.eloAfter - ratingRecord.eloBefore)})
           </p>
         )}
 
@@ -188,12 +190,6 @@ export function ResultBanner({
       </div>
     </div>
   );
-}
-
-function signedChange(change: number): string {
-  if (change > 0) return `+${change}`;
-  if (change < 0) return `−${Math.abs(change)}`;
-  return "0";
 }
 
 function wordingOf(status: GameStatus, {result}: Messages): Wording | undefined {
